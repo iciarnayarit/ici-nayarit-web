@@ -21,19 +21,19 @@ export default function DownloadApp() {
       <div className="relative container mx-auto px-4 md:px-6 text-center text-white">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl font-headline font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Read, Listen, and Pray Anywhere
+            Lee, Escucha y Ora en Cualquier Lugar
           </h2>
           <p className="mt-4 text-lg md:text-xl">
-            Take the Bible with you wherever you go. Download the YouVersion app for free.
+            Lleva la Biblia contigo a donde vayas. Descarga la aplicación YouVersion gratis.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
             <Button size="lg" className="bg-white text-black hover:bg-gray-200 w-full sm:w-auto">
               <AppleIcon className="mr-2 h-6 w-6" />
-              Download on the App Store
+              Descargar en la App Store
             </Button>
             <Button size="lg" className="bg-white text-black hover:bg-gray-200 w-full sm:w-auto">
               <GooglePlayIcon className="mr-2 h-6 w-6" />
-              Get it on Google Play
+              Consíguelo en Google Play
             </Button>
           </div>
         </div>

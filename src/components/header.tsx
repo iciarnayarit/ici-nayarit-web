@@ -7,17 +7,17 @@ export default function Header() {
       <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <BookHeart className="h-7 w-7 text-primary" />
-          <span className="font-bold text-xl font-headline">YouVersion Reimagined</span>
+          <span className="font-bold text-xl font-headline">YouVersion Reimaginado</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
           <Link href="#verse" className="text-foreground/80 hover:text-foreground transition-colors">
-            Verse of the Day
+            Versículo del Día
           </Link>
           <Link href="#plans" className="text-foreground/80 hover:text-foreground transition-colors">
-            Plans
+            Planes
           </Link>
           <Link href="#download" className="text-foreground/80 hover:text-foreground transition-colors">
-            Download
+            Descargar
           </Link>
         </nav>
       </div>

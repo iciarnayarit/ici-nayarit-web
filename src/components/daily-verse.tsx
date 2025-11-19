@@ -7,19 +7,19 @@ export default function DailyVerse() {
       <div className="container mx-auto px-4 md:px-6 text-center">
         <div className="max-w-3xl mx-auto">
           <blockquote className="text-3xl font-headline font-bold text-foreground md:text-5xl lg:text-6xl tracking-tight">
-            “For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life.”
+            “Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.”
           </blockquote>
           <p className="mt-6 text-lg text-muted-foreground font-body">
-            John 3:16
+            Juan 3:16
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button variant="outline">
               <Share2 className="mr-2 h-4 w-4" />
-              Share
+              Compartir
             </Button>
             <Button style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
               <Mail className="mr-2 h-4 w-4" />
-              Subscribe
+              Suscribirse
             </Button>
           </div>
         </div>

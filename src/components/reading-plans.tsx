@@ -6,20 +6,20 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 const plans = [
   {
     id: '1',
-    title: 'Journey Through John',
-    description: 'Explore the life and teachings of Jesus in this 30-day plan.',
+    title: 'Viaje a través de Juan',
+    description: 'Explora la vida y las enseñanzas de Jesús en este plan de 30 días.',
     imageUrlId: 'plan-1'
   },
   {
     id: '2',
-    title: 'Proverbs: A Daily Dose of Wisdom',
-    description: 'Gain practical wisdom for everyday living with a chapter from Proverbs each day.',
+    title: 'Proverbios: Una Dosis Diaria de Sabiduría',
+    description: 'Obtén sabiduría práctica para la vida diaria con un capítulo de Proverbios cada día.',
     imageUrlId: 'plan-2'
   },
   {
     id: '3',
-    title: 'The Story of Redemption',
-    description: 'Trace the grand narrative of the Bible from Genesis to Revelation.',
+    title: 'La Historia de la Redención',
+    description: 'Sigue la gran narrativa de la Biblia desde Génesis hasta Apocalipsis.',
     imageUrlId: 'plan-3'
   }
 ];
@@ -30,10 +30,10 @@ export default function ReadingPlans() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-3xl font-headline font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Reading Plans & Devotionals
+            Planes de Lectura y Devocionales
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Grow in your faith with plans that fit your life.
+            Crece en tu fe con planes que se ajustan a tu vida.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -58,7 +58,7 @@ export default function ReadingPlans() {
                 </CardHeader>
                 <CardContent className="flex-grow"></CardContent>
                 <CardFooter>
-                  <Button variant="outline" className="w-full">Start Plan</Button>
+                  <Button variant="outline" className="w-full">Comenzar Plan</Button>
                 </CardFooter>
               </Card>
             );
