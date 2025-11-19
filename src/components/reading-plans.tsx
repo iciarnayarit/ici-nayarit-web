@@ -16,7 +16,8 @@ const plans = [
     id: '2',
     title: 'Proverbios: Una Dosis Diaria de Sabiduría',
     description: 'Obtén sabiduría práctica para la vida diaria con un capítulo de Proverbios cada día.',
-    imageUrlId: 'plan-2'
+    imageUrlId: 'plan-2',
+    slug: 'proverbios-sabiduria-diaria'
   },
   {
     id: '3',
