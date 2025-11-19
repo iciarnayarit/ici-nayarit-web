@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="flex items-center gap-2">
           <BookHeart className="h-6 w-6 text-primary" />
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} YouVersion Reimaginado. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} ICIAR Nayarit. Todos los derechos reservados.
           </p>
         </div>
         <div className="flex items-center gap-4 mt-4 sm:mt-0">

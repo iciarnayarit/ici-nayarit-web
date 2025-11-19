@@ -3,7 +3,7 @@ import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'YouVersion Reimaginado',
+  title: 'ICIAR Nayarit',
   description: 'Una versión moderna de la experiencia de lectura de la Biblia.',
 };
 
