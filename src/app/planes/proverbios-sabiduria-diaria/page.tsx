@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
@@ -65,8 +66,11 @@ export default function ProverbiosPlanPage() {
                       </label>
                     </AccordionTrigger>
                   </div>
-                  <AccordionContent className="pl-12">
-                   {item.summary}
+                  <AccordionContent className="pl-12 space-y-4">
+                    <p>{item.summary}</p>
+                    <Link href="/biblia" className="text-primary hover:underline">
+                      Leer el pasaje completo
+                    </Link>
                   </AccordionContent>
                 </AccordionItem>
               ))}
