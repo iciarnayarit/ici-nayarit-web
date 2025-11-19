@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -8,7 +9,8 @@ const plans = [
     id: '1',
     title: 'Viaje a través de Juan',
     description: 'Explora la vida y las enseñanzas de Jesús en este plan de 30 días.',
-    imageUrlId: 'plan-1'
+    imageUrlId: 'plan-1',
+    slug: 'viaje-a-traves-de-juan'
   },
   {
     id: '2',
@@ -39,6 +41,9 @@ export default function ReadingPlans() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {plans.map((plan) => {
             const image = PlaceHolderImages.find(p => p.id === plan.imageUrlId);
+            const button = (
+              <Button variant="outline" className="w-full">Comenzar Plan</Button>
+            );
             return (
               <Card key={plan.id} className="flex flex-col overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
                 {image && (
@@ -58,7 +63,13 @@ export default function ReadingPlans() {
                 </CardHeader>
                 <CardContent className="flex-grow"></CardContent>
                 <CardFooter>
-                  <Button variant="outline" className="w-full">Comenzar Plan</Button>
+                  {plan.slug ? (
+                    <Link href={`/planes/${plan.slug}`} className="w-full">
+                      {button}
+                    </Link>
+                  ) : (
+                    button
+                  )}
                 </CardFooter>
               </Card>
             );
