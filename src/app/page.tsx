@@ -1,7 +1,6 @@
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import DailyVerse from '@/components/daily-verse';
-import ReadingPlans from '@/components/reading-plans';
 import DownloadApp from '@/components/download-app';
 
 export default function Home() {
@@ -10,7 +9,6 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <DailyVerse />
-        <ReadingPlans />
         <DownloadApp />
       </main>
       <Footer />
