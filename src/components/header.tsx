@@ -10,14 +10,17 @@ export default function Header() {
           <span className="font-bold text-xl font-headline">ICIAR Nayarit</span>
         </Link>
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-          <Link href="/#verse" className="text-foreground/80 hover:text-foreground transition-colors">
-            Versículo del Día
+          <Link href="/biblia" className="text-foreground/80 hover:text-foreground transition-colors">
+            Biblia
           </Link>
           <Link href="/planes" className="text-foreground/80 hover:text-foreground transition-colors">
             Planes
           </Link>
           <Link href="/#download" className="text-foreground/80 hover:text-foreground transition-colors">
             Descargar
+          </Link>
+          <Link href="/#verse" className="text-foreground/80 hover:text-foreground transition-colors">
+            Versículo del Día
           </Link>
         </nav>
       </div>
