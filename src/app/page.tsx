@@ -1,3 +1,19 @@
+import Header from '@/components/header';
+import Footer from '@/components/footer';
+import DailyVerse from '@/components/daily-verse';
+import ReadingPlans from '@/components/reading-plans';
+import DownloadApp from '@/components/download-app';
+
 export default function Home() {
-  return <></>;
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <main className="flex-1">
+        <DailyVerse />
+        <ReadingPlans />
+        <DownloadApp />
+      </main>
+      <Footer />
+    </div>
+  );
 }
