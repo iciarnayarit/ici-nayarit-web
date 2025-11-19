@@ -23,7 +23,8 @@ const plans = [
     id: '3',
     title: 'La Historia de la Redención',
     description: 'Sigue la gran narrativa de la Biblia desde Génesis hasta Apocalipsis.',
-    imageUrlId: 'plan-3'
+    imageUrlId: 'plan-3',
+    slug: 'la-historia-de-la-redencion'
   }
 ];
 
