@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const books = [
   "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué",
@@ -38,57 +40,79 @@ export default function Bible() {
   const [selectedBook, setSelectedBook] = useState('Génesis');
   const [selectedChapter, setSelectedChapter] = useState(1);
 
+  const handleBookChange = (book: string) => {
+    setSelectedBook(book);
+    setSelectedChapter(1);
+  };
+
+  const totalChapters = chaptersPerBook[selectedBook] || 1;
+
+  const goToNextChapter = () => {
+    if (selectedChapter < totalChapters) {
+      setSelectedChapter(selectedChapter + 1);
+    }
+  };
+
+  const goToPreviousChapter = () => {
+    if (selectedChapter > 1) {
+      setSelectedChapter(selectedChapter - 1);
+    }
+  };
+
+
   const chapters = chaptersPerBook[selectedBook] ? Array.from({ length: chaptersPerBook[selectedBook] }, (_, i) => i + 1) : [];
 
   return (
-    <section id="bible" className="w-full py-12 md:py-24 lg:py-32">
+    <section id="bible" className="w-full py-12 md:py-24 lg:py-32 bg-card">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-4xl mx-auto text-center mb-12">
-          <h1 className="text-4xl font-headline font-bold tracking-tight sm:text-5xl md:text-6xl">
-            La Santa Biblia
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Explora las Escrituras, libro por libro, capítulo por capítulo.
-          </p>
-        </div>
-
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-          <Select value={selectedBook} onValueChange={setSelectedBook}>
-            <SelectTrigger className="w-full sm:w-[200px]">
-              <SelectValue placeholder="Seleccionar libro" />
-            </SelectTrigger>
-            <SelectContent>
-              {books.map(book => (
-                <SelectItem key={book} value={book}>{book}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={selectedChapter.toString()} onValueChange={(val) => setSelectedChapter(Number(val))}>
-            <SelectTrigger className="w-full sm:w-[150px]">
-              <SelectValue placeholder="Capítulo" />
-            </SelectTrigger>
-            <SelectContent>
-              {chapters.map(chapter => (
-                <SelectItem key={chapter} value={chapter.toString()}>Capítulo {chapter}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Card>
-          <CardContent className="p-6 md:p-8">
-            <h2 className="text-2xl font-bold font-headline mb-4">{selectedBook} {selectedChapter}</h2>
-            <div className="space-y-4 text-left font-body text-base md:text-lg leading-relaxed">
-              <p><strong>1</strong> En el principio creó Dios los cielos y la tierra.</p>
-              <p><strong>2</strong> Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo, y el Espíritu de Dios se movía sobre la faz de las aguas.</p>
-              <p><strong>3</strong> Y dijo Dios: Sea la luz; y fue la luz.</p>
-              <p><strong>4</strong> Y vio Dios que la luz era buena; y separó Dios la luz de las tinieblas.</p>
-              <p><strong>5</strong> Y llamó Dios a la luz Día, y a las tinieblas llamó Noche. Y fue la tarde y la mañana un día.</p>
-              <p className="italic mt-6 text-center text-muted-foreground">(Contenido de muestra. La funcionalidad completa de la Biblia se implementará más adelante.)</p>
+        <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
+                <div className="flex gap-4">
+                <Select value={selectedBook} onValueChange={handleBookChange}>
+                    <SelectTrigger className="w-full sm:w-[200px]">
+                    <SelectValue placeholder="Seleccionar libro" />
+                    </SelectTrigger>
+                    <SelectContent>
+                    {books.map(book => (
+                        <SelectItem key={book} value={book}>{book}</SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+                <Select value={selectedChapter.toString()} onValueChange={(val) => setSelectedChapter(Number(val))}>
+                    <SelectTrigger className="w-full sm:w-[150px]">
+                    <SelectValue placeholder="Capítulo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                    {chapters.map(chapter => (
+                        <SelectItem key={chapter} value={chapter.toString()}>Capítulo {chapter}</SelectItem>
+                    ))}
+                    </SelectContent>
+                </Select>
+                </div>
             </div>
-          </CardContent>
-        </Card>
 
+            <Card>
+            <CardContent className="p-6 md:p-8">
+                <h2 className="text-3xl font-bold font-headline mb-6 text-center">{selectedBook} {selectedChapter}</h2>
+                <div className="space-y-4 text-left font-body text-lg md:text-xl leading-relaxed">
+                <p><sup className="font-bold mr-2">1</sup>En el principio creó Dios los cielos y la tierra.</p>
+                <p><sup className="font-bold mr-2">2</sup>Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo, y el Espíritu de Dios se movía sobre la faz de las aguas.</p>
+                <p><sup className="font-bold mr-2">3</sup>Y dijo Dios: Sea la luz; y fue la luz.</p>
+                <p><sup className="font-bold mr-2">4</sup>Y vio Dios que la luz era buena; y separó Dios la luz de las tinieblas.</p>
+                <p><sup className="font-bold mr-2">5</sup>Y llamó Dios a la luz Día, y a las tinieblas llamó Noche. Y fue la tarde y la mañana un día.</p>
+                <p className="italic mt-8 text-center text-muted-foreground">(Contenido de muestra. La funcionalidad completa de la Biblia se implementará más adelante.)</p>
+                </div>
+            </CardContent>
+            </Card>
+            <div className="flex justify-between mt-8">
+                <Button onClick={goToPreviousChapter} disabled={selectedChapter === 1} variant="outline">
+                    <ChevronLeft className="mr-2 h-4 w-4" /> Anterior
+                </Button>
+                <Button onClick={goToNextChapter} disabled={selectedChapter === totalChapters} variant="outline">
+                    Siguiente <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
+        </div>
       </div>
     </section>
   );

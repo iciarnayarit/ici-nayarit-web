@@ -3,10 +3,13 @@ import { Button } from '@/components/ui/button';
 
 export default function DailyVerse() {
   return (
-    <section id="verse" className="w-full py-20 md:py-32 lg:py-40 bg-card">
+    <section id="verse" className="w-full py-20 md:py-32 lg:py-40 bg-background">
       <div className="container mx-auto px-4 md:px-6 text-center">
         <div className="max-w-3xl mx-auto">
-          <blockquote className="text-3xl font-headline font-bold text-foreground md:text-5xl lg:text-6xl tracking-tight">
+          <h2 className="text-3xl font-headline font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
+            Versículo del Día
+          </h2>
+          <blockquote className="text-2xl font-headline font-bold text-foreground md:text-4xl lg:text-5xl tracking-tight">
             “Porque de tal manera amó Dios al mundo, que ha dado a su Hijo unigénito, para que todo aquel que en él cree, no se pierda, mas tenga vida eterna.”
           </blockquote>
           <p className="mt-6 text-lg text-muted-foreground font-body">
