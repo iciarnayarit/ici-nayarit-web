@@ -19,6 +19,9 @@ export default function Header() {
           <Link href="/videos" className="text-foreground/80 hover:text-foreground transition-colors">
             Videos
           </Link>
+          <Link href="/templos" className="text-foreground/80 hover:text-foreground transition-colors">
+            Templos
+          </Link>
           <Link href="/#download" className="text-foreground/80 hover:text-foreground transition-colors">
             Descargar
           </Link>
