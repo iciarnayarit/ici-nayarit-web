@@ -11,14 +11,18 @@ export default function Footer() {
           </p>
         </div>
         <div className="flex items-center gap-4 mt-4 sm:mt-0">
-          <Link href="#" className="text-muted-foreground hover:text-foreground" aria-label="Twitter">
-            <Twitter className="h-5 w-5" />
-          </Link>
-          <Link href="#" className="text-muted-foreground hover:text-foreground" aria-label="Facebook">
+          {
+            /**
+             <Link href="#" target="_blank"  className="text-muted-foreground hover:text-foreground" aria-label="Twitter">
+             <Twitter className="h-5 w-5" />
+             </Link>
+             <Link href="#" target="_blank"  className="text-muted-foreground hover:text-foreground" aria-label="Instagram">
+             <Instagram className="h-5 w-5" />
+             </Link>
+             * */
+          }
+          <Link href="https://www.facebook.com/ici.nayarit" target="_blank"  className="text-muted-foreground hover:text-foreground" aria-label="Facebook">
             <Facebook className="h-5 w-5" />
-          </Link>
-          <Link href="#" className="text-muted-foreground hover:text-foreground" aria-label="Instagram">
-            <Instagram className="h-5 w-5" />
           </Link>
         </div>
       </div>

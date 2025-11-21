@@ -68,7 +68,7 @@ export default function Header() {
             Templos
           </Link>
           <Link href="/#download" className="text-foreground/80 hover:text-foreground transition-colors">
-            Descargar
+            App
           </Link>
           <ThemeToggle />
         </nav>
@@ -103,7 +103,7 @@ export default function Header() {
                     Templos
                 </Link>
                 <Link href="/#download" className="flex w-full items-center py-2 text-lg font-semibold">
-                    Descargar
+                    App
                 </Link>
                 </div>
             </SheetContent>

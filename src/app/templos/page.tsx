@@ -1,4 +1,5 @@
 import TempleMap from "@/components/temple-map";
+import ContactSection from "@/components/contact-section";
 
 export default function TemplosPage() {
   return (
@@ -10,6 +11,7 @@ export default function TemplosPage() {
         </p>
       </div>
       <TempleMap />
+      <ContactSection />
     </div>
   );
 }
