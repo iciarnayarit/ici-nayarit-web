@@ -1,12 +1,13 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import pr from '@/lib/bible/prv.json';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Bookmark } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 const planDays = Array.from({ length: 31 }, (_, i) => ({
   day: i + 1,
@@ -14,11 +15,24 @@ const planDays = Array.from({ length: 31 }, (_, i) => ({
   summary: `Un capítulo de sabiduría para guiar tu día, abordando temas de justicia, prudencia y vida recta. El capítulo ${i + 1} ofrece consejos prácticos para las relaciones, el trabajo y la integridad personal.`,
 }));
 
+interface SavedVerse {
+  text: string;
+  reference: string;
+}
+
 export default function ProverbiosPlanPage() {
   const [completedDays, setCompletedDays] = useState<number[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  
+  const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
+  const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('savedVerses');
+    if (saved) {
+      setSavedVerses(JSON.parse(saved));
+    }
+  }, []);
 
   const toggleDayCompletion = (day: number) => {
     setCompletedDays(
@@ -30,11 +44,34 @@ export default function ProverbiosPlanPage() {
 
   const progressPercentage = (completedDays.length / planDays.length) * 100;
 
+  const handleSaveVerse = (verseText: string, verseNumber: number, chapter: number) => {
+    const reference = `Proverbios ${chapter}:${verseNumber}`;
+    const newVerse = { text: verseText, reference };
+    
+    let updatedSavedVerses;
+    if (savedVerses.some(v => v.reference === reference)) {
+      updatedSavedVerses = savedVerses.filter(v => v.reference !== reference);
+      toast({
+        title: "Versículo Eliminado",
+        description: "Has eliminado el versículo de tus guardados.",
+      });
+    } else {
+      updatedSavedVerses = [...savedVerses, newVerse];
+      toast({
+        title: "Versículo Guardado",
+        description: `Has guardado ${reference}.`,
+      });
+    }
+    
+    setSavedVerses(updatedSavedVerses);
+    localStorage.setItem('savedVerses', JSON.stringify(updatedSavedVerses));
+  };
+
   if (selectedDay) {
     const dayData = planDays.find(d => d.day === selectedDay);
     if (!dayData) return null;
 
-    const chapter = (pr as any).chapters?.[selectedDay - 1] || [];
+    const chapterVerses = (pr as any).chapters?.[selectedDay - 1] || [];
 
     return (
       <div className="container mx-auto px-4 py-12 md:px-6">
@@ -47,12 +84,27 @@ export default function ProverbiosPlanPage() {
           
           <Card>
             <CardContent className="p-6 space-y-4 text-lg leading-relaxed">
-              {chapter.map((verse: string, index: number) => (
-                <p key={index}>
-                  <sup className="font-bold mr-2">{index + 1}</sup>
-                  {verse}
-                </p>
-              ))}
+              {chapterVerses.map((verse: string, index: number) => {
+                const verseNumber = index + 1;
+                const reference = `Proverbios ${selectedDay}:${verseNumber}`;
+                const isSaved = savedVerses.some(v => v.reference === reference);
+                return (
+                  <div key={index} className="flex items-start gap-2">
+                    <p className="flex-grow">
+                      <sup className="font-bold mr-2">{verseNumber}</sup>
+                      {verse}
+                    </p>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleSaveVerse(verse, verseNumber, selectedDay)}
+                    >
+                        <Bookmark className={`h-6 w-6 ${isSaved ? 'fill-current text-black' : 'text-gray-400'}`} />
+                        <span className="sr-only">Guardar versículo</span>
+                    </Button>
+                  </div>
+                );
+              })}
             </CardContent>
           </Card>
           <div className="flex justify-center mt-6">
@@ -72,9 +124,14 @@ export default function ProverbiosPlanPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="max-w-4xl mx-auto">
-        <Button onClick={() => router.back()} variant="outline" className="mb-4">
-            &larr; Regresar
-        </Button>
+        <div className="flex justify-between items-center mb-4">
+            <Button onClick={() => router.back()} variant="outline">
+                &larr; Regresar
+            </Button>
+            <Link href="/biblia/guardados">
+                <Button variant="outline">Ver Versículos Guardados</Button>
+            </Link>
+        </div>
         <h1 className="text-4xl font-bold font-headline text-center mb-4">
           Proverbios: Una Dosis Diaria de Sabiduría
         </h1>

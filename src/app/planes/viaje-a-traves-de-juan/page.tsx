@@ -1,11 +1,13 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import jo from '@/lib/bible/jo.json';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Bookmark } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 const planDays = [
   { day: 1, reading: 'Juan 1:1-18', summary: `Contempla al Verbo eterno: aquí se revela la preexistencia, la divinidad y la encarnación del Hijo. Medita en cómo la Palabra se hizo carne para habitar entre nosotros; deja que este asombro te conduzca a la adoración y a una vida transformada por la presencia de Dios.` },
@@ -40,11 +42,24 @@ const planDays = [
   { day: 30, reading: 'Juan 18', summary: `Sigue a Jesús en su camino hacia la pasión: presencia, traición y juicio que culminan en la redención. Mantén la mirada en su fidelidad y pide valor para ser testigo fiel aun en la adversidad.` },
 ];
 
+interface SavedVerse {
+  text: string;
+  reference: string;
+}
+
 export default function JuanPlanPage() {
   const [completedDays, setCompletedDays] = useState<number[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  
+  const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
+  const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('savedVerses');
+    if (saved) {
+      setSavedVerses(JSON.parse(saved));
+    }
+  }, []);
 
   const toggleDayCompletion = (day: number) => {
     setCompletedDays(
@@ -65,6 +80,29 @@ export default function JuanPlanPage() {
     const verseEnd = match[4] ? Number(match[4]) : (jo as any).chapters[chapter - 1]?.length;
 
     return { chapter, verseStart, verseEnd };
+  };
+
+  const handleSaveVerse = (verseText: string, verseNumber: number, chapter: number) => {
+    const reference = `Juan ${chapter}:${verseNumber}`;
+    const newVerse = { text: verseText, reference };
+    
+    let updatedSavedVerses;
+    if (savedVerses.some(v => v.reference === reference)) {
+      updatedSavedVerses = savedVerses.filter(v => v.reference !== reference);
+      toast({
+        title: "Versículo Eliminado",
+        description: "Has eliminado el versículo de tus guardados.",
+      });
+    } else {
+      updatedSavedVerses = [...savedVerses, newVerse];
+      toast({
+        title: "Versículo Guardado",
+        description: `Has guardado ${reference}.`,
+      });
+    }
+    
+    setSavedVerses(updatedSavedVerses);
+    localStorage.setItem('savedVerses', JSON.stringify(updatedSavedVerses));
   };
 
   if (selectedDay) {
@@ -88,12 +126,27 @@ export default function JuanPlanPage() {
           
           <Card>
             <CardContent className="p-6 space-y-4 text-lg leading-relaxed">
-              {verses.map((verse: string, index: number) => (
-                <p key={index}>
-                  <sup className="font-bold mr-2">{parsed.verseStart + index}</sup>
-                  {verse}
-                </p>
-              ))}
+              {verses.map((verse: string, index: number) => {
+                const verseNumber = parsed.verseStart + index;
+                const reference = `Juan ${parsed.chapter}:${verseNumber}`;
+                const isSaved = savedVerses.some(v => v.reference === reference);
+                return (
+                  <div key={index} className="flex items-start gap-2">
+                    <p className="flex-grow">
+                      <sup className="font-bold mr-2">{verseNumber}</sup>
+                      {verse}
+                    </p>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleSaveVerse(verse, verseNumber, parsed.chapter)}
+                    >
+                        <Bookmark className={`h-6 w-6 ${isSaved ? 'fill-current text-black' : 'text-gray-400'}`} />
+                        <span className="sr-only">Guardar versículo</span>
+                    </Button>
+                  </div>
+                );
+              })}
             </CardContent>
           </Card>
           <div className="flex justify-center mt-6">
@@ -113,9 +166,14 @@ export default function JuanPlanPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="max-w-4xl mx-auto">
-        <Button onClick={() => router.back()} variant="outline" className="mb-4">
-            &larr; Regresar
-        </Button>
+        <div className="flex justify-between items-center mb-4">
+            <Button onClick={() => router.back()} variant="outline">
+                &larr; Regresar
+            </Button>
+            <Link href="/biblia/guardados">
+                <Button variant="outline">Ver Versículos Guardados</Button>
+            </Link>
+        </div>
         <h1 className="text-4xl font-bold font-headline text-center mb-4">
           Viaje a través de Juan
         </h1>

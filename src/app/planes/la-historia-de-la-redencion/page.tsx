@@ -1,11 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Bookmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 // Import all necessary bible books
 import gn from '@/lib/bible/gn.json';
@@ -105,12 +106,24 @@ const planDays = [
     text: string;
   }
 
+  interface SavedVerse {
+    text: string;
+    reference: string;
+  }
+
 export default function RedemptionStoryPlanPage() {
   const [completedDays, setCompletedDays] = useState<number[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
-  
+  const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
   const router = useRouter();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('savedVerses');
+    if (saved) {
+      setSavedVerses(JSON.parse(saved));
+    }
+  }, []);
 
   const toggleDayCompletion = (day: number) => {
     setCompletedDays(
@@ -121,6 +134,29 @@ export default function RedemptionStoryPlanPage() {
   };
 
   const progressPercentage = (completedDays.length / planDays.length) * 100;
+
+  const handleSaveVerse = (verse: PassageVerse) => {
+    const reference = `${verse.book} ${verse.chapter}:${verse.verse}`;
+    const newVerse = { text: verse.text, reference };
+    
+    let updatedSavedVerses;
+    if (savedVerses.some(v => v.reference === reference)) {
+      updatedSavedVerses = savedVerses.filter(v => v.reference !== reference);
+      toast({
+        title: "Versículo Eliminado",
+        description: "Has eliminado el versículo de tus guardados.",
+      });
+    } else {
+      updatedSavedVerses = [...savedVerses, newVerse];
+      toast({
+        title: "Versículo Guardado",
+        description: `Has guardado ${reference}.`,
+      });
+    }
+    
+    setSavedVerses(updatedSavedVerses);
+    localStorage.setItem('savedVerses', JSON.stringify(updatedSavedVerses));
+  };
 
   const handleReadPassage = (reading: string): PassageVerse[] => {
     const allVerses: PassageVerse[] = [];
@@ -216,12 +252,26 @@ export default function RedemptionStoryPlanPage() {
           
           <Card>
             <CardContent className="p-6 space-y-4 text-lg leading-relaxed">
-              {verses.length > 0 ? verses.map((v, index) => (
-                <p key={index}>
-                    <sup className="font-bold mr-2">{v.chapter}:{v.verse}</sup>
-                    {v.text}
-                </p>
-              )) : <p>No se encontró el contenido para este día.</p>}
+              {verses.length > 0 ? verses.map((v, index) => {
+                const reference = `${v.book} ${v.chapter}:${v.verse}`;
+                const isSaved = savedVerses.some(sv => sv.reference === reference);
+                return (
+                    <div key={index} className="flex items-start gap-2">
+                        <p className="flex-grow">
+                            <sup className="font-bold mr-2">{v.chapter}:{v.verse}</sup>
+                            {v.text}
+                        </p>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleSaveVerse(v)}
+                        >
+                            <Bookmark className={`h-6 w-6 ${isSaved ? 'fill-current text-black' : 'text-gray-400'}`} />
+                            <span className="sr-only">Guardar versículo</span>
+                        </Button>
+                    </div>
+                );
+              }) : <p>No se encontró el contenido para este día.</p>}
             </CardContent>
           </Card>
           <div className="flex justify-center mt-6">
@@ -241,9 +291,14 @@ export default function RedemptionStoryPlanPage() {
   return (
     <div className="container mx-auto px-4 py-12 md:px-6">
       <div className="max-w-4xl mx-auto">
-        <Button onClick={() => router.back()} variant="outline" className="mb-4">
-            &larr; Regresar
-        </Button>
+        <div className="flex justify-between items-center mb-4">
+            <Button onClick={() => router.back()} variant="outline">
+                &larr; Regresar
+            </Button>
+            <Link href="/biblia/guardados">
+                <Button variant="outline">Ver Versículos Guardados</Button>
+            </Link>
+        </div>
         <h1 className="text-4xl font-bold font-headline text-center mb-4">
           La Historia de la Redención
         </h1>
