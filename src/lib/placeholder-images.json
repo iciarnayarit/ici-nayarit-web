@@ -19,6 +19,18 @@
       "imageHint": "landscape journey"
     },
     {
+      "id": "plan-4",
+      "description": "Lecturas diarias: Antiguo Testamento + Nuevo Testamento (1–3 capítulos al día).",
+      "imageUrl": "https://i.imgur.com/mm2tx3n.png",
+      "imageHint": "Plan de la Biblia en un Año"
+    },
+    {
+      "id": "plan-5",
+      "description": "Ordena los eventos tal como ocurrieron históricamente.",
+      "imageUrl": "https://i.imgur.com/YWlQCbQ.png",
+      "imageHint": "Plan Cronológico"
+    },
+    {
       "id": "download-bg",
       "description": "Person holding a smartphone with a soft-focus background",
       "imageUrl": "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwaG9uZSUyMGFwcHxlbnwwfHx8fDE3NjM1MDE5MzN8MA&ixlib=rb-4.1.0&q=80&w=1080",

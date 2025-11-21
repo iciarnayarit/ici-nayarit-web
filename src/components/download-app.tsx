@@ -24,14 +24,14 @@ export default function DownloadApp() {
             Lee, Escucha y Ora en Cualquier Lugar
           </h2>
           <p className="mt-4 text-lg md:text-xl">
-            Lleva la Biblia contigo a donde vayas. Descarga la aplicación ICIAR Nayarit gratis.
+            Lleva la Biblia contigo a donde vayas. Descarga la aplicación gratis.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
-            <Button size="lg" className="bg-white text-black hover:bg-gray-200 w-full sm:w-auto">
+            <Button size="lg" className="bg-white text-black hover:bg-gray-200 w-full sm:w-auto" disabled>
               <AppleIcon className="mr-2 h-6 w-6" />
               Descargar en la App Store
             </Button>
-            <Button size="lg" className="bg-white text-black hover:bg-gray-200 w-full sm:w-auto">
+            <Button size="lg" className="bg-white text-black hover:bg-gray-200 w-full sm:w-auto" disabled>
               <GooglePlayIcon className="mr-2 h-6 w-6" />
               Consíguelo en Google Play
             </Button>

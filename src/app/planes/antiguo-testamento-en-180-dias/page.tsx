@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -7,110 +7,116 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Import all necessary bible books
+// Import all Old Testament bible books
 import gn from '@/lib/bible/gn.json';
 import ex from '@/lib/bible/ex.json';
-import le from '@/lib/bible/lv.json';
-import nu from '@/lib/bible/nm.json';
-import de from '@/lib/bible/dt.json';
-import jos from '@/lib/bible/js.json';
-import jue from '@/lib/bible/jud.json';
+import lv from '@/lib/bible/lv.json';
+import nm from '@/lib/bible/nm.json';
+import dt from '@/lib/bible/dt.json';
+import js from '@/lib/bible/js.json';
+import jud from '@/lib/bible/jud.json';
+import rt from '@/lib/bible/rt.json';
 import sa1 from '@/lib/bible/1-samuel.json';
 import sa2 from '@/lib/bible/2-samuel.json';
-import re1 from '@/lib/bible/1-kings.json';
-import re2 from '@/lib/bible/2-kings.json';
+import k1 from '@/lib/bible/1-kings.json';
+import k2 from '@/lib/bible/2-kings.json';
+import c1 from '@/lib/bible/1-chronicles.json';
+import c2 from '@/lib/bible/2-chronicles.json';
+import ezr from '@/lib/bible/ezr.json';
+import ne from '@/lib/bible/ne.json';
+import et from '@/lib/bible/et.json';
 import job from '@/lib/bible/job.json';
-import sa from '@/lib/bible/ps.json';
-import pr from '@/lib/bible/prv.json';
+import ps from '@/lib/bible/ps.json';
+import prv from '@/lib/bible/prv.json';
+import ec from '@/lib/bible/ec.json';
+import so from '@/lib/bible/so.json';
 import is from '@/lib/bible/is.json';
-import je from '@/lib/bible/jr.json';
+import jr from '@/lib/bible/jr.json';
+import lm from '@/lib/bible/lm.json';
 import ez from '@/lib/bible/ez.json';
-import da from '@/lib/bible/dn.json';
-import mt from '@/lib/bible/mt.json';
-import lu from '@/lib/bible/lk.json';
-import jo from '@/lib/bible/jo.json';
-import ro from '@/lib/bible/rm.json';
-import ga from '@/lib/bible/gl.json';
-import ef from '@/lib/bible/eph.json';
-import he from '@/lib/bible/hb.json';
-import ap from '@/lib/bible/re.json';
+import dn from '@/lib/bible/dn.json';
+import ho from '@/lib/bible/ho.json';
+import jl from '@/lib/bible/jl.json';
+import am from '@/lib/bible/am.json';
+import ob from '@/lib/bible/ob.json';
+import jn from '@/lib/bible/jn.json';
+import mi from '@/lib/bible/mi.json';
+import na from '@/lib/bible/na.json';
+import hk from '@/lib/bible/hk.json';
+import zp from '@/lib/bible/zp.json';
+import hg from '@/lib/bible/hg.json';
+import zc from '@/lib/bible/zc.json';
+import ml from '@/lib/bible/ml.json';
 
 const bibleData: { [key: string]: any } = {
-    'génesis': gn,
-    'éxodo': ex,
-    'levítico': le,
-    'números': nu,
-    'deuteronomio': de,
-    'josué': jos,
-    'jueces': jue,
-    '1 samuel': sa1,
-    '2 samuel': sa2,
-    '1 reyes': re1,
-    '2 reyes': re2,
-    'job': job,
-    'salmos': sa,
-    'proverbios': pr,
-    'isaías': is,
-    'jeremías': je,
-    'ezequiel': ez,
-    'daniel': da,
-    'mateo': mt,
-    'lucas': lu,
-    'juan': jo,
-    'romanos': ro,
-    'gálatas': ga,
-    'efesios': ef,
-    'hebreos': he,
-    'apocalipsis': ap,
+    'génesis': gn, 'éxodo': ex, 'levítico': lv, 'números': nm, 'deuteronomio': dt, 'josué': js, 'jueces': jud, 'rut': rt,
+    '1 samuel': sa1, '2 samuel': sa2, '1 reyes': k1, '2 reyes': k2, '1 crónicas': c1, '2 crónicas': c2, 'esdras': ezr,
+    'nehemías': ne, 'ester': et, 'job': job, 'salmos': ps, 'proverbios': prv, 'eclesiastés': ec, 'cantar de los cantares': so,
+    'isaías': is, 'jeremías': jr, 'lamentaciones': lm, 'ezequiel': ez, 'daniel': dn, 'oseas': ho, 'joel': jl,
+    'amós': am, 'abdías': ob, 'jonás': jn, 'miqueas': mi, 'nahúm': na, 'habacuc': hk, 'sofonías': zp, 'hageo': hg,
+    'zacarías': zc, 'malaquías': ml,
 };
 
+const bookOrderOT = [
+    'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio', 'Josué', 'Jueces', 'Rut', '1 Samuel', '2 Samuel',
+    '1 Reyes', '2 Reyes', '1 Crónicas', '2 Crónicas', 'Esdras', 'Nehemías', 'Ester', 'Job', 'Salmos', 'Proverbios',
+    'Eclesiastés', 'Cantares', 'Isaías', 'Jeremías', 'Lamentaciones', 'Ezequiel', 'Daniel', 'Oseas', 'Joel',
+    'Amós', 'Abdías', 'Jonás', 'Miqueas', 'Nahúm', 'Habacuc', 'Sofonías', 'Hageo', 'Zacarías', 'Malaquías'
+];
 
-const planDays = [
-    { day: 1, reading: 'Génesis 1;2;3;', summary: 'La creación del mundo y la caída del hombre.' },
-    { day: 2, reading: 'Génesis 12:1-9; 15:1-6', summary: 'El llamado de Abram y el pacto de Dios con él.' },
-    { day: 3, reading: 'Éxodo 12;13;14;', summary: 'La Pascua y el cruce del Mar Rojo.' },
-    { day: 4, reading: 'Éxodo 19;20;', summary: 'Dios entrega los Diez Mandamientos en el Monte Sinaí.' },
-    { day: 5, reading: 'Levítico 16', summary: 'Instrucciones para el Día de la Expiación.' },
-    { day: 6, reading: 'Números 13;14;', summary: 'Los espías exploran Canaán y la rebelión de Israel.' },
-    { day: 7, reading: 'Deuteronomio 6; 30:11-20', summary: 'El gran mandamiento de amar a Dios y la elección entre la vida y la muerte.' },
-    { day: 8, reading: 'Josué 1; 24', summary: 'Josué lidera a Israel y el pueblo renueva el pacto.' },
-    { day: 9, reading: 'Jueces 2:6-23; 6-7', summary: 'El ciclo de desobediencia de Israel y la historia de Gedeón.' },
-    { day: 10, reading: '1 Samuel 16;17;', summary: 'David es ungido rey y derrota a Goliat.' },
-    { day: 11, reading: '2 Samuel 7; 11;12;', summary: 'El pacto de Dios con David y su pecado con Betsabé.' },
-    { day: 12, reading: '1 Reyes 8; 18;', summary: 'La dedicación del templo de Salomón y el enfrentamiento de Elías con los profetas de Baal.' },
-    { day: 13, reading: '2 Reyes 17; 25;', summary: 'La caída de Israel y Judá.' },
-    { day: 14, reading: 'Job 1-2; 42;', summary: 'El sufrimiento de Job y su restauración.' },
-    { day: 15, reading: 'Salmos 1; 23; 51', summary: 'Poemas de sabiduría, confianza y arrepentimiento.' },
-    { day: 16, reading: 'Proverbios 1;2;3;', summary: 'La búsqueda de la sabiduría.' },
-    { day: 17, reading: 'Isaías 1; 9:1-7', summary: 'Un llamado al arrepentimiento y la profecía del nacimiento de un niño que será Rey.' },
-    { day: 18, reading: 'Isaías 52:13;53:12', summary: 'La profecía del Siervo Sufriente.' },
-    { day: 19, reading: 'Jeremías 1; 31:31-34', summary: 'El llamado de Jeremías y la promesa de un nuevo pacto.' },
-    { day: 20, reading: 'Ezequiel 36:22-38; 37', summary: 'La promesa de un corazón nuevo y el valle de los huesos secos.' },
-    { day: 21, reading: 'Daniel 7;8;9;', summary: 'Las visiones de Daniel y su oración por su pueblo.' },
-    { day: 22, reading: 'Mateo 1;2; Lucas 1;2;', summary: 'El nacimiento de Jesús.' },
-    { day: 23, reading: 'Mateo 5;6;7;', summary: 'El Sermón del Monte.' },
-    { day: 24, reading: 'Juan 1;2;3;', summary: 'El Verbo se hizo carne y la conversación de Jesús con Nicodemo.' },
-    { day: 25, reading: 'Romanos 3;4;5;', summary: 'La justificación por la fe.' },
-    { day: 26, reading: 'Romanos 8', summary: 'La vida en el Espíritu.' },
-    { day: 27, reading: 'Gálatas 5', summary: 'La libertad en Cristo y el fruto del Espíritu.' },
-    { day: 28, reading: 'Efesios 1;2;', summary: 'Las bendiciones espirituales en Cristo y la salvación por gracia.' },
-    { day: 29, reading: 'Hebreos 11;12;', summary: 'La fe y la perseverancia.' },
-    { day: 30, reading: 'Apocalipsis 1; 21;22;', summary: 'La visión de Juan y la promesa de un cielo nuevo y una tierra nueva.' },
-  ];
+const chaptersInBook = (bookName: string) => bibleData[bookName.toLowerCase()]?.chapters?.length || 0;
 
-  interface PassageVerse {
+const generateOT180DaysPlan = () => {
+    const plan = [];
+    let day = 1;
+    let currentBookIndex = 0;
+    let currentChapter = 1;
+
+    while (day <= 180 && currentBookIndex < bookOrderOT.length) {
+        let chaptersReadToday = 0;
+        let readingsForDay = [];
+
+        while (chaptersReadToday < 3 && currentBookIndex < bookOrderOT.length) {
+            const bookName = bookOrderOT[currentBookIndex];
+            const totalChapters = chaptersInBook(bookName);
+
+            if (currentChapter <= totalChapters) {
+                readingsForDay.push(`${bookName} ${currentChapter}`);
+                currentChapter++;
+                chaptersReadToday++;
+            } else {
+                currentBookIndex++;
+                currentChapter = 1;
+            }
+        }
+
+        if (readingsForDay.length > 0) {
+            plan.push({
+                day: day,
+                reading: readingsForDay.join('; '),
+                summary: `Lectura del día ${day} del Antiguo Testamento.`
+            });
+            day++;
+        }
+    }
+    return plan;
+};
+
+interface PassageVerse {
     book: string;
     chapter: number;
     verse: number;
     text: string;
-  }
+}
 
-export default function RedemptionStoryPlanPage() {
+export default function OT180DaysPlanPage() {
   const [completedDays, setCompletedDays] = useState<number[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   
   const router = useRouter();
   const { toast } = useToast();
+
+  const planDays = useMemo(() => generateOT180DaysPlan(), []);
 
   const toggleDayCompletion = (day: number) => {
     setCompletedDays(
@@ -148,20 +154,6 @@ export default function RedemptionStoryPlanPage() {
       for (const part of passageParts) {
         let match;
   
-        match = part.match(/^(\d+):(\d+)-(\d+)$/);
-        if (match) {
-          const chapter = parseInt(match[1], 10);
-          const startVerse = parseInt(match[2], 10);
-          const endVerse = parseInt(match[3], 10);
-          const verses = book.chapters[chapter - 1] || [];
-          for (let i = startVerse; i <= endVerse; i++) {
-            if (verses[i - 1]) {
-              allVerses.push({ book: currentBookKey, chapter, verse: i, text: verses[i - 1] });
-            }
-          }
-          continue;
-        }
-  
         match = part.match(/^(\d+)-(\d+)$/);
         if (match) {
           const startChapter = parseInt(match[1], 10);
@@ -174,16 +166,16 @@ export default function RedemptionStoryPlanPage() {
           }
           continue;
         }
-  
+        
         match = part.match(/^(\d+):(\d+)$/);
         if (match) {
-          const chapter = parseInt(match[1], 10);
-          const verse = parseInt(match[2], 10);
-          const verses = book.chapters[chapter - 1] || [];
-          if (verses[verse - 1]) {
-            allVerses.push({ book: currentBookKey, chapter, verse, text: verses[verse - 1] });
-          }
-          continue;
+            const chapter = parseInt(match[1], 10);
+            const verse = parseInt(match[2], 10);
+            const chapterVerses = book.chapters[chapter - 1] || [];
+            if(chapterVerses[verse-1]) {
+                allVerses.push({ book: currentBookKey, chapter, verse, text: chapterVerses[verse - 1] });
+            }
+            continue;
         }
   
         match = part.match(/^(\d+)$/);
@@ -218,7 +210,8 @@ export default function RedemptionStoryPlanPage() {
             <CardContent className="p-6 space-y-4 text-lg leading-relaxed">
               {verses.length > 0 ? verses.map((v, index) => (
                 <p key={index}>
-                    <sup className="font-bold mr-2">{v.chapter}:{v.verse}</sup>
+                    <sup
+                        className="font-bold mr-2">{v.book.charAt(0).toUpperCase() + v.book.slice(1)} {v.chapter}:{v.verse}<br/></sup>
                     {v.text}
                 </p>
               )) : <p>No se encontró el contenido para este día.</p>}
@@ -245,15 +238,15 @@ export default function RedemptionStoryPlanPage() {
             &larr; Regresar
         </Button>
         <h1 className="text-4xl font-bold font-headline text-center mb-4">
-          La Historia de la Redención
+          Antiguo Testamento en 180 Días
         </h1>
         <p className="text-center text-muted-foreground mb-8">
-          Sigue la gran narrativa de la Biblia desde Génesis hasta Apocalipsis en este plan de 30 días.
+          Lectura profunda pero alcanzable. Muy útil para liderazgo y discipulado.
         </p>
 
         <div className="mb-8">
             <Progress value={progressPercentage} className="w-full" />
-            <p className="text-sm text-muted-foreground text-center mt-2">{Math.round(progressPercentage)}% completado</p>
+            <p className="text-sm text-muted-foreground text-center mt-2">{Math.round(progressPercentage)}% completado ({completedDays.length} de {planDays.length} días)</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

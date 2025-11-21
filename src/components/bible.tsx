@@ -1,9 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const books = [
   "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué",
@@ -20,7 +21,24 @@ const books = [
   "3 Juan", "Judas", "Apocalipsis"
 ];
 
-// This is a simplified mapping. A real implementation would be more complex.
+const bookFileMap: { [key: string]: string } = {
+    "Génesis": "gn", "Éxodo": "ex", "Levítico": "lv", "Números": "nm", "Deuteronomio": "dt",
+    "Josué": "js", "Jueces": "jud", "Rut": "rt", "1 Samuel": "1-samuel", "2 Samuel": "2-samuel",
+    "1 Reyes": "1-kings", "2 Reyes": "2-kings", "1 Crónicas": "1-chronicles", "2 Crónicas": "2-chronicles",
+    "Esdras": "ezr", "Nehemías": "ne", "Ester": "et", "Job": "job", "Salmos": "ps",
+    "Proverbios": "prv", "Eclesiastés": "ec", "Cantares": "so", "Isaías": "is",
+    "Jeremías": "jr", "Lamentaciones": "lm", "Ezequiel": "ez", "Daniel": "dn",
+    "Oseas": "ho", "Joel": "jl", "Amós": "am", "Abdías": "ob", "Jonás": "jn",
+    "Miqueas": "mi", "Nahúm": "na", "Habacuc": "hk", "Sofonías": "zp", "Hageo": "hg",
+    "Zacarías": "zc", "Malaquías": "ml", "Mateo": "mt", "Marcos": "mk", "Lucas": "lk",
+    "Juan": "jo", "Hechos": "act", "Romanos": "rm", "1 Corintios": "1-corinthians",
+    "2 Corintios": "2-corinthians", "Gálatas": "gl", "Efesios": "eph", "Filipenses": "ph",
+    "Colosenses": "colossians", "1 Tesalonicenses": "1-thessalonians", "2 Tesalonicenses": "2-thessalonians",
+    "1 Timoteo": "1-timothy", "2 Timoteo": "2-timothy", "Tito": "tt", "Filemón": "phm",
+    "Hebreos": "hb", "Santiago": "jm", "1 Pedro": "1-peter", "2 Pedro": "2-peter",
+    "1 Juan": "1-john", "2 Juan": "2-john", "3 Juan": "3-john", "Judas": "jd", "Apocalipsis": "re"
+  };
+
 const chaptersPerBook: { [key: string]: number } = {
   "Génesis": 50, "Éxodo": 40, "Levítico": 27, "Números": 36, "Deuteronomio": 34, "Josué": 24,
   "Jueces": 21, "Rut": 4, "1 Samuel": 31, "2 Samuel": 24, "1 Reyes": 22, "2 Reyes": 25,
@@ -39,6 +57,69 @@ const chaptersPerBook: { [key: string]: number } = {
 export default function Bible() {
   const [selectedBook, setSelectedBook] = useState('Génesis');
   const [selectedChapter, setSelectedChapter] = useState(1);
+  const [verses, setVerses] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSharing, setIsSharing] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchChapter = async () => {
+      setIsLoading(true);
+      try {
+        const bookFileName = bookFileMap[selectedBook];
+        if (bookFileName) {
+          const bookModule = await import(`@/lib/bible/${bookFileName}.json`);
+          const chapterVerses = bookModule.chapters[selectedChapter - 1] || [];
+          setVerses(chapterVerses);
+        }
+      } catch (error) {
+        console.error("Failed to load chapter:", error);
+        setVerses([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchChapter();
+  }, [selectedBook, selectedChapter]);
+
+  const handleVerseClick = async (verseText: string, verseNumber: number) => {
+    if (isSharing) return;
+
+    const fullVerse = `"${verseText}" (${selectedBook} ${selectedChapter}:${verseNumber})`;
+    setIsSharing(true);
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Versículo de la Biblia',
+          text: fullVerse,
+        });
+      } catch (error: any) {
+        if (error.name !== 'AbortError') {
+          console.error('Error al compartir:', error);
+        }
+      } finally {
+        setIsSharing(false);
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(fullVerse);
+        toast({
+          title: "Copiado",
+          description: "Versículo copiado al portapapeles.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "No se pudo copiar el versículo.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSharing(false);
+      }
+    }
+  };
 
   const handleBookChange = (book: string) => {
     setSelectedBook(book);
@@ -59,7 +140,6 @@ export default function Bible() {
     }
   };
 
-
   const chapters = chaptersPerBook[selectedBook] ? Array.from({ length: chaptersPerBook[selectedBook] }, (_, i) => i + 1) : [];
 
   return (
@@ -79,7 +159,7 @@ export default function Bible() {
                     </SelectContent>
                 </Select>
                 <Select value={selectedChapter.toString()} onValueChange={(val) => setSelectedChapter(Number(val))}>
-                    <SelectTrigger className="w-full sm:w-[150px]">
+                    <SelectTrigger className="w-full sm:w-[200px]">
                     <SelectValue placeholder="Capítulo" />
                     </SelectTrigger>
                     <SelectContent>
@@ -91,25 +171,37 @@ export default function Bible() {
                 </div>
             </div>
 
-            <Card>
-            <CardContent className="p-6 md:p-8">
-                <h2 className="text-3xl font-bold font-headline mb-6 text-center">{selectedBook} {selectedChapter}</h2>
-                <div className="space-y-4 text-left font-body text-lg md:text-xl leading-relaxed">
-                <p><sup className="font-bold mr-2">1</sup>En el principio creó Dios los cielos y la tierra.</p>
-                <p><sup className="font-bold mr-2">2</sup>Y la tierra estaba desordenada y vacía, y las tinieblas estaban sobre la faz del abismo, y el Espíritu de Dios se movía sobre la faz de las aguas.</p>
-                <p><sup className="font-bold mr-2">3</sup>Y dijo Dios: Sea la luz; y fue la luz.</p>
-                <p><sup className="font-bold mr-2">4</sup>Y vio Dios que la luz era buena; y separó Dios la luz de las tinieblas.</p>
-                <p><sup className="font-bold mr-2">5</sup>Y llamó Dios a la luz Día, y a las tinieblas llamó Noche. Y fue la tarde y la mañana un día.</p>
-                <p className="italic mt-8 text-center text-muted-foreground">(Contenido de muestra. La funcionalidad completa de la Biblia se implementará más adelante.)</p>
-                </div>
-            </CardContent>
-            </Card>
-            <div className="flex justify-between mt-8">
-                <Button onClick={goToPreviousChapter} disabled={selectedChapter === 1} variant="outline">
-                    <ChevronLeft className="mr-2 h-4 w-4" /> Anterior
+            <div className="relative">
+                <Button onClick={goToPreviousChapter} disabled={selectedChapter === 1} variant="outline" className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(100%+8px)]">
+                    <ChevronLeft className="h-6 w-6" />
                 </Button>
-                <Button onClick={goToNextChapter} disabled={selectedChapter === totalChapters} variant="outline">
-                    Siguiente <ChevronRight className="ml-2 h-4 w-4" />
+
+                <Card>
+                    <CardContent className="p-6 md:p-8">
+                        <h2 className="text-3xl font-bold font-headline mb-6 text-center">{selectedBook} {selectedChapter}</h2>
+                        <div className="space-y-4 text-left font-body text-lg md:text-xl leading-relaxed">
+                        {isLoading ? (
+                        <p>Cargando...</p>
+                        ) : verses.length > 0 ? (
+                        verses.map((verse, index) => (
+                            <div key={index}>
+                                <p 
+                                    onClick={() => handleVerseClick(verse, index + 1)} 
+                                    className="cursor-pointer p-2 rounded-md hover:bg-muted/50 transition-colors"
+                                >
+                                    <sup className="font-bold mr-2">{index + 1}</sup>{verse}
+                                </p>
+                            </div>
+                        ))
+                        ) : (
+                        <p>No se encontró el contenido de este capítulo.</p>
+                        )}
+                        </div>
+                    </CardContent>
+                </Card>
+
+                <Button onClick={goToNextChapter} disabled={selectedChapter === totalChapters} variant="outline" className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[calc(100%+8px)]">
+                    <ChevronRight className="h-6 w-6" />
                 </Button>
             </div>
         </div>
