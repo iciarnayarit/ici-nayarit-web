@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Bookmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 const books = [
   "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué",
@@ -54,13 +55,25 @@ const chaptersPerBook: { [key: string]: number } = {
   "3 Juan": 1, "Judas": 1, "Apocalipsis": 22
 };
 
+interface SavedVerse {
+  text: string;
+  reference: string;
+}
+
 export default function Bible() {
   const [selectedBook, setSelectedBook] = useState('Génesis');
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [verses, setVerses] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSharing, setIsSharing] = useState(false);
+  const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const saved = localStorage.getItem('savedVerses');
+    if (saved) {
+      setSavedVerses(JSON.parse(saved));
+    }
+  }, []);
 
   useEffect(() => {
     const fetchChapter = async () => {
@@ -83,42 +96,27 @@ export default function Bible() {
     fetchChapter();
   }, [selectedBook, selectedChapter]);
 
-  const handleVerseClick = async (verseText: string, verseNumber: number) => {
-    if (isSharing) return;
-
-    const fullVerse = `"${verseText}" (${selectedBook} ${selectedChapter}:${verseNumber})`;
-    setIsSharing(true);
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'Versículo de la Biblia',
-          text: fullVerse,
-        });
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error('Error al compartir:', error);
-        }
-      } finally {
-        setIsSharing(false);
-      }
+  const handleSaveVerse = (verseText: string, verseNumber: number) => {
+    const reference = `${selectedBook} ${selectedChapter}:${verseNumber}`;
+    const newVerse = { text: verseText, reference };
+    
+    let updatedSavedVerses;
+    if (savedVerses.some(v => v.reference === reference)) {
+      updatedSavedVerses = savedVerses.filter(v => v.reference !== reference);
+      toast({
+        title: "Versículo Eliminado",
+        description: "Has eliminado el versículo de tus guardados.",
+      });
     } else {
-      try {
-        await navigator.clipboard.writeText(fullVerse);
-        toast({
-          title: "Copiado",
-          description: "Versículo copiado al portapapeles.",
-        });
-      } catch (error) {
-        toast({
-          title: "Error",
-          description: "No se pudo copiar el versículo.",
-          variant: "destructive",
-        });
-      } finally {
-        setIsSharing(false);
-      }
+      updatedSavedVerses = [...savedVerses, newVerse];
+      toast({
+        title: "Versículo Guardado",
+        description: `Has guardado ${reference}.`,
+      });
     }
+    
+    setSavedVerses(updatedSavedVerses);
+    localStorage.setItem('savedVerses', JSON.stringify(updatedSavedVerses));
   };
 
   const handleBookChange = (book: string) => {
@@ -169,6 +167,9 @@ export default function Bible() {
                     </SelectContent>
                 </Select>
                 </div>
+                <Link href="/biblia/guardados">
+                    <Button variant="outline">Ver Versículos Guardados</Button>
+                </Link>
             </div>
 
             <div className="relative">
@@ -183,16 +184,25 @@ export default function Bible() {
                         {isLoading ? (
                         <p>Cargando...</p>
                         ) : verses.length > 0 ? (
-                        verses.map((verse, index) => (
-                            <div key={index}>
-                                <p 
-                                    onClick={() => handleVerseClick(verse, index + 1)} 
-                                    className="cursor-pointer p-2 rounded-md hover:bg-muted/50 transition-colors"
-                                >
-                                    <sup className="font-bold mr-2">{index + 1}</sup>{verse}
-                                </p>
-                            </div>
-                        ))
+                        verses.map((verse, index) => {
+                            const reference = `${selectedBook} ${selectedChapter}:${index + 1}`;
+                            const isSaved = savedVerses.some(v => v.reference === reference);
+                            return (
+                                <div key={index} className="flex items-start gap-2">
+                                    <p className="flex-grow">
+                                        <sup className="font-bold mr-2">{index + 1}</sup>{verse}
+                                    </p>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() => handleSaveVerse(verse, index + 1)}
+                                    >
+                                        <Bookmark className={`h-6 w-6 ${isSaved ? 'fill-current text-black' : 'text-gray-400'}`} />
+                                        <span className="sr-only">Guardar versículo</span>
+                                    </Button>
+                                </div>
+                            );
+                        })
                         ) : (
                         <p>No se encontró el contenido de este capítulo.</p>
                         )}
