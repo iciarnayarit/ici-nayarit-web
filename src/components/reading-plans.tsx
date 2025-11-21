@@ -1,7 +1,11 @@
+'use client';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { Bookmark } from 'lucide-react';
 
 const plans = [
   {
@@ -91,6 +95,36 @@ const plans = [
 ];
 
 export default function ReadingPlans() {
+  const { toast } = useToast();
+  const [savedPlans, setSavedPlans] = useState<string[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('savedPlans');
+    if (saved) {
+      setSavedPlans(JSON.parse(saved).map((p: any) => p.id));
+    }
+  }, []);
+
+  const handleSavePlan = (plan: typeof plans[0]) => {
+    let updatedSavedPlans = [];
+    if (savedPlans.includes(plan.id)) {
+      updatedSavedPlans = savedPlans.filter(id => id !== plan.id);
+      toast({
+        title: "Plan Eliminado",
+        description: `Has eliminado el plan "${plan.title}" de tus guardados.`,
+      });
+    } else {
+      updatedSavedPlans = [...savedPlans, plan.id];
+      toast({
+        title: "Plan Guardado",
+        description: `Has guardado el plan "${plan.title}".`,
+      });
+    }
+    setSavedPlans(updatedSavedPlans);
+    const fullSavedPlans = plans.filter(p => updatedSavedPlans.includes(p.id));
+    localStorage.setItem('savedPlans', JSON.stringify(fullSavedPlans));
+  };
+
   return (
     <section id="plans" className="w-full py-20 md:py-32">
       <div className="container mx-auto px-4 md:px-6">
@@ -101,9 +135,15 @@ export default function ReadingPlans() {
           <p className="mt-4 text-lg text-muted-foreground">
             Crece en tu fe con planes que se ajustan a tu vida.
           </p>
+          <div className="mt-4">
+            <Link href="/planes/guardados">
+              <Button>Ver Planes Guardados</Button>
+            </Link>
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {plans.map((plan) => {
+            const isSaved = savedPlans.includes(plan.id);
             const button = (
               <Button variant="outline" className="w-full">Comenzar Plan</Button>
             );
@@ -116,6 +156,18 @@ export default function ReadingPlans() {
                     fill
                     className="object-cover"
                   />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 bg-white/50 hover:bg-white/75"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleSavePlan(plan);
+                    }}
+                  >
+                    <Bookmark className={`h-6 w-6 text-black ${isSaved ? 'fill-current' : ''}`} />
+                    <span className="sr-only">Guardar plan</span>
+                  </Button>
                 </div>
                 <CardHeader>
                   <CardTitle className="font-headline">{plan.title}</CardTitle>

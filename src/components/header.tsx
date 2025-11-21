@@ -4,6 +4,13 @@ import { MenuIcon, Moon, Sun } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
+import { DialogTitle } from '@radix-ui/react-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function useDarkMode() {
     const [theme, setTheme] = useState('light');
@@ -44,6 +51,8 @@ function ThemeToggle() {
 }
 
 export default function Header() {
+  const [isPlanesMenuOpen, setIsPlanesMenuOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
@@ -54,9 +63,21 @@ export default function Header() {
           <Link href="/biblia" className="text-foreground/80 hover:text-foreground transition-colors">
             Biblia
           </Link>
-          <Link href="/planes" className="text-foreground/80 hover:text-foreground transition-colors">
-            Planes
-          </Link>
+          <DropdownMenu open={isPlanesMenuOpen} onOpenChange={setIsPlanesMenuOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="text-foreground/80 hover:text-foreground transition-colors" onMouseEnter={() => setIsPlanesMenuOpen(true)}>
+                Planes
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent onMouseLeave={() => setIsPlanesMenuOpen(false)}>
+              <DropdownMenuItem asChild>
+                <Link href="/planes">Todos los Planes</Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/planes/guardados">Planes Guardados</Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           {
             /**
              * <Link href="/videos" className="text-foreground/80 hover:text-foreground transition-colors">
@@ -82,6 +103,7 @@ export default function Header() {
                 </Button>
             </SheetTrigger>
             <SheetContent side="left">
+                <DialogTitle className="sr-only">Menú de navegación</DialogTitle>
                 <Link href="#" className="flex items-center gap-2 py-6">
                 <span className="font-bold text-lg">ICIAR Nayarit</span>
                 </Link>
@@ -90,7 +112,10 @@ export default function Header() {
                     Biblia
                 </Link>
                 <Link href="/planes" className="flex w-full items-center py-2 text-lg font-semibold">
-                    Planes
+                    Todos los Planes
+                </Link>
+                <Link href="/planes/guardados" className="flex w-full items-center py-2 text-lg font-semibold">
+                    Planes Guardados
                 </Link>
                 {
                     /**
