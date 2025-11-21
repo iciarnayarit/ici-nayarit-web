@@ -112,12 +112,16 @@ export default function DailyVerse() {
               </DialogContent>
             </Dialog>
             <Dialog>
-                <DialogTrigger asChild>
+                {
+                    /*
+                    <DialogTrigger asChild>
                     <Button style={{ backgroundColor: 'hsl(var(--accent))', color: 'hsl(var(--accent-foreground))' }}>
                         <Mail className="mr-2 h-4 w-4" />
                         Suscribirse
                     </Button>
                 </DialogTrigger>
+                    * **/
+                }
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>Suscribirse al Versículo Diario</DialogTitle>

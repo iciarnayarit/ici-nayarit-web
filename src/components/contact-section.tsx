@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 export default function ContactSection() {
   const [name, setName] = useState('');
@@ -64,23 +65,31 @@ export default function ContactSection() {
   };
 
   return (
-    <section className="w-full py-12 md:py-24 lg:py-32 bg-muted">
-      <div className="container mx-auto px-4 md:px-6 text-center">
+    <section className="relative w-full py-12 md:py-24 lg:py-32">
+      <Image
+        src="https://i.imgur.com/pIdxDkl.jpeg"
+        alt="Background"
+        layout="fill"
+        objectFit="cover"
+        className="z-0"
+      />
+      <div className="absolute inset-0 bg-black/60 z-10"></div>
+      <div className="relative container mx-auto px-4 md:px-6 text-center text-white z-20">
         <h2 className="text-3xl font-bold font-headline mb-4">¿Tienes más dudas?</h2>
-        <p className="text-lg text-muted-foreground mb-8">
+        <p className="text-lg mb-8">
           Ponte en contacto con nosotros a través de correo electrónico o WhatsApp.
         </p>
         <div className="flex justify-center gap-4">
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
             {
-              /*
-              <DialogTrigger asChild>
-              <Button onClick={() => setIsModalOpen(true)}>
-                <Mail className="mr-2 h-4 w-4" />
-                Enviar Correo
-              </Button>
-            </DialogTrigger>
-              * */
+              /**
+               <DialogTrigger asChild>
+               <Button onClick={() => setIsModalOpen(true)}>
+               <Mail className="mr-2 h-4 w-4" />
+               Enviar Correo
+               </Button>
+               </DialogTrigger>
+               * */
             }
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
@@ -114,7 +123,7 @@ export default function ContactSection() {
               </DialogFooter>
             </DialogContent>
           </Dialog>
-          <Button onClick={handleWhatsAppClick} variant="outline">
+          <Button onClick={handleWhatsAppClick} style={{ backgroundColor: 'purple', color: 'white' }}>
             <MessageCircle className="mr-2 h-4 w-4" />
             Enviar WhatsApp
           </Button>

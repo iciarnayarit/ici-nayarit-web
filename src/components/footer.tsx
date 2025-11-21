@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { BookHeart, Twitter, Facebook, Instagram } from 'lucide-react';
+import {BookHeart, Twitter, Facebook, Instagram, Youtube} from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -23,6 +23,9 @@ export default function Footer() {
           }
           <Link href="https://www.facebook.com/ici.nayarit" target="_blank"  className="text-muted-foreground hover:text-foreground" aria-label="Facebook">
             <Facebook className="h-5 w-5" />
+          </Link>
+          <Link href="https://www.youtube.com/@iciarnayarit" target="_blank"  className="text-muted-foreground hover:text-foreground" aria-label="Youtube">
+            <Youtube className="h-5 w-5" />
           </Link>
         </div>
       </div>
