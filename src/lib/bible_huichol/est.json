@@ -1,0 +1,735 @@
+{
+  "book": {
+    "name": "'Etsitexi",
+    "alternate_names": ["Ester", "Esther"],
+    "language": "Huichol (Wixarika)",
+    "translation_info": {
+      "title": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
+      "edition": "2020",
+      "translator": "Wycliffe Bible Translators, Inc.",
+      "copyright_year": "2020",
+      "copyright_holder": "Wycliffe Bible Translators, Inc.",
+      "license": "Creative Commons License: Attribution-Noncommercial-No Derivative Works (CC BY-NC-ND 4.0)"
+    },
+    "chapters": [
+      {
+        "chapter_number": 1,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Hiki ti'aitame 'Atsuheru,* piti'aitakai xeitsienituyari heimana xeitewiyari heimana 'atahuta (127) kwieyaritetsie, 'akaniyeukaitini Hiriya mirakutewatsie meta Kutsi kwieyaritsie paiti ye'atikaiti."
+          },
+          {
+            "verse_number": 2,
+            "text": "'Atsuheru kiekarieya 'aixia mirekukurarutuiyarie Tsutsa mirakutewatsie 'ukaiti katini'aitakaitini."
+          },
+          {
+            "verse_number": 3,
+            "text": "Hairieka wiyaritsie ti'aitati 'ixiarari kaniuwewieni yunaiti te'aitamete memiparewie wahetsiemieme, mekanekikinixiani kuyaxi wa'ukiyarima Peritsiya kwieyaritsie kiekatari meta Meriya miemete, meta 'auriena memuti'u meta kwieyarite kepaimeti mana mirawiyatikatei meta kuwexinaruritsixi,"
+          },
+          {
+            "verse_number": 4,
+            "text": "xeitsienituyari heimana nauka tewiyari tukari 'aye'aku, yunaime wahixie katiniwaruxeitsitiani waikawa witsiti'anenekame kemirexeiyakai meta mariwemeki kemiti'aitametikai."
+          },
+          {
+            "verse_number": 5,
+            "text": "Miki naiti tawarita ranuyeyaku, ti'aitame 'ixiarari kaniuwewieni, 'atahuta tukari kaniuyurieni, Tsutsa kiekariyari 'aixia mirekukurarutuiyarie memitama wahetsiemieme, waikawa memimatiwa meta waikawa memikamatiwa yunaiti. 'Iki 'ixiarari kaniuwewiyani paratsiyu hixiapapaiti mira'iteiritsietsie,"
+          },
+          {
+            "verse_number": 6,
+            "text": "miki witsitiniyuxexeiyakaitini rinu 'ixurikiyari meuwikai tuxati meta yuyuawiti, 'ayukawiyati rinu mutuxa meta 'ixuriki mitairaiye matia, miki karena kaunariyari hepai pi'anekai pirataki wewiyati wewiyati tete mukawetika witsimitiyuxexeiyatsie rawiwiyati. Mana tsiere kanixuawekaitini 'ipari 'amipapa huruki meta pirataki wewiyatikaiti meta takwa pakumanekai tetexi witsimi'anene, perira teteyari meta hipati tetexi witsimi'aneneki."
+          },
+          {
+            "verse_number": 7,
+            "text": "Huru tekixiyari xexuiti yiki pitiyuxexeiyatikatei, kaxie winuyari waikawa miraye'axe kaniukatuariwakaitini muxuawekaiki, miki ti'aitame pitiwamikwakai waikawa miyiwekaiki."
+          },
+          {
+            "verse_number": 8,
+            "text": "Yunaiti teiteri memuta'inierie mekanipitiariekaitini tsepa kememiteheu'iku, nawayamete mipai memitehetahiawarieki ti'aitame niukieyaki mekanikatu'akaitini kepaimeme memeuyehiakai."
+          },
+          {
+            "verse_number": 9,
+            "text": "'Uka ti'aitame Watsiti yuhetsiemiemeta 'ixiarari kaniuwewieni 'ukarawetsixi wahetsiemieme ti'aitame 'Atsuheru paratsiyuyata."
+          },
+          {
+            "verse_number": 10,
+            "text": "'Atahuta tukaritsie, winuki ti'aitame 'Atsuheru kwinimieme katiniyutemawiekaitini, mipai katiniwaruta'aitiani 'atahuta memite'i'uximayatsiriekai -Mehumani, Witsita, Kaxiwuna, Wihita, 'Awakita, Tsetaxi meta Kaxikatsi-"
+          },
+          {
+            "verse_number": 11,
+            "text": "hixiena mekehewitinike 'uka ti'aitame 'anakuruname, 'auriena makaniki witsitiyuxexeiyati memiwaxeiyaniki teiteri meta te'aitamete, miki yemeki witsitini'iimarikaitini."
+          },
+          {
+            "verse_number": 12,
+            "text": "Peru kepauka te'uximayatamete 'uka ti'aitame mipai memite'utahiawixi kemitiwareta'aitiakai, peru 'uka ti'aitame pika'uyuwairi miyemieki hetsiana. Ti'aitame 'ana matsi waikawa kaniuyeha'ani."
+          },
+          {
+            "verse_number": 13,
+            "text": "Yapauka ti'aitame temaiwawemete kaniwarutakwewieni 'iniari niukiyari memakumate, 'ana mipai tiniiyiximekaitini kepauka ti'aitame 'aixia mitiyurieni, miki kaniwaruti'iwawiyakaitini temaiwawemete."
+          },
+          {
+            "verse_number": 14,
+            "text": "'Ahurawa memuti'ukai mekanihikitikaitini: Kaxitsena, Tsetaxi, 'Arimata, Taritsi, Meretsi, Maritsena meta Memukani, 'atahuta ti'uximayatamete Peritsiya meta Meriya kiekatari mekanipitiariekaitini ti'aitame hamatia memitekuxataniki meta miki meteni'uximayakaitini ti'aitame hetsiemieme waikawa mira'aitsietsie."
+          },
+          {
+            "verse_number": 15,
+            "text": "Ti'aitame mipai katiniwaruta'iwawiya: -¿Ke'iyurieni 'uka ti'aitame Watsiti ti'aitame te'uximayatsiriwamete mikawaranu'eniki ti'aitame tiwa'aitiakaku, 'iniari niukiyari kehaine?"
+          },
+          {
+            "verse_number": 16,
+            "text": "Ti'aitame hixie meta 'iparewiwametemama, Memukani mipai kaniutayini: -'Uka ti'aitame Watsiti 'eki ti'aitame xeikia 'axapikamatsi'uyuri, matsita yunaime 'ahetsia memite'uximaya meta kwieyarite keyupaimeti 'ena memite'awiya."
+          },
+          {
+            "verse_number": 17,
+            "text": "Yunaiti 'ukarawetsixi mipai mekatenetimaikuni 'uka ti'aitame kemitiuka'iyari, 'ana yikinama mekaniwatinanaimakuni, mipai me'utiyuati: Ti'aitame 'Atsuheru katiniutani'ani 'uka ti'aitame Watsiti hetsiana munuaniki, peru miki pikahenu'eni."
+          },
+          {
+            "verse_number": 18,
+            "text": "Kepauka 'ukirawetsixi wa'iitama Peritsiya meta Meriya kiekatari memitehetimani ti'aitame kemitiuka'iyari, 'uka mekateniwa'eiyakuni 'ahetsia yaxeikia memiteta'uximayata. Peru miki pikareuyunuani tenanaimarieti."
+          },
+          {
+            "verse_number": 19,
+            "text": ">>Tamitsi xika matsikunanakeni, xapa pemitawewieni mana miraka'utsieni xewiti pikayiweni mipataniki Peritsiya meta Meriya 'iniari niukiyari kemire'uxa: kename 'ahixie ti'aitame 'Atsuheru hatsuaku Watsiti kaheyuhekiatani, meta 'uka ti'aitame kemitihiritiariekai xewiti pita ke'anukakeni matsi 'aixia tiuka'iyariti."
+          },
+          {
+            "verse_number": 20,
+            "text": "Mipai miki xapa kepauka memeitimani hakewapaiti temeuye'atika, yunaiti 'ukarawetsixi yikinama 'aixia mekateniwaxeiyakakuni, tsepa memimamariwawe meta tsepa memikamamariwawe»."
+          },
+          {
+            "verse_number": 21,
+            "text": "Ti'aitame meta hetsiana memite'uximaya miki 'ixatsi kaniwarunake, mipai katiniuyurieni Memukani kemainekai,"
+          },
+          {
+            "verse_number": 22,
+            "text": "xapa kaneutani'axiani naitsarie kwie keyeumetsie miti'aitakai, keyupaimeti mana memite'awiyakai wa'utiarikaki, kiekari kemitiukumanekai waniukiki raye'utikaime, mipai tiwarahiaweti waniukiki kiekari mukumanetikatsie yuxexuiti 'ukitsi yu'iitama yutiriyama meketewareu'aitiaka."
+          }
+        ]
+      },
+      {
+        "chapter_number": 2,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Miixa tukari 'anukayaku, ti'aitame 'Atsuheru 'uhaxiapieka, kanaye'erieni Watsiti kemiyuriekai meta kemitiuyuriekai kemitiuxatsiekai hetsiena mieme."
+          },
+          {
+            "verse_number": 2,
+            "text": "Hiki teparewiwamete te'uximayatamete mipai mekaniutiyuani: «Meke'utiwawieni naitsarie 'iimarixi witsimemite'iimaritika ti'aitametsie mieme."
+          },
+          {
+            "verse_number": 3,
+            "text": "Ti'aitame kiekari mukumanetikatsie kewaru'uitiani memiwatiwauniki, 'ukari witsimemite'iimarixi memiwakuxeirieniki, Tsutsa kiekariyaritsie 'ukarawetsixi wakiita. Miki Kekahi meke'uhiritiani miwa'iwiyaniki, Kekahi ti'uximayatame ti'aitame wahiwemeki ti'aitame hetsiemieme 'ukarawetsixi wahiwemeki, kewaruti'uayemani witsimemiteyuxexeiyaniki."
+          },
+          {
+            "verse_number": 4,
+            "text": "Ketiuta'aita Watsiti hetsiemieme 'uka ti'aitame kemi'ane matsi waikawa minake». Miki niuki kaninakire ti'aitame, mipai katiniuta'aita."
+          },
+          {
+            "verse_number": 5,
+            "text": "Tsutsa kiekariyaritsie niukateitini xewiti huriyu tewiyari Wenikamini nuiwarieya hetsiemieme, Maxirukeyu titewati Yahixi nu'aya, Tsimi teukarieya, Kihitsi tutsieya,"
+          },
+          {
+            "verse_number": 6,
+            "text": "muwiyariekai Kerutsareme miyehanie kepauka Nawukurunutsuxi, Wawiruniya kwieyaritsie ti'aitame, Kekuniyaxi mehatsie, Kura kwieyaritsie ti'aitame."
+          },
+          {
+            "verse_number": 7,
+            "text": "Maxirukeyu yutatatsi niweya kanex- eiyakaitini Karatsa titewakame. Miki 'iimari 'Etsitexi kiita kanimatiwakaitini, kanitaw- eriyakaitini kaninutuitikaitini paapaya maamaya mekaniukumawerekaitini, witsitini'iimarikaitini witsitiniyuxexeiyakaitini. Paapamama me'ukwiku, Maxirukeyu kanitaweriya yuniwe kanayeitiakaitini."
+          },
+          {
+            "verse_number": 8,
+            "text": "Kepauka mukuxaxatsiwakai xara ti'aitame kemainekai, yumiireti 'ukari mekaniukuxeiriyani Tsutsa kiekariyaritsie Kekahi kaniwa'iwiyakaitini. 'Etsitexi meta kanewitikieni ti'aitame paratsiyuyata, Kekahi kaniyetuiriyarieni, mana miki 'ukari 'iimarixi wakii kanihiritiariekaitini."
+          },
+          {
+            "verse_number": 9,
+            "text": "'Etsitexi Kekahi 'aixia katinixeiyakaitini. 'Ayumieme mikiki kaniuyukumexiitiani witsimitiyuxexeiyaniki 'uayete katinimikwakaitini meta 'ikwai 'aixia ti'anenekame. Kaniwaranuyehapani 'atahuta 'ukari memita'iwiyaniki mete'i'uximayatsirieti, paratsiyuta 'iimarixi 'aixia memi'anene, meta muyekukutsuni 'aixia tiuye'anekame kaniuxatiarieni 'ukarawetsixi wakiita."
+          },
+          {
+            "verse_number": 10,
+            "text": "'Etsitexi pikayutaxa hakewa mekiekametikai meta yu'ukiyarima, Maxirukeyu me'imaiyakaiki."
+          },
+          {
+            "verse_number": 11,
+            "text": "Maxirukeyu yakatiniutiyeikakaitini hareni hixie, timaimiti 'Etsitexi kemiraka'iyuniwakai meta kememite'ixeiyakai."
+          },
+          {
+            "verse_number": 12,
+            "text": "Hiki ti'aitame 'Atsuheru hetsia meutahaniki, tamamata heimana huta metseri kaniyurimiki 'aixia yuyurieti kemire'uxa: 'ataxewime metseri mixaxi hatseitiyariki meta 'ataxewime metseri witsimu'iatikaki kaniyu'uayemakamiki."
+          },
+          {
+            "verse_number": 13,
+            "text": "Miki naime raye'atiame, 'uka ti'aitame hixie kaniyuhekiatamiki, kaniyiwemiki hareni timieme mirepini paratsiyupaiti, tita mireuyehiaka."
+          },
+          {
+            "verse_number": 14,
+            "text": "Yiwikita neta'axekaitini paratsiyuta, ximeri kani'axekaitini Tsatsikaxi 'i'iwiyakaku, ti'uximayatame ti'aitame tuxexerimama wa'iwiyame. Pikayuhekiatakai ti'aitame hixie, 'itihiwe'erieniki titani'airieniki."
+          },
+          {
+            "verse_number": 15,
+            "text": "Kepauka 'Etsitexi 'Awikahiri niweya, Maxirukeyu mitaweriyaxi yutatatsi niweya, kanaye'ani muyuhekiataki ti'aitame hixie, miki Kekahi ti'aitame hetsiemieme 'ukarawetsixi wa'iwiyame tita mitiwaxatiakai tixaiti pikatiuta'iwau. 'Ana yunaiti mekanihixiyakaitini me'ixeiyati."
+          },
+          {
+            "verse_number": 16,
+            "text": "'Anari 'Etsitexi kanewitikieni paratsiyuta, ti'aitame 'Atsuheru hixie, tamamata metseritsie, tewe metseriyaritsie, 'atahutarieka wiyaritsie ti'aitakaku. kaniutihiwe'erieni"
+          },
+          {
+            "verse_number": 17,
+            "text": "Ti'aitame 'Etsitexi kehipame 'iimarixi, miki 'aixia katiniuxeiya keyuri hipame 'ukari. Hiki kuruna kanenamanirieni 'uka ti'aitame kanayeitiani Watsiti hetsiemieme. Mipai"
+          },
+          {
+            "verse_number": 18,
+            "text": "Ti'aitame 'ixiarari kaniuwewieni 'Etsitexi hetsiemieme meta yunaiti memiparewiekai mete'i'uximayatsirieti wahetsiemieme. katiniwaruta'aitiani kwieyarite mamanetikatsie, 'ixiarari memukuwewiexianiki xeitukari, 'imikierite katineutani'axiani naitsarie 'aixia 'anemeki."
+          },
+          {
+            "verse_number": 19,
+            "text": "Mexi meyuxeiriekai hutarieka miemete 'ukari, Maxirukeyu ti'aitame kitenie kaniutakateitini."
+          },
+          {
+            "verse_number": 20,
+            "text": "'Etsitexi yaxeikia 'atsikapainekai kemi'ane memipaapamamatikai meta hakewa mekiekametikai, Maxirukeyu kemirehiawekai, yaxeikia Maxirukeyu kaneu'eniekaitini meripai hepai kepauka 'iweriyakaku kemirei'eniekai."
+          },
+          {
+            "verse_number": 21,
+            "text": "Miki tukaritsie, Maxirukeyu ti'aitame kitenie 'utakaiku, yuhutati mekaniuyeha'ani ti'aitame parewiwamete Wihitani Teretsi matia ti'aitame hetsia miemete, memite'iwiyametetikai, mipai mekaniutiyuani kename ti'aitame 'Atsuheru memieni."
+          },
+          {
+            "verse_number": 22,
+            "text": "Maxirukeyu retimaika kemitiuxatsie, 'uka ti'aitame 'Etsitexi mipai katiniutahiawe, mikita ti'aitame mipai katiniutahiawe Maxirukeyu hetsiemieme."
+          },
+          {
+            "verse_number": 23,
+            "text": "Kepauka mitiuti'iwauritixi miki, mipai mekatenetimani kename tiyuritikai, yuhutati ti'aitame te'uximayatsiriwamete kiyetsie mekanikaxuiyaxiani. 'Iki naiti katinaka'utsieni kepauka miraka'utiarietsie ti'aitame hixie."
+          }
+        ]
+      },
+      {
+        "chapter_number": 3,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Miyatiuyikukeri ti'aitame 'Atsuheru 'Amani waikawa mariweme kanayeitiani Hamerata nu'aya, 'Akaki nuiwarieya, kanipitiani hetsiana miti'uximayakaki matsi waikawa katinipitiani keyuri hipame."
+          },
+          {
+            "verse_number": 2,
+            "text": "Yunaiti te'uximayatamete paratsiyu kitenie miemete ti'aitame muwayekatsie, mekaniukatunuma'uwekaitini 'Amani hixie, mariweme mekanayeitiwakaitini, ti'aitame mipai mitiu'aitakaiki. Peru Maxirukeyu hixiena pika'ukatunumakiekakai meta mariweme pika'eriekai."
+          },
+          {
+            "verse_number": 3,
+            "text": "Hiki paratsiyuta memite'uximaya ti'aitame kitenie memihiritiariekai, Maxirukeyu mipai mekateniuta'iwawiya: ¿Titayari ti'aitame kemaine yapekatikamie?>>>"
+          },
+          {
+            "verse_number": 4,
+            "text": "Tukari meukayunetsie mekanitate'akaitini miixa. Peru miki pikawa'eniekai. 'Ayumieme mekanitaxata 'Amani hetsia mixeiyaki Maxirukeyu kemiyianekai, mikiri kaniyutaxatakaitini kename huriyu tewiyaritikai."
+          },
+          {
+            "verse_number": 5,
+            "text": "Kepauka 'Amani Maxirukeyu muxei hixiena mika'ukatunumakiekakaiki meta mariweme mika'eriekaiki kaniuyeha'ani."
+          },
+          {
+            "verse_number": 6,
+            "text": "Kepauka 'Amani miretima Maxirukeyu hakewa mekiekametikai, katiniuhayewa yuxaitame 'imienike kanitiwauni yunaime Maxirukeyu teiterimama wahetsia, tatsuari huriyutsixi 'Atsuheru mira'aitakaitsie memitamakai."
+          },
+          {
+            "verse_number": 7,
+            "text": "Hiki mexiakame metseriyaritsie nitsahani tamamata heimana huta wiyari 'Atsuheru ti'aitakaku, mekaniuyuta'iwa 'Amani hixie, yamemitehetimaniki kemi'ane metseritsie meta tukaritsie mitinake, huriyutisixi memikwi'iwaki. Hiki 'iniari memuwewi katinikanake tamamata heimana huta, 'araxi metseriyaritsie."
+          },
+          {
+            "verse_number": 8,
+            "text": "Hiki 'Amani ti'aitame 'Atsuheru mipai katiniu- tahiawe: -'Ena mepuxuawe hipati teiteri naitsarie metaxirieti kiekari mukumanetsie watsata pemira'aitatsie, 'iniari niukiyari kememitehexeiya kememite'uhu yiki pi'ane, hipati kememiteheixeiya. Yamepikatekahu 'iniari niukiyaritsie kepemiti'aita, 'aixia pika'ane memu'uwani me'ayeneniereti."
+          },
+          {
+            "verse_number": 9,
+            "text": "Xika matsinakeni xapa keneutawewi raka'ukame memikwi'iwaki, ne nekaniyetuamiki te'uximayatamete wahixie haika tsienituyari heimana xeitewiyari heimana tamamata miriyari (330.000) kiruyari pirata, tumini miwati'utsiwa miyuhayewaki."
+          },
+          {
+            "verse_number": 10,
+            "text": "Hiki ti'aitame hanira tseyuyari yumamatsie 'anutihinaka 'Amani kaniu'iitiani Hamerata nu'aya, 'Akaki nuiwarieya meta huriyutsixi miwaraye'unie."
+          },
+          {
+            "verse_number": 11,
+            "text": "Ti'aitame 'Amani mipai katiniutahiawe: -'Atumini kena'iti kemimatinake yakeni- wareyuri miki teiteri."
+          },
+          {
+            "verse_number": 12,
+            "text": "Mexiakame metseritsie tamamata heimana hairieka tukaritsie mekaniuta'inierieni te'utiwamete ti'aitame hetsia memite'uximaya. Mekatenaka'utiani kiekari mukumane wa'utiarikaki meta waniukiki kemitiwa'aitiakai, 'Amani ti'aitame mitiwa'aitiakai kwie mukumanetsie te'uximayatamete yiki memite'uniuka muwa memite'uximayakai kuwexinaruritsixi meta wa'ukiyarima. Naiti katinaka'utsieni kename ti'aitame 'Atsuheru haine, meta kanititseyumani ti'aitame hanirayaki."
+          },
+          {
+            "verse_number": 13,
+            "text": "Hiki xapa me'utiwewieka tupiritsixi mekaniwareutani'axiani, kwie mukumanetsie mipai mekateniwaruni'ani memiwakwiniki yunaime huriyutsixi temari, 'ukirawetsixi, 'ukarawetsixi, tiri meta wapiini memitewanawairieniki xeitukaritsie, tamamata hairieka tukaritsie tamamata heimana hutarieka metseritsie, tatsiari 'araxi metseriyaritsie."
+          },
+          {
+            "verse_number": 14,
+            "text": "Kwie mukumanetikatsie 'iniari niukiyari 'ikiyari mipai mukumanetikatsie mepexeiyatikani, memiteyukuxaxatiwaniki memiyukuha'aritiwaniki miki tukaritsie."
+          },
+          {
+            "verse_number": 15,
+            "text": "Hiki tupiritsixi mekaneutayeixiani ti'aitame yatiwaruta'aitiaku, meta tsiere miki xapa kaniutaxatsieni Tsutsa kiekariyaritsie. Hiki ti'aitame 'Amani hamatia me'anukayaxeka mekananu'ieni, mexi Tsutsa kiekariyaritsie mekayumaiwawekai."
+          }
+        ]
+      },
+      {
+        "chapter_number": 4,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Kepauka Maxirukeyu miretima kemitiutainekai, yukamixa kaneukatsana, hiwerika kamixayari kananakatini meta kiekari naxi kaniuyukawiwirieni, kaniuyeikakaitini karima 'utatsuati."
+          },
+          {
+            "verse_number": 2,
+            "text": "Paratsiyuta mepikapitiariekai hiwerika kamixayari me'anakatitikaiti, ti'aitame kitenie xeikia kaniye'axekaitini."
+          },
+          {
+            "verse_number": 3,
+            "text": "Naitsarie mira'aitakaitsie kiekariitetsie, mana waikawa huriyutsixi mekaniyuhakiekaitini mete'uka'eniwati me'utitsuati. Miki yuwaikwati hiwerika kamixayari me'anakatitikaiti, naxipa mekanitihipitekaitini."
+          },
+          {
+            "verse_number": 4,
+            "text": "Kepauka 'uka ti'aitame 'Etsitexi hiwemete 'ukari meta ti'aitame te'uximayatsiriwamete memu'axia mekatenitaxatiani kemitiutainekai, miki waikawa kaniuyukahiwerieni, hiki Maxirukeyu kamixate katineni'airieni menakatiniki hiwerika kamixayari mika'anakatikinikiri, peru miki pika'itanaki'eri."
+          },
+          {
+            "verse_number": 5,
+            "text": "Hiki 'Etsitexi Hataki katiniutani'airieni, ti'aitame ti'uximayatsiriwame ti'aitame hetsiemieme mikeriekai mi'iwiyaniki, mipai katinita'aitiani meti'iwauniki Maxirukeyu titaki mitiyu'iyaritia titayari mitiyuhiwerie."
+          },
+          {
+            "verse_number": 6,
+            "text": "Hiki Hataki Maxirukeyu hetsia kaniye'ani, kiekaritsie kaniuyeikakaitini teiteri memayutixexeiriwatsie, ti'aitame kitenie hixie."
+          },
+          {
+            "verse_number": 7,
+            "text": "Maxirukeyu katinitaxatiani kemiranuyeyakai, meta kanitaxatiani kepaimeme 'Amani tumini miyetuakai tumini hiweme hetsia huriyutsixi memikwi'iwaki."
+          },
+          {
+            "verse_number": 8,
+            "text": "Kanihiritiani tsiere xapa Tsutsa kiekariyaritsie miyetuiya 'ikiyarieya, miki miti'aitakai memikwi'iwaki, miki 'Etsitexi meixeitsitianiki, mireitaxatianiki, meitatieniki ti'aitame hixie mitakeniki mitawawirieniki yuteiterima wahetsie mitanuaniki."
+          },
+          {
+            "verse_number": 9,
+            "text": "Hiki Hataki kanakunuani 'Etsitexi katiniu- taxatiani Maxirukeyu kemainekai."
+          },
+          {
+            "verse_number": 10,
+            "text": "Hiki 'Etsitexi Hataki mipai katiniuta'aitiani Maxirukeyu mipai miretahiaweki: <<Yunaiti ti'aitame hetsia te'uximayatamete meta kiekari mukumanetikatsie mipai mepitemate, tsepa kemi'ane 'uki 'uka, ti'aitame ka'ita'inieyu, hixiena miye'ani takwa 'upaiti miyematsie, xei'iniariyari xeikia kanixuaweni:"
+          },
+          {
+            "verse_number": 11,
+            "text": "Xika heutahani kanimieriemiki xeimieme. Kaniupitiariemiki xeikia ti'aitame xika huru 'itsiyari ratserieni 'atukariki pimareuyehiwirieni. Ne xeitewiyari heimana tamamata tukari panukamie ti'aitame pikaneretani'airiewe hixiena nemitakeniki»."
+          },
+          {
+            "verse_number": 12,
+            "text": "Kepauka miretima Maxirukeyu 'Etsitexi kemainekai,"
+          },
+          {
+            "verse_number": 13,
+            "text": "hiki mipai katinini'airieni: <<Mipai pepikareku'eriwani, 'eki xeikia ti'aitame kiita pemayekaki xeikia pepitawikweni yunaime huriyutsixi watsata."
+          },
+          {
+            "verse_number": 14,
+            "text": "Xika 'eki kayuwati petiuyerini, xaitsiepita kanayenemiki tatsixiname huriyutsixi, peru 'eki meta 'apaapa 'iwamama mekanikwikuni yunaiti. Xiari yaki 'uwenitsie pepikanua xiari mipai temite'anuyekinekekaiki pepanukake»."
+          },
+          {
+            "verse_number": 15,
+            "text": "'Etsitexi Maxirukeyu mipai katineni'airieni 'iku'eiyati:"
+          },
+          {
+            "verse_number": 16,
+            "text": "«Kenemieka mipai ketineyuri keniwarekuxeiri yunaime huriyutsixi Tsutsa kiekatari, para memeyuhakieniki nehetsiemieme. Haika tukari xepikatehekwaka xepikahehareka tukariki meta tikariki. Neta nepinehakieni neparewiwamete teyunaiti xehepai. Kepauka nemiraye'atiani, ti'aitame hixie nepitakeni, tsepa 'iniari mikahaine hepai. Xika ne'umierieni, tsepa neketiumierie»."
+          },
+          {
+            "verse_number": 17,
+            "text": "Hiki Maxirukeyu heyaka yakatinikayani 'Etsitexi kemitita'aitiakai."
+          }
+        ]
+      },
+      {
+        "chapter_number": 5,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Hairieka tukaritsie, 'Etsitexi 'iwi 'amitewi witsimi'ane 'anakatika kaneyani paratsiyu kitenie kwitiwa takwa mukumatsie, ti'aitame hixie. Ti'aitame muwa kanakateitini yu'uwenitsie, kitenie heuyeniereti."
+          },
+          {
+            "verse_number": 2,
+            "text": "Kepauka 'uka ti'aitame 'Etsitexi muxei takwa 'uwekame, 'aixia 'anemeki kanixeiya huru 'itsiyari kanitserieni. Hiki 'Etsitexi 'aniuyani huru 'itsiyari kaniumayiani."
+          },
+          {
+            "verse_number": 3,
+            "text": "Hiki Ti'aitame mipai katinita'iwawiya: -¿Ketita perayexeiya, 'uka ti'aitame 'Etsitexi? ¿Ketita pera'iwawa? Tsepa nemira'aita kemiyewa hixiapa 'akame nepimatsiyetuiriewe."
+          },
+          {
+            "verse_number": 4,
+            "text": "'Etsitexi mipai katinita'eiya: -Xika matsinakeni ti'aitame, kenemie hiki taikaiyaritsie 'ixiarari 'ahetsiemieme nepewewieni meta 'Amani kena'inieti."
+          },
+          {
+            "verse_number": 5,
+            "text": "Hiki Ti'aitame mipai katiniuta'aita: -Xeiya 'Amani xekenewitiyu temite'aye'atiirieniki kaniutayini. Hiki ti'aitame meta 'Amani 'Etsitexi mekanekine 'ixiararipa 'Etsitexi miwareta'iniekaiki."
+          },
+          {
+            "verse_number": 6,
+            "text": "Kepaukari me'ieti ti'aitame tawarita, 'Etsitexi kaniuta'iwawiya: -Yakenetineutahiawi tita pereuyehiwa nepimatiyetuirieni. ¿Tita pera'iwawa? Tsepa kwie nemira'aita kemiyewa hixiapa 'akame nepimatsiyetuiriewe."
+          },
+          {
+            "verse_number": 7,
+            "text": "'Etsitexi mipai katinita'eiya: -Nemireuyehiwa kanihikitini, nemira'iwawa meta pemiraye'atiani."
+          },
+          {
+            "verse_number": 8,
+            "text": "xika 'aixia penetimaika, xika matsinakeni nemireuyehiwa meta nemira'iwawa, 'uxa'a pekanayenemiki 'Amani matia 'ixiarari nemixewewirienitsie, 'anake yanekatinixetahiawimiki."
+          },
+          {
+            "verse_number": 9,
+            "text": "Miki tukaritsie 'Amani kwinimieme tiyutemawieti newayeyani 'aixia tiku'eriwati, peru kepauka Maxirukeyu muxei ti'aitame kitenie hixiena pika'anukuke meta nitima pika'uyiyiakakai, waikawa kaniuyeha'ani hetsiena mieme."
+          },
+          {
+            "verse_number": 10,
+            "text": "Peru 'uyinitiaka yukie kaneyani. 'Amani yuhamikuma kaniwaruta'inieni meta yu'iya Tseretsi,"
+          },
+          {
+            "verse_number": 11,
+            "text": "katiniwarutaxatiani kemitixikutikai meta niwemama kememiyupaimekai, ti'aitame kemitixeiyakai kemitinaki'eriekai naimeki kemirenukake ti'aitame hetsia te'uximayatamete waheimapai mikaweniki."
+          },
+          {
+            "verse_number": 12,
+            "text": "Tawarita 'Amani mipai kaniutayini: -Matsi ne xeikia nekanihikitini 'uka ti'aitame 'Etsitexi muta'ini 'ixiararipa ti'aitame mewewiritsie. Metatsiere 'uxa'a kaneneta'inieni nemeiteitaki."
+          },
+          {
+            "verse_number": 13,
+            "text": "Peru naiti miki ne nehepaitsita tixaiti pikatihiki, huriyu Maxirukeyu nemixeiyaki kuxi ti'aitame kitenie."
+          },
+          {
+            "verse_number": 14,
+            "text": "'Iyaya Tseretsi meta yunaime yuhamikuma mipai metenitahiawe: -Kiye 'anuyemitsime keneuta'aita huta tewiyari heimana tamamata tsikuriyari 'utewime, ximerita ti'aitame keneutawawiri Maxirukeyu mana mikaxuiyaniki. Mipai 'aixia 'iyari pekanimieni 'ixiararipa ti'aitame matia."
+          }
+        ]
+      },
+      {
+        "chapter_number": 6,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Hiki ti'aitame miki tikaritsie pikakuwekai, 'ana katiniutani'ani kemitiuyi xapayari muhuriyamieki, kepauka miti'aitakaitsie mieme makateriwarieniki."
+          },
+          {
+            "verse_number": 2,
+            "text": "Mana mipai tineuku'ukaitini kename Maxirukeyu Wihitani meta Teretsi mame warutaxatakai ti'aitame hiwemetemama, mipai memitekuxatakaiki kename ti'aitame 'Atsuheru memieni."
+          },
+          {
+            "verse_number": 3,
+            "text": "Ti'aitame mipai kaniutayini: -¿Ke'u'itiarie tita tiyetuiriyarie yu'iwarika Maxirukeyu 'ikiki?"
+          },
+          {
+            "verse_number": 4,
+            "text": "Kepauka 'Amani paratsiyu kitenie takwa munua ti'aitame tawawirienike, Maxirukeyu kiye muta'aitakaitsie pihetsiena miemetikai. Hiki ti'aitame kaniuta'iwauni."
+          },
+          {
+            "verse_number": 5,
+            "text": "'Iparewiwamete mipai mekaniutiyuani: -Takwa muyeika 'Amani kaniyianeni."
+          },
+          {
+            "verse_number": 6,
+            "text": "Ti'aitame mipai katiniuta'aita: -Kewatayani. Kepauka 'Amani muwataha ti'aitame mipai katinita'iwawiya: -¿Kehepai 'itiariwa tewi ti'aitame 'aixia mitixeiya?"
+          },
+          {
+            "verse_number": 7,
+            "text": "Hiki 'Amani mipai kaniutayini yuxatati: «¿Kemi'ane tawarikuta ti'aitame 'aixia pitixeiyarie nexeikia nekanihikitini?>>> 'Ayumieme mipai kaniutayini: -Ti'aitame tewi 'aixia mitixeiya,"
+          },
+          {
+            "verse_number": 8,
+            "text": "'ixurikiki ketiutani'ani ti'aitame menakatikikai meta kawayuya manutiyeixa yumu'utsie witsiti'anenekame reukapikame."
+          },
+          {
+            "verse_number": 9,
+            "text": "'Ixurikite meta kawayu ketiyetuiriyarieni ti'aitame kemi'ane ti'uximayatame 'aixia mitixeiya, ti'aitame tewi 'aixia mitixeiya mititiketianiki, ke'utiyani kiekaritsie 'ehanati, mipai tiuhiwati: Mipai kani'itiariwani tewi ti'aitame 'aixia mitixeiya."
+          },
+          {
+            "verse_number": 10,
+            "text": "Ti'aitame 'Amani mipai katiniutahiawe: -Yapauka kenemie 'ixuriki pe'ahurieti meta kawayu pe'ahanati yaketineuyuri kepemutayi, Maxirukeyu huriyu tewiyari ti'aitame kitenie mutaka. Pepikaratitimaiyani nixeiniukiyari tima naimeki kepemutayi yaketineuyuri."
+          },
+          {
+            "verse_number": 11,
+            "text": "Hiki 'Amani 'ixuriki 'anuhurieka meta kawayu 'anuhanaka, Maxirukeyu katiniutikemaritiani, kawayutsie 'anakaime kiekaritsie 'ehanati kaniuyeikakaitini, mipai 'utaiti: «Mipai kani'itiariwani tewi ti'aitame 'aixia mitixeiya»."
+          },
+          {
+            "verse_number": 12,
+            "text": "Maxirukeyu kaninuani ti'aitame paratsiyu kitenie, 'Amani yukieta kanakunuani yumexiitiati, nutuixieti heuyutinati yihixie."
+          },
+          {
+            "verse_number": 13,
+            "text": "Yu'iya Tseretsi meta yunaime yuhamikuma katiniwarutaxatiani kemiranuyeyakai. Hiki 'ixatsitamete waikawa memitemaiwawekai meta 'iyaya Tseretsi mipai mekatenitahiawe: -Maxirukeyu xika pemiemiki, xika huriyu tewiyari hikitini pepikayiwekaxiani. Kaniyuritini 'ekipita pekanimieriemiki."
+          },
+          {
+            "verse_number": 14,
+            "text": "Hiki mexi'akuxi metekuxatakai 'Amani hamatia, mekaniu'axiani ti'aitame te'uximayatsiriwamete mekaneiwitini mexiima 'ixiararipa 'Etsitexi meiwewiekai hetsia."
+          }
+        ]
+      },
+      {
+        "chapter_number": 7,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Ti'aitame 'Amani matia 'ixiararipa mekananikine 'uka ti'aitame 'Etsitexi hetsia,"
+          },
+          {
+            "verse_number": 2,
+            "text": "hutarieka tukaritsie me'ietiweti tawarita ti'aitame kanita'iwawiya: -Kenetineutaxatia tita pereuyehiwa, 'uka ti'aitame 'Etsitexi, ne nematiyetuirieni. ¿Tita pera'iwawa? Tsepa ne hixiata 'akame nepimatsiyetuiriewe nemira'aitatsie."
+          },
+          {
+            "verse_number": 3,
+            "text": "'Etsitexi mipai katinita'eiya: -Xika 'aixia penetimaika ti'aitame, xika matsinakeni, ne tukari nepeuyehiakaku. Nepira'iwawa neteiterima pemiwatinenimayataki."
+          },
+          {
+            "verse_number": 4,
+            "text": "Ne meta neteiterima tekaniutuiyani temeuyehiiyaniki temikwi'iwaki teyunaiti. Xika xeikia temite'uximayakaki te'utuiyanike, ne 'atsinepikahainenikeyu, mikiki pikaheuyewekakeyu nemimatsi'uximatiaka ti'aitame."
+          },
+          {
+            "verse_number": 5,
+            "text": "Ti'aitame 'Atsuheru mipai 'Etsitexi katini- uta'iwawiya: -¿Kemi'ane miki pihiki miyamitiuka'iyari mika'uyukatewiya? ¿Hakewa peyeika?"
+          },
+          {
+            "verse_number": 6,
+            "text": "'Etsitexi mipai katinita'eiya: -Mitatsi'aye'unie 'axamitiuka'iyari. 'Amani kanihikitini."
+          },
+          {
+            "verse_number": 7,
+            "text": "'Amani waikawa kaniutimani ti'aitame hixie meta 'uka ti'aitame hixie. Ti'aitame kananukukeni waikawa ha'ati, kananuyeyani makutsiiraiyetsie paratsiyuta 'ieti tiuhayewaka. Peru 'Amani retimaika kename ti'aitame kareiyehiwirienikekai, kaniuyuhayewa 'uka ti'aitame 'Etsitexi tawawirienike mireiyehiwirieniki mikamierieniki."
+          },
+          {
+            "verse_number": 8,
+            "text": "Kepauka ti'aitame hutarieka muwa munua 'ixiarari maxuawetsie, 'Etsitexi mexi yu'iparitsie 'akatei 'Amani 'auriena kaniukaweni. Miyatiuniereka, ti'aitame karima mipai kaniutayini: -Hiki 'akuxi matsi 'uka ti'aitame hamatia ti- huimiki ne'ixeiyakaku nekiita. Yapauka mipai 'utayiku ti'aitame, 'Amani yuhixie kaneutihiiyani."
+          },
+          {
+            "verse_number": 9,
+            "text": "Kaxiwuna titewati ti'uximayatsiriwame, mipai kaniutayini: -Kiye 'Amani kie kaneweni huta tewiyari heimana tamamata tsikuriyari 'utewiti. Mita'aitakai Maxirukeyu hetsiemieme meripaiti 'ahetsie mutanua. Ti'aitame mipai katiniuta'aita: -Mana xekenekaxu'i."
+          },
+          {
+            "verse_number": 10,
+            "text": "Mipai katiniuyini 'Amani kiyetsie kaniukawiyani Maxirukeyu hetsiemieme mita'aitakai. Mipai katiniuhaxiapieni ti'aitame miha'akai."
+          }
+        ]
+      },
+      {
+        "chapter_number": 8,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Miki tukaritsie ti'aitame 'Atsuheru 'uka ti'aitame 'Etsitexi 'Amani tipiinieya katiniyetuirieni, huriyutsixi miwaraye'uniekai. Maxirukeyu ti'aitame hixie kaninuani, 'Etsitexi titaxatiaku kename marieyatikai."
+          },
+          {
+            "verse_number": 2,
+            "text": "Ti'aitame yutseyu hanirayari kananutihina, 'Amani mekamakai, Maxirukeyu kaniu'iitiani. 'Etsitexi 'Amani mira'aitakaitsie Maxirukeyu pita katiniuhiritiani meta piiniteya."
+          },
+          {
+            "verse_number": 3,
+            "text": "Hiki tawarita 'Etsitexi ti'aitame hetsia kaniye'ani. Hixiena kanatiweni 'utatsuati, kanitawawirieni 'Amani 'Akaki nuiwarieya huriyutsixi kemitiwaru'aitaxi yamikatiyiniki."
+          },
+          {
+            "verse_number": 4,
+            "text": "Ti'aitame huru 'itsiyari 'Etsitexi kaniutserieni. Hiki 'anukukeka ti'aitame hixie,"
+          },
+          {
+            "verse_number": 5,
+            "text": "mipai kaniutayini: -Xika 'aixia penetimaika, xika 'aixia 'aneni keneyutemawieka nehamatia, mipai ketineu'aita mikahaye'atiarieniki huriyutsixi memikwi'iwakekai pemira'aitatsie naitsarie, 'Amani miti'utia Hamerata nu'aya, 'Akaki nuiwarieya."
+          },
+          {
+            "verse_number": 6,
+            "text": "Ne yanepikara'eriwakai memite'uka'eniwanikekai neteiterima. Nepikaheunierimikikai neteiterima memikwi'iwakekaitsie."
+          },
+          {
+            "verse_number": 7,
+            "text": "Ti'aitame 'Atsuheru 'uka ti'aitame 'Etsitexi meta huriyu tewiyari Maxirukeyu, mipai katiniwarutahiawe: -'Amani huriyutsixi miya miwaruyuriki 'ayumieme 'Etsitexi nepitiupitia piiniteya, mikita kiyetsie pukawiya."
+          },
+          {
+            "verse_number": 8,
+            "text": "Hikita xapa xekeneutawewi, ne kename nehaine, huriyutsixi wahetsiemieme kemixetinake, xekeneutseyuma ne nehaniraki. Xapatsie raka'utiariekame kename ne nehaine meta tseyumariekame nehaniraki, 'anari xewiti mikupatani pikayiweni."
+          },
+          {
+            "verse_number": 9,
+            "text": "Yapauka te'utiwamete ti'aitame hetsia miemete mekaniuta'inierieni. Hairieka metseritsie xeitewiyari heimana haika tukariyaritsie, tsiwani metseriyaritsie mekaniyuakaitini. Tinaka'utsieni naime Maxirukeyu huriyutsixi kemitiwaru'aitia, kuwexinaruritsixi meta memite'aitiarie xeitsienituyari heimana xeitewiyari heimana 'atahuta kwieyaritsie memitamakai, Hiriya meta Kutsi meye'atikaiti."
+          },
+          {
+            "verse_number": 10,
+            "text": "Maxirukeyu 'aitsika naka'utiani ti'aitame 'Atsuheru kename haine hanirayaki 'ititseyumaka, ti'aitame tupiritsiximama kaniwareutani'axiani naitsarie, kawayutsixi kurarutana miemete kwin- imieme memayiwawe wahetsie me'utekame."
+          },
+          {
+            "verse_number": 11,
+            "text": "Ti'aitame niukieya huriyutsixi kaniwarupitiani memuyukuxeirieniki meta memuyukihianiki kemi'ane memiwatakwini, para memiwakwiniki tsepa kemi'ane kwieyaritsie kiekatari xika mewakwikuni wa'iitama, watiiriyama meta wapiinite yupiinite memite'ayeitianiki."
+          },
+          {
+            "verse_number": 12,
+            "text": "Mipai memiteyurieniki naime kiekari mukumanetsie 'Atsuheru mira'aitakaitsie, huriyutsixi mekanitipini tamamata heimana haika tukariyariitsie, 'araxi metseriyaritsie."
+          },
+          {
+            "verse_number": 13,
+            "text": "Miki xapa 'ikiyaya naitsarie kwie mukumanetsie kaniyuhayewaxiamiki, yunaiti mekete'utamarieni kiekari mukumanetsie. Huriyutsixi memuyuha'aritiakaki miki tukariyatsie memiwaraye'unie memiwatakwiniki."
+          },
+          {
+            "verse_number": 14,
+            "text": "Tupiritsiximama, ti'aitame yatiwa'aitiakaku, yapauka mekanayekine kawayutsixi kwinimieme memayiwawe wahetsie me'uteti. Miki xapa kanikuxaxatsiwakaitini yaxeikiata Tsutsa kiekariyaritsie."
+          },
+          {
+            "verse_number": 15,
+            "text": "Maxirukeyu kaniwayeyani ti'aitame hixie 'aixia rekemariti muyuawi, mutuxa meta huru kurunayari 'ayeukame 'anamati, meta rinu 'ixuriki- yari tairaiyeme 'anatatiti. Tsutsa kiekariyaritsie mekaniutihiwakaitini meyutemamawieti."
+          },
+          {
+            "verse_number": 16,
+            "text": "Huriyutsixi wahetsiemieme miki pihekiariyatikai meta temawierika tukariyari patia, memutihiwaniki 'aixia 'anemeki."
+          },
+          {
+            "verse_number": 17,
+            "text": "Xexuime kwieyaritsie meta kiekarite mukumanetsie hakewa xapate meye'axekai ti'aitame niukieya, mana temawierika kanixuawekaitini mekaniyunitiakaitini hipame kwieyaritetsie teiteri huriyutsixi 'ixiarari mewewieti. Meyumiireti teiteri mekanayuyeitiani memamati."
+          }
+        ]
+      },
+      {
+        "chapter_number": 9,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Ti'aitame xapaya kaniuye'axianikekaitini tamamata heimana haika tukari, tamamata heimana huta metseriyaritsie, 'araxi metseriyari mihiki. Huriyutsixi memiwaraye'unie mekanitakwewiekaitini miki tukaritsie memiwakwiniki, peru xapate kaniuyupataxiani huriyutsixi mekateniwa'aitiakaitini kemi'ane memiwakwikukai."
+          },
+          {
+            "verse_number": 2,
+            "text": "'Atsuheru mira'aita memite'awiya, huriyutsixi mekaniyuxeiriekaitini yukiekaritsie memiwatakwiniki 'iya memiwaraye'uniekai. Nixewiti miwatakwiniki pikayuwairiyakai yunaiti mepimamakai."
+          },
+          {
+            "verse_number": 3,
+            "text": "Yunaiti naitsarie kwieyaritsie mekaniwa- te'uximayatamete meta ti'aitame parewiwamete, kuwexinaruritsixi, huriyutsixi parewiekaitini, Maxirukeyu memakati."
+          },
+          {
+            "verse_number": 4,
+            "text": "Maxirukeyu 'aixia tiyurieneti kanayuyeitiani paratsiyuta. Nikuxaxatsiwakaitini naitsarie kwiepa waikawa mariweti kanayeiximekaitini."
+          },
+          {
+            "verse_number": 5,
+            "text": "Huriyutsixi 'ixiparaki mekaniwarukwini yunaime memiwaraye'uniekai. Mekaniwarakumaweriya, yamekateniuyurieni kemitiwanake memiwaxani'eriekai wahetsiemieme."
+          },
+          {
+            "verse_number": 6,
+            "text": "Tsutsa kiekariteyaritsie 'auxiwime tsienituyari teiteri mekaniwarukwini."
+          },
+          {
+            "verse_number": 7,
+            "text": "Meta mekaniukwi'iwa Raripuni, 'Atsipata,"
+          },
+          {
+            "verse_number": 8,
+            "text": "Purata, 'Arariyaxi, 'Arirata,"
+          },
+          {
+            "verse_number": 9,
+            "text": "Paritsanirata, Parimatsita, 'Aritsai, 'Arirahi, meta Wahitsata,"
+          },
+          {
+            "verse_number": 10,
+            "text": "tamamata memihikitikai 'Amani niwemama Hamerata nu'aya, huriyutsixi memiwaraye'uniekai. Peru piiniteya mepikatehepi."
+          },
+          {
+            "verse_number": 11,
+            "text": "Miki tukaritsie ti'aitame retimaika keyupaimeti memukwi'iwaxi Tsutsa kiekariteyaritsie,"
+          },
+          {
+            "verse_number": 12,
+            "text": "'uka ti'aitame 'Etsitexi mipai katiniutahiawe: -Huriyutsixi 'auxiwime tsienituyari memiwarukwi, meta tamamata 'Amani niwemama Tsutsa kiekariyaritsie, matsi kiekari mamanetikatsie kememiteheyurie. Kenetineu- taxatia titapereuyehiwa, yanepitikayani. ¿Tita tawarita pereuyehiwa? Yapitiyini kepemitayini."
+          },
+          {
+            "verse_number": 13,
+            "text": "'Etsitexi mipai kaniutayini: -Ti'aitame xika matsinakeni, huriyutsixi Tsutsa kiekatari keniwarupitia 'uxa'ake memitetahayewaki hiki mieme kepemitiwarupitia, meta keniwarupitia tamamata 'Amani niwemama kiyexitsie memikaxuiyaxianiki."
+          },
+          {
+            "verse_number": 14,
+            "text": "Ti'aitame mipai katiniuta'aita. Tsutsa kiekariyaritsie xapa kaniyetuiyani, tamamata me'aye'ukame 'Amani niwemama kiyexitsie memikaxuiyaxianiki."
+          },
+          {
+            "verse_number": 15,
+            "text": "Huriyutsixi Tsutsa kiekariyaritsie mekani- uyukuxeirieni tamamata heimana nauka tukariyaritsie, 'araxi metseriyaritsie, 'ana mekaniwarukwini haika tsienituyari teiteri, peru wapiinite mepikatehepi."
+          },
+          {
+            "verse_number": 16,
+            "text": "Metatsiere, huriyutsixi kwie mamanetikatsie ti'aitame mira'aitatsie mekaniuyukuxeiriexiani yuhetsie memitanuaniki memiwaraye'unie wahepaitsita. Haika tewiyari heimana tamamata heimana 'auxiwi miriyari memiwaxani'eriekai mekaniwarukwini, mikita wapiinite mepikateheti."
+          },
+          {
+            "verse_number": 17,
+            "text": "Miki katiniuyini tamamata heimana haika tukariyaritsie 'araxi metseriyaritsie. Tamamata tukariyaritsie heimana nauka mekaniuka'uxipieni, 'ixiarari mekaniuwewieni."
+          },
+          {
+            "verse_number": 18,
+            "text": "Huriyutsixi Tsutsa kiekatari tamamata heimana haika tukaritsie memuyuxeiri meta tamamata heimana nauka, tamamata heimana 'auxiwiriekatsie mekaniuka'uxipieni, 'ixiarari mekaniuwewieni meyutemamawieti."
+          },
+          {
+            "verse_number": 19,
+            "text": "'Ayumieme huriyutsixi naitsarie kiekaritsie memeutitekai kiekari 'etsimiyeyeutsie, 'ixiarari mekaniutiwewiwakaitini tamamata heimana nauka tukaritsie 'araxi metseriyaritsie, temawierika tukariyari meta 'ixiarari tukari, 'ana yunaiti mekateniyutamikwakaitini."
+          },
+          {
+            "verse_number": 20,
+            "text": "Hiki Maxirukeyu 'iki naime raka'utiaka kemitiuyi, xapate kaneutani'axiani yunaime huriyutsixi wahetsia, 'ateewa paiti memetitekai wahetsia meta 'ahurawa mitiuyehanetsie 'Atsuheru mira'aitakaitsie,"
+          },
+          {
+            "verse_number": 21,
+            "text": "mipai tiwa'aitiati xeiwiyari 'anuyeyeikakaku memitiwewiwaniki 'ixiarari tamamata heimana nauka tukaritsie meta 'auxiwirieka tukariyaritsie 'araxi metseriyaritsie,"
+          },
+          {
+            "verse_number": 22,
+            "text": "'ana memuxinarieki huriyutsixi hipati mewaraye'uniekaku kepauka wahiwerika temawierika matia, kepauka meta wakukwiniya temawierika 'ixiarariyari patia. 'Ayumieme peuyewekai memitiwewiwaniki temawierika tukariyari meta 'ixiarari, yu'ikwai meta hipame memikatehexeiya metewatamikwati, tixaiti memikatehexeiya metewakumikwati. Mipai huriyutsixi meteku'eriwati"
+          },
+          {
+            "verse_number": 23,
+            "text": "yuyeiyari mekanayeitiani 'ixiarari me'utiwewiwati mekanakine, Maxirukeyu kemitiwaraka'utsiriekai mete'aye'atiwati mepaki."
+          },
+          {
+            "verse_number": 24,
+            "text": "'Amani Hamerata nu'aya, 'Akaki nuiwarieya, huriyutsixi miwaraye'unie, naime miki katiniuyuriekaitini huriyutsixi memikwi'iwaki puri kaniuwewiekaitini wahetsiemieme, -tatsiari kemi'ane mirayu'iwa- miwahixiyatsitianiki miwakwiniki."
+          },
+          {
+            "verse_number": 25,
+            "text": "Peru kepauka 'Etsitexi ti'aitame hixie mutaniu, miki xapatsie mipai katiniu'aita kename 'Amani kemitiu'aitaxi huriyutsixi wahetsiemieme hetsiena tinakekekai, miki meta niwemama kiyetsie mekekaxuiyaxianike."
+          },
+          {
+            "verse_number": 26,
+            "text": "Mipai tiuyiku miki tukaritsie katini- uteriwarieni Purimi, puri hetsie 'ayehaniekame. Kemireku'uxa xapatsie, kememite'unenierixi kememite'anuyeki,"
+          },
+          {
+            "verse_number": 27,
+            "text": "hiki huriyutsixi mekaniuyu'enieni yuhetsiemieme meta yuniwema wahetsiemieme, para yunaiti meyuxewiti memitiwewiwaniki xeiwiyari 'anuyeyeikakaku memikatehayewaniki, kemireuku'uxa miki tukaritsie."
+          },
+          {
+            "verse_number": 28,
+            "text": "Para yunaiti nuiwarite meta naitsarie kwieyaritetsie meta yunaiti teiteri kiekaritetsie, memitewiwaniki miki tukaritsie xeiwiyari 'anuyeyeikakaku. Miki Purimi tukariyari huriyutsixi yamepite'itiwewiwanikekai, memikaheiyehipaniki meta waxiiyarima."
+          },
+          {
+            "verse_number": 29,
+            "text": "'Uka ti'aitame 'Etsitexi 'Awikahiri niweya, huriyu tewiyari Maxirukeyu matia, mekatenaka'utiani meteha'aitati hutarieka xapa Purimi hetsiemieme."
+          },
+          {
+            "verse_number": 30,
+            "text": "Miki xapa kaneutani'axiani yunaime huriyutsixi wahetsia xeitsienituyari heimana xeitewiyari heimana 'atahuta kwieyaritsie, 'Atsuheru pitiwa'aitiakai 'aixia 'anekameki meta yuriki haiti,"
+          },
+          {
+            "verse_number": 31,
+            "text": "Purimi 'ixiarariyari mematinenetiwaniki kemi'ane tukariyaritsie, kememaitikatei huriyu tewiyari Maxirukeyu 'uka ti'aitame 'Etsitexi matia, kememitekuxatakai yuhetsiemieme meta yuniwema wahetsiemieme, memiyuhakiekaitsie memuyuhiweriekaitsie meta."
+          },
+          {
+            "verse_number": 32,
+            "text": "Kemitiu'aitaxi 'Etsitexi Purimi hetsiemieme, mipai katinaka'utiarieni xapatsie."
+          }
+        ]
+      },
+      {
+        "chapter_number": 10,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Ti'aitame 'Atsuheru tumini kani- warutawawirieni naitsarie mira'aitatsie meta haramara hixiapa kwie miyemanetsie kiekatari memiteyukutuayaniki."
+          },
+          {
+            "verse_number": 2,
+            "text": "Naiti Maxirukeyu kemitiu'aitaxi tirikaiyemeki, kemitiuyi xatsikayari 'aye'ati mariweti kemiratia ti'aitame 'iparewiekaku, naiti kanaka'uka te'aitamete waxapatsie, Meriya meta Peritsiya waxapayaritsie."
+          },
+          {
+            "verse_number": 3,
+            "text": "Huriyu tewiyari Maxirukeyu mariweti kanayani yuteiterima wahetsiemieme, hutarieka mieme ti'aitame kanayani 'Atsuheru 'utia. Yumiireti 'aixia me mekatenixeiyakaitini, yuteiterima miwaparewieka minakekaiki 'aixia 'anemeki memu'uwaniki."
+          }
+        ]
+      }
+    ]
+  }
+}

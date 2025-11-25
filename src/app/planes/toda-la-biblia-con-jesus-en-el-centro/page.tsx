@@ -7,13 +7,13 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Import all necessary bible books
-import gn from '@/lib/bible/gn.json';
-import ex from '@/lib/bible/ex.json';
-import is from '@/lib/bible/is.json';
-import rm from '@/lib/bible/rm.json';
-import jo from '@/lib/bible/jo.json';
-import hb from '@/lib/bible/hb.json';
+// Import all necessary bible_rvr books
+import gn from '@/lib/bible_rvr/gn.json';
+import ex from '@/lib/bible_rvr/ex.json';
+import is from '@/lib/bible_rvr/is.json';
+import rm from '@/lib/bible_rvr/rm.json';
+import jo from '@/lib/bible_rvr/jo.json';
+import hb from '@/lib/bible_rvr/hb.json';
 
 const bibleData: { [key: string]: any } = {
     'génesis': gn,

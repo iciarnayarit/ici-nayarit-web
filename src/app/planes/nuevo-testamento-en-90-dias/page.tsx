@@ -7,34 +7,34 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Import all New Testament bible books
-import mt from '@/lib/bible/mt.json';
-import mk from '@/lib/bible/mk.json';
-import lk from '@/lib/bible/lk.json';
-import jo from '@/lib/bible/jo.json';
-import act from '@/lib/bible/act.json';
-import rm from '@/lib/bible/rm.json';
-import co1 from '@/lib/bible/1-corinthians.json';
-import co2 from '@/lib/bible/2-corinthians.json';
-import gl from '@/lib/bible/gl.json';
-import eph from '@/lib/bible/eph.json';
-import ph from '@/lib/bible/ph.json';
-import col from '@/lib/bible/colossians.json';
-import th1 from '@/lib/bible/1-thessalonians.json';
-import th2 from '@/lib/bible/2-thessalonians.json';
-import ti1 from '@/lib/bible/1-timothy.json';
-import ti2 from '@/lib/bible/2-timothy.json';
-import tt from '@/lib/bible/tt.json';
-import phm from '@/lib/bible/phm.json';
-import hb from '@/lib/bible/hb.json';
-import jm from '@/lib/bible/jm.json';
-import pe1 from '@/lib/bible/1-peter.json';
-import pe2 from '@/lib/bible/2-peter.json';
-import jn1 from '@/lib/bible/1-john.json';
-import jn2 from '@/lib/bible/2-john.json';
-import jn3 from '@/lib/bible/3-john.json';
-import jd from '@/lib/bible/jd.json';
-import re from '@/lib/bible/re.json';
+// Import all New Testament bible_rvr books
+import mt from '@/lib/bible_rvr/mt.json';
+import mk from '@/lib/bible_rvr/mk.json';
+import lk from '@/lib/bible_rvr/lk.json';
+import jo from '@/lib/bible_rvr/jo.json';
+import act from '@/lib/bible_rvr/act.json';
+import rm from '@/lib/bible_rvr/rm.json';
+import co1 from '@/lib/bible_rvr/1-corinthians.json';
+import co2 from '@/lib/bible_rvr/2-corinthians.json';
+import gl from '@/lib/bible_rvr/gl.json';
+import eph from '@/lib/bible_rvr/eph.json';
+import ph from '@/lib/bible_rvr/ph.json';
+import col from '@/lib/bible_rvr/colossians.json';
+import th1 from '@/lib/bible_rvr/1-thessalonians.json';
+import th2 from '@/lib/bible_rvr/2-thessalonians.json';
+import ti1 from '@/lib/bible_rvr/1-timothy.json';
+import ti2 from '@/lib/bible_rvr/2-timothy.json';
+import tt from '@/lib/bible_rvr/tt.json';
+import phm from '@/lib/bible_rvr/phm.json';
+import hb from '@/lib/bible_rvr/hb.json';
+import jm from '@/lib/bible_rvr/jm.json';
+import pe1 from '@/lib/bible_rvr/1-peter.json';
+import pe2 from '@/lib/bible_rvr/2-peter.json';
+import jn1 from '@/lib/bible_rvr/1-john.json';
+import jn2 from '@/lib/bible_rvr/2-john.json';
+import jn3 from '@/lib/bible_rvr/3-john.json';
+import jd from '@/lib/bible_rvr/jd.json';
+import re from '@/lib/bible_rvr/re.json';
 
 const bibleData: { [key: string]: any } = {
     'mateo': mt, 'marcos': mk, 'lucas': lk, 'juan': jo, 'hechos': act, 'romanos': rm,

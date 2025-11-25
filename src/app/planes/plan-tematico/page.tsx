@@ -7,18 +7,18 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Import all bible books
-import gn from '@/lib/bible/gn.json';
-import hb from '@/lib/bible/hb.json';
-import jm from '@/lib/bible/jm.json';
-import mt from '@/lib/bible/mt.json';
-import lk from '@/lib/bible/lk.json';
-import act from '@/lib/bible/act.json';
-import jo from '@/lib/bible/jo.json';
-import rm from '@/lib/bible/rm.json'; // Import missing rm
-import eph from '@/lib/bible/eph.json';
-import prv from '@/lib/bible/prv.json';
-import co1 from '@/lib/bible/1-corinthians.json';
+// Import all bible_rvr books
+import gn from '@/lib/bible_rvr/gn.json';
+import hb from '@/lib/bible_rvr/hb.json';
+import jm from '@/lib/bible_rvr/jm.json';
+import mt from '@/lib/bible_rvr/mt.json';
+import lk from '@/lib/bible_rvr/lk.json';
+import act from '@/lib/bible_rvr/act.json';
+import jo from '@/lib/bible_rvr/jo.json';
+import rm from '@/lib/bible_rvr/rm.json'; // Import missing rm
+import eph from '@/lib/bible_rvr/eph.json';
+import prv from '@/lib/bible_rvr/prv.json';
+import co1 from '@/lib/bible_rvr/1-corinthians.json';
 
 const bibleData: { [key: string]: any } = {
     'génesis': gn,

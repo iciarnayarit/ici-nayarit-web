@@ -7,15 +7,15 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Import all necessary bible books
-import jo from '@/lib/bible/jo.json';
-import ps from '@/lib/bible/ps.json';
-import prv from '@/lib/bible/prv.json';
-import eph from '@/lib/bible/eph.json';
-import act from '@/lib/bible/act.json';
-import ph from '@/lib/bible/ph.json';
-import rm from '@/lib/bible/rm.json';
-import gn from '@/lib/bible/gn.json'; // For Genesis 3
+// Import all necessary bible_rvr books
+import jo from '@/lib/bible_rvr/jo.json';
+import ps from '@/lib/bible_rvr/ps.json';
+import prv from '@/lib/bible_rvr/prv.json';
+import eph from '@/lib/bible_rvr/eph.json';
+import act from '@/lib/bible_rvr/act.json';
+import ph from '@/lib/bible_rvr/ph.json';
+import rm from '@/lib/bible_rvr/rm.json';
+import gn from '@/lib/bible_rvr/gn.json'; // For Genesis 3
 
 const bibleData: { [key: string]: any } = {
     'juan': jo,

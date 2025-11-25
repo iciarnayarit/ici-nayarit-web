@@ -7,11 +7,11 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Import all bible books
-import mt from '@/lib/bible/mt.json';
-import mk from '@/lib/bible/mk.json';
-import lk from '@/lib/bible/lk.json';
-import jo from '@/lib/bible/jo.json';
+// Import all bible_rvr books
+import mt from '@/lib/bible_rvr/mt.json';
+import mk from '@/lib/bible_rvr/mk.json';
+import lk from '@/lib/bible_rvr/lk.json';
+import jo from '@/lib/bible_rvr/jo.json';
 
 const bibleData: { [key: string]: any } = {
     'mateo': mt,

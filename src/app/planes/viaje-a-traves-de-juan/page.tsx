@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import jo from '@/lib/bible/jo.json';
+import jo from '@/lib/bible_rvr/jo.json';
 import { CheckCircle2, Bookmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';

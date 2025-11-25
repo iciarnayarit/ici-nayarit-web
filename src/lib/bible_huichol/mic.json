@@ -1,0 +1,42 @@
+{
+  "book": {
+    "name": "Mikeyaxi",
+    "alternate_names": ["Miqueas", "Micah"],
+    "language": "Huichol (Wixarika)",
+    "translation_info": {
+      "title": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKƗ",
+      "edition": "2020",
+      "translator": "Wycliffe Bible Translators, Inc.",
+      "copyright_year": "2020",
+      "copyright_holder": "Wycliffe Bible Translators, Inc.",
+      "license": "Creative Commons License: Attribution-Noncommercial-No Derivatives Works (CC BY-NC-ND 4.0)"
+    },
+    "chapters": [
+      {
+        "chapter_number": 1,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "'Iki niuki kanihikitini Yawé Mikeyaxi Muretseti kiekame kemitiutaxatia, kepauka memite'aitakaitsie Kutani, 'Akatsi meta 'Etsekiyaxi, Kura kwieyaritsie te'aitamete. 'Iki kanihikitini kemitiunieritiarie miki Tsamariya hepaitsita meta Kerutsareme hepaitsita."
+          },
+          {
+            "verse_number": 2,
+            "text": "Yunaiti teiteri, xekeneu'enana, kwie keneu'ena meta yunaiti hetsiena xemite'u'uwa. Yutuki mipatsieta paiti Ti'aitame, Yawé naimekimiyiwe, kaninierekamiki xeme ke'axaxemiteyurie."
+          },
+          {
+            "verse_number": 3,
+            "text": "Neuxei. Yawé yukiita kanayeyeiximeniri, 'akanakamieniri meta kaniumieni hiri 'amanutitititsie."
+          },
+          {
+            "verse_number": 4,
+            "text": "Hiri heima makekatsie kanitipenikeni, xirika taiki mukwanani hepai, kwie mayeweweri hixiata kanitsanikeni, haa mitirikaiye hixiata mitsana hepai."
+          },
+          {
+            "verse_number": 5,
+            "text": "'Iki naiti miya katiniyimiki Kakuwu nuiwarimama 'axamemite'uyuriki, 'ixaheritsixi teiteriyari 'axamemite'uyuriki. Tsamariya kanihikitini ya'aneme meutiwiwiexia 'axa'aneme meutiwiwiexia"
+          }
+        ]
+      }
+    ]
+  }
+}

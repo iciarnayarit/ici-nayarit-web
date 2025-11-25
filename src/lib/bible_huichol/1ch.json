@@ -1,0 +1,651 @@
+{
+  "book_title": "1 Kemitiuyi (1 Crónicas)",
+  "language": "Huichol (Wixárika)",
+  "title_spanish": "Primer Libro de Crónicas (Huichol)",
+  "chapters": [
+    {
+      "chapter_number": 1,
+      "verses": [
+        {
+          "verse_number": 1,
+          "text": "'Arani, Tseti, 'Enuxi,"
+        },
+        {
+          "verse_number": 2,
+          "text": "Kainahani, Marareri, Kareri,"
+        },
+        {
+          "verse_number": 3,
+          "text": "'Enuki, Matutsareni, Rameki,"
+        },
+        {
+          "verse_number": 4,
+          "text": "Nuhexi. Nuhexi nuiwarimama (1Kem 1:5-23 - Tsut 10:2-31, 11:10-27) Nuhexi niwemama: Tsemi, Kami meta Kapeti."
+        },
+        {
+          "verse_number": 5,
+          "text": "Kapeti niwemama mepitetetewakai: Kumexi, Makuki, Marahi, Kawani, Tuwari, Metseki meta Tiratsi."
+        },
+        {
+          "verse_number": 6,
+          "text": "Kumexi niwemama: 'Atsikenatsi, Xipati meta Tukaxima."
+        },
+        {
+          "verse_number": 7,
+          "text": "Kawani niwemama: 'Eritsaha, Taritsi, Tsipire meta Xuranini."
+        },
+        {
+          "verse_number": 8,
+          "text": "Kami niwemama mepitetewakai: Kutsi, Mitsirahini, Puti meta Kanani."
+        },
+        {
+          "verse_number": 9,
+          "text": "Kutsi niwemama mepitetewakai: Tsewa, Kawira, Tsaweta, Xahama meta Tsaweteka. Xakama niwemama mekanakine: Tsawaha meta Rerani."
+        },
+        {
+          "verse_number": 10,
+          "text": "Kutsi Nimiruri paapaya kanayani, miki tewi kwinimieme reuyutamieweti kanayani 'ena kwiepa."
+        },
+        {
+          "verse_number": 11,
+          "text": "Mitsirahini wa'ukiyari kanayani rureutsixi, 'anameutsixi, rehawitsixi, natuhitsixi,"
+        },
+        {
+          "verse_number": 12,
+          "text": "meta paturutseutsixi, katsurukitsixi meta katuritsixi miki piritsiteutsixi wa'ukiyarima mepaki."
+        },
+        {
+          "verse_number": 13,
+          "text": "Kanani Tsiruni paapaya kanayani matiarieya, meta Heti,"
+        },
+        {
+          "verse_number": 14,
+          "text": "meta mepixiiyarimamatikai kewutseutsixi,"
+        },
+        {
+          "verse_number": 15,
+          "text": "'amuxeutsixi, keriketseutsixi, heweutsixi, 'aratseutsixi, tsineutsixi,"
+        },
+        {
+          "verse_number": 16,
+          "text": "'axiwareutsixi, tsemareutsixi meta kamatitsixi."
+        },
+        {
+          "verse_number": 17,
+          "text": "Tsemi niwemama: 'Erami, 'Atsuxi, 'Axipatsari, Ruri meta 'Arami. 'Arami niwemama: 'Utsi, Huri, Ketexi meta Metseki."
+        },
+        {
+          "verse_number": 18,
+          "text": "'Axipatsari Tseraki kanipaapayatikaitini, mikita 'Ewexi paapaya patia."
+        },
+        {
+          "verse_number": 19,
+          "text": "Meta 'Ewexi yuhutame yuniwema kaniwarayexeiya: mexiakame Pereki pititewakai, miki 'utinuiwaku teiteri yuxaita memeukuyaxixiaki yayupapaimeti. Pereki mutaya pititewakai Kutani."
+        },
+        {
+          "verse_number": 20,
+          "text": "Kutani 'Arimurari paapaya patia meta Tserepi, Katsaxi-Maweti, Yeraki,"
+        },
+        {
+          "verse_number": 21,
+          "text": "Harurani, 'Utsari, Rikira"
+        },
+        {
+          "verse_number": 22,
+          "text": "'Uwari, 'Awimaheri, Tsawa,"
+        },
+        {
+          "verse_number": 23,
+          "text": "'Upixi, Kawira meta Kuwawi. 'Iki yunaiti Kutani mekaniniwemamatini."
+        },
+        {
+          "verse_number": 24,
+          "text": "Tsemi, 'Axipatsari, Tseraki"
+        },
+        {
+          "verse_number": 25,
+          "text": "'Ewexi, Pereki, Xehu,"
+        },
+        {
+          "verse_number": 26,
+          "text": "Tseruki, Nakuxi, Teraki"
+        },
+        {
+          "verse_number": 27,
+          "text": "meta 'Apirami, 'Apirahami mititewatatsiere."
+        },
+        {
+          "verse_number": 28,
+          "text": "'Apirahami niwemama: 'Itsahaki meta 'Itsimaheri."
+        },
+        {
+          "verse_number": 29,
+          "text": "'Itsimaheri niwemama: Newayuti mexiakameya patia, Tseraxi, 'Ariweheri, Miwitsani,"
+        },
+        {
+          "verse_number": 30,
+          "text": "Mitsima, Rumaha, Matsa, Haraha, Temaha,"
+        },
+        {
+          "verse_number": 31,
+          "text": "Ketuxi, Napitsi meta Tserema. Miki mepihiki 'Itsimaheri niwemama."
+        },
+        {
+          "verse_number": 32,
+          "text": "'Apirahami niwemama Tsetura muwarayexei 'iparewiwameya 'iyaddWidget"
+        },
+        {
+          "verse_number": 33,
+          "text": "Mariyani niwemama: 'Epa, 'Epexi, Kanuki, 'Awiraha meta 'Eriraha. Yunaiti miki Tsetura niwemama mepihiki."
+        },
+        {
+          "verse_number": 34,
+          "text": "'Apirahami meta 'Itsahaki paapaya kanayani. 'Itsahaki niwemama mekanakine 'Etsahu meta 'Ixaheri."
+        },
+        {
+          "verse_number": 35,
+          "text": "'Etsahu niwemama: 'Eripaxi, Xehueri, Kehutsi, Karani meta Kure."
+        },
+        {
+          "verse_number": 36,
+          "text": "'Eripaxi niwemama: Temani, 'Umaxi, Tsepuhu, Katani meta Kenatsi, Timina meta 'Amareki."
+        },
+        {
+          "verse_number": 37,
+          "text": "Xehueri niwemama: Nakati, Tsera, Tsama meta Mitsaha."
+        },
+        {
+          "verse_number": 38,
+          "text": "Tsehixi niwemama: Rutani, Tsuwari, Tsiwehuni, 'Ahana, Ritsuni, 'Etsexi meta Ritsani."
+        },
+        {
+          "verse_number": 39,
+          "text": "Rutani niwemama: Huri meta Humani. Rutani Timina pitaruyatikai."
+        },
+        {
+          "verse_number": 40,
+          "text": "Tsuwari niwemama: 'Ariwani, Manakati, 'Ewari, Tsepuhu meta 'Unami. Tsiwehuni niwemama: 'Ayaha meta 'Ahana."
+        },
+        {
+          "verse_number": 41,
+          "text": "'Ahana nu'aya kanayani Ritsuni. Ritsuni niwemama: 'Amirani, 'Etsiwani, 'Itirani meta Kerani."
+        },
+        {
+          "verse_number": 42,
+          "text": "'Etsexi niwemama: Wirani, Tsawani meta Yakani. Ritsani niwemama: 'Utsi meta 'Arahani."
+        },
+        {
+          "verse_number": 43,
+          "text": "Te'aitamete 'ena memika'uxa kwieyaritsie 'Erumi mekateniuta'aita, 'ixaheritsixi ti'aitame mekahexeiyakaku: 'akuxi Wera Wehuxi nu'aya, kiekarieya Rinawa katinitewakaitini."
+        },
+        {
+          "verse_number": 44,
+          "text": "Kepauka mumi Wera, 'utimanata katiniuta'aita Kuwawi Tsera nu'aya, Wutsira kiekametiti."
+        },
+        {
+          "verse_number": 45,
+          "text": "Kepauka Kuwawi mumi, 'utimana katiniuta'aita Kutsani, miki Temani kwieyaritsie pikiekametikai."
+        },
+        {
+          "verse_number": 46,
+          "text": "Kepauka Kutsani mumi, 'utimana katiniuta'aita Harari Werari nu'aya, miki mariyanitsixi kaniwara'iwa Muhawi kwieyaritsie. Kiekarieya katinitewakaitini 'Awiti."
+        },
+        {
+          "verse_number": 47,
+          "text": "Kepauka Harari mumi, 'utimana katiniuta'aita Tsamira, Matsireka kiekame."
+        },
+        {
+          "verse_number": 48,
+          "text": "Kepauka Tsamira mumi, 'utimana katiniuta'aita Tsahuri, Xekuwuti mirakutewatsie kiekame 'Eupirate hatuxameyari tetsita."
+        },
+        {
+          "verse_number": 49,
+          "text": "Kepauka Tsahuri mumi, 'utimana katiniuta'aita Wahari-Kanani 'Akuwuxi nu'aya."
+        },
+        {
+          "verse_number": 50,
+          "text": "Kepauka Wahari-Kanani mumi, 'utimana katiniuta'aita Harari. Kiekarieya katinitewakaitini Pahu, 'iyaya Mehitaweri pititewakai, Matereri nu'aya meta Metsawi teukarieya."
+        },
+        {
+          "verse_number": 51,
+          "text": "Kepaukata Harari mumi, 'Erumi kwieyaritsie mekateniuta'aita 'iki 'itsikate: Timina, 'Ariwa, Keteti,"
+        },
+        {
+          "verse_number": 52,
+          "text": "'Ahuriwama, 'Eraha, Pinuni,"
+        },
+        {
+          "verse_number": 53,
+          "text": "Kenatsi, Temani, Miwitsaxi,"
+        },
+        {
+          "verse_number": 54,
+          "text": "Makirieri meta 'Irami. mekanakine 'Erumi kwieyaritsie."
+        }
+      ]
+    },
+    {
+      "chapter_number": 2,
+      "verses": [
+        {
+          "verse_number": 1,
+          "text": "'Ixaheri niwemama mekanihikitini: Xuweni, Tsimehuni, Rewi, Kura, 'Itsakaxi, Tsawuruni,"
+        },
+        {
+          "verse_number": 2,
+          "text": "Rani, Kutse, Wenikamini, Nepitahari, Kahari meta 'Atsexi."
+        },
+        {
+          "verse_number": 3,
+          "text": "Kura niwemama: 'Exi, 'Unani meta Tseraxi. 'Iki meyuhaikame 'uka kananeu tewiyari Tsuhaki niweya hetsie puwarayexei. 'Exi Kura pimatiarieyatikai, miki Yawé kemikatinake pitiuyuri, hiki Yawé tukarieya pinawairi."
+        },
+        {
+          "verse_number": 4,
+          "text": "Tamaxi, Kura mu'eya, tiri yuhutame kaniwarayexeiya Kura hetsiemieme: Paretsi meta Tsera. Hiki meyunaiti Kura meyu'auxiwime kaniwarayexeiya tiri."
+        },
+        {
+          "verse_number": 5,
+          "text": "Paretsi niwemama: Ketsiruni meta Kamuri."
+        },
+        {
+          "verse_number": 6,
+          "text": "Tsera niwemama meyunaiti meyu'auxiwiti mepaki: Tsimiri, 'Etani, Hemani, Karikuri meta Raxira."
+        },
+        {
+          "verse_number": 7,
+          "text": "Karimi nu'aya 'Akaxi* kanayani, tatsiari miki 'axamitiuyuri 'Ixaheri hetsiemieme Kakaiyari 'aitsikaya mika'anu'eni naime kememiteka'unakekai."
+        },
+        {
+          "verse_number": 8,
+          "text": "'Etani nu'aya 'Atsariyaxi kanayani."
+        },
+        {
+          "verse_number": 9,
+          "text": "Ketsiruni niwemama: Kerameri, Xami meta Keruwahi."
+        },
+        {
+          "verse_number": 10,
+          "text": "Xami 'Aminarawi paapaya kanayani, mikita Nahatsuni paapaya kanayani, Kura nuiwarimama wa'ukiyari matia."
+        },
+        {
+          "verse_number": 11,
+          "text": "Nahatsuni Tsarimuni pupaapayatikai, mikita Puhuxi paapaya patia."
+        },
+        {
+          "verse_number": 12,
+          "text": "Puhuxi 'Uweri paapaya patia, mikita 'Itsahi paapaya patia."
+        },
+        {
+          "verse_number": 13,
+          "text": "Kitsahi nu'aya mexiakame patia 'Eriyáwi, hutarieka mieme 'Awinarawi, hairieka mieme Tsimaha,"
+        },
+        {
+          "verse_number": 14,
+          "text": "naurieka mieme Natanaheri, 'auxiwirieka mieme Xarahi,"
+        },
+        {
+          "verse_number": 15,
+          "text": "'ataxewirieka mieme 'Utseni, 'atahutarieka mieme Rawiri."
+        },
+        {
+          "verse_number": 16,
+          "text": "Wa'iwama 'ukari mekatenitetewakaitini Tsariwiya meta 'Awikahiri. Tsariwiya niwemama meyuhaikati mekanakine: 'Awitsahi, Kuhawi meta 'Atsaheri."
+        },
+        {
+          "verse_number": 17,
+          "text": "'Awikahiri 'Amatsaha mamaaya kanayani Ketexi matia memeyexei 'itsimaheri tewiyari."
+        },
+        {
+          "verse_number": 18,
+          "text": "Karewi Ketsiruni nu'aya türi kaniwarayexeiya yu'iitama 'Atsuwa meta Kerihuti wahamatia. 'Iki niwemama mekanakine: Ketsexi, Tsuwawi meta 'Axiruni."
+        },
+        {
+          "verse_number": 19,
+          "text": "Kepauka 'Atsuwa mumi, Karewi 'Epirata kaniutiwitini, miki matiata yuniwe Kuxi kanayexeiya."
+        },
+        {
+          "verse_number": 20,
+          "text": "Kuxi 'Urihi paapaya kanayani, mikita Wetsareri paapaya kanayani."
+        },
+        {
+          "verse_number": 21,
+          "text": "Kepauka Ketsiruni haika tewiyari wiyari mexeiyakai, Makixi nu'aya kaniutiwitini, Karaha paapaya, miki matia kaneyexeiya yuniwe Tsekuwi."
+        },
+        {
+          "verse_number": 22,
+          "text": "Tsekuwi Yahixi paapaya kanayani, miki xeitewiyari heimana haika kiekariyari katinipinieyatikaitini Karaha kwieyaritsie."
+        },
+        {
+          "verse_number": 23,
+          "text": "Peru Ketsuxi meta 'Arami mekaninawairieni Yahixi kiekariteya meta Kenati kiekariteya, metatsiere kiekarite wa'aurie mamanetikatei. Naiti munawaiyarie kanayani haika tewiyari kiekarite. Miki meyunaiti Makixi nuiwarimama mepihikitikai, Karaha paapaya."
+        },
+        {
+          "verse_number": 24,
+          "text": "'Arike Ketsiruni 'umiku Karewi-'Epirata mirakutewatsie, 'iyaya 'Awiyaxi, 'Atsuxi kanayexeiya, mikita Tekuha paapaya kanayani."
+        },
+        {
+          "verse_number": 25,
+          "text": "Kerameri niwemama, Ketsiruni matiarieya, mekanakine: matiarieya Xami, Wuna, 'Ureni, 'Utseni meta 'Ahiyaxi."
+        },
+        {
+          "verse_number": 26,
+          "text": "Kerameri tawari xeime kaniutiwitini, miki katinitewakaitini 'Atara. Miki 'Unami mamaaya kanayani."
+        },
+        {
+          "verse_number": 27,
+          "text": "Xami niwemama, Kerameri matiarieya, mekanakine: Mahatsi, Kamini meta 'Ekexi."
+        },
+        {
+          "verse_number": 28,
+          "text": "'Unami niwemama: Tsamahi meta Yara. Tsamahi niwemama: Narawi meta 'Awitsuxi."
+        },
+        {
+          "verse_number": 29,
+          "text": "'Awitsuxi 'iyaya katinitewakaitini 'Awikahiri, miki hamatia 'Akiwani kanayexeiya meta Muriri."
+        },
+        {
+          "verse_number": 30,
+          "text": "Narawi niwemama: Tsereri meta 'Apahini. Tsereri kaniumini türi kawarayexeiyaweti."
+        },
+        {
+          "verse_number": 31,
+          "text": "'Apahini nu'aya 'Itsi kanayani, 'Itsi nu'aya Tsetsani kanihikitikaitini, Tsetsani nu'aya 'Akirahi kanayani."
+        },
+        {
+          "verse_number": 32,
+          "text": "Yara niwemama, Tsamahi 'iwaya, mekanihikitini: Ketexi meta Kunatani. Ketexi kaniumini tiri kawarayexeiyaweti."
+        },
+        {
+          "verse_number": 33,
+          "text": "Kunatani niwemama: Pereti meta Tsatsa. 'Iki mekanakine Kerameri nuiwarimama."
+        },
+        {
+          "verse_number": 34,
+          "text": "Tsetsani 'ukitsi pikawarayexei 'ukari puwarayexei pita, meta xeime 'uki wairiyarika ti'uximayatame pexeiyakai 'ekipitutanaka Yaxika titewakame."
+        },
+        {
+          "verse_number": 35,
+          "text": "Miki xeime yuniwe kaniwititiani, miki 'Atahi mamaaya kanayani."
+        },
+        {
+          "verse_number": 36,
+          "text": "'Atahi Natani paapaya kanayani, Natani Tsawari paapaya patia,"
+        },
+        {
+          "verse_number": 37,
+          "text": "Tsawari 'Epirari pupaapayatikai, 'Epirari 'Uweri pupaapayatikai,"
+        },
+        {
+          "verse_number": 38,
+          "text": "'Uweri Kehu pupaapayatikai, Kehu 'Atsariyaxi pupaapayatikai,"
+        },
+        {
+          "verse_number": 39,
+          "text": "'Atsariyaxi Heretsi pupaapayatikai, Heretsi 'Eratsa pupaapayatikai,"
+        },
+        {
+          "verse_number": 40,
+          "text": "'Eratsa Tsitsimahi pupaapayatikai, Tsitsimahi Tsaruni pupaapayatikai,"
+        },
+        {
+          "verse_number": 41,
+          "text": "Tsaruni Kekamiyaxi pupaapayatikai, meta Kekamiyaxi 'Eritsama pupaapayatikai."
+        },
+        {
+          "verse_number": 42,
+          "text": "Karewi niwemama, Kerameri 'iwaya, mekanakine: matiarimieme Metsaha, miki Tsipi paapaya matia, meta Maretsa, Hewuruni paapaya matia."
+        },
+        {
+          "verse_number": 43,
+          "text": "Hewuruni niwemama: Kure, Tapuhaki, Xekeni metatsiere Tsema."
+        },
+        {
+          "verse_number": 44,
+          "text": "Tsema Xahami 'ukiyarieya patia, mikita Kuxukuhani paapaya patia. Xekeni Tsamahi paapaya patia."
+        },
+        {
+          "verse_number": 45,
+          "text": "Tsamahi Mahuni paapaya patia."
+        },
+        {
+          "verse_number": 46,
+          "text": "Mahuni Wetsuxi paapaya patia. 'Epa, Karewi ti'uximayatsiriwame 'iy데일리titi matia, Karani mamaaya kanayani meta Mutsa, Katsetsi meta. Karani Katsetsi paapaya patia."
+        },
+        {
+          "verse_number": 47,
+          "text": "Yarahi niwemama: Xekeni, Kutani, Ketsani, Pereti, 'Epa meta Tsakapi."
+        },
+        {
+          "verse_number": 48,
+          "text": "Mahaka, Karewi ti'uximayatsiriwame 'iyดี๋ยวiti matia, Tsewexi mamaaya kanayani meta Tirikana,"
+        },
+        {
+          "verse_number": 49,
+          "text": "metatsiere Tsakapi mamaaya kanayani, Marimana paapaya matia, metatsiere Maka Tsewa mamaaya patia, miki Makiwena paapaya matia meta Kiweya. Metatsiere Karewi xeime 'uka kanayexeiya 'Akatsa titewakame."
+        },
+        {
+          "verse_number": 50,
+          "text": "Miki mekanakine Karewi nuiwarimama. Kuxi niwemama, 'Epirata matiarieya, mekanakine: Tsuwari, Kiriati-Yeharini paapaya matia,"
+        },
+        {
+          "verse_number": 51,
+          "text": "Tsarima, Wereni paapaya, meta Karepi, Weti-Karexi paapaya matia."
+        },
+        {
+          "verse_number": 52,
+          "text": "Tsuwari niwemama, Kiriati-Yeharini paapaya, mekanakine: Haruhe, hixiata me'ati manakatitsixi,"
+        },
+        {
+          "verse_number": 53,
+          "text": "Kiriati-Yeharini türiyamama, 'itiritatsixi, putitsixi, tsumatitsixi meta mitsirahitsixi, miki wahetsie mepiyeki tsuratitsixi meta 'etsitahuritsixi."
+        },
+        {
+          "verse_number": 54,
+          "text": "Tsarima niwemama: Wereni, netupatari, 'Ateruti-Weti-Kuhawi, hixiata me'ati manakatitsixi, tsurehitsixi,"
+        },
+        {
+          "verse_number": 55,
+          "text": "metatsiere te'utiwamete Kawetsi memitamakai, miki mepihikitikai, tirateutsixi, tsimateutsixi meta tsukatehutsixi. 'Iki mepaki kenitsixi, Kamati nuiwarimama, tiriyamama wapaapa."
+        }
+      ]
+    },
+    {
+      "chapter_number": 3,
+      "verses": [
+        {
+          "verse_number": 1,
+          "text": "'Iki mepihiki Rawiri niwemama memutinunui- waxi Hewuruni kiekariyaritsie: 'Aminuni matiarieya kanayani 'Akinuhani hetsiemieme Ketsireri kiekame, hutarieka mieme,"
+        },
+        {
+          "verse_number": 2,
+          "text": "Tanieri 'Awikahiri hetsiemieme Kaximeri kiekame, hairieka mieme, 'Awitsaruni Mahaka hetsiemieme, ti'aitame Tarimahi nu'aya Ketsuxi miti'aitametikai,"
+        },
+        {
+          "verse_number": 3,
+          "text": "naurieka mieme, 'Aruniyaxi hetsiemieme, Kakiti 'auxiwirieka mieme, Tsepatiyaxi 'Awitari hetsiemieme, 'ataxewirieka mieme, 'Itirehani hetsiemieme, 'Ekira mikitatsiere Rawiri mi'iyayatikai."
+        },
+        {
+          "verse_number": 4,
+          "text": "Mɨkɨ meyu'ataxewitɨ mekaniutinunuiwa Hewuruni, kepauka mana mɨti'aitakai 'atahuta wiyari heimana 'ataxewime metseri. Kerutsareme kiekariyaritsieta katiniuta'aita xeitewiyari heimana tamamata heimana haika wiyari."
+        },
+        {
+          "verse_number": 5,
+          "text": "Manata mekaniutinunuiwa Tsimaha, Tsuwawi, Natani meta Tsarumuni, mɨkɨ Wetitsawe hetsie mepɨmiemetetɨkai, 'Amiheri nu'aya."
+        },
+        {
+          "verse_number": 6,
+          "text": "Metatsiere puwarayexei 'Iwikaxi, 'Eritsama, 'Eripereti,"
+        },
+        {
+          "verse_number": 7,
+          "text": "Nuka, Nepeki, Kapiha,"
+        },
+        {
+          "verse_number": 8,
+          "text": "'Eritsama, 'Erihara meta 'Eripereti, yunaitɨ mepuyu'atanauka."
+        },
+        {
+          "verse_number": 9,
+          "text": "Yunaitɨ mɨkɨ Rawiri mepɨniwemama, meka'inɨaritɨ te'uximayatamete 'ɨitamamatɨtɨ memakɨ wahetsie mɨwarayexei. Wa'iwa 'uka pɨtitewakai Tamaxi."
+        },
+        {
+          "verse_number": 10,
+          "text": "'Ikɨ mepɨhɨkɨ Tsarumuni nuiwarimama te'aitamete memakɨ: Xuwuhani, 'Awiyaxi, 'Atsá, Kutsapati,"
+        },
+        {
+          "verse_number": 11,
+          "text": "Kurani, 'Ukutsiyaxi, Kuhatsi,"
+        },
+        {
+          "verse_number": 12,
+          "text": "'Amatsiyaxi, 'Atsariyaxi, Kutani,"
+        },
+        {
+          "verse_number": 13,
+          "text": "'Akatsi, 'Etsekiyaxi, Manatsexi,"
+        },
+        {
+          "verse_number": 14,
+          "text": "'Amuni meta Kutsiyaxi."
+        },
+        {
+          "verse_number": 15,
+          "text": "Kutsiyaxi niwemama mekanakɨne: Mexɨakame Kuhanahani, hutarieka mieme Kuhatsimi, hairieka mieme Tserekiyaxi, naurieka mieme Tsaruni."
+        },
+        {
+          "verse_number": 16,
+          "text": "Kuhatsimi niwemama mekanakɨne Keku niyaxi meta Tserekiyaxi:"
+        },
+        {
+          "verse_number": 17,
+          "text": "Kekuniyaxi niwemama, muwiyarie tewa mehanie, mekanakɨne: Tsaratiheri,"
+        },
+        {
+          "verse_number": 18,
+          "text": "Marikirani, Perahiyaxi, Tsenatsaxi, Kekamiyaxi, Hutsama meta Nerawiyaxi."
+        },
+        {
+          "verse_number": 19,
+          "text": "Perahiyaxi niwemama mekanakɨne: Tsuruwaweri meta Tsimi. Tsuruwaweri niwemama mekanakɨne: Metsurani meta Kananiyaxi, wa'iwa 'uka Tserumiti pɨtitewakai."
+        },
+        {
+          "verse_number": 20,
+          "text": "Meta 'ikɨ kaniwarayexeiya meyu'auxɨwime: Katsuwa, 'Uheri, Werekiyaxi, Katsariyaxi meta Yutsawi-Ketseri."
+        },
+        {
+          "verse_number": 21,
+          "text": "Kananiyaxi nuiwarimama mekanakɨne: Peratiyaxi meta Kitsariyaxi, metatsiere Xepahiyaxi niwemama nuiwarimama mepakɨ, meta 'Axinahani niwemama, meta 'Awiriyaxi niwemama metatsiere Tsekaniyaxi niwemama."
+        },
+        {
+          "verse_number": 22,
+          "text": "Tsekaniyaxi nuiwarimama mepakɨ Tsemahiyaxi meta niwemama: Katuxi, 'Ikahari, Wariyaxi, Nehariyaxi meta Tsapati, mɨkɨ yunaitɨ mepuyu'ataxewi."
+        },
+        {
+          "verse_number": 23,
+          "text": "Nehariyaxi niwemama mepakɨ: 'Eri huhenahi, 'Etsekiyaxi meta 'Atsirikani, mɨkɨ yunaitɨ mepuyuhaika."
+        },
+        {
+          "verse_number": 24,
+          "text": "'Erihuhenahi niwemama mepakɨ: Hurawiyaxi, 'Eriyatsiwi, Perahiyaxi, 'Akuwi, Kuhanahani, Rerahiyaxi meta 'Ananihi, mɨkɨ meyunaitɨ mepɨ'atahuta."
+        }
+      ]
+    },
+    {
+      "chapter_number": 4,
+      "verses": [
+        {
+          "verse_number": 1,
+          "text": "Kura nuiwarimama mekanihɨkɨtɨni: Paretsi, Ketsiruni, Karimi, Kuxi meta Tsuwari."
+        },
+        {
+          "verse_number": 2,
+          "text": "Xehahiyaxi Tsuwari nu'aya Yakati paapaya kanayani, meta Yakati 'Akumahi paapaya kanayani meta Rakari. Mɨkɨ mekanakɨne tsuratitsixi nuiwariyari."
+        },
+        {
+          "verse_number": 3,
+          "text": "'Etami niwemama menakɨne: Ketsireri, 'Itsima meta 'Iwatsi. Wa'iwa 'uka katinite wakaitɨni Katsereripuni."
+        },
+        {
+          "verse_number": 4,
+          "text": "Metatsiere niwemama mekanakɨne: Penuheri, Keruxi paapaya, meta 'Etsexi, Kutsa paapaya. Mɨkɨ mekanakɨne Kuxi nuiwarimama, 'Epɨrata matɨarieya, Wereni paapaya."
+        },
+        {
+          "verse_number": 5,
+          "text": "'Atsuxi, Tekuha paapaya yuhutame 'ukarawetsixi kaniwarutiwitɨni, Hera meta Nahara."
+        },
+        {
+          "verse_number": 6,
+          "text": "Nahara 'Akutsani mamaaya patɨa meta Hepexi, Temeni meta 'Akatsitari. Mɨkɨ Nahara niwemama mekanakɨne."
+        },
+        {
+          "verse_number": 7,
+          "text": "Hera niwemama mekanakɨne: Tsereti, Yetsukaxi meta 'Etinahani."
+        },
+        {
+          "verse_number": 8,
+          "text": "Kuhutsi 'Anuwi 'ukiyarieya patɨa, meta Tsuwewa, metatsiere 'Akaxikeri tɨɨriyamama Haruni nu'aya."
+        },
+        {
+          "verse_number": 9,
+          "text": "Kawetsi waɨkawa rexeiyatɨ patɨa 'iwamama kememɨka'anekai. Kepauka mamaaya mɨyamɨtiterɨwaxɨ, mɨpaɨ kaniutayɨni: «Netiuka'eniwatɨ nepitiniwexɨ»."
+        },
+        {
+          "verse_number": 10,
+          "text": "Hikɨ Kawetsi 'Ixaheri Kakaɨyarieya mɨpaɨ pɨtiutawawiri: «'Aixɨa keneneyurieka, kwie 'eyeume keneneyetuiri, kenene parewieka, 'axamɨ'anetsie keneneuxɨna nemɨkatiuka'eniwanikɨ». Kakaɨyari yakatini uyurieni kemɨtitawawiri."
+        },
+        {
+          "verse_number": 11,
+          "text": "Keruwi, Tsuka 'iwaya, Mekixi paapaya kanayani, mɨkɨta Mekixi 'Etsituni paapaya kanayani."
+        },
+        {
+          "verse_number": 12,
+          "text": "'Etsituni Weti-Xapaha paapaya kanayani meta Patsehaki metatsiere Tekina, 'Ixi-Nakatsi paapaya matɨa. Mɨkɨ mekanakɨne Xekaha kiekatariti."
+        },
+        {
+          "verse_number": 13,
+          "text": "Kenatsi niwemama mekanakɨne: 'Utunieri meta Tserahiyaxi. 'Utunieri niwemama mekanakɨne: Katati"
+        },
+        {
+          "verse_number": 14,
+          "text": "meta Mehunutahi, mɨkɨ 'Upɨra paapaya matɨa. Tserahiyaxi Kuhawi paapaya patɨa, mɨkɨta Ke-Karitsini kiekatariti wapaapa patɨa, mana kiekatari tepɨakɨ te'uximayatamete memɨhɨkɨtɨkaikɨ."
+        },
+        {
+          "verse_number": 15,
+          "text": "Karewi niwemama Kepune nu'aya mekanakɨne: 'Ixi, 'Eraha meta Nuhani. 'Eraha Kenatsi paapaya kanayani."
+        },
+        {
+          "verse_number": 16,
+          "text": "Yarereri niwemama mekanakɨne: Tsipi, Tsipa, Tiriyaxi meta 'Atsareri."
+        },
+        {
+          "verse_number": 17,
+          "text": "'Etsitɨraxi niwemama mekanakɨne: Ketexi, Mereri, 'Epexi meta Karuni."
+        },
+        {
+          "verse_number": 18,
+          "text": "Xewitɨ Mereri 'ɨyaya ―hetsiena kaniwarayexeiya: Miriyami, Tsamahi meta 'Itsiwa, 'Etsitemuha paapaya matɨa― mɨkɨ Witiha katinitewakaitɨni Parahuni nu'aya. Xewitɨta Mereri 'ɨyaya Kura nuiwarieyatsie kanimiemetɨkaitɨni, mɨkɨ hamatɨa kaniwarayexeiya: Kereri, Keruxi paapaya, Hewexi, Tsuku paapaya, meta Kekutiheri, Tsanuha paapaya."
+        },
+        {
+          "verse_number": 19,
+          "text": "Kehira, Karimi tewiyari, meta 'Etsitemuha, Mahaka kiekame, mɨkɨ Huriyaxi 'ɨyaya niwemama mekanakɨne, tatsɨari, Nakani 'iwaya 'uka."
+        },
+        {
+          "verse_number": 20,
+          "text": "Tsimuni niwemama mekanakɨne: 'Aminuni, Xina, Weni-Kanani meta Tiruni. 'Itsi niwemama mekanakɨne: Tsuketi meta Weni-Tsuketi."
+        },
+        {
+          "verse_number": 21,
+          "text": "Tseraxi nuiwarimama Kura nu'aya mekanakɨne: 'Exi, Rekaha paapaya, Raraha, Maretsa paapaya, meta memɨte'uximaya rinutsie Weti-'Atsiweya kiekariyaritsie mepɨtɨɨriyamama,"
+        },
+        {
+          "verse_number": 22,
+          "text": "metatsiere Tsera nuiwarimama mepakɨ Kuhakini, meta Kutsewa kiekariyaritsie kiekatari, Kuhatsi kiekariyaritsie kiekatari meta Tsarape kiekariyaritsie kiekatari, mɨkɨ (mɨpaɨ paine 'utɨarika meripai mieme) kename meka'akunuaxɨawawetɨ Werenitsie 'ukarawetsixi muhawitsixi mewarutiwitɨ."
+        },
+        {
+          "verse_number": 23,
+          "text": "Mɨkɨ mekanihɨkɨtɨkaitɨni 'iwewamete Netahini memɨkiekataritɨkai meta Kerera, mana mekaniyuhayewa ti'aitame mete'uximayatsirietɨ. Tsimehuni nuiwarimama (1Kem 4:28-33 – Kuts 19:2"
+        }
+      ]
+    }
+  ]
+}

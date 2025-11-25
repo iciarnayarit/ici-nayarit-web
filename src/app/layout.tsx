@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
   title: 'ICIAR Nayarit',
-  description: 'Una versión moderna de la experiencia de lectura de la Biblia.',
+  description: 'Somos una Iglesia Cristiana Interdenominacional comprometida con compartir el amor de Cristo en Nayarit.',
 };
 
 export default function RootLayout({

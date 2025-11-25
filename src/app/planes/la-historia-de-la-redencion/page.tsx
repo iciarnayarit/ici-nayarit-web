@@ -8,33 +8,33 @@ import { CheckCircle2, Bookmark } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 
-// Import all necessary bible books
-import gn from '@/lib/bible/gn.json';
-import ex from '@/lib/bible/ex.json';
-import le from '@/lib/bible/lv.json';
-import nu from '@/lib/bible/nm.json';
-import de from '@/lib/bible/dt.json';
-import jos from '@/lib/bible/js.json';
-import jue from '@/lib/bible/jud.json';
-import sa1 from '@/lib/bible/1-samuel.json';
-import sa2 from '@/lib/bible/2-samuel.json';
-import re1 from '@/lib/bible/1-kings.json';
-import re2 from '@/lib/bible/2-kings.json';
-import job from '@/lib/bible/job.json';
-import sa from '@/lib/bible/ps.json';
-import pr from '@/lib/bible/prv.json';
-import is from '@/lib/bible/is.json';
-import je from '@/lib/bible/jr.json';
-import ez from '@/lib/bible/ez.json';
-import da from '@/lib/bible/dn.json';
-import mt from '@/lib/bible/mt.json';
-import lu from '@/lib/bible/lk.json';
-import jo from '@/lib/bible/jo.json';
-import ro from '@/lib/bible/rm.json';
-import ga from '@/lib/bible/gl.json';
-import ef from '@/lib/bible/eph.json';
-import he from '@/lib/bible/hb.json';
-import ap from '@/lib/bible/re.json';
+// Import all necessary bible_rvr books
+import gn from '@/lib/bible_rvr/gn.json';
+import ex from '@/lib/bible_rvr/ex.json';
+import le from '@/lib/bible_rvr/lv.json';
+import nu from '@/lib/bible_rvr/nm.json';
+import de from '@/lib/bible_rvr/dt.json';
+import jos from '@/lib/bible_rvr/js.json';
+import jue from '@/lib/bible_rvr/jud.json';
+import sa1 from '@/lib/bible_rvr/1-samuel.json';
+import sa2 from '@/lib/bible_rvr/2-samuel.json';
+import re1 from '@/lib/bible_rvr/1-kings.json';
+import re2 from '@/lib/bible_rvr/2-kings.json';
+import job from '@/lib/bible_rvr/job.json';
+import sa from '@/lib/bible_rvr/ps.json';
+import pr from '@/lib/bible_rvr/prv.json';
+import is from '@/lib/bible_rvr/is.json';
+import je from '@/lib/bible_rvr/jr.json';
+import ez from '@/lib/bible_rvr/ez.json';
+import da from '@/lib/bible_rvr/dn.json';
+import mt from '@/lib/bible_rvr/mt.json';
+import lu from '@/lib/bible_rvr/lk.json';
+import jo from '@/lib/bible_rvr/jo.json';
+import ro from '@/lib/bible_rvr/rm.json';
+import ga from '@/lib/bible_rvr/gl.json';
+import ef from '@/lib/bible_rvr/eph.json';
+import he from '@/lib/bible_rvr/hb.json';
+import ap from '@/lib/bible_rvr/re.json';
 
 const bibleData: { [key: string]: any } = {
     'génesis': gn,

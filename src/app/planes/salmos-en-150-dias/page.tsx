@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-import ps from '@/lib/bible/ps.json';
+import ps from '@/lib/bible_rvr/ps.json';
 
 const bibleData: { [key: string]: any } = {
     'salmos': ps,
