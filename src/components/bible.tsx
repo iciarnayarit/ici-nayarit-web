@@ -81,7 +81,7 @@ export default function Bible() {
       try {
         const bookFileName = bookFileMap[selectedBook];
         if (bookFileName) {
-          const bookModule = await import(`@/lib/bible/${bookFileName}.json`);
+          const bookModule = await import(`@/lib/bible_rvr/${bookFileName}.json`);
           const chapterVerses = bookModule.chapters[selectedChapter - 1] || [];
           setVerses(chapterVerses);
         }
