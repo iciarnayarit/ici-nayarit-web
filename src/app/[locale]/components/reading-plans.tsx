@@ -5,8 +5,12 @@ import {Link} from '@/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/app/[locale]/components/ui/card';
 import { Button } from '@/app/[locale]/components/ui/button';
 import { useToast } from '@/app/[locale]/hooks/use-toast';
-import { Bookmark, Share2 } from 'lucide-react';
+import { Bookmark, Share2, Download } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { allPlanData } from '@/lib/reading-plan-data';
+import { bibleData } from '@/lib/bible-data';
 
 const plans = [
   {
@@ -95,6 +99,13 @@ const plans = [
   }
 ];
 
+interface PassageVerse {
+  book: string;
+  chapter: number;
+  verse: number;
+  text: string;
+}
+
 export default function ReadingPlans() {
   const { toast } = useToast();
   const [savedPlans, setSavedPlans] = useState<string[]>([]);
@@ -170,6 +181,96 @@ export default function ReadingPlans() {
     }
   };
 
+  const handleReadPassage = (reading: string): PassageVerse[] => {
+    const allVerses: PassageVerse[] = [];
+    let currentBookKey = '';
+  
+    const references = reading.split(';').map(r => r.trim());
+  
+    for (const ref of references) {
+      let passage = ref;
+      const bookMatch = ref.match(/^(\d?\s?[a-zA-Záéíóúñ]+(?:\sde\slos\s[a-zA-Záéíóúñ]+)?)\s/);
+  
+      if (bookMatch && bookMatch[1]) {
+        const bookName = bookMatch[1].trim().toLowerCase();
+        if (bibleData[bookName]) {
+          currentBookKey = bookName;
+          passage = ref.substring(bookMatch[0].length).trim();
+        }
+      }
+  
+      if (!currentBookKey) continue;
+  
+      const book = bibleData[currentBookKey];
+      const passageParts = passage.split(',').map(p => p.trim());
+  
+      for (const part of passageParts) {
+        let match;
+  
+        match = part.match(/^(\d+):(\d+)-(\d+)$/);
+        if (match) {
+          const chapter = parseInt(match[1], 10);
+          const startVerse = parseInt(match[2], 10);
+          const endVerse = parseInt(match[3], 10);
+          const verses = book.chapters[chapter - 1] || [];
+          for (let i = startVerse; i <= endVerse; i++) {
+            if (verses[i - 1]) {
+              allVerses.push({ book: currentBookKey, chapter, verse: i, text: verses[i - 1] });
+            }
+          }
+          continue;
+        }
+  
+        match = part.match(/^(\d+)-(\d+)$/);
+        if (match) {
+          const startChapter = parseInt(match[1], 10);
+          const endChapter = parseInt(match[2], 10);
+          for (let c = startChapter; c <= endChapter; c++) {
+            const verses = book.chapters[c - 1] || [];
+            verses.forEach((text: string, i: number) => {
+              allVerses.push({ book: currentBookKey, chapter: c, verse: i + 1, text });
+            });
+          }
+          continue;
+        }
+  
+        match = part.match(/^(\d+)$/);
+        if (match) {
+          const chapter = parseInt(match[1], 10);
+          const verses = book.chapters[chapter - 1] || [];
+          verses.forEach((text: string, i: number) => {
+            allVerses.push({ book: currentBookKey, chapter, verse: i + 1, text });
+          });
+        }
+      }
+    }
+    return allVerses;
+  };
+
+  const handleDownloadPlan = (plan: typeof plans[0]) => {
+    const doc = new jsPDF();
+    const planData = allPlanData[plan.slug];
+
+    doc.text(t(plan.titleKey), 10, 10);
+    doc.text(t(plan.descriptionKey), 10, 20);
+
+    if (planData) {
+        const tableData = planData.map(day => {
+            const verses = handleReadPassage(day.reading);
+            const verseText = verses.map(v => `${v.chapter}:${v.verse} ${v.text}`).join('\n');
+            return [day.day, day.reading, verseText];
+        });
+
+        autoTable(doc, {
+            head: [['Día', 'Lectura', 'Texto']],
+            body: tableData,
+            startY: 30,
+        });
+    }
+
+    doc.save(`${plan.slug}.pdf`);
+  };
+
   return (
     <section id="plans" className="w-full py-20 md:py-32">
       <div className="container mx-auto px-4 md:px-6">
@@ -202,6 +303,18 @@ export default function ReadingPlans() {
                     className="object-cover"
                   />
                   <div className="absolute top-2 right-2 flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="bg-white/50 hover:bg-white/75"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDownloadPlan(plan);
+                      }}
+                    >
+                      <Download className="h-6 w-6 text-black" />
+                      <span className="sr-only">{t('download_plan')}</span>
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"

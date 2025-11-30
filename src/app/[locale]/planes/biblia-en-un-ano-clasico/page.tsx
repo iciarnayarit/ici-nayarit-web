@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle2, Bookmark, Share2 } from 'lucide-react';
 import { useToast } from '@/app/[locale]/hooks/use-toast';
 import {Link} from '@/navigation';
+import { allPlanData } from '@/lib/reading-plan-data';
 
 // Import all bible_rvr books
 import gn from '@/app/[locale]/lib/bible_rvr/gn.json';
@@ -89,64 +90,7 @@ const bibleData: { [key: string]: any } = {
     'judas': jd, 'apocalipsis': re,
 };
 
-const bookOrder = [
-    'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio', 'Josué', 'Jueces', 'Rut', '1 Samuel', '2 Samuel', '1 Reyes', '2 Reyes', '1 Crónicas', '2 Crónicas', 'Esdras', 'Nehemías', 'Ester', 'Job', 'Salmos', 'Proverbios', 'Eclesiastés', 'Cantares', 'Isaías', 'Jeremías', 'Lamentaciones', 'Ezequiel', 'Daniel', 'Oseas', 'Joel', 'Amós', 'Abdías', 'Jonás', 'Miqueas', 'Nahúm', 'Habacuc', 'Sofonías', 'Hageo', 'Zacarías', 'Malaquías',
-    'Mateo', 'Marcos', 'Lucas', 'Juan', 'Hechos', 'Romanos', '1 Corintios', '2 Corintios', 'Gálatas', 'Efesios', 'Filipenses', 'Colosenses', '1 Tesalonicenses', '2 Tesalonicenses', '1 Timoteo', '2 Timoteo', 'Tito', 'Filemón', 'Hebreos', 'Santiago', '1 Pedro', '2 Pedro', '1 Juan', '2 Juan', '3 Juan', 'Judas', 'Apocalipsis'
-];
-
-const chaptersInBook = (bookName: string) => bibleData[bookName.toLowerCase()].chapters.length;
-
-const generateClassicPlan = () => {
-    const otBooks = bookOrder.slice(0, 39);
-    const ntBooks = bookOrder.slice(39);
-
-    let otChapter = 1;
-    let otBookIndex = 0;
-    let ntChapter = 1;
-    let ntBookIndex = 0;
-
-    const plan = [];
-
-    for (let day = 1; day <= 365; day++) {
-        const readings = [];
-
-        // OT Reading
-        if (otBookIndex < otBooks.length) {
-            const currentBook = otBooks[otBookIndex];
-            readings.push(`${currentBook} ${otChapter}`);
-            otChapter++;
-            if (otChapter > chaptersInBook(currentBook)) {
-                otBookIndex++;
-                otChapter = 1;
-            }
-        }
-        
-        // NT Reading
-        if (ntBookIndex < ntBooks.length) {
-            const currentBook = ntBooks[ntBookIndex];
-            readings.push(`${currentBook} ${ntChapter}`);
-            ntChapter++;
-            if (ntChapter > chaptersInBook(currentBook)) {
-                ntBookIndex++;
-                ntChapter = 1;
-            }
-        } else { // Loop NT if OT is not finished
-            ntBookIndex = 0;
-            ntChapter = 1;
-            const currentBook = ntBooks[ntBookIndex];
-            readings.push(`${currentBook} ${ntChapter}`);
-            ntChapter++;
-        }
-
-        plan.push({
-            day,
-            reading: readings.join('; '),
-            summary: `Lectura del día ${day} del plan anual.`
-        });
-    }
-    return plan;
-};
-
+const planDays = allPlanData['biblia-en-un-ano-clasico'];
 
 interface PassageVerse {
     book: string;
@@ -167,8 +111,6 @@ export default function BibleInAYearPlanPage() {
   
   const router = useRouter();
   const { toast } = useToast();
-
-  const planDays = useMemo(() => generateClassicPlan(), []);
 
   useEffect(() => {
     const saved = localStorage.getItem('savedVerses');

@@ -11,39 +11,39 @@ export default function VideosPage() {
     },
     {
       id: '2',
-      youtubeId: 'xsYFE_kS7wY', // Example YouTube ID
+      youtubeId: 'dQw4w9WgXcQ', // Placeholder YouTube ID
       titleKey: 'video_2_title',
     },
     {
       id: '3',
-      youtubeId: 'ypr_Cr1pRs0', // Example YouTube ID
+      youtubeId: 'someOtherVideoId', // Placeholder YouTube ID
       titleKey: 'video_3_title',
     },
     {
       id: '4',
-      youtubeId: '75NOoY3FxSs?si=tJcaGj-dOpxbfFoc', // Example YouTube ID
+      youtubeId: 'anotherVideoId', // Placeholder YouTube ID
       titleKey: 'video_4_title',
     },
-      {
-          id: '5',
-          youtubeId: 'LNLLCZbgEPs',
-          titleKey: 'video_5_title',
-      },
-      {
-          id: '6',
-          youtubeId: 'qf7EjJLUn0c', // Example YouTube ID
-          titleKey: 'video_6_title',
-      },
-      {
-          id: '7',
-          youtubeId: '3xTbtiy_sOs', // Example YouTube ID
-          titleKey: 'video_7_title',
-      },
-      {
-          id: '8',
-          youtubeId: 'B6s5IWbLY4U', // Example YouTube ID
-          titleKey: 'video_8_title',
-      },
+    {
+      id: '5',
+      youtubeId: 'yetAnotherVideoId', // Placeholder YouTube ID
+      titleKey: 'video_5_title',
+    },
+    {
+      id: '6',
+      youtubeId: 'lastVideoId', // Placeholder YouTube ID
+      titleKey: 'video_6_title',
+    },
+    {
+      id: '7',
+      youtubeId: 'finalVideoId', // Placeholder YouTube ID
+      titleKey: 'video_7_title',
+    },
+    {
+      id: '8',
+      youtubeId: 'ultimateVideoId', // Placeholder YouTube ID
+      titleKey: 'video_8_title',
+    },
   ];
 
   return (

@@ -8,12 +8,9 @@ import pr from '@/app/[locale]/lib/bible_rvr/prv.json';
 import { CheckCircle2, Bookmark, Share2 } from 'lucide-react';
 import { useToast } from '@/app/[locale]/hooks/use-toast';
 import {Link} from '@/navigation';
+import { allPlanData } from '@/lib/reading-plan-data';
 
-const planDays = Array.from({ length: 31 }, (_, i) => ({
-  day: i + 1,
-  reading: `Proverbios ${i + 1}`,
-  summary: `Un capítulo de sabiduría para guiar tu día, abordando temas de justicia, prudencia y vida recta. El capítulo ${i + 1} ofrece consejos prácticos para las relaciones, el trabajo y la integridad personal.`,
-}));
+const planDays = allPlanData['proverbios-sabiduria-diaria'];
 
 interface SavedVerse {
   text: string;
