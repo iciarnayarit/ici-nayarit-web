@@ -1,33 +1,86 @@
 {
-  "file_name": "hch_2TH.pdf",
-  "book": "2 Tetsarunikatari",
-  "language_note": "Huichol language (Wixárika)",
-  "chapters": {
-    "1": {
-      "title": "Pamipariyutsi kememite'ipitiaka meta nenewieri",
-      "verses": {
-        "1": "Papuru, Tsiriwanu meta Timuteu, tekanixewairitiaka tetsarunikatari xemiyutixexeiriwa Kakaiyari mita'ukiyari hetsie xetewiyati, Ti'aitame Ketsutsi Kiritsitu hetsie xetewiyati.",
-        "2": "Kakaiyari mita'ukiyari, Ketsutsi Kiritsitu miti'aitame, 'aixia mekete'u'iyarini xe- hetsiemieme, mekexepitiaka yu'iyaritsie xemika'uximatiariekaki.",
-        "3": "Neuxei 'iwamarixi, kaneuyeweka tame taheyemeki pamipariyutsi temipitiakaki Kakaiyari xehepaitsita, kemireuyewetse yatemiteyuriekaki xeme keyuri xemite'erie xemitaweriyarimeki, meta yuxexuiti yunaiti xemitetamiiriyarimeki xeteyukanaki'erieti.",
-        "4": "'Ayumieme tameri 'aixia te'utiyuati xehepaitsita yatekateniwakuxaxatiwani miki memiyutixexeiriwa Kakaiyari hetsie metewiyati, mipai teteniwakihiaweni, kexemite'uka'eniwa, yuri kexemite'erie mexi xetaweweiyariwa, mexi xe'uximatiarie, meta naime kexemi'itiarietiwe.",
-        "5": "Yaxe'itiariekaku kanimatsiikini Kakaiyari heitseriemeki kemiti'iniata 'itsikametiti, mipai xeteta'iniatsieme xemeta xekanimariwakakuni, xehetsie kemitinakeni 'axemu'uwaniki Kakaiyari tixe'aitiwametikaku, mipai mitiyiniki xetenikwineni xemeta.",
-        "6": "Kamitsi, Kakaiyari heitseriemeki katiniyuriemiki kemitiwapinirieni wa'uximatiati miki memixe'uximatia,",
-        "7": "xeme kemitixepinirieni xemeta xe'uxipitiati xemi'uximatiarie, yatati'uxipitiati tameta, kepauka matsiikiti mayani Ti'aitame Ketsutsi taheima 'akamieti, yuniuki tuayamete memitirikawi wahamatia 'akamieti, taipai merikaiyeti.",
-        "8": "Heitseriemeki kaniwaranutaxiriemiki miki memika'imate Kakaiyari, miki yamemikatekahu Tati'aitiwame Ketsutsi niukieya 'aixia manuyine hetsie.",
-        "9": "Miki mipai memi'anene ke- memite'anutaxiriyani, wahetsie tininakimiki memika'unarieniki yuheyemeki, Ti'aitame hixieya mekaxeiyati meta tirikaiyeti kemitimariwe meka'ixeiyati",
-        "10": "kepauka munuani, kaninuamikitsi wit- simitixeiyarieniki yuteiterima wahetsie tiwiyati, yunaiti yuri memite'uta'eri memihixiyaniki me'i'ixiarieti 'iya tukaritsie, mipai katiniyimiki yuri xemite'ita'eririki tita temitehekiatakai xehetsia.",
-        "11": "Mipai mitiyiniki, tekanitanenewieka taheyemeki, mipai mitixemaikaki xeme kemireuyewetse 'amuyeikaniki Kakaiyari xe'u'uwame 'ita'inieyu, naime kexemiteyurie yuri xete'erieti.",
-        "12": "Mipai tiyiyu, kemi'ane Tati'aitiwame Ketsutsi mihiki witsikatinixeiyariemiki xehetsie tiwiyati, xemeta witsixekatenixeiyariekuni Kiritsitu 'aixia mitiuka'iyariki."
-      }
-    },
-    "2": {
-      "title": "Matsikiti kemirayani 'iya tewi yamitiyurieneni kemikatiheitserie",
-      "verses": {
-        "1": "Hiki 'iwamarixi, Tati'aitiwame Ketsutsi Kiritsitu kemitinuani hepaitsita meta hetsiana ketemitekuxeiriyani, mipai tepitexewawirie,",
-        "2": "yapauka xepikaheuyuyexiriwani yumu'utsie meta xepikamamaka hipame kemitiyini niukiyariki, yatini xewiti mipai tikuxatakaku, yatini xapa tahetsia kename miemeki, mipai 'ayetaineme: «Ti'aitame tukarieya paye'ari».",
-        "3": "Xepikatepitiaka nikahirixia xewiti xe'ukwamana, kariki meri hipati Kakaiyari me'aye'unieti mekanakinikuni meta matsiikime kanayuyeitiamiki miki tewi 'axamitiyuruwame, kemi'ane mika'unarieni.",
-        "4": "Miki neye'uniekamiki kanitawe'eriekamiki naime Kakaiyari mititewa meta naime mirayexeiyarie,"
-      }
+  "nombre_biblia": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
+  "abbrev": "2Th",
+  "idioma": "Huichol",
+  "libro": [
+    {
+      "nombre": "2 Tetsarunikatari",
+      "capitulo": [
+        {
+          "numero": 1,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Papuru, Tsiriwanu meta Timuteu, tekanixewairitiaka tetsarunikatari xemiyutixexeiriwa Kakaiyari mita'ukiyari hetsie xetewiyati, Ti'aitame Ketsutsi Kiritsitu hetsie xetewiyati."
+            },
+            {
+              "numero": 2,
+              "texto": "Kakaiyari mita'ukiyari, Ketsutsi Kiritsitu miti'aitame, 'aixia mekete'u'iyarini xe- hetsiemieme, mekexepitiaka yu'iyaritsie xemika'uximatiariekaki."
+            },
+            {
+              "numero": 3,
+              "texto": "Neuxei 'iwamarixi, kaneuyeweka tame taheyemeki pamipariyutsi temipitiakaki Kakaiyari xehepaitsita, kemireuyewetse yatemiteyuriekaki xeme keyuri xemite'erie xemitaweriyarimeki, meta yuxexuiti yunaiti xemitetamiiriyarimeki xeteyukanaki'erieti."
+            },
+            {
+              "numero": 4,
+              "texto": "'Ayumieme tameri 'aixia te'utiyuati xehepaitsita yatekateniwakuxaxatiwani miki memiyutixexeiriwa Kakaiyari hetsie metewiyati, mipai teteniwakihiaweni, kexemite'uka'eniwa, yuri kexemite'erie mexi xetaweweiyariwa, mexi xe'uximatiarie, meta naime kexemi'itiarietiwe."
+            },
+            {
+              "numero": 5,
+              "texto": "Yaxe'itiariekaku kanimatsiikini Kakaiyari heitseriemeki kemiti'iniata 'itsikametiti, mipai xeteta'iniatsieme xemeta xekanimariwakakuni, xehetsie kemitinakeni 'axemu'uwaniki Kakaiyari tixe'aitiwametikaku, mipai mitiyiniki xetenikwineni xemeta."
+            },
+            {
+              "numero": 6,
+              "texto": "Kamitsi, Kakaiyari heitseriemeki katiniyuriemiki kemitiwapinirieni wa'uximatiati miki memixe'uximatia,"
+            },
+            {
+              "numero": 7,
+              "texto": "xeme kemitixepinirieni xemeta xe'uxipitiati xemi'uximatiarie, yatati'uxipitiati tameta, kepauka matsiikiti mayani Ti'aitame Ketsutsi taheima 'akamieti, yuniuki tuayamete memitirikawi wahamatia 'akamieti, taipai merikaiyeti."
+            },
+            {
+              "numero": 8,
+              "texto": "Heitseriemeki kaniwaranutaxiriemiki miki memika'imate Kakaiyari, miki yamemikatekahu Tati'aitiwame Ketsutsi niukieya 'aixia manuyine hetsie."
+            },
+            {
+              "numero": 9,
+              "texto": "Miki mipai memi'anene ke- memite'anutaxiriyani, wahetsie tininakimiki memika'unarieniki yuheyemeki, Ti'aitame hixieya mekaxeiyati meta tirikaiyeti kemitimariwe meka'ixeiyati"
+            },
+            {
+              "numero": 10,
+              "texto": "kepauka munuani, kaninuamikitsi wit- simitixeiyarieniki yuteiterima wahetsie tiwiyati, yunaiti yuri memite'uta'eri memihixiyaniki me'i'ixiarieti 'iya tukaritsie, mipai katiniyimiki yuri xemite'ita'eririki tita temitehekiatakai xehetsia."
+            },
+            {
+              "numero": 11,
+              "texto": "Mipai mitiyiniki, tekanitanenewieka taheyemeki, mipai mitixemaikaki xeme kemireuyewetse 'amuyeikaniki Kakaiyari xe'u'uwame 'ita'inieyu, naime kexemiteyurie yuri xete'erieti."
+            },
+            {
+              "numero": 12,
+              "texto": "Mipai tiyiyu, kemi'ane Tati'aitiwame Ketsutsi mihiki witsikatinixeiyariemiki xehetsie tiwiyati, xemeta witsixekatenixeiyariekuni Kiritsitu 'aixia mitiuka'iyariki."
+            }
+          ]
+        },
+        {
+          "numero": 2,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Hiki 'iwamarixi, Tati'aitiwame Ketsutsi Kiritsitu kemitinuani hepaitsita meta hetsiana ketemitekuxeiriyani, mipai tepitexewawirie,"
+            },
+            {
+              "numero": 2,
+              "texto": "yapauka xepikaheuyuyexiriwani yumu'utsie meta xepikamamaka hipame kemitiyini niukiyariki, yatini xewiti mipai tikuxatakaku, yatini xapa tahetsia kename miemeki, mipai 'ayetaineme: «Ti'aitame tukarieya paye'ari»."
+            },
+            {
+              "numero": 3,
+              "texto": "Xepikatepitiaka nikahirixia xewiti xe'ukwamana, kariki meri hipati Kakaiyari me'aye'unieti mekanakinikuni meta matsiikime kanayuyeitiamiki miki tewi 'axamitiyuruwame, kemi'ane mika'unarieni."
+            },
+            {
+              "numero": 4,
+              "texto": "Miki neye'uniekamiki kanitawe'eriekamiki naime Kakaiyari mititewa meta naime mirayexeiyarie,"
+            }
+          ]
+        }
+      ]
     }
-  }
+  ]
 }

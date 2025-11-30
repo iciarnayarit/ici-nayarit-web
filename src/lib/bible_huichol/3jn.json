@@ -1,82 +1,77 @@
 {
-  "book": {
-    "name": "3 Wani",
-    "alternate_names": ["3 Juan", "3 John"],
-    "language": "Huichol (Wixarika)",
-    "translation_info": {
-      "title": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
-      "edition": "2020",
-      "translator": "Wycliffe Bible Translators, Inc.",
-      "copyright_year": "2020",
-      "copyright_holder": "Wycliffe Bible Translators, Inc.",
-      "license": "Creative Commons License: Attribution-Noncommercial-No Derivative Works (CC BY-NC-ND 4.0)"
-    },
-    "chapters": [
-      {
-        "chapter_number": 1,
-        "verses": [
-          {
-            "verse_number": 1,
-            "text": "Ne nemi'a'ukiyari, nepimati'utiirie nemimatsinaki'erie Kayu, yuriki nepimatsinaki'erie. [cite: 7, 8, 9, 10]"
-          },
-          {
-            "verse_number": 2,
-            "text": "Neuxei, 'eki nemimatsinaki'erie, nepinenenewie naimeki 'aixia pemireumieniki meta 'aixia pemireu'eriekaki, 'a'iyari 'aixia mitimie hepai. [cite: 11]"
-          },
-          {
-            "verse_number": 3,
-            "text": "Waikawa nepinetemawiekai me'u'axiaku ta'iwama meta metehekiatakaku 'ahepaitsita yuri kepemaine, yaxeikia 'eki tita yuri mirainetsie yapetiyurieneti pemuyeikaki. [cite: 12]"
-          },
-          {
-            "verse_number": 4,
-            "text": "Keyanemikatinetemawie, waikawa matsi nepinetemawie yanetimaiti kename neniwema hipati me'u'uwa tita yuri mirainetsie metewiyati. [cite: 13]"
-          },
-          {
-            "verse_number": 5,
-            "text": "Neuxei, 'eki nemimatsinaki'erie, yamitikamie hepai pekaniyianeni naime ta'iwama wahetsiemieme kepemitiyuriene, pemikawamate. [cite: 14, 15]"
-          },
-          {
-            "verse_number": 6,
-            "text": "Miki mekateniutahekiata meyukuxeirieku kepemiti'akanaki'erie. 'Aixia pekaniwayuriemiki pewaparewieti wahuyeta, Kakaiyari kemitinake petiuka'iyariti. [cite: 17]"
-          },
-          {
-            "verse_number": 7,
-            "text": "Kemi'ane Ketsutsi Kiritsitu mihikitsie mieme meteta'uximayatake mekanayekine, tixaiti mepikatewarutanaki'eriri hipame nuiwarite. [cite: 21]"
-          },
-          {
-            "verse_number": 8,
-            "text": "'Ayumieme kaneuyeweka tame temiwatanaki'erieniki miyamemi'anene takie miki meta tanaiti tita yuri mirainetsie mieme temite'uximayakaki. [cite: 23, 24, 25, 26, 27, 28]"
-          },
-          {
-            "verse_number": 9,
-            "text": "Ne 'etsiwa nepitiwaruta'utiiri memiyutixexeiriwa, peru miki Riyutirepexi manuyehaitia mayuyeitiamiki pikatatsi'upitia. [cite: 29, 30, 31]"
-          },
-          {
-            "verse_number": 10,
-            "text": "'Ayumieme xika nehenuani nekan- eye'eritiamiki kemitiyuriene niuki 'axami'aneneki tatsiniukimati. Mikiki xeikia pikanaki'a, matsi miireme pitiyurienikeyu. Ta'iwama pikawapitia, pikawataunie miki memiwapitiaku, memiyutixexeiriwa watsata piwaranuyeni'awa. [cite: 32, 33]"
-          },
-          {
-            "verse_number": 11,
-            "text": "Neuxei, 'eki nemimatsinaki'erie, 'axamiti'ane pepika'ikeni, 'aixia miti'ane pita kene'ikeni. Kemi'ane 'aixia mitiyuriene Kakaiyari hetsia kanimiemetini, kemi'ane 'axamitiyuriene Kakaiyari pikaxeiyawe. [cite: 34, 35]"
-          },
-          {
-            "verse_number": 12,
-            "text": "Yunaiti mepitehekiata Remetiriyu hepaitsita meta tita yuri miraine pitiutahekiataxi hepaitsitana. Tameta tepitehekiata hepaitsitana 'eki pepitimate ketemitehekiata muyuriki. [cite: 36]"
-          },
-          {
-            "verse_number": 13,
-            "text": "Netsi waikawa nepimatitaxatianikeyu, nepikanewairiya peru nemimeraka'utiirieniki. [cite: 37, 38, 39, 40]"
-          },
-          {
-            "verse_number": 14,
-            "text": "Nepimatsixeiyamikikaku pita xapatsie kwitiwa, pepika'uximatiarieka. tahixie te'utineniereti tepitetaxata. [cite: 42, 43, 44, 45, 46]"
-          },
-          {
-            "verse_number": 15,
-            "text": "'A'iyaritsie 'Ahamikuma 'ena mepimetsiwairitia. 'Ekita muwa paiti keniwarewairitiaka yuxexuime miki temiwanaki'erie. [cite: 47, 48, 52]"
-          }
-        ]
-      }
-    ]
-  }
+  "nombre_biblia": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
+  "abrev": "3Jn",
+  "idioma": "Huichol",
+  "libro": [
+    {
+      "nombre": "3 Wani",
+      "capitulo": [
+        {
+          "numero": 1,
+          "versiculos": [
+            {
+              "numero": 1,
+            "texto": "Ne nemi'a'ukiyari [cite: 7], nepimati'utiirie nemimatsinaki'erie Kayu [cite: 8], yuriki nepimatsinaki'erie[cite: 9, 10]."
+            },
+            {
+              "numero": 2,
+            "texto": "Neuxei, 'eki nemimatsinaki'erie, nepinenenewie naimeki 'aixia pemireumieniki meta 'aixia pemireu'eriekaki, 'a'iyari 'aixia mitimie hepai[cite: 11]."
+            },
+            {
+              "numero": 3,
+            "texto": "Waikawa nepinetemawiekai me'u'axiaku ta'iwama meta metehekiatakaku 'ahepaitsita yuri kepemaine, yaxeikia 'eki tita yuri mirainetsie yapetiyurieneti pemuyeikaki[cite: 12]."
+            },
+            {
+              "numero": 4,
+            "texto": "Keyanemikatinetemawie, waikawa matsi nepinetemawie yanetimaiti kename neniwema hipati me'u'uwa tita yuri mirainetsie metewiyati[cite: 13]."
+            },
+            {
+              "numero": 5,
+            "texto": "Neuxei, 'eki nemimatsinaki'erie, yamitikamie hepai pekaniyianeni naime ta'iwama wahetsiemieme kepemitiyuriene, pemikawamate[cite: 14, 15]."
+            },
+            {
+              "numero": 6,
+              "texto": "Miki mekateniutahekiata meyukuxeirieku kepemiti'akanaki'erie. 'Aixia pekaniwayuriemiki pewaparewieti wahuyeta, Kakaiyari kemitinake petiuka'iyariti[cite: 17]."
+            },
+            {
+              "numero": 7,
+            "texto": "Kemi'ane Ketsutsi Kiritsitu mihikitsie mieme meteta'uximayatake mekanayekine, tixaiti mepikatewarutanaki'eriri hipame nuiwarite[cite: 21]."
+            },
+            {
+              "numero": 8,
+            "texto": "'Ayumieme kaneuyeweka tame temiwatanaki'erieniki miyamemi'anene takie miki meta tanaiti tita yuri mirainetsie mieme temite'uximayakaki[cite: 23, 24, 25, 26, 27, 28]."
+            },
+            {
+              "numero": 9,
+            "texto": "Ne 'etsiwa nepitiwaruta'utiiri memiyutixexeiriwa, peru miki Riyutirepexi manuyehaitia mayuyeitiamiki pikatatsi'upitia[cite: 29, 30, 31]."
+            },
+            {
+              "numero": 10,
+              "texto": "'Ayumieme xika nehenuani nekan- eye'eritiamiki kemitiyuriene niuki 'axami'aneneki tatsiniukimati. Mikiki xeikia pikanaki'a, matsi miireme pitiyurienikeyu. Ta'iwama pikawapitia, pikawataunie miki memiwapitiaku, memiyutixexeiriwa watsata piwaranuyeni'awa[cite: 32, 33]."
+            },
+            {
+              "numero": 11,
+              "texto": "Neuxei, 'eki nemimatsinaki'erie, 'axamiti'ane pepika'ikeni, 'aixia miti'ane pita kene'ikeni. Kemi'ane 'aixia mitiyuriene Kakaiyari hetsia kanimiemetini, kemi'ane 'axamitiyuriene Kakaiyari pikaxeiyawe[cite: 34, 35]."
+            },
+            {
+              "numero": 12,
+              "texto": "Yunaiti mepitehekiata Remetiriyu hepaitsita meta tita yuri miraine pitiutahekiataxi hepaitsitana. Tameta tepitehekiata hepaitsitana 'eki pepitimate ketemitehekiata muyuriki[cite: 36]."
+            },
+            {
+              "numero": 13,
+            "texto": "Netsi waikawa nepimatitaxatianikeyu, nepikanewairiya peru nemimeraka'utiirieniki[cite: 37, 38, 39, 40]."
+            },
+            {
+              "numero": 14,
+            "texto": "Nepimatsixeiyamikikaku pita xapatsie kwitiwa, pepika'uximatiarieka. tahixie te'utineniereti tepitetaxata[cite: 42, 43, 44, 45, 46]."
+            },
+            {
+              "numero": 15,
+            "texto": "'A'iyaritsie 'Ahamikuma 'ena mepimetsiwairitia[cite: 47, 48]. 'Ekita muwa paiti keniwarewairitiaka yuxexuime miki temiwanaki'erie[cite: 52]."
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

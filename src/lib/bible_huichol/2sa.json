@@ -1,33 +1,101 @@
 {
-  "file_name": "hch_2SA.pdf",
-  "book": "2 Tsamuheri",
-  "language_note": "Huichol language (Wixárika)",
-  "chapters": {
-    "1": {
-      "title": "Tsahuri kemitiumi niukiyari",
-      "verses": {
-        "1": "Merikitsi Tsahuri hemieriekuri, Rawiri Tsikiraki mirakutewatsie huta tukari kaniuyurieni meta 'amarekitsixi wara'iwakari.",
-        "2": "Hairieka tukaritsie xewiti tewi heyuta'unaka Tsikiraki kaninuani, Tsahuri kuyaximama mematitekai heyeyaka. Kamixaya peukatsanikai meta mu'unaximati kemitiyuhiweriekai miki pi'iniariyaritikai, mana Rawiri hixie nuaka kaniukatunumakeni kwiepa.",
-        "3": "Rawiri mipai katinita'iwawiya: -¿Hakewapai pepeyetia? Kuya mipai katinita'eiya: -Nepeyuta'unaxi 'ixaheritsixi memakuteitsie.",
-        "4": "Rawiri mipai katinita'iwawiya: -Kenetineutaxatia naime kemireyi. Miki tewi mipai katinita'eiya: -Matsi 'ipai pireyi takuyaxima mepeyuta'unaxia mirayukwitinetsie meta yuwaikawati mekanekwi'iwa. Miki Tsahuri meta nu'aya Kunatani mepekwi'iwaxi.",
-        "5": "Hiki Rawiri niuki mi'atiiri mipai katiniuta'iwawiya: -¿Kehapaititiri 'eki yapepitimate kename Tsahuri meta nu'aya Kunatani mehekwi?",
-        "6": "Mipai katinita'eiya niuki mi'atiiri: -Ne 'atsinekatimaiti Kiriwuha yemuriyaritsie nekaneyeikakaitini. Ne nekaneixeiya kepauka Tsahuri yupitsikatsie meyukaxui, hiki kuyaxi kaxetatetsie me'uteti memeye'unie mekanehuraweiyakaitini meta kawayutsixi wahetsie me'uteti.",
-        "7": "Tsahuri kananakuniere kanenexeiya. Hiki kanenetahiawe, yanekatinekayani. keminereta'aitia",
-        "8": "Hiki kaneneta'iwawiya, kemi'ane nemihikitikai, ne mipai nekatineita'eiya: \"Amareki tewiyari nepihiki\".",
-        "9": "Hiki kanenetawawirieni 'ahurawa nemuyaniki, mipai kanetineta'aitiani: \"Ximixi keneneumi'a, nepitiuka'eniwa xeikia nepikamiwe\".",
-        "10": "Ne 'ahurawa ne'uyaka nekaneimieni, mipai neretimaika mikatawikwenikekaikiri. Hiki kuruna menakekai nekanenutihanirieni meta matsiwaya miraye'axe, para 'eki pita neti'aitiwame nemimatsiyetuirieniki.",
-        "11": "Hiki Rawiri meta hamatiana memiti'ukai me'u'enanaka, yukamixa mekaneukatsanaxiani hiwerikaki.",
-        "12": "Meyuhiwerieti meta meyuhakieti mekaniukutaikaiyarieni, Tsahuri meta nu'aya Kunatani 'ixiparaki memekwi'iwakaiki, yaxeikiata Yawé kuyaximama waheki meta 'Ixaheri nuiwariyari wahetsiemieme.",
-        "13": "Merikitsi Rawiri temaiki kaniuta'iwawiya niuki mi'atiiri: -¿Hakewa pepekiekame?",
-        "14": "Mipai katinita'eiya: -Teewatanaka nekanihikitini 'amareki tewiyari. Rawiri mipai katinitatieni: -¿Kari 'eki miya pepireyuri Yawé menayexei pepemi?",
-        "15": "Hiki tewi xeime yuhetsia mieme 'uta'inieka mipai katinita'aitiani: -Kenanuhanaka kenemi'a. Kemitiuta'aitiariekai 'iya kanimieni. kanimieni. 'iya kaneye'atiani",
-        "16": "Rawiri mipai kaniutayini: -'Akimana 'ahetsie pekatinahiani pekaniuyumieni peyutahekiataka Yawé menayexei pememiki. Rawiri kemitiyuhiweriekai Tsahuri meta Kunatani waheki",
-        "17": "Merikitsi Rawiri 'iki hiwerika kwikariyari kaniutakwika Tsahuri meta nu'aya Kunatani wahepaitsita mieme.",
-        "18": "«Tuupi kwikariyari» katiniteriwa. Meta katiniuta'aita miki kwikari Kura kiekatari memita'ikitiarieniki. Mipai katine'uka Katsexi xapayatsie:",
-        "19": "«Xia'ui 'Ixaheri. Wakimana pemi'ata'irekai mekwikwi'iti yemuritsie mekanekuheni. Yuwaikawati kuyaxi memitirikawi hiki mekanekwi'iwa.",
-        "20": ">>Kahati kiekariyaritsie xepikaheikuxatani meta 'Atsikaruni kayeyari 'utia mipai xepikatehehiwani, 'ukari piritsiteutsixi memikaheyutemamawiekaki",
-        "21": "'ixiarari memikahewewiekaki miki xitekiya 'iniariyari memikahexeiya waniwema. xeme xehetsia pika'ukawiwiyeni Xia'ui, Kiriwuha hiriyarite, pika'ukuhaitsiyatani. Tiriku pika'utixuxuawereni mayaniki. narima 'a'iti: meta mawari Tsahuri mana"
-      }
+  "nombre_biblia": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
+  "abrev": "2Sa",
+  "idioma": "Huichol",
+  "libro": [
+    {
+      "nombre": "2 Tsamuheri",
+      "capitulo": [
+        {
+          "numero": 1,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Merikitsi Tsahuri hemieriekuri, Rawiri Tsikiraki mirakutewatsie huta tukari kaniuyurieni meta 'amarekitsixi wara'iwakari."
+            },
+            {
+              "numero": 2,
+              "texto": "Hairieka tukaritsie xewiti tewi heyuta'unaka Tsikiraki kaninuani, Tsahuri kuyaximama mematitekai heyeyaka. Kamixaya peukatsanikai meta mu'unaximati kemitiyuhiweriekai miki pi'iniariyaritikai, mana Rawiri hixie nuaka kaniukatunumakeni kwiepa."
+            },
+            {
+              "numero": 3,
+              "texto": "Rawiri mipai katinita'iwawiya: -¿Hakewapai pepeyetia? Kuya mipai katinita'eiya: -Nepeyuta'unaxi 'ixaheritsixi memakuteitsie."
+            },
+            {
+              "numero": 4,
+              "texto": "Rawiri mipai katinita'iwawiya: -Kenetineutaxatia naime kemireyi. Miki tewi mipai katinita'eiya: -Matsi 'ipai pireyi takuyaxima mepeyuta'unaxia mirayukwitinetsie meta yuwaikawati mekanekwi'iwa. Miki Tsahuri meta nu'aya Kunatani mepekwi'iwaxi."
+            },
+            {
+              "numero": 5,
+              "texto": "Hiki Rawiri niuki mi'atiiri mipai katiniuta'iwawiya: -¿Kehapaititiri 'eki yapepitimate kename Tsahuri meta nu'aya Kunatani mehekwi?"
+            },
+            {
+              "numero": 6,
+              "texto": "Mipai katinita'eiya niuki mi'atiiri: -Ne 'atsinekatimaiti Kiriwuha yemuriyaritsie nekaneyeikakaitini. Ne nekaneixeiya kepauka Tsahuri yupitsikatsie meyukaxui, hiki kuyaxi kaxetatetsie me'uteti memeye'unie mekanehuraweiyakaitini meta kawayutsixi wahetsie me'uteti."
+            },
+            {
+              "numero": 7,
+              "texto": "Tsahuri kananakuniere kanenexeiya. Hiki kanenetahiawe, keminereta'aitia yanekatinekayani."
+            },
+            {
+              "numero": 8,
+              "texto": "Hiki kaneneta'iwawiya, kemi'ane nemihikitikai, ne mipai nekatineita'eiya: \"Amareki tewiyari nepihiki\"."
+            },
+            {
+              "numero": 9,
+              "texto": "Hiki kanenetawawirieni 'ahurawa nemuyaniki, mipai kanetineta'aitiani: \"Ximixi keneneumi'a, nepitiuka'eniwa xeikia nepikamiwe\"."
+            },
+            {
+              "numero": 10,
+              "texto": "Ne 'ahurawa ne'uyaka nekaneimieni, mipai neretimaika mikatawikwenikekaikiri. Hiki kuruna menakekai nekanenutihanirieni meta matsiwaya miraye'axe, para 'eki pita neti'aitiwame nemimatsiyetuirieniki."
+            },
+            {
+              "numero": 11,
+              "texto": "Hiki Rawiri meta hamatiana memiti'ukai me'u'enanaka, yukamixa mekaneukatsanaxiani hiwerikaki."
+            },
+            {
+              "numero": 12,
+              "texto": "Meyuhiwerieti meta meyuhakieti mekaniukutaikaiyarieni, Tsahuri meta nu'aya Kunatani 'ixiparaki memekwi'iwakaiki, yaxeikiata Yawé kuyaximama waheki meta 'Ixaheri nuiwariyari wahetsiemieme."
+            },
+            {
+              "numero": 13,
+              "texto": "Merikitsi Rawiri temaiki kaniuta'iwawiya niuki mi'atiiri: -¿Hakewa pepekiekame?"
+            },
+            {
+              "numero": 14,
+              "texto": "Mipai katinita'eiya: -Teewatanaka nekanihikitini 'amareki tewiyari. Rawiri mipai katinitatieni: -¿Kari 'eki miya pepireyuri Yawé menayexei pepemi?"
+            },
+            {
+              "numero": 15,
+              "texto": "Hiki tewi xeime yuhetsia mieme 'uta'inieka mipai katinita'aitiani: -Kenanuhanaka kenemi'a. Kemitiuta'aitiariekai 'iya kanimieni. 'iya kanimieni. 'iya kaneye'atiani"
+            },
+            {
+              "numero": 16,
+              "texto": "Rawiri mipai kaniutayini: -'Akimana 'ahetsie pekatinahiani pekaniuyumieni peyutahekiataka Yawé menayexei pememiki. Rawiri kemitiyuhiweriekai Tsahuri meta Kunatani waheki"
+            },
+            {
+              "numero": 17,
+              "texto": "Merikitsi Rawiri 'iki hiwerika kwikariyari kaniutakwika Tsahuri meta nu'aya Kunatani wahepaitsita mieme."
+            },
+            {
+              "numero": 18,
+              "texto": "«Tuupi kwikariyari» katiniteriwa. Meta katiniuta'aita miki kwikari Kura kiekatari memita'ikitiarieniki. Mipai katine'uka Katsexi xapayatsie:"
+            },
+            {
+              "numero": 19,
+              "texto": "«Xia'ui 'Ixaheri. Wakimana pemi'ata'irekai mekwikwi'iti yemuritsie mekanekuheni. Yuwaikawati kuyaxi memitirikawi hiki mekanekwi'iwa."
+            },
+            {
+              "numero": 20,
+              "texto": ">>Kahati kiekariyaritsie xepikaheikuxatani meta 'Atsikaruni kayeyari 'utia mipai xepikatehehiwani, 'ukari piritsiteutsixi memikaheyutemamawiekaki"
+            },
+            {
+              "numero": 21,
+              "texto": "'ixiarari memikahewewiekaki miki xitekiya 'iniariyari memikahexeiya waniwema. xeme xehetsia pika'ukawiwiyeni Xia'ui, Kiriwuha hiriyarite, pika'ukuhaitsiyatani. Tiriku pika'utixuxuawereni narima 'a'iti: meta mawari Tsahuri mana"
+            }
+          ]
+        }
+      ]
     }
-  }
+  ]
 }

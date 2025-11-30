@@ -1,70 +1,126 @@
 {
-  "file_name": "hch_2CH.pdf",
-  "title_huichol": "2 Kemitiuyi",
-  "title_spanish": "Segundo Libro de Crónicas (Huichol)",
-  "chapters": [
+  "nombre_biblia": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
+  "abbrev": "2Ch",
+  "idioma": "Huichol",
+  "libro": [
     {
-      "chapter": 1,
-      "verses": {
-        "1": "Merikitsi Tsarumuni Rawiri nu'aya mira'aita tirikaiyeti kanayani, Yawé Kakaiyarieya hamatiana muyeikakaiki meta waikawa tirikaiyeme kanayeitiani.",
-        "2": "Hiki Tsarumuni yunaime 'ixaheritsixi teiteriyari kaniwarutahiawe, 'iki xeimiriyari meta xeitsienituyari kuyaxi tewa'aitiwamete metatsiere kuwexinaruritsixi, meta yunaime 'Ixaheri nuiwarimama wa'ukiyarima.",
-        "3": "Hiki miki meta yunaiti memeweiyakai mekaniyukuxeirieni mirakutewatsie, tukita muwa Kawahuni Kakaiyari mekaniutahiawekaitini, Muitsexi Yawé ti'uximayatsiriwame, makumawetsie 'ixuriki tukiyari Kakaiyari hetsiemieme mitawewiekai.",
-        "4": "Kerutsareme kiekariyaritsie Kakaiyari tiratuya kakuniyari kaniukateitini, Rawiri mana pi'atiakai Kiriati-Yeharini paiti kepauka meiyetitsie,",
-        "5": "peru mawari taiyame wurunitse tepiayariki miwewiya Wetsareri mitawewi, 'Urihi nu'aya meta Kuxi teukarieya, Kawahuni paiti kanewekaitini, Yawé tukieya hixie. 'Ayumieme Tsarumuni meta 'ixaheritsixi mana mekanekine Yawé mehetahiaweke.",
-        "6": "Mana Tsarumuni Yawé hixie, mana mawari taiyame hixie 'uyaka 'ixuriki tukiyari manuwe, hetsiena xeimiriyari mawari taiyariyari kani-uwewieni.",
-        "7": "Hiki miki tikaritsie Kakaiyari Tsarumuni hixie kaniuyuhekiata mipai katinitahiawe:",
-        "8": "-Tita pemireuyehiwa kenetineutawawiri. Mipai Tsarumuni katinita'eiya:",
-        "9": "-'Eki ne'ukiyari Rawiri pe'inaki'erieti 'aixia pepitixeiyakai, hikita ne hetsiena mieme nemitita'aitaki pepinetsi'anayexei. Yawé meta Kakaiyari, ne'ukiyari Rawiri kepemitiutahiawixi kenaye'atia, 'ekitsi ti'aitame pekanenayeitiani teiteri memiyumiire wahetsiemieme tumuanari kwiepa mieme hepai.",
-        "10": "Ne nepimatsiwawirie nemitimaiweniki meta nemireutamaiweniki nemitiwata'aitianiki 'iki 'ateiterima memiyumiire, xika piyiwe mipai pekanetiupitiani, ¿kemi'ane mitiwata'aitiani?",
-        "11": "Hiki Kakaiyari Tsarumuni mipai katiniutahiawe:",
-        "12": "-Metsi pekaneniwawirieka pemitimaiweniki meta pemirakumaikaki para neteiterima pemitiwata'aitianiki, wahetsiemieme ti'aitame nemimatsi'ayeitia, peru 'atsipepikahaine pemixikutiniki, pemimariwaniki, pemirexeiyaniki meta memimatsi'aye'unie memikwiniki meta tukari waikawa pemexeiyaniki 'atsipepikahaine, ne nepimatiyetuirieni.",
-        "13": "Peru nekamanipitiamikita pemixikutiniki, pemirexeiyaniki meta pemimariwaniki, meripaiti te'aitamete kenemikatiwarupitia meta nixewiti 'a'utima memanuka'uni mipai mepikayini.",
-        "14": "Hiki 'arike Tsarumuni 'ixuriki tukiyari manuwe Kawahuni mirakutewatsie 'akaneka kanayeyani Kerutsareme kaneyani, mana 'ukaiti katiniuta'aita naime 'Ixaheri kwieyaritsie.",
-        "15": "Kawayutsixi Tsarumuni waikawa warexeiyati patia meta kaxetate kuyaxa miemete: xeimiriyari heimana nauka tsienituyari (1.400) meyupaimeme piwarexeiyakai kaxetate, meta kawayutsixi tamamata heimana huta miriyari (12.000) mepiyupaimekai, miki kawayutsixi kaxetate kuyaxa mieme muwa'uti mepiye'inekai meta hipati Kerutsareme paiti yuparatsiyu 'aurie piwaye'inakai.",
-        "16": "Kerutsareme kiekariyaritsie ti'aitame pirata meta huru kwinimieme paimeme pexeiyakai tetexi kemiti'ane hepai, meta kariuxa kiyeyari waikawame pexeiyakai piní makuweri mieme hepai.",
-        "17": "Tsarumuni kawayutsiximama 'Ekipitu kwieyaritsie mepinanaiyakatetikai meta Kuha, mana paiti ti'aitame tetuayametemama mepiwatinawekai. Kaxeta kuyaxa mieme 'Ekipitu kwieyaritsie nanaiyakame piraye'akai 'ataxewime tsienituyari pirata tuminiyari, yuxewiti kawayu paye'akai xeitsienituyari heimana huta tewiyari heimana tamamata. 'Iki kaxetate kuyaxa miemete meta kawayutsixi yunaime te'aitamete hetitsixi meta tsiriyutsixi 'arike mepiwatuiriekaita."
-      }
-    },
-    {
-      "chapter": 2,
-      "verses": {
-        "1": "Merikitsi Tsarumuni yakaniutayini yuparat-siyu mitawewieniki meta tuki Yawé hetsiemieme.",
-        "2": "Hiki te'ikatamete kaniwaru'uitiani haika tewiyari heimana tamamata miriyari, meta nauka tewiyari miriyari tetexi xixiwamete memiteta'uximayataki hiritsie. Piwaru'uitiata haika miriyari heimana 'ataxewi tsienituyari te'uximayatamete tewa'aitiwamete.",
-        "3": "Hiki Tsarumuni 'iki niuki Hirami Tirutsie ti'aitame kaneni'airieni:",
-        "4": "«Kenenani'airi kariuxa kiyeyari, ne'ukiyari Rawiri kepemireyeni'airi hepai paratsiyu mitawewieniki. Ne tuki Yawé takakaiyari hetsia mieme nekanitawewimiki. Hetsiena mieme patsiekame nepayeitiani, muwa 'ikwa witsimu'ia nemititaiyaniki, meta paa mipatsie yanepiremaniriwani, mawari taiyariyari ximeri meta taikai nepitiwewiriwani, mawari xawatikimieme meta metseri manatiwenitsie mieme, meta hipame 'ixiarari Yawé takakaiyari hetsiemieme. 'Iki 'Ixaheri kwieyaritsie yuheyemeki mipai mepiteyurieka.",
-        "5": "Tuki nekanitawewimiki mariwekame, matsi takakaiyari kanimariweni kakaiyarixi.",
-        "6": "Perutsi, ¿tete'itawewirieni tuki, matsititi muyuawi tsepa kemeutitewa hetsiena mieme 'etsipiyewa? Ne tsepa tixaiti nemikatihiki, tuki nepitawewirieni muwa 'ikwa mititaiyariwaniki hetsiena mieme.",
-        "7": ">>Xeime kenenani'airi ti'uximayatame rakumaikame huruki, pirataki, wurunitseki, tepiaki, 'ixuriki kwimixeta, mixeta meta miyitsikimaiyeki, mireutaxixiwe naimeki, mitita'uximayataki 'ena kiekatari memiteheutamate nemiwarexeiya wahamatia Kura kwieyaritsie meta Kerutsareme, ne'ukiyari Rawiri meripaiti miwaruta'iniekai.",
-        "8": ">>Kenenani'airi Riwanu mieme kariuxa kiyeyari meta huku kwinimieme miraye'atika kiyeyari, ne nepitimate te'a'uximayatamete mepite'akumate 'iki kiyexi witeyariki. Neteiterima meta 'ateiterima yunaiti mekatenita'uximayatakuni,",
-        "9": "kiyexi waikawa memikuxeirieniki, tuki nemitawewieni 'apati kanayeimiki mariweti.",
-        "10": "Te'a'uximayatsiriwamete kiyexi memitiwiteni nekaniwayetuiriemiki xeitewiyari miriyari tiriku 'ikayari, xeitewiyari miriyari tsewara 'ikayari, kaxie winuyari nauka tsienituyari heimana huta tewiyari miriyari rituruyari meta yaxeikia paimeme rituruyari huriwa hatseitiyari».",
-        "11": "Hiki Hirami Tiru kwieyaritsie ti'aitame, Tsarumuni kaniuta'eiya xapa kaneini'airieni mipai 'ayetaineme:",
-        "12": "«Yawé ti'aitame kamenayeitiani yuteiterima wahetsiemieme, waikawa matsinaki'erieti. Yawé 'aixia ketikuxaxatsiwani, 'Ixaheri Kakaiyarieya, kwie meta taheima muyema muyuawi mutawewi, ti'aitame Rawiri mupitia yuniwe mayexeiyaki, timaiweme meta reutamaiweme, miki kanitawewimiki paratsiyu 'amipa meta Yawé tukieya.",
-        "13": ">>Kamitsi Hirami-'Awihi nepimatsi'anuni'airieni, mitimaiwe meta mireutamaiwe,",
-        "14": "pihiki maamaya Rani xiiyarieya meta 'ukiyarieya Tiru pikiekame. Miki meta katineuta'uximayataweni, huruki pirataki, wurunitseki meta tepiaki, tetetsie meta kiyetsie, meta 'ixuriki kwimixetaki meta miyitsikimaiyeki, rinu 'ixurikiyariki meta 'ixuriki mixetaki, meta naime katineutaxixiweni meta tsepa kemitiu'aitiarie kaniyiweni. Hirami katinita'uximayatamiki 'ateiterima memitemate wahamatia meta Rawiri 'a'ukiyari neti'atiwame miwaranayexei wahamatia.",
-        "15": ">>>Hiki ketanani'airi tiriku, meta tsewara, huriwa hatseitiyari meta kaxie winuyari pemitatsi'utaxatia neti'aitiwame.",
-        "16": "Tame hiritsie Riwanu mieme kiyexi tepitiwiteni kepaimeme pemeuyehiwa, te'itihiame waikakawame tepenuhautsitiani haramaratsie Kupe paiti. 'Ekitari mana pekatinita'aitamiki Kerutsareme paiti manutikieniki».",
-        "17": "Tsarumuni 'Ixaheri kwieyaritsie memititekai tewa kiekatari yunaime kaniwaruti'iniata. Meripaitiri Rawiri piwaruti'iniatakai, hikita 'iki mepaki xeitsienituyari heimana huta tewiyari heimana tamamata heimana haika miriyari heimana 'ataxewi tsienituyari (153.600).",
-        "18": "Te'ikatamete kaniwarayeitiani haika tewiyari heimana tamamata miriyari (70.000) meyupaimeme, tetexi xixiwamete hiritsie memu'uwani kaniwarayeitiani nauka tewiyari miriyari (80.000) meyupaimeme, meta te'uximayatamete tewa'aitiwamete kaniwarayeitiani haika miriyari heimana 'ataxewi tsienituyari meyupaimeme (3.600)."
-      }
-    },
-    {
-      "chapter": 3,
-      "verses": {
-        "1": "Hiki kanitsutiani Tsarumuni Yawé tukieya wewieneti Muriya yemuriyaritsie Kerutsareme kiekariyaritsie, hakewa Yawé meyuhekiataxi 'ukiyarieya Rawiri hixie. Mana kanitawewieni hakewa Rawiri metaxatakai, 'Arahuna* maka'etsakaitsie, kewutseu tewiyari.",
-        "2": "'Uximayatsika kaniutsutiani nauka wiyari ti'aitati meta hutarieka metseritsie meta hutarieka tukariyaritsie.",
-        "3": "'Iki 'iniari Tsarumuni miyetia kanihikitini Kakaiyari tukieya tsutimeyari hetsiemieme, 'emeutatewatsie xeitewiyari heimana 'atahuta meturuyari pexeiyakai, 'etsimauyewatsie 'atanauka meturuyari pexeiyakai.",
-        "4": "Tuki hixie kii meukumiakai kitenietsie yaxeikia pitewikai tuki 'etsimauyewatsie kematayeukai, tatsiari, 'atanauka meturuyari tewiti meta 'atanauka meturuyari heutitewati. Taitanatsie huru mihikiaki piwakuwiri Tsarumuni.",
-        "5": "Tukita 'amuyeyewatsie huku miraye'axe mex-ayari kaniwakumana, mikitsie taki 'ikiyari kani-waku'utiani meta huru tepiayari 'aixia mi'ane kaunariyari.",
-        "6": "Tuki witsikaniuta'itiarieni tetexi wits-imi'aneneki meta huru Pariwahini kwieyaritsie miemeki.",
-        "7": "Tuki taita pikaxite manuyehe huru kaniti-wirieni, meta kitenie manuyehe, tuki 'ixumeri-yari, meta 'ituparite, meta tuki 'ixumeriyaritsie kaniwarawewiexiani Kakaiyari teitametemama.",
-        "8": "Tsarumuni Waikawa Muyepatsie kani-utawewieni, yaxeikia paimeme pexeiyatikatei tuki kematayeukai, 'ipai paimeme xeiyakai, 'atanauka meturuyari tewiti, yaxeikiata 'atayeuti. Taitanatsie huru muhikiaki kaniwakuwirieni, xeitewiyari heimana haika miriyari kiruyariki.",
-        "9": "Huru kirapuxiyari xexuiti meriyu kiruyari pirahetekai. Yaxeikiata kii wapaiti muyewaikawa huru kaniuyewiriexiani.",
-        "10": "Waikawa Muyepatsietsie Kakaiyari teitametemama yuhutati memitiwewiyaniki katiniuta'aita, meta huru kaniwarukawirieni.",
-        "11": "Kakaiyari teitametemama yuhutati yu'anate metatseratikaiti 'atanauka meturuyari mepatayeukai. Yuxewiti Kakaiyari teitameya 'anateya xexuiti huta meturuyari heimana xeitewiyari heimana 'auxiwi tsenitimeturuyari pexeiyatikatei, xewiti 'anaya tuki 'ixumeriyaritsie peuta'axekai, xeimekita hutarieka mieme Kakaiyari teitameya 'anayatsie peuta'axeikai.",
-        "12": "Kakaiyari teitameya hutarieka mieme mikitatsiere 'anateya xexuiti huta meturuyari heimana xeitewiyari heimana 'auxiwi tsenitimeturuyari pexeiyatikatei, xewiti 'anaya tuki 'ixumeriyaritsie peuta'axeikai, xeimekita matiari mieme Kakaiyari teitameya 'anayatsie peuta'axekai.",
-        "13": "Kakaiyari teitametemama mepiti'ukai heitserie meheutaneniereti tukita, yunaiti yu'anate metaweratikaiti 'atanauka meturuyari mepatayeukai."
-      }
+      "nombre": "2 Kemitiuyi",
+      "capitulo": [
+        {
+          "numero": 1,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Merikitsi Tsarumuni Rawiri nu'aya mira'aita tirikaiyeti kanayani, Yawé Kakaiyarieya hamatiana muyeikakaiki meta waikawa tirikaiyeme kanayeitiani."
+            },
+            {
+              "numero": 2,
+              "texto": "Hiki Tsarumuni yunaime 'ixaheritsixi teiteriyari kaniwarutahiawe, 'iki xeimiriyari meta xeitsienituyari kuyaxi tewa'aitiwamete metatsiere kuwexinaruritsixi, meta yunaime 'Ixaheri nuiwarimama wa'ukiyarima."
+            },
+            {
+              "numero": 3,
+              "texto": "Hiki miki meta yunaiti memeweiyakai mekaniyukuxeirieni mirakutewatsie, tukita muwa Kawahuni Kakaiyari mekaniutahiawekaitini, Muitsexi Yawé ti'uximayatsiriwame, makumawetsie 'ixuriki tukiyari Kakaiyari hetsiemieme mitawewiekai."
+            },
+            {
+              "numero": 4,
+              "texto": "Kerutsareme kiekariyaritsie Kakaiyari tiratuya kakuniyari kaniukateitini, Rawiri mana pi'atiakai Kiriati-Yeharini paiti kepauka meiyetitsie,"
+            },
+            {
+              "numero": 5,
+              "texto": "peru mawari taiyame wurunitse tepiayariki miwewiya Wetsareri mitawewi, 'Urihi nu'aya meta Kuxi teukarieya, Kawahuni paiti kanewekaitini, Yawé tukieya hixie. 'Ayumieme Tsarumuni meta 'ixaheritsixi mana mekanekine Yawé mehetahiaweke."
+            },
+            {
+              "numero": 6,
+              "texto": "Mana Tsarumuni Yawé hixie, mana mawari taiyame hixie 'uyaka 'ixuriki tukiyari manuwe, hetsiena xeimiriyari mawari taiyariyari kani-uwewieni."
+            },
+            {
+              "numero": 7,
+              "texto": "Hiki miki tikaritsie Kakaiyari Tsarumuni hixie kaniuyuhekiata mipai katinitahiawe:"
+            },
+            {
+              "numero": 8,
+              "texto": "-Tita pemireuyehiwa kenetineutawawiri. Mipai Tsarumuni katinita'eiya:"
+            },
+            {
+              "numero": 9,
+              "texto": "-'Eki ne'ukiyari Rawiri pe'inaki'erieti 'aixia pepitixeiyakai, hikita ne hetsiena mieme nemitita'aitaki pepinetsi'anayexei. Yawé meta Kakaiyari, ne'ukiyari Rawiri kepemitiutahiawixi kenaye'atia, 'ekitsi ti'aitame pekanenayeitiani teiteri memiyumiire wahetsiemieme tumuanari kwiepa mieme hepai."
+            },
+            {
+              "numero": 10,
+              "texto": "Ne nepimatsiwawirie nemitimaiweniki meta nemireutamaiweniki nemitiwata'aitianiki 'iki 'ateiterima memiyumiire, xika piyiwe mipai pekanetiupitiani, ¿kemi'ane mitiwata'aitiani?"
+            },
+            {
+              "numero": 11,
+              "texto": "Hiki Kakaiyari Tsarumuni mipai katiniutahiawe:"
+            },
+            {
+              "numero": 12,
+              "texto": "-Metsi pekaneniwawirieka pemitimaiweniki meta pemirakumaikaki para neteiterima pemitiwata'aitianiki, wahetsiemieme ti'aitame nemimatsi'ayeitia, peru 'atsipepikahaine pemixikutiniki, pemimariwaniki, pemirexeiyaniki meta memimatsi'aye'unie memikwiniki meta tukari waikawa pemexeiyaniki 'atsipepikahaine, ne nepimatiyetuirieni."
+            },
+            {
+              "numero": 13,
+              "texto": "Peru nekamanipitiamikita pemixikutiniki, pemirexeiyaniki meta pemimariwaniki, meripaiti te'aitamete kenemikatiwarupitia meta nixewiti 'a'utima memanuka'uni mipai mepikayini."
+            },
+            {
+              "numero": 14,
+              "texto": "Hiki 'arike Tsarumuni 'ixuriki tukiyari manuwe Kawahuni mirakutewatsie 'akaneka kanayeyani Kerutsareme kaneyani, mana 'ukaiti katiniuta'aita naime 'Ixaheri kwieyaritsie."
+            },
+            {
+              "numero": 15,
+              "texto": "Kawayutsixi Tsarumuni waikawa warexeiyati patia meta kaxetate kuyaxa miemete: xeimiriyari heimana nauka tsienituyari (1.400) meyupaimeme piwarexeiyakai kaxetate, meta kawayutsixi tamamata heimana huta miriyari (12.000) mepiyupaimekai, miki kawayutsixi kaxetate kuyaxa mieme muwa'uti mepiye'inekai meta hipati Kerutsareme paiti yuparatsiyu 'aurie piwaye'inakai."
+            },
+            {
+              "numero": 16,
+              "texto": "Kerutsareme kiekariyaritsie ti'aitame pirata meta huru kwinimieme paimeme pexeiyakai tetexi kemiti'ane hepai, meta kariuxa kiyeyari waikawame pexeiyakai piní makuweri mieme hepai."
+            },
+            {
+              "numero": 17,
+              "texto": "Tsarumuni kawayutsiximama 'Ekipitu kwieyaritsie mepinanaiyakatetikai meta Kuha, mana paiti ti'aitame tetuayametemama mepiwatinawekai. Kaxeta kuyaxa mieme 'Ekiputu kwieyaritsie nanaiyakame piraye'akai 'ataxewime tsienituyari pirata tuminiyari, yuxewiti kawayu paye'akai xeitsienituyari heimana huta tewiyari heimana tamamata. 'Iki kaxetate kuyaxa miemete meta kawayutsixi yunaime te'aitamete hetitsixi meta tsiriyutsixi 'arike mepiwatuiriekaita."
+            }
+          ]
+        },
+        {
+          "numero": 2,
+          "versiculos": {
+            "1": "Merikitsi Tsarumuni yakaniutayini yuparat-siyu mitawewieniki meta tuki Yawé hetsiemieme.",
+            "2": "Hiki te'ikatamete kaniwaru'uitiani haika tewiyari heimana tamamata miriyari, meta nauka tewiyari miriyari tetexi xixiwamete memiteta'uximayataki hiritsie. Piwaru'uitiata haika miriyari heimana 'ataxewi tsienituyari te'uximayatamete tewa'aitiwamete.",
+            "3": "Hiki Tsarumuni 'iki niuki Hirami Tirutsie ti'aitame kaneni'airieni:",
+            "4": "«Kenenani'airi kariuxa kiyeyari, ne'ukiyari Rawiri kepemireyeni'airi hepai paratsiyu mitawewieniki. Ne tuki Yawé takakaiyari hetsia mieme nekanitawewimiki. Hetsiena mieme patsiekame nepayeitiani, muwa 'ikwa witsimu'ia nemititaiyaniki, meta paa mipatsie yanepiremaniriwani, mawari taiyariyari ximeri meta taikai nepitiwewiriwani, mawari xawatikimieme meta metseri manatiwenitsie mieme, meta hipame 'ixiarari Yawé takakaiyari hetsiemieme. 'Iki 'Ixaheri kwieyaritsie yuheyemeki mipai mepiteyurieka.",
+            "5": "Tuki nekanitawewimiki mariwekame, matsi takakaiyari kanimariweni kakaiyarixi.",
+            "6": "Perutsi, ¿tete'itawewirieni tuki, matsititi muyuawi tsepa kemeutitewa hetsiena mieme 'etsipiyewa? Ne tsepa tixaiti nemikatihiki, tuki nepitawewirieni muwa 'ikwa mititaiyariwaniki hetsiena mieme.",
+            "7": ">>Xeime kenenani'airi ti'uximayatame rakumaikame huruki, pirataki, wurunitseki, tepiaki, 'ixuriki kwimixeta, mixeta meta miyitsikimaiyeki, mireutaxixiwe naimeki, mitita'uximayataki 'ena kiekatari memiteheutamate nemiwarexeiya wahamatia Kura kwieyaritsie meta Kerutsareme, ne'ukiyari Rawiri meripaiti miwaruta'iniekai.",
+            "8": ">>Kenenani'airi Riwanu mieme kariuxa kiyeyari meta huku kwinimieme miraye'atika kiyeyari, ne nepitimate te'a'uximayatamete mepite'akumate 'iki kiyexi witeyariki. Neteiterima meta 'ateiterima yunaiti mekatenita'uximayatakuni,",
+            "9": "kiyexi waikawa memikuxeirieniki, tuki nemitawewieni 'apati kanayeimiki mariweti.",
+            "10": "Te'a'uximayatsiriwamete kiyexi memitiwiteni nekaniwayetuiriemiki xeitewiyari miriyari tiriku 'ikayari, xeitewiyari miriyari tsewara 'ikayari, kaxie winuyari nauka tsienituyari heimana huta tewiyari miriyari rituruyari meta yaxeikia paimeme rituruyari huriwa hatseitiyari».",
+            "11": "Hiki Hirami Tiru kwieyaritsie ti'aitame, Tsarumuni kaniuta'eiya xapa kaneini'airieni mipai 'ayetaineme:",
+            "12": "«Yawé ti'aitame kamenayeitiani yuteiterima wahetsiemieme, waikawa matsinaki'erieti. Yawé 'aixia ketikuxaxatsiwani, 'Ixaheri Kakaiyarieya, kwie meta taheima muyema muyuawi mutawewi, ti'aitame Rawiri mupitia yuniwe mayexeiyaki, timaiweme meta reutamaiweme, miki kanitawewimiki paratsiyu 'amipa meta Yawé tukieya.",
+            "13": ">>Kamitsi Hirami-'Awihi nepimatsi'anuni'airieni, mitimaiwe meta mireutamaiwe,",
+            "14": "pihiki maamaya Rani xiiyarieya meta 'ukiyarieya Tiru pikiekame. Miki meta katineuta'uximayataweni, huruki pirataki, wurunitseki meta tepiaki, tetetsie meta kiyetsie, meta 'ixuriki kwimixetaki meta miyitsikimaiyeki, rinu 'ixurikiyariki meta 'ixuriki mixetaki, meta naime katineutaxixiweni meta tsepa kemitiu'aitiarie kaniyiweni. Hirami katinita'uximayatamiki 'ateiterima memitemate wahamatia meta Rawiri 'a'ukiyari neti'atiwame miwaranayexei wahamatia.",
+            "15": ">>>Hiki ketanani'airi tiriku, meta tsewara, huriwa hatseitiyari meta kaxie winuyari pemitatsi'utaxatia neti'aitiwame.",
+            "16": "Tame hiritsie Riwanu mieme kiyexi tepitiwiteni kepaimeme pemeuyehiwa, te'itihiame waikakawame tepenuhautsitiani haramaratsie Kupe paiti. 'Ekitari mana pekatinita'aitamiki Kerutsareme paiti manutikieniki».",
+            "17": "Tsarumuni 'Ixaheri kwieyaritsie memititekai tewa kiekatari yunaime kaniwaruti'iniata. Meripaitiri Rawiri piwaruti'iniatakai, hikita 'iki mepaki xeitsienituyari heimana huta tewiyari heimana tamamata heimana haika miriyari heimana 'ataxewi tsienituyari (153.600).",
+            "18": "Te'ikatamete kaniwarayeitiani haika tewiyari heimana tamamata miriyari (70.000) meyupaimeme, tetexi xixiwamete hiritsie memu'uwani kaniwarayeitiani nauka tewiyari miriyari (80.000) meyupaimeme, meta te'uximayatamete tewa'aitiwamete kaniwarayeitiani haika miriyari heimana 'ataxewi tsienituyari meyupaimeme (3.600)."
+          }
+        },
+        {
+          "numero": 3,
+          "versiculos": {
+            "1": "Hiki kanitsutiani Tsarumuni Yawé tukieya wewieneti Muriya yemuriyaritsie Kerutsareme kiekariyaritsie, hakewa Yawé meyuhekiataxi 'ukiyarieya Rawiri hixie. Mana kanitawewieni hakewa Rawiri metaxatakai, 'Arahuna* maka'etsakaitsie, kewutseu tewiyari.",
+            "2": "'Uximayatsika kaniutsutiani nauka wiyari ti'aitati meta hutarieka metseritsie meta hutarieka tukariyaritsie.",
+            "3": "'Iki 'iniari Tsarumuni miyetia kanihikitini Kakaiyari tukieya tsutimeyari hetsiemieme, 'emeutatewatsie xeitewiyari heimana 'atahuta meturuyari pexeiyakai, 'etsimauyewatsie 'atanauka meturuyari pexeiyakai.",
+            "4": "Tuki hixie kii meukumiakai kitenietsie yaxeikia pitewikai tuki 'etsimauyewatsie kematayeukai, tatsiari, 'atanauka meturuyari tewiti meta 'atanauka meturuyari heutitewati. Taitanatsie huru mihikiaki piwakuwiri Tsarumuni.",
+            "5": "Tukita 'amuyeyewatsie huku miraye'axe mex-ayari kaniwakumana, mikitsie taki 'ikiyari kani-waku'utiani meta huru tepiayari 'aixia mi'ane kaunariyari.",
+            "6": "Tuki witsikaniuta'itiarieni tetexi wits-imi'aneneki meta huru Pariwahini kwieyaritsie miemeki.",
+            "7": "Tuki taita pikaxite manuyehe huru kaniti-wirieni, meta kitenie manuyehe, tuki 'ixumeri-yari, meta 'ituparite, meta tuki 'ixumeriyaritsie kaniwarawewiexiani Kakaiyari teitametemama.",
+            "8": "Tsarumuni Waikawa Muyepatsie kani-utawewieni, yaxeikia paimeme pexeiyatikatei tuki kematayeukai, 'ipai paimeme xeiyakai, 'atanauka meturuyari tewiti, yaxeikiata 'atayeuti. Taitanatsie huru muhikiaki kaniwakuwirieni, xeitewiyari heimana haika miriyari kiruyariki.",
+            "9": "Huru kirapuxiyari xexuiti meriyu kiruyari pirahetekai. Yaxeikiata kii wapaiti muyewaikawa huru kaniuyewiriexiani.",
+            "10": "Waikawa Muyepatsietsie Kakaiyari teitametemama yuhutati memitiwewiyaniki katiniuta'aita, meta huru kaniwarukawirieni.",
+            "11": "Kakaiyari teitametemama yuhutati yu'anate metatseratikaiti 'atanauka meturuyari mepatayeukai. Yuxewiti Kakaiyari teitameya 'anateya xexuiti huta meturuyari heimana xeitewiyari heimana 'auxiwi tsenitimeturuyari pexeiyatikatei, xewiti 'anaya tuki 'ixumeriyaritsie peuta'axekai, xeimekita hutarieka mieme Kakaiyari teitameya 'anayatsie peuta'axeikai.",
+            "12": "Kakaiyari teitameya hutarieka mieme mikitatsiere 'anateya xexuiti huta meturuyari heimana xeitewiyari heimana 'auxiwi tsenitimeturuyari pexeiyatikatei, xewiti 'anaya tuki 'ixumeriyaritsie peuta'axeikai, xeimekita matiari mieme Kakaiyari teitameya 'anayatsie peuta'axekai.",
+            "13": "Kakaiyari teitametemama mepiti'ukai heitserie meheutaneniereti tukita, yunaiti yu'anate metaweratikaiti 'atanauka meturuyari mepatayeukai."
+          }
+        }
+      ]
     }
   ]
 }

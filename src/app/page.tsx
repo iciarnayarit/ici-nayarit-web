@@ -11,11 +11,7 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <DailyVerse />
-          {
-              /**
-               <RegisterInvitation />
-               * */
-          }
+          <RegisterInvitation />
         <ReadingPlans />
         <DownloadApp />
       </main>

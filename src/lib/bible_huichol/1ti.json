@@ -1,149 +1,281 @@
 {
-  "abbrev": "1ti",
-  "name": "1 Timuteu (Primera Epístola a Timoteo - Huichol)",
-  "language": "Huichol",
-  "chapters": [
+  "nombre_biblia": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
+  "abrev": "1Ki",
+  "idioma": "Huichol",
+  "libro": [
     {
-      "chapter": 1,
-      "verses": [
-        "Ne Papuru Kiritsitu Ketsutsi ni'arieya nekanihikitini mipai mitiu'aitaxiki tatsiwikweitsitiwame Kakaiyari, meta kemi'anetsie yuri temite'erie mexi teta'ikwewa Kiritsitu Ketsutsi mipai mitiu'aitaxiki[cite: 534],",
-        "nekamaniwairitiaka Timuteu, yuriki neniwe pekanihikitini yuri temite'erieki: Kakaiyari mita'ukiyari meta Kiritsitu Ketsutsi mitati'aitiwame 'aixia mekete'u'iyarini 'ahetsiemieme, mekematsinenimayaka, meta mekematsipitiaka 'a'iyaritsie pemika'uximatiariekaki. [cite: 535, 536]",
-        "'Ikitsika 'axami'ane hepaitsita kemitita'imaiyaxi Matseruniya kwieyaritsie kepauka nemiyemieximekai, mipai nepimatiuhiritia 'Epetsutsie pemi'ahayewaki, pemitiwata'aitianiki hipame kapa yiki mete'ikitaniki [cite: 537]",
-        "meta kapa mewaru'enieniki yaki xeikia kememite'u'ixatsita meta niuki mikapariweki xeime ramare hepaitsita. Kemi'ane mipai miti'ikita niuki xiatiarika piwewie xeikia, pikaheye'atia tita Kakaiyari mitihiritia para yuri ti'erieti yamitiyurieneniki. [cite: 538, 539]",
-        "'Iki 'ayumieme pukuyiane mitiyukanaki'eriekaki 'iyarieya 'itiyakaku, ka'itate'akaku meta yuri ti'erieti peru huta 'iyariyari kahexeiyati. [cite: 545]",
-        "Hipati xaitsie meheukuyuneka miki hepaitsita ta'aurie mekanaxirieni, 'ayumieme yaki xeikia mekatenikuxatani. [cite: 546]",
-        "Piwanake 'iniari niukiyari hepaitsita memite'ikitaniki, peru 'atsimepikatemate tita memitekuxata meta mepikaheitimaiwawe tita memitexata tsepa tirikaiyemeki mipai memitekuxata. [cite: 548, 549]",
-        "Tsirikite mipai tepitemate, 'iniari niukiyari 'aixia kani'aneni, tewi xika yatikamieni he'eriwati 'iniari mihikiki. [cite: 550]",
-        "Mipai timaiti, 'iniari pikaheuyewetse xika tewi heitseriemeki yatikamieni hetsiena, miki 'iniari memititsana wahepaitsita pita pikuxaxatsiwa, miki memika'enana wahepaitsita meta miki Kakaiyari memika'ayexeiya 'axamemiteyurie wahepaitsita, miki 'axamemi'anene Kakaiyari memixani'erie wahepaitsita, miki memiwakuya yupaapama wahepaitsita, meta memiteyumemiwa miki [cite: 551, 552, 554, 555]",
-        "memiwakumaiwa kemi'ane mikawa'iya mikawakina meta 'ukitsi hipame 'ukitsi memiwakumaiwa wahepaitsita, memiwanawatiwe teiteri wahepaitsita, miki memiteyu'itaiya meta memiyihiritia mete'itawati miki wahepaitsita. Hipati yunaiti memeye'unie 'ikitsika 'aixia mi'ane, miki wahepaitsita pikuxaxatsiwa 'iniari, [cite: 556, 557, 558]",
-        "kemaine miki niuki mipai manuyine witsikemitimariwa Kakaiyari yutemawieti, kenemitiuhiritiarie yanemitikuxataniki ne. [cite: 559, 563]",
-        "Pamipariyutsi nekanipitiaka kemi'ane mitiu'aitiwame, minetsi'erieki, nemiti'uximayakaki, Ketsutsi Kiritsitu miki yanetikamieme minetsi'anayexeiki mipai [cite: 566, 567, 568, 569, 570, 571, 572]",
-        "tsepa ne meripaiti 'axanemutainekai hepaitsitana, tsepa nemitaweiyaxi, tsepa nemitawe'eriekai, neputinenimayatsie matsi mipai nemitiyurienekaiki 'atsinekatimaiti kepauka yuri nemikati'eriekai. [cite: 573]",
-        "Tati'aitiwame kwinimieme 'aixia pitiuka'iyarikai nehetsiemieme, pinetsi'upitia yuri nemiti'eriekaki nemitinekanaki'eriekaki Kiritsitu Ketsutsi hetsie netiwiyati. [cite: 574]",
-        "'Iki niuki yuriki paine meta kaneuyeweka minaki'eriwaniki yemeki: kename Kiritsitu Ketsutsi kwiepa nua 'axateyuruwamete watawikweitsitianike, ne miki 'axateyuruwamete watsata mexiakame nepihiki. [cite: 575]",
-        "Peru 'ayumieme neputinenimayatsie, Ketsutsi Kiritsitu matsi waikawameki matsiikime mayeitianiki nehetsie, naimeki kemireuteriwe tiuka'eniwati, 'iniari nemayaniki mexiakame nehikititi, meminetsiha'eriwaniki miki 'arike hetsiena yuri memiteta'erieni yuheyemeki tukari mikaxiwe memexeiyaniki. [cite: 576]",
-        "Kemi'ane kwiepa naime miti'aitame yuheyemeki, kemi'ane mikapiniwe, mikaxeiyariewe, yuxewiti timaiweti Kakaiyari, miki mariweme kexatsiwani meta witsiketixeiyarieka yuheyemeki tsepaneti xeitsienituyari wiyari manuyekika. Mipai xeikia kani'aneni. [cite: 577, 581]",
-        "Neuxei neniwe Timuteu, 'ipai nepimati'aitia, nepimatsihiritia yaxeikia niuki 'ahepaitsita kemitiutaxatsie meripaiti kename mipai petiyurienikekai. [cite: 582]",
-        "Kepemitihekiatsiekai, kuya hepai keneyianeni, 'aixia 'anemeki kene'amieneni yuri peti'erieti 'a'iyari kamatsi'utate'akaku. Hipati memitixani'eriki wa'iyari warutate'akaku, yuri kememite'eriekai mepukayunixi. [cite: 583, 584]",
-        "Mipai mekani'aneneni Himeneu meta 'Arekanituru, miki nepiwayetua Kauyumarie hetsia, mikiki mipai memiteta'ikitiarieniki 'axamemikatekuxataniki. [cite: 585]"
-      ]
-    },
-    {
-      "chapter": 2,
-      "verses": [
-        "'Ayumieme mipai nepimatituika mipai yemeki mireuyewetseki, xekenewawirieka Kakaiyari, nenewieri xekenepitiaka, xeketenewawirieka meta pamipariyutsi xekenepitiaka yunaime teiteri wahetsiemieme, [cite: 588]",
-        "kwiepa te'aitamete wahetsiemieme meta yunaime 'itsikate wahetsiemieme, tame kayuwati te'umati teka'uximatiarieti 'atemu'uwaniki, naimeki Kakaiyari te'ayexeiyati 'aixia tetekahuti. [cite: 589]",
-        "Xika mipai 'aneni 'aixia kaniyimiki meta mipai katininakeni tatsiwikweitsitiwame Kakaiyari. [cite: 590]",
-        "Mipai pitinake yunaiti teiteri memitawikweitsitiarieniki meta tita yuri miraine metemaiti memakineki. [cite: 591]",
-        "Kakaiyari kaniyuxewini meta niukame puyuxewi kemi'ane Kakaiyari mikihiawe meta teiteri, tewititi Kiritsitu Ketsutsi, [cite: 595]",
-        "miki piyuyetua yunaime wahetsiemieme waxinake. Mipai pitiuhekiatsie tukaritsie yemeki meuyewekaitsie 'aye'aku, [cite: 596]",
-        "neta 'ayumieme nepukerie tixaxatame ni'ari. Yuri nepaine, nepikati'itawa: Nepukerie memikahuriyutsixi nemitiwata'ikitianiki tita yuri temite'erie hepaitsita tita yuri miraine hepaitsita. [cite: 597]",
-        "'Ayumieme mipai pinetinake, memeyutixexeiriwa 'ukitsi mekeyunenewieka yumamate muyuawitsie meheutitseratikaiti mepatsieti, tixai mekaha'ati meta mekaxiatiati yu'iyaritsie. [cite: 598, 599]",
-        "'Ukari meta, mekeyukemaritiaka kemitiheitserie, memixeiyariekaki mekayiati meta meyumaiwaweti, mepikateyukutsatsaweni, huru, meta 'ixuriki kwinie miraye'atikaki xeikia mepikayukemaritiaka. [cite: 603]",
-        "'Aixia kememite'u'iyariki pita mekeyukemaritiaka, 'aixia kaniyimiki mipai memiteyurieka 'ukari mipai memutiyuane kename Kakaiyari me'ayexeiya. [cite: 605, 606]",
-        "'Uka kayuwati 'umati ketiyi'ikitiaka, keyuwairiyani miti'aitiariekaki. [cite: 607, 609, 608]",
-        "Nepika'ipitia 'uka miti'ikitaniki 'uki miti'aitiakaki, matsi peuyewetse kayuwati mumakaki pita. [cite: 610]",
-        "'Arani meri putawewiya, 'arike 'Ewa. [cite: 611]",
-        "'Arani meta pikatiu'iriwiyarie, peru 'uka tiu'iriwiyarieka 'aitsika tsaname patia. [cite: 612]",
-        "Kanitawikweitsitiariemiki kepauka mitiniweni, yuri mete'erieti, meteyukanaki'erieti meta mepatsieti xika meyuhayewani meyumaiwaweti. [cite: 617, 618, 619, 620]"
-      ]
-    },
-    {
-      "chapter": 3,
-      "verses": [
-        "'Iki niuki yuriki paine, kemi'ane ti'iwiyame mayeimiki, miki 'uximayatsika 'aixia mi'ane pihiwe'erie. [cite: 625]",
-        "'Ayumieme kaneuyeweka ti'iwiyame hetsie tixaiti mikarahiiwaniki tsepa mutaxanetsie, xeime hikia 'ukaratsi pawitikini, piyumaika, pitimaiweni, 'aixia pitixeiyarieka, piwanaki'erieka tewanarixi, piti'ikitaweni, [cite: 627]",
-        "tawekame pikahikitini meta pikawatiwayani, tumini pikahiwe'erieka, matsi pika'ayu'eriyani, pikayumieneni, [cite: 628]",
-        "'aixia 'anemeki pitiwa'aitiaka yukie kiekatari meta yitiriyama piwarexeiyani tiwa'aitiati naimeki meta 'aixia 'anemeki mepei'enieka, [cite: 629]",
-        "kemi'ane 'atsimikatimate yukie kiekatari mitiwa'aitiakaki, ¿keri tiwa'iwiyani memiyutixexeiriwa Kakaiyari hetsia miemete? [cite: 630]",
-        "Xike yuri mitiuta'eri pikahikitini, kapa 'uyuta'ireme kauyumarie hepai 'uximatiarika 'upitiarieni. [cite: 631]",
-        "Kaneuyeweka yuri memikate'erie 'aixia memite'ihekiataniki kapa 'axatiuxeiyarieme kauyumarie winiyarieyatsie 'uyukahiani. [cite: 632]",
-        "Yaxeikiata teparewiwamete, peuyewetse mipai memi'aneneniki, 'aixia mepitekahuni, yuriki mepitekuxatani, mepikatariwetiweni, tumini mepikahiwe'erieka meteyukwamanakuti, [cite: 633, 637]",
-        "wa'iyari 'itiyatikaikaku kawatate'akaku mepi'iwiyani niuki matsiikiti mayeitiarie titatsie yuri temite'erie. [cite: 637]",
-        "Mikita yaxeikia wahepai meke'uta'iniatsieni meri xika meyiwaweni, 'arike teparewiwamete meke'akine xika wahetsie karahiiwani. [cite: 638]",
-        "Yaxeikiata wa'iitama 'aixia mepitekahuni, niuki peraixi mepikayiaka, mepiyukemaka meta heitseriemeki yamepitekahuni naimeki. [cite: 639]",
-        "Tiparewiwame xeime hikia yi'iya pawitikini, meta 'aixia 'anemeki yitiriyama ketiwa'aitiaka meta yukie kiekatari. [cite: 640]",
-        "Kemi'ane tiparewiwameki yemeki memeye'atia yihiritiarika, miki mepite'iwa 'aixia memitexeiyarieniki, meta meyuyetuati yuri memite'erieki Kiritsitu Ketsutsi hetsie. [cite: 641]",
-        "Tsepaneti kwitiwa 'ahetsia nemeyeikani, 'ipai nepimati'utiirie, [cite: 642]",
-        "mexika nekahenuaweni, ketinemaika kemireuyewetse kehepai mitiuyeikani Kakaiyari kie kiekatari watsata, miki mekanihikitini memiyutixexeiriwa Kakaiyari mayeniere hetsia miemete, muka'utika meta tsutimeyari tita yuri miraine. [cite: 643]",
-        "Mipai katinihekiaka, pimariwe miki niuki matsiikiti matia, ketemiteheyexeiya Kakaiyari manuyine: Miki matsiikiti kanayani yuwaiyaritsie 'uyeikati, heitserie pupitiarie 'Iyari hexeiyati, niuki tuayamete mepixei, pikuxaxatsiwakai nuiwarite watsata, yuri mepite'uta'eri hetsiena kwiepa memitama, witsi'aneti panutiwitikie. [cite: 644, 645, 646, 647, 651, 652]"
-      ]
-    },
-    {
-      "chapter": 4,
-      "verses": [
-        "Yakatinihekiaka 'Iyari kemaine, 'imatirieka 'aye'aximekaku, hipati mekatenihayewakuni yuri mete'erieti, 'iyarite memite'itawa mepiwa'enieni meta kakaiyarixi yakixeikia kememite'ikita, [cite: 655]",
-        "mete'ikitati yaki xeikia metekuxatati, Kauyumarie 'iniarieyaki mepitepiatiarieni yu'iyaritsie, 'ayumieme pikawarutate'ani wa'iyari. [cite: 656]",
-        "Mipai mepite'aitani memikaneneikeniki memikawikiekaki meta memitehayewaniki hipame 'ikwaite metekwati, tsepa Kakaiyari minetia 'ikwaite memenu'iniki pamipariyutsi me'ipitiati miki yuri memite'erie, miki tita yuri miraine memitehetima. [cite: 657]",
-        "Naime Kakaiyari mitiunetia 'aixia katini'aneni, tixaiti pikatixani'eriwa xika ranupini pamipariyutsi 'ipitiati Kakaiyari, [cite: 658]",
-        "Kakaiyari niukieyaki meta nenewieriki kanitipatsiwani. [cite: 659]",
-        "Mipai xika petiwaruta'ikitiani 'iwamarixi, Kiritsitu Ketsutsi parewiwameya 'aixia mi'ane pekaniyianemiki, pewereti niuki yuri ketemite'erie pe'enieti, 'ikitsika mitseiye pe'enieti kepemitiweiya 'iniaritime. [cite: 660]",
-        "Kememite'u'ixatsita Kakaiyari meka'ayexeiyati 'ixatsi meripaimieme, miki kenexani'erieka. Matsi ketine'a'ikitiaka pemi'iyamakaki Kakaiyari pemayexeiyaniki tirikaiyemeki. [cite: 662, 663, 664, 665, 666]",
-        "Xika tiyi'ikitiaka waiyari mi'iyamakaki miki 'etsiwa pitiyunaki'erie, peru xika Kakaiyari 'ayex-eiyani, naimeki pitiyunaki'erie, tukari mexeiyaki ketemite'utahiawarie temeixeiyaniki hiki meta tukari 'umamietsieta. [cite: 670]",
-        "Miki niuki yuriki paine meta kaneuyeweka minaki'eriwaniki yemeki. [cite: 671]",
-        "Mipai mi'aneki, 'ayumieme tepite'uximaya meta 'axatepitekihiawariwa, yuri temite'uta'eriki Kakaiyari mayenieretsie teta'ikwewati, miki yunaime teiteri kaniwawikweitsitiwametini, matsi yemeki yuri memite'erie. [cite: 672]",
-        "Mipai ketiniwahiritiaka meta mipai ketine'ikitani. [cite: 675, 676, 674]",
-        "Xewiti pikamatsitawe'erieka temaiki 'akuxi pemihikiki. Matsi miki yuri memite'erie mipai memi'aneneniki 'iniari kena'ayeitiwani kepemitiutaniuka, kepemiti'akanaki'erie, kepemitiuyeika, keyapemitikamie 'aniukiki meta kepemiti'itiya. [cite: 677, 678]",
-        "Mexi nekahenuawe, kene'ayumiemetini petiteriwati niuki memi'enieniki, pewatuikati meta peti'ikitati. [cite: 679]",
-        "Ketineuhayewa pe'itimaiyati tita mipai pemitiupitiarie 'iyaritsie timieme, pepitiupitiarie tixaxatame tikuxatakaku, kepauka 'ukirawetsixi 'axeikia 'ahetsie memutimeixia. [cite: 680, 681, 682, 683, 684, 685, 686]",
-        "Mikiki kene'ayumiemetini, mikitsie keneuyeikani yunaiti memimatsixeiyaki kepemiraye'axime. [cite: 687]",
-        "Kene'a'iwiyani meta kene'iwiyani 'ikitsika. Mipai petiyurieneti kene'ahayewa, mikiki meta pepi'atawikweitsitiani pepiwatawikweitsitiani miki memimatsi'enie. [cite: 688, 689, 690]"
-      ]
-    },
-    {
-      "chapter": 5,
-      "verses": [
-        "'Ukiratsi pepikatatieni, matsi pepinitiani 'apaapa hepai. Temari 'a'iwama wahepai ketiniwakihiaweni. [cite: 693, 694, 695]",
-        "'Ukarawetsixi 'amemuyumate 'amaama hepai ketiniwaxeiyani, 'iimarixi 'a'iwama wahepai ketiniwakihiaweni, naimeki pe'itiyati. [cite: 696]",
-        "'Aixia ketiniwaxeiyani wiuraxi xika yemeki meyuxewini. [cite: 697]",
-        "Kemi'ane wiura yuniwema meta yuteukarima miwarexeiya, matsi yemeki kaneuyeweka miki mipai memitehetimaniki 'aixia memitewaxeiyaniki yukie kiekatari, 'amemite'apikaki mewaparewieti yupaapama, mipai Kakaiyari mitinakeki. [cite: 698]",
-        "Kemi'ane wiura yuxaita 'amuka yemeki, miki kemitita'ikwewa Kakaiyari hetsie, 'iwawirieti meta nenewieri 'ipitiati tukariki tikariki. [cite: 699]",
-        "Peru wiura kemi'ane kemitiyikihiawe xeikia 'amuyeika hiwe'erikaki, miki mikiti 'apuyeika tsepa mayeniere. [cite: 700]",
-        "'Ipai ketiwahiritiaka, meke'axiwaweni memiwaxewini. [cite: 701]",
-        "Kemi'ane tewi 'atsimikatimate yukie 'uwikaimete 'aixia mitiwa'axeiyaka, miki miki 'aitsika kanikuxatani yuri temite'erie hepaitsita, miki mi'ane 'axatiuxeiyarieme patia. [cite: 702]",
-        "Wiura 'atsixeitini pepikataniwaxeiyani, tsepa waru'ukiratsiki hikini, 'axeikia hikia yi'iya pawitikini, [cite: 703]",
-        "'aixia memiyihiritiarieni yuri memiteyurie 'aixia mi'ane. Kemi'ane yuriki metemaiwa, nu'aya memiteyakieka, 'iwa memiteyukuxiwa, memiteyuwairiya memiyunaki'erie Kiritsitu hetsie, 'iitama memite'uhekiatani yuhekiye, yunaime 'aixia memitewaye'uniemiki, kexemiteyuyetuati yunaiti tita meyuhayewaniki. [cite: 704]",
-        "Peru wiura te'iimarixi pepikataniwaxeiyani, miki kepauka mehepitiyani Kiritsitu hetsie metewiyati, miki mepeuyeimiki miki yuki mepeuyutewieni. [cite: 705]",
-        "Mikiki wa'ikitsika memimeixia 'axamepititekuxataniki, mepikahekiaka yuri kememite'erieki. [cite: 706]",
-        "Mipaita memutiyuane, meputihutate'ani tukariki tikariki meyuni'iwiyatsiwa, meputiwarunewiwa, 'ayumieme meputiyumiewa teiteri wahetsiemieme, yaki xeikia metekuxata, tita 'axamemikati'itiya memetekuxatati. [cite: 707]",
-        "Ne 'ayumieme nepimatinake wiura te'iimarixi mepe'iyaweni, mepeweneniki, meke'uximayaka yukie kiekatari, mepikate'ipitia 'axatiuxeiyarieme mepitewata'ikitianiki. [cite: 708]",
-        "Tsepa hipati memehepitiyani Kiritsitu hetsie metewiyati mehewewirieni yunaime wahetsiemieme. [cite: 709]",
-        "Kemi'ane 'uka miwarexeiya wiura yuniwema, meke'iwiyani, miki teparewiwamete pikawihetsiwa 'axatiwatitewakaki. [cite: 710]",
-        "'Ukirawetsixi 'aixɨa 'anemekɨ memɨte'uximaya mɨkɨ matsi waɨkawa 'aixɨa mekete'uxeiyarieni, yemekɨ matsi mɨkɨ naimekɨ meyutatuatɨ memɨtekuxata meta memɨte'ɨkita. [cite: 712, 713]",
-        "'Utɨarika xapayari mɨpaɨ paine: «Pepɨka'itsurihɨaka túuru kepauka tɨriku mɨketsinane mɨtihenarienikɨ», mɨpaɨ meta paine «Ti'uximayamete heitserie kanexeiyani mɨtipitɨarienikɨ». [cite: 714, 715]",
-        "Yuri'utaineme pepɨka'erieka xɨka 'ixanetani mɨhɨritɨarie, mexɨka yuhutatɨ yuhaikatɨ memune nierixɨ metehekɨatani xeikɨa pepuwa'enieka. [cite: 716]",
-        "Mɨkɨ 'axamemɨteyurie keniwarutati'a yunaitɨ mematsi'eniekaku hipatɨta marika memexeiyanikɨ. [cite: 717]",
-        "Nekamenihɨritɨaka Kakaɨyari hɨxie meta Kɨritsitu Ketsutsi hɨxie niuki tuayamete memanayexeiyarie mematsixeiyakaku, mɨpaɨ yaketinekamieni, kwitɨwa pepɨka'itahɨawe tewi petimarietɨ xeikɨa peru peka'i'eniewetɨ, 'atsipepɨkatiyurieneni xeime xeikɨa 'aixɨa petixeiyatɨ. [cite: 718]",
-        "Kwitɨwa xeimetsie pepɨka'utimemeni, mɨkɨ meta 'axakememɨteyurie hipatɨ 'ahetsieta rahɨiwanikɨ. Pe'itiyatɨ kene'a'ɨwiyani. [cite: 719, 720]",
-        "Peru ketineuhayewa haa xeikɨa peharetɨ, matsi 'etsiwata winu kenanuye'eni 'ayuriepa pemɨtikuyekɨ mɨixa. [cite: 721]",
-        "'Axamemɨteyurie hipatɨ mepanuyehaitɨrɨwe, kwitɨwa mepɨmatsiɨkɨ tsepa 'itsɨkame mɨkawatahɨawiwe, hipatɨ 'axakememɨteyurie mepu'imatɨ mepɨkawiyariewawe kwitɨwa. [cite: 722, 723]",
-        "Yaxeikɨa mɨkɨ 'aixɨa memɨteyurie kwitɨwa mepɨmatsiɨkɨ, meta tsepa memɨkamatsiɨkɨ, mepɨkayɨwawe memɨ'awietsiekakɨ yuheyemekɨ. [cite: 724, 725]"
-      ]
-    },
-    {
-      "chapter": 6,
-      "verses": [
-        "Waɨriyarika te'uximayatamete kɨye memanuyetekiyarie, yemekɨ wawemete mekewa'erieka yukutsiyarima, xɨka mɨpaɨ meteyurieka 'axapɨkatikuxaxatsiwakuni Kakaɨyari, yuri'utaineme meta niuki temɨte'ɨkita. [cite: 728, 729, 730]",
-        "Yemekɨ memɨteyuwawieni waɨriyarika 'iwamarixi Kiritsitu hetsie memɨtewiyatɨ, mɨkɨ mewawiemete pɨkamatsitawe'erieka yuwaɨriyarima, mɨkɨ memeyutɨkɨtsixɨ mɨpaɨ meyutɨkɨtsixɨ. Memɨte'uximaya xeikɨa keniwawaɨriyani, yuri memɨti'ɨkitatɨ, memɨte'uximayatɨ Kakaɨyari, yemekɨ 'aixɨa mɨtixeniye. 'Ekɨtsɨ, mɨpaɨ kene'ɨkitatɨ. [cite: 731, 732, 733, 734]",
-        "Xɨka tewi yaki xeikɨa mɨti'ɨkitatɨ, pɨka'ɨtani yuri niukiki 'aixɨa mɨ'anene Tati'aitɨwame Ketsutsi Kɨritsitu hetsie, pɨka'ɨtani yuri temɨti'ɨkitatɨ memɨte'uximayatɨ Kakaɨyari, [cite: 736]",
-        "mɨkɨ kaniuyumɨxɨmɨwatenikɨ yuri yu'iyaritsie, 'atsimepitimate tita, yariwa mɨti'ikiitaniyani, yaki xeikɨa mɨti'ikitanikɨ, yu'iyaritsie meputikixiwani mɨpaɨ memɨteykiki. [cite: 737, 738, 739]",
-        "Mɨkɨ meputiwarukahɨawi, yu'iyaritsie mɨtiutaxatsie waɨriyarika. Mɨkɨ memɨyutiyuane, Kakaɨyari mɨti'uximaya, mɨkɨ xeikɨa mɨti'anene mɨtiyu'axiemekakɨ tumini. [cite: 740, 741]",
-        "Tsiepɨre xɨka Kakaɨyari 'ayexeiyani tixaɨtɨ kareuyehɨatɨ, yemekɨ pɨti'iwa. [cite: 743, 744, 745, 746]",
-        "Tixaɨtɨ tepɨkate'atɨkɨkai kwiepa temu'axɨa, 'ayumieme tepɨkayɨwawe tixaɨtɨ temɨte'anutɨni temɨyehu. [cite: 747]",
-        "'Ayumieme, 'ikwai meta kemari xɨka tehex eiyani, mɨkɨkɨ tekenaki'aka. [cite: 748]",
-        "Mɨkɨ memeuka'unikɨ xeikɨa memɨyɨa, mɨkɨ mepekaxɨrieni me'inɨatsietɨ, winiyarikɨ mepɨwiyarieni, waɨkawa mepɨteyukahiwe'erieka 'atsimekatemaitɨ, meteyukwinitɨatɨ. Mɨkɨ hiwe'erika teɨteripɨwakatuikamemɨka'unarienikɨ memɨtatɨmaiyarienikɨ.",
-        "Teɨteri kememɨte'ihiwe'erie tumini, mɨkɨ nanaritsie kaniutineikani naitɨ 'axamɨti'anene, hipatɨ me'ihiwe'erietɨ, mepeuyexɨri yuri mekate'erietɨ mepakɨ, meta mepɨte'uka'eniexɨa waɨkawa hiwerikakɨ.",
-        "'Ekɨtsɨ, Kakaɨyari tewiyari pekanihɨkɨtɨni, kene'ata'unamɨkɨkɨ, mɨpaɨpɨta ketine'amexɨitɨaka, heitseriemekɨ yapemɨtikamienikɨ, Kakaɨyari pemayexeiyanikɨ, yuri pemɨti'eriekakɨ, pemɨti'akanaki'eriekakɨ, pemɨtiuka'eniwanikɨ meta pemɨkahayu'eriyanikɨ.",
-        "'Aixɨa 'anemekɨ pe'atatuatɨ keneutananaut sani yuri peti'erietɨ, keneuwiya tukari mɨkaxɨwe, mɨkɨ 'ayumieme peputa'inierie meta yumɨiretɨ tehekɨatamete mematsixeiyakaku 'aixɨa 'anemekɨ pepɨ'ahekɨatakai yape'anetɨ.",
-        "Kakaɨyari hɨxie nepɨkamati'aitɨaka, mɨkɨ yunaitɨ tita kanimɨyupitɨarie, mɨpaɨ meta Kiritsitu Ketsutsi hɨxie nepɨkamati'aitɨaka, mɨkɨ piyumɨretɨ kawiritsɨwa 'axamɨtitatɨmaiyarieni Pɨrantu Pɨratu 'ixatsi,",
-        "kwitɨwa kene'a'ɨwiyani yuri ketemɨti'ɨkita, kene'atixeiyani tixai yɨkɨ kene'u'iwamaneiwa, yuri 'axapɨkatikuxatsawani, ketinemaika kepauka Tati'aitɨwame Ketsutsi Kɨritsitu munuani.",
-        "Mɨkɨ Katɨnɨkɨ mi'axi Kakaiyari mɨti'uximayakɨ munuani. Kakaiyari mɨkɨ kanipitipitini mɨkɨ yuheye-mekɨ, ti'aitɨwame kaniyatini, 'aitɨwame kaniyatini,",
-        "mɨkɨ xeikɨa mɨtixepu'u, kanikitsiyame, hekiariya mɨtiuyeikani kamɨkatati'urini, mɨkɨ kapa yiki mɨkatixeiya, mɨkɨ pɨkahepɨkumatɨni, mɨkɨ xeikɨa pɨmariwe, witsiketɨxeiyarieka kani'aneni. Mɨpaɨ xeikɨa kani'aneni.",
-        "Mɨkɨ yuri me'ihɨwe'erie yukutɨyari 'enieniyate, kene'a'ɨkitatɨ yuxewɨtɨ mɨkɨ memɨteyu'ɨtewetɨ, mɨkɨ mepe'uximayaka yunaitɨ tumini mepekahiwe'erieka,",
-        "matsi kene'a'ɨkitatɨ, 'aixɨa mɨkete'uximayaka, 'aixɨa mɨkete'uye'enie yu'ixatsi, mɨkɨ mekehetimaka yunaime,",
-        "mɨpaɨ 'axamemɨteyurieka mɨkɨ memɨteyuhetimatiarieni yuriki memɨte'eriekakɨ, mɨkɨ kaniyuhetimatiarieni tukariki mɨkaxɨwe, mɨkɨ kaniyuhetimatiarieni tukariki mɨkaxɨwe mɨkɨ memɨte'iwiyani, matsiikiti kaniyuhetimatiarieni.",
-        "Neuxei neniwe Tɨmuteu, kene'a'ɨwiyani yuri pɨmitiupitɨarie Kakaiyari, pɨkatsi'utananautɨani mɨkɨ yaki xeikɨa memɨtekuxata.",
-        "Hipatɨ memɨtekuxata mɨkɨ mepɨtekuxata mɨkɨ mepɨkatsi'u'enieka, mepeuyumɨretɨ yuri memɨte'eriekɨ. 'Aixɨa ketiuka'iyarini xehetsiemieme."
+      "nombre": "1 Te'aitamete",
+      "capitulo": [
+        {
+          "numero": 1,
+          "versiculos": [
+            {
+              "numero": 1,
+            "texto": "kani'ukiratsitikaitiniri, pikaheuxikakai tsepa waikawa memika'ikaritiwakai yaxeikia katineuhaitikaitini. [cite: 2154]"
+            },
+            {
+              "numero": 2,
+            "texto": "'Ayumieme 'iparewiwamete mipai mekatenitahiawe: «Xeime 'uka 'iimari yuxewime tepikuwauni para matsi'iwiyaniki, meta 'a'aurie mutihupuniki mimatsi'utixiriyaniki». [cite: 2156]"
+            },
+            {
+              "numero": 3,
+            "texto": "Hiki miki mekaniukakine naitsarie 'ixaher- itsixi wahetsia 'uka mekuwautiweti witsimi'ane, mekanitaxeiya 'Awitsahaki Tsunemi kiekariyarit- sie kiekame, miki ti'aitame mekani'atiirieni. [cite: 2157]"
+            },
+            {
+              "numero": 4,
+            "texto": "Miki 'uka yemeki witsipitiyuxexeiyakai, ti'aitame pi'iwiyakai meta 'apirepiniriwakai tita mireuyehiakai, peru ti'aitame miki hatsuaku pika'ikumayia. [cite: 2158]"
+            },
+            {
+              "numero": 5,
+              "texto": "Merikitsi 'Aruniyaxi Rawiri nu'aya Kakiti matia memeyexei, kaniuyukuha'aritiani mipai 'utaiti: «Ti'aitame nepayani». 'Ayumieme yuwaikawame kaniwarukuxeirieni kuyaxi. Kaxetate kuyaxa miemete meta kawayutsixi kaniwarukuxeirieni meta huta tewiyari heimana tamamata kuyaxi 'ihiwemete. [cite: 2159, 2160]"
+            },
+            {
+              "numero": 6,
+              "texto": "'Aruniyaxi pitemaikitikai 'aixia pitiyuxexeiyakai yaki puyumaikai 'Awitsaruni 'utia mieme pihikitikai. Paapaya Rawiri hatsuaku pika'ita'imaiyaxi kemitiyurienekai 'Aruniyaxi. [cite: 2161]"
+            },
+            {
+              "numero": 7,
+            "texto": "'Ayumieme 'Aruniyaxi Kuhawi Tsariwiya nu'aya matia mekatenikuxatakaitini 'awie meta mawari wewiwame hamatia 'Awiyataxi, mikita mekaniparewieni. [cite: 2165]"
+            },
+            {
+              "numero": 8,
+            "texto": "'Ikita 'Aruniyaxi memika'uparewi mepihikitikai mawari wewiwame Tsaruki meta Wenahiyaxi Kuyara nu'aya, Natani Kakaiyari niukameya, Tsimi meta Xeki meta Rawiri kuyaximama memikamama. [cite: 2166]"
+            },
+            {
+              "numero": 9,
+              "texto": "Hiki 'Aruniyaxi 'Enixukeri haixayari 'aurie katiniutimawa, Tsukereti 'aiyari manukatsie, mana tsikerutsixi memiwaiyatika, tuurutsixi meta muxatsi mekaniwarutimawa. Yu'iwama kaniwaruta'inieni ti'aitame niwemama memi'iwamamatikaiki meta yunaime paratsiyuta te'uximayatamete, Kura kwieyaritsie miemete, [cite: 2167, 2168]"
+            },
+            {
+              "numero": 10,
+            "texto": "peru Natani Kakaiyari niukameya pika'uta'ini, Wenahiyaxi meta ti'aitame kuyaximama memikamama, meta yu'iwa Tsarumuni pika'uta'ini. [cite: 2169]"
+            },
+            {
+              "numero": 11,
+            "texto": "'Ayumieme Natani Tsarumuni maamaya Wetitsawe, mipai katiniuta'iwawiya: «¿Mipai petimateri, 'Aruniyaxi Kakiti nu'aya ti'aitame mayuyeitiaxime, 'atsikatimaikaku?» [cite: 2170, 2171, 2172]"
+            },
+            {
+              "numero": 12,
+            "texto": "Xika tati'aitiwame pehauyuwikweitsitiamikini Rawiri meta 'aniwe Tsarumuni pehauwikweitsitiamikini, keneneupitia mipai nemimatitaxatianiki: [cite: 2173, 2174, 2175, 2176, 2177, 2178]"
+            },
+            {
+              "numero": 13,
+              "texto": "Kenemie ti'aitame Rawiri hetsia, mipai ketinetahiawi: «¿Tami ne mati'uximayatsiriwame mipai pepinetiuhiritia, kename neniwe Tsarumuni ti'aitame 'ayanikekai 'a'utima? ¿Kepautiti hiki 'Aruniyaxi ti'aitame pihiki?» [cite: 2179]"
+            },
+            {
+              "numero": 14,
+            "texto": "Mexi 'eki perekuxatani Rawiri hamatia neta nepautahani para neta yaxeikia nemireitahiaweki». [cite: 2183]"
+            },
+            {
+              "numero": 15,
+              "texto": "Merikite Wetitsawe kaneutahani ti'aitame muyehupu. Mikiri waikawa mi'ukiratsitikaiki 'Awitsahaki pi'iwiyakai Tsunemi kiekame. [cite: 2184]"
+            },
+            {
+              "numero": 16,
+              "texto": "Wetitsawe kepauka muwa munua kaniukatunumakeni hixiena. Hiki ti'aitame mipai katinita'iwawiya: [cite: 2185]"
+            },
+            {
+              "numero": 17,
+            "texto": "-¿Ketitaki nematiparewieni? [cite: 2187]"
+            },
+            {
+              "numero": 18,
+            "texto": "Hiki Wetitsawe mipai katinita'eiya: -Neti'aitiwame yapepinetiutahiawixi mati'uximayatsiriwame, Yawé mi'akakaiyari matsi'eniekaku kename neniwe Tsarumuni ti'aitame 'ayanikekai 'a'utima. [cite: 2188]"
+            },
+            {
+              "numero": 19,
+            "texto": "Peru hiki matsi 'Aruniyaxi pita ti'aitame payuyeitiaxime, 'eki 'atsipekatimaikaku yuri ti'aitame pemihiki. [cite: 2189]"
+            },
+            {
+              "numero": 20,
+              "texto": "Mikiri mawari kanewewieni turutsixi, tsikerutsixi meta muxatsi kaniwarekwini yumiireme. Hiki kaniwaruta'inieni yunaime ti'aitame 'aniwema, mawari wewiwame 'Awiyataxi meta Kuhawi kuyaxi tiwa'aitiwame. Peru Tsarumuni pika'uta'ini 'aixia mimati'uximayatsirie. [cite: 2190, 2191]"
+            },
+            {
+              "numero": 21,
+            "texto": "Hiki neti'aitiwame meta ti'aitame, yunaiti 'ixaheritsixi mekanita'ikwewani yapemitayiniki, kemi'ane mitita'aita 'a'utima 'a'uwenitsie mayerini. [cite: 2192]"
+            },
+            {
+              "numero": 22,
+            "texto": "Mexika 'eki yapekatayiweti pe'umini, matsi kwitiwa 'Aruniyaxi pitatsikwini ne meta neniwe Tsarumuni matia 'axateyuruwamete wahepai. [cite: 2193]"
+            },
+            {
+              "numero": 23,
+            "texto": "Mexi 'akuxi Wetitsawe tikuxatakai ti'aitame hamatia, Natani Kakaiyari niukameya kaninuani. [cite: 2194]"
+            },
+            {
+              "numero": 24,
+              "texto": "Ti'aitame katinetimani kepauka munua. Hiki Natani hixiena 'utihiximakeka, [cite: 2198]"
+            },
+            {
+              "numero": 25,
+              "texto": "mipai Rawiri katiniutahiawe: -Neti'aitiwame. ¿'Eki mipai petiuta'ai kename 'Aruniyaxi 'anukakeni 'a'utima? [cite: 2199]"
+            },
+            {
+              "numero": 26,
+              "texto": "Mipai nekamatina'iwawiyani yanetimaiti miki mawari mewewiki yumiireme, turutsixi, muxatsi meta tsikerutsixi memiwaiyatika. Meta yunaime 'aniwema kaniwaruta'inieni, kuyaxi tewa'aitiwamete, meta mawari wewiwame 'Awiyataxi mana miki yunaiti mekatenekwaka mekane'ieka, mipai mete'uhiwati hixiena: 'Ti'aitame 'Aruniyaxi yuheyemeki keti'aitani'. [cite: 2200, 2201]"
+            },
+            {
+              "numero": 27,
+            "texto": "Peru ne pikanetsi'uta'ini 'ahetsiemieme nemiti'uximaya, yaxeikia mawari wewi- wame Tsaruki meta Wenahiyaxi Kuyara nu'aya meta Tsarumuni pika'uta'ini 'aixia mimati'uximayatsirie. [cite: 2202]"
+            },
+            {
+              "numero": 28,
+            "texto": "¿Kamitsi 'eki mipai petiuta'ai, tame mate'uximayatsiriwamete yapekatarahiaweti, kemi'ane 'a'utima 'a'uwenitsie mayerinikekai? [cite: 2203, 2204]"
+            },
+            {
+              "numero": 29,
+              "texto": "Merikitsi mipai tiu'enaka, ti'aitame Rawiri mipai katiniuta'aita: -Xekenewata'ini Wetitsawe. Miki kaneutayani ti'aitame hixie kaniutakeni. [cite: 2207, 2208]"
+            },
+            {
+              "numero": 30,
+            "texto": "Hiki ti'aitame mipai katinitahiawe: -Yuriki Yawé hixie mipai nekanaineni, minetsi'uxinaxi naime 'uximatiarika hepaitsita, [cite: 2209]"
+            },
+            {
+              "numero": 31,
+              "texto": "hiki nekaneye'atiamiki kenemimatiutahiawixi Yawé 'ixaheritsixi takakaiyari hixie. Hiki yanepitiyurieni ne kenemimatiutahiawixi, [cite: 2210]"
+            },
+            {
+              "numero": 32,
+              "texto": "'aniwe Tsarumuni ti'aitame payani ne'utima, nehetsiemieme pitita'aita. Hiki Wetitsawe ti'aitame hixie 'utihiximakeka, mipai kaniutayini: -Neti'aitiwame meta ti'aitame Rawiri 'aheye- meki peke'ayeyurini. [cite: 2213, 2214, 2215, 2216, 2217, 2218, 2219, 2220, 2221]"
+            },
+            {
+              "numero": 33,
+            "texto": "'Ana Rawiri mipai katiniuta'aita: -Xekenewata'ini mawari wewiwame Tsaruki, meta Natani Kakaiyari niukameya metatsiere We- nahiyaxi Kuyara nu'aya. [cite: 2223]"
+            },
+            {
+              "numero": 34,
+            "texto": "Hiki kepauka miki yuhaikati memu'axia ti'aitame hixie, ti'aitame mipai katiniwarutahiawe: -Xekeniwara'inieti memite'uximaya, neniwe paratsiyuta Tsarumuni xekenanutiyetsa nemuratsie, hiki xekenanuwitiki Kikuni haixayari matiniere paiti, [cite: 2224, 2225, 2226, 2227, 2228, 2229, 2230, 2231, 2232]"
+            },
+            {
+              "numero": 35,
+              "texto": "muwa mawari wewiwame Tsaruki meta Natani Kakaiyari niukameya hatseiti witsimu'ia mekaneikawirieni Kikuni paiti. Muwa paiti mekaneitsutiani teiteri me'utihiwati temawierikaki meta kiekaritsie yaxeikia mepeyuxeirie. 'Ayumieme miki hiwari kana'eniiriikini. [cite: 2233, 2234]"
+            },
+            {
+              "numero": 36,
+            "texto": "Metatsiere 'ari Tsarumuni ti'aitame 'uweniey- atsie kanayerini, [cite: 2236]"
+            },
+            {
+              "numero": 37,
+            "texto": "meta paratsiyuta te'uximayatamete tati'aitiwame Rawiri mekaneiwairitiatiwekaitini matsi Mipai paiti miyamitiuyuriki. mekateneikihiawekaitini Kakaiyari Tsarumuni matsi waikawa mariweme kehayeitiani keyuri Rawiri, meta matsi mariwemeki ketiuta'aita keyuri Rawiri. [cite: 2237, 2238, 2239, 2240]"
+            },
+            {
+              "numero": 38,
+            "texto": "Hiki ti'aitame Rawiri mipai rahiawariwati yu'utatsie 'akaiti kananakatutsire hiki mipai kanetayini: 'Aixia kerahiawariwani Yawé 'ixaheritsixi takakaiyari, hiki minetsi'upitia nemixeiyaki ne'utima mitita'aita, ne'uwenitsie 'akaime'. [cite: 2244]"
+            },
+            {
+              "numero": 39,
+            "texto": "Hiki mipai mete'u'enanaka, yunaiti 'Aruniyaxi 'inierimama me'anuku'uka mekaneutayeixiani waikawa memamati. [cite: 2245, 2272]"
+            },
+            {
+              "numero": 40,
+            "texto": "'Aruniyaxi, waikawa Tsarumuni makati, 'ix- uriki tukiyari manuwe kaneuyuta'una, mawari wewiwame 'awateyatsie katinawiyakaitini. [cite: 2273]"
+            },
+            {
+              "numero": 41,
+              "texto": "Hiki yapauka ti'aitame Tsarumuni mipai pitiutaxatiarie: -Ti'aitame, 'Aruniyaxi kamenimakaka, 'ixuriki tukiyari manuwe mawari wewiwame 'awateyat- sie katinawiyani. Mipai 'utaiti: 'Hiki kwitiwa mipai kehetayini ti'aitame Tsarumuni kename ne kanetsimieni ti'uximayatsiriwame'. [cite: 2274, 2275, 2276]"
+            },
+            {
+              "numero": 42,
+            "texto": "Hiki Tsarumuni mipai kaniutayini: -Xika yuhemeki heitserie 'a'uyeikani, ni'atsipikaranuyeyani, peru xika tixaiti tiuyurieni 'uxa'atini, kanimieriemiki. [cite: 2277]"
+            },
+            {
+              "numero": 43,
+              "texto": "Hiki ti'aitame Tsarumuni katiniutani'ani miwitikiemieki. Kepauka 'Aruniyaxi munua, kaniutihiximakeni ti'aitame Tsarumuni hixie, hiki miki kanitani'ani yukie miyemieki. [cite: 2278]"
+            }
+          ]
+        },
+        {
+          "numero": 2,
+          "versiculos": [
+            {
+              "numero": 1,
+            "texto": "Hiki Rawiri kanimiximekaitini, 'ayumieme yu- niwe Tsarumuni mipai katiniuhiritiani: [cite: 2281]"
+            },
+            {
+              "numero": 2,
+              "texto": "«Teyunaiti yaxeikia miiya pitatsiheutakwewie, neri 'etsiwa xeikia peuyewetse nemiminiki. Kene'atirikariyani, pepikaheumaka 'uki muka'iyari kenehikitini. 'aitsikayatsie [cite: 2282, 2283, 2284]"
+            },
+            {
+              "numero": 3,
+              "texto": "Yawé 'akakaiyari yaketinekamieni huyeya keneuweiyani meta Muitsexi naime 'iniari niukiyaritsie kemiraka'utia. Mipai 'ana tsepa kepemitiyuriene 'aixia pepitiukaxexeiyani meta tsepa hakewa pemetia, [cite: 2285, 2289]"
+            },
+            {
+              "numero": 4,
+            "texto": "Yawé, kaneye'atiamiki 'ipai keminetiutahiawixi: 'Xika 'anuiwarima 'aixia mete'u'uwani, xika yu'iyariki yametekahuni, mipai 'anuiwarima xeikia mepanuti'uweni 'ixaheritsixi metewa'aitiati'. [cite: 2291, 2292]"
+            },
+            {
+              "numero": 5,
+            "texto": "»'Eki pepitimate, kemitiuyuri Kuhawi Tsariwiya nu'aya, miki kuyaxi miyianeni hepai pitiuyuri kayuwati 'umakakutiti, 'Awinexi Nexi nu'aya meta 'Amatsaha Ketexi nu'aya, miki yuhutame puwarukwi kuyaxi tewa'aitiwamete ixaheritsixi, mipai miki yuhetsie pirahia. [cite: 2294]"
+            },
+            {
+              "numero": 6,
+            "texto": "'Ayumieme, ketinemaiweni, 'apikareutewini 'ena 'uyeikati, pepika'ihayewani kayuwati hex- eiyati muminiki. [cite: 2295]"
+            },
+            {
+              "numero": 7,
+            "texto": "Matsi 'aixia ketiniwaxeiyani Waxitsirahi niwemama Karaha kiekame, miki 'amexatsie keniwapitiaka 'ahamatia memitekwaniki, mikitsi neheima mekaniutanuani kepauka 'a'iwa minetsi'uweiyakai 'Awitsaruni. [cite: 2296]"
+            },
+            {
+              "numero": 8,
+              "texto": "»Yaxeikiata nepimatsiyetuirie Tsimi Kera nu'aya, Wenikamini xiiyarieya Wakurini kiekame, waikawa 'axapinetiutihiawixi Makanahini ne'umiekaku. Kurutani kepauka Kaniyuritinita hatuxameyaritsie minetsihekunakixi, ne Yawé hixie mipai nekatineitahiawe kename [cite: 2297, 2298, 2299, 2300, 2301, 2302]"
+            },
+            {
+              "numero": 9,
+              "texto": "'Ayumiemeri 'eki pepikareiyehiwirieka. 'Eki pepitimaiwe, 'ekiri matsi waikawa kepemiyurieneni, tsepa mi'ukiratsiri keneuta'aita mimierieniki»."
+            },
+            {
+              "numero": 10,
+            "texto": "Hiki Rawiri kaniumini, kaniukateukieni yukiekaritsie hepaina mititewatsie yu'ukiyarima wahamatia. [cite: 2309, 2311]"
+            },
+            {
+              "numero": 11,
+            "texto": "Hewuruni kiekariyaritsie piti'aitametikai 'atahuta wiyari, Kerutsareme hetsieta xeitewiyari heimana tamamata heimana haika wiyari, naimekiri pitiuta'aitaxi huta tewiyari wiyari, 'Ixaheri kwieyaritsie. [cite: 2314]"
+            },
+            {
+              "numero": 12,
+            "texto": "'Utimana mitiuta'aitaxi nu'aya kanayani Tsarumuni, hiki miki tirikaiyemeki katiniuta'aita. [cite: 2315]"
+            },
+            {
+              "numero": 13,
+            "texto": "Tsarumuni tirikaiyemeki kemitiuta'ai Hiki 'Aruniyaxi Kakiti nu'aya petia Wetitsawe Tsarumuni maamaya hetsia, Wetitsawe mipai katinita'iwawiya: -¿Petinua pekanetsi'aye'unieti? [cite: 2316, 2317]"
+            },
+            {
+              "numero": 14,
+              "texto": "'Aruniyaxi mipai katinita'eiya: -Huu, tixaiti nepirayexeiya nepimatitaxatiani. Wetitsawe mipai katinitahiawe: -Kenetineutaxatia. [cite: 2318, 2319, 2320]"
+            },
+            {
+              "numero": 15,
+              "texto": "'Aruniyaxi mipai kaniutayini: -Kamitsi 'eki pekatinimaika, nepita ti'aitame nekanayanikekaitini, yunaiti 'ixaheritsixi mipai mekateniku'eriwakaitini. Peru hikiri nemuta pita katiniunakitsitiani, Yawé kemitinake katiniuyini. [cite: 2321, 2322]"
+            },
+            {
+              "numero": 16,
+              "texto": "'Aixiatsi kani'aneni, peru tixaiti nepimatitawawirieni, perutsi pekati- naye'atiamiki. Wetitsawe mipai katinitahiawe: -¿Kekuta petayini? [cite: 2323, 2324, 2325, 2326, 2327, 2328]"
+            },
+            {
+              "numero": 17,
+            "texto": "'Aruniyaxi mipai katinitahiawe: -Ximixi, 'eki mipai ketinetahiawi ti'aitame Tsarumuni, kenetsi'uwititiani 'Awitsahaki Tsunemi kiekame, 'eki yapereitahiaweyu pimatsi'anu'enieni. [cite: 2329, 2330]"
+            },
+            {
+              "numero": 18,
+            "texto": "Wetitsawe mɨpaɨ katinita'eiya: —'Aixɨa kani'aneni, nepɨreitaxatɨani ti'aitame kepemaine. [cite: 2331]"
+            },
+            {
+              "numero": 19,
+              "texto": "Hikɨ Wetitsawe kaneyani ti'aitame Tsarumuni hetsɨa, mɨpaɨ mɨtitaxatɨanikɨ 'Aruniyaxi hetsiemieme. Ti'aitame kananukukeni mitahɨawekɨ yuwarutsi hɨxie kananakatutsire, hikɨ 'itahɨaweka kanayerɨni yu'uwenitsie, kanita'aitata tawari xeime 'uweni mana mayerɨnikɨ maamaya, hikɨ tserietana kaniutiyerɨni. [cite: 2332, 2333]"
+            },
+            {
+              "numero": 20,
+              "texto": "Wetitsawe mɨpaɨ katinitahɨawe: —Ximɨxi 'etsiwa nepɨmatitawawirienikeyu, peru yemekɨ yaketinekaye'a. Tsarumuni mɨpaɨ yumaama katiniuta'eiya: —Yakeneutayɨki tita pemɨtixata, nemaama 'aku, 'ekɨ tixaɨtɨkɨ nepɨkamatita'imaiya. [cite: 2334]"
+            },
+            {
+              "numero": 21,
+            "texto": "Maamaya mɨpaɨ kaniutayɨni: —Keneupitɨa 'a'iwa 'Aruniyaxi 'Awitsahaki Tsunemi kiekame mɨtiwitɨnikɨ. [cite: 2335]"
+            },
+            {
+              "numero": 22,
+              "texto": "Hikɨ ti'aitame yumaama mɨpaɨ katiniu tahɨawe: —Peru neuxei ¿titayari penetiwawirie 'Awitsahaki '"
+            }
+          ]
+        }
       ]
     }
   ]

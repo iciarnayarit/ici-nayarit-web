@@ -1,417 +1,335 @@
 {
-  "book": {
-    "name": "Kurutsetari",
-    "alternate_names": ["Colosenses", "Colossians"],
-    "language": "Huichol (Wixarika)",
-    "translation_info": {
-      "title": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
-      "edition": "2020",
-      "translator": "Wycliffe Bible Translators, Inc.",
-      "copyright_year": "2020",
-      "copyright_holder": "Wycliffe Bible Translators, Inc.",
-      "license": "Creative Commons License: Attribution-Noncommercial-No Derivative Works (CC BY-NC-ND 4.0)"
-    },
-    "chapters": [
-      {
-        "chapter_number": 1,
-        "verses": [
-          {
-            "verse_number": 1,
-            "text": "Ne Papuru, ta'iwa Timuteu matia, tekanixewairitiaka, ni'ariekame nekanihikitini Kiritsitu Ketsutsi hetsiemieme, mipai mitinakeki Kakaiyari,"
-          },
-          {
-            "verse_number": 2,
-            "text": "tekanixewairitiaka ta'iwama yuri xemite'erie kurutsetari, Kakaiyari teiterimama xemihiki Kiritsitu hetsie xetewiyati, 'ipai teputiyuane: Kakaiyari mita'ukiyari Tati'aitiwame Ketsutsi Kiritsitu matia 'aixia mekete'u'iyarini xehetsiemieme, mekexepitiaka yu'iyaritsie xemika'uximatiariekaki."
-          },
-          {
-            "verse_number": 3,
-            "text": "Tetanenewieti, taheyemeki xehepaitsita pamipariyutsi tekanipitiaka Kakaiyari, Tati'aitiwame Ketsutsi Kiritsitu 'ukiyarieya,"
-          },
-          {
-            "verse_number": 4,
-            "text": "tekatenimarieka yuri kexemite'erie Kiritsitu Ketsutsi hetsie, kexemitewanaki'erie Kakaiyari teiterimama yunaime,"
-          },
-          {
-            "verse_number": 5,
-            "text": "mipai xekateniyurieka 'amuweki xehetsiemieme tita miti'iwiyarie taheima, yaxete'ikwewieti. Xeme meripai xekaniu'enanani kemiti'iwiyarie, kuxaxatsiwakaku niuki 'aixia manuyine kemitiyuri,"
-          },
-          {
-            "verse_number": 6,
-            "text": "miki niuki xehetsiapaiti kaninuani. Naitsarie kwiepa katinitixuaweririmeni, kanitaweririmeni yaxeikia kemitiuyi xehetsia, niuki kaniutsutiarieni 'iya tukaritsie kepauka xemu'enana, kepauka xemitehetima yuriki 'aixia kemitiuka'iyari Kakaiyari."
-          },
-          {
-            "verse_number": 7,
-            "text": "'Epapiraxi kemitixe'uta'ikitia, miki tahepai katini'uximayatametini, tekaninaki'erieka, yakatinikamieni Kiritsitu parewiwameya hikititi xehetsiemieme."
-          },
-          {
-            "verse_number": 8,
-            "text": "Miki katatiniutaxatiani kexemiteyukanaki'erie 'Iyaritsie xetewiyati."
-          },
-          {
-            "verse_number": 9,
-            "text": "Yatetehetimaika 'anapaiti hikike, tame 'ayumieme tepikatehayewa tetanenewieti xehetsiemieme, mipai tete'iwawirieti Kakaiyari, xemihipineniki yaxetemaiti tita mitinake Kakaiyari, naimeki xetemaiwaweti, 'Iyaritsie timieme xetemaiti naimeki,"
-          },
-          {
-            "verse_number": 10,
-            "text": "'axemu'uwaniki meta kemireuyewetse Ti'aitame hetsia miemete xeteyuriekaku 'aixia mitiutixuxuawereniki 'aixia kememite'u'uwa, Tepiwawirie xemitiwaweririmeniki kexemite'imate Kakaiyari."
-          },
-          {
-            "verse_number": 11,
-            "text": "Tepiwawirie xemitirikariyarieniki, naimeki xetirikawiti, 'iya kemititirikaiye mariweti, para xemiyiwaweniki xemite'uka'eniwaniki, xemite'ukanenewiekaki naime hepaitsita,"
-          },
-          {
-            "verse_number": 12,
-            "text": "xeyutemamawieti pamipariyutsi xemipitiakaki ta'ukiyari. Miki yiwemete katanayeitiani, tahetsie mitinakeniki tita Kakaiyari teiterimama wahetsie mitinakeni hekiaripa memu'uwa."
-          },
-          {
-            "verse_number": 13,
-            "text": "Kakaiyari Kataniutawikweitsitiani, yiriya heitserie mikahexeiyaniki tahepaitsita. Kataniupata, kemi'ane minaki'erie tati'aitiwame mayaniki, nu'ayatiti."
-          },
-          {
-            "verse_number": 14,
-            "text": "Mikitsie tetewiyati tekaniuxinarieni, kemitareuyehiwiri 'axatemite'uyuriki."
-          },
-          {
-            "verse_number": 15,
-            "text": "Tepikayiwawe temixeiyaki Kakaiyari, peru miki kani'ikitsikayatini, kanimexiakametini heitserie hexeiyati tita mitiunetiarie hepaitsita."
-          },
-          {
-            "verse_number": 16,
-            "text": "Hetsiena tiwiyati, naiti katiniunetiarieni, tita taheima mitimieme, tita kwiepa mitimieme, tita temitexeiya, tita temikatexeiya, meta mamariwawemete, miki memitirikawi, te'aitamete, miki heitserie memexeiya: miki naiti katiniunetiarieni 'iya 'inetiaku, hetsiena mieme tiniunetiarienita."
-          },
-          {
-            "verse_number": 17,
-            "text": "Miki 'akaniuyeikakaitini tixaiti katinetiariewekaku 'akuxi, naiti katiniyuxewini mikitsie tiwiyati."
-          },
-          {
-            "verse_number": 18,
-            "text": "Miki kanitamu'utini, tewi waiyarieya hepai te'anenekaku, tame temitatixexeiriwa. Titsutiwame hikititi, miki mikite memanuku'uni wamexiakame kanihikitini, naimeki mexiakame mayaniki."
-          },
-          {
-            "verse_number": 19,
-            "text": "Kakaiyari kemitiyuwairiya, naiti ke'aneti mihiki Kakaiyari, miki Kiritsitu hetsie 'akaniuweni."
-          },
-          {
-            "verse_number": 20,
-            "text": "Mipaita katiniuyuwairiya, naime 'aixia mitiyurieniki Kiritsitu yatiyurienekaku, para naiti 'aixia mitixeiyarieniki miki kemitixeiya, kuruxitsie yuxuriya kemitiutayeuri, pipitia tita kwiepa mitimieme tita taheima mitimieme hamatiana 'aixia memiteyuxeiyaniki."
-          },
-          {
-            "verse_number": 21,
-            "text": "Xemeta 'ana paiti xepiyupatakai xaitsie miemete xe'ayuyeitiati, kexemiteyikihiawekai, xekani'uxiwe'eriekaitini mexi 'axaxeteyuriekai."
-          },
-          {
-            "verse_number": 22,
-            "text": "Hikirixia 'aixia xetexeiyarieti xekanayeitiarieni, miki tewititi yuwaiyaritsie mumiki, mipai katiniuyurieni mixe'aye'atianiki Kakaiyari hixie, hetsiena mieme xepatsiekaku, 'aixia xe'anenekaku, xehetsie karahiiwakaku."
-          },
-          {
-            "verse_number": 23,
-            "text": "Mipai katiniyimiki xikate xeyuhayewa yuri xete'erieti, xetetsariya tirikaiyekaku xehetia, xetseiriyarieti xekakuyuaximeti, matsi xe'ikwewieti tita mitixata niuki 'aixia manuyine. Xekani'enieni miki niuki, kanihekiatsieka naitsarie kemiranetiarie muyuawi hetia, ne Papuru nekaniuhiritiarieni hepaitsitana."
-          },
-          {
-            "verse_number": 24,
-            "text": "Hikitsiari ne nekaninetemawieka tsepa nemu'uximatiarie xehetsiemieme, nekaneye'atiani tita mireuyewetse nemu'uximatiariekaki, Kiritsitu kemitiu'uximatiarie, newaiyaritsie mipai nekatiniyurieneni miki waiyarieyatsie mieme, memiyutixexeiriwa mehikitikaku."
-          },
-          {
-            "verse_number": 25,
-            "text": "Ne waparewiwame nekanayani, Kakaiyari keminetiuhiritia xehetsiemieme, 'aye'arikameki nemikuxataniki Kakaiyari niukieya,"
-          },
-          {
-            "verse_number": 26,
-            "text": "miki niuki kani'awietsiekaitini, tukari manukatiatsie pikamatsiikikai, teiteri kepauka memanutiki mipai mepikatemaikai, matsi hiki matsiikiti kanayani, Kakaiyari teiterimama mipai memitemaikaki."
-          },
-          {
-            "verse_number": 27,
-            "text": "Kakaiyari kaniuyuwairiya mipai mitiwa'ikitianiki miki, waikawameki witsikemiti'ane 'iki niuki mi'awietsiekai, kemitimariwe nuiwarite watsata. Kiritsitu xehetsie katiniwiyani, 'ayumieme xekanikwewieka witsimiti'ane, miki kanihikitini niuki mi'awietsiekai."
-          },
-          {
-            "verse_number": 28,
-            "text": "Tame tekanihekiatani Kiritsitu, ketemitewaku'imaiya yunaime teiteri, ketemitewa'ikitia yunaime teiteri tetemaiwaweti naimeki, temiwaraye'atianiki yunaime teiteri me'aye'arikame Kiritsitu hetsie metewiyame."
-          },
-          {
-            "verse_number": 29,
-            "text": "'Ayumieme netinine'uxitiaka, yemeki neti'uximayati, 'iya tirikaiyemeki keminetikuyuitiwa."
-          }
-        ]
-      },
-      {
-        "chapter_number": 2,
-        "verses": [
-          {
-            "verse_number": 1,
-            "text": "Kaneuyeweka xemitemaikaki waikawa kenemitine'uxitia xehetsiemieme, rautitseyatari wahetsiemieme meta, hipameta keyupaimeti memikanetsixeiyawawe wahetsiemieme."
-          },
-          {
-            "verse_number": 2,
-            "text": "Wa'iyari mituikarieniki, memiyutaxewireki meyunaki'erieti, memeuka'uniki yemeki yametemaiti kemitiheitserie, memeitimaniki tita Kakaiyari miti'awietakai, miki Kiritsitu kanihikitiniri,"
-          },
-          {
-            "verse_number": 3,
-            "text": "hetsiena miti'awietsieki naiti kemireukawe Kakaiyari, mitimaiweniki mi'ayumieme meta mitiuyemaikaki."
-          },
-          {
-            "verse_number": 4,
-            "text": "'Ipai nepaine, xewiti mikatixe'iriwiyaniki wit- sitiuniuti xeikia."
-          },
-          {
-            "verse_number": 5,
-            "text": "Tsepa newaiyaritsie xehetsia nemika'uyeika, pita xehetsia nekaniuyeikani nexexeiyati ne'iyaritsie nenetemawieti, 'aixia xete'aitiariekame, xetsetse'ime yuri xete'erieti Kiritsitu hetsie."
-          },
-          {
-            "verse_number": 6,
-            "text": "'Ayumieme, Ketsutsi kexemite'utanaki'eri Kiritsitu Ti'aitame time, yaxeikia hetsiena xetewiyati 'axekeneu'uwani."
-          },
-          {
-            "verse_number": 7,
-            "text": "Hetsiena xeketenewiyani kiye kemitiwiya yunanayaritsie, kii kemitiwiya tetsariyatsie, heitseriemeki xekenetseiriyarieka yuri xete'erieti, xemite'u'ikitiarie hepai, pamipariyutsi xekenepitiaka Kakaiyari."
-          },
-          {
-            "verse_number": 8,
-            "text": "Xekeneyukweriwayurieka kapa xewiti xe'unawaniki, timaiweme hepai tikuxatati, yaki xeikia tixe'iriwiyati teiteri wayeiyariki, hekwameki kwiepa memitama kememite'ikitiarie, peru Kiritsitu kemaine katikuxatati."
-          },
-          {
-            "verse_number": 9,
-            "text": "Miki waiyarieyatsie 'akaniuweni naiti ke'aneti mihiki Kakaiyari."
-          },
-          {
-            "verse_number": 10,
-            "text": "Xemeta hetsiena xetewiyati xekanaye'atiarieni, yunaiti memite'aita heitserie memexeiya kaniwamu'utini."
-          },
-          {
-            "verse_number": 11,
-            "text": "Hetsiena xetewiyati xekaniu'iniaritiarieni miyatiniketi, peru mamá kemitiyuxiteke pikatixai, Kiritsitu pita kemitixe'u'iniaritia, kanixe'upitiani xemitehayewaki yaxeteyurieti teiteri wawaiyari kemitiwakuyuitiwa."
-          },
-          {
-            "verse_number": 12,
-            "text": "Xeme xepu'iniaritiarie kepauka xemuka'iyarie hamatiana xemukateukie. Miki meta, kepauka xemuka'iyarie, xekananuku'uitiarieni yuri xete'erieti Kakaiyari tirikariyayatsie, yaxeikia kemirenukuketia Kiritsitu mikite watsata."
-          },
-          {
-            "verse_number": 13,
-            "text": "Tsepa xemimikitetikai xeka'iniaritiariewaweti miki mame, kanixe'anutanieritiani xeheuyexiriweti kexemiteteiteri, Kiritsitu katatineuyehiwirieni naime ketemiteheuyexiriwekai."
-          },
-          {
-            "verse_number": 14,
-            "text": "Ketemite'ataka'utia yakititi 'aitiarikatsie yatemitekahuniki, miki 'utiarika hixiapa 'uweti kemitatika'unakekai, Kiritsitu kaneyeitiani heihurieka yakititi, yukuruxitsie 'ikirapuximaka."
-          },
-          {
-            "verse_number": 15,
-            "text": "'Ixuriki miye'i hepai kaniwarewiwieni miki memite'aita heitserie memexeiya, wahekiatiati yunaime wahixie, kuruxitsie 'uyewieti, kaniwarehapani yu'utima, wara'iwaka."
-          },
-          {
-            "verse_number": 16,
-            "text": "Xewiti 'ayumieme pikaxexanetani tita xemitekwa'aki meta tita xemite'ieki, xemiwewieki 'ixiarari, yatini metsa mihekwa 'ixiarariyari, yatini 'uxipiya tukari kexemikate'iwewieki."
-          },
-          {
-            "verse_number": 17,
-            "text": "Miki tita 'umiramie 'etiriyaya katinihikitini, peru kemi'ane 'umamie, Kiritsitu kanihikitini."
-          },
-          {
-            "verse_number": 18,
-            "text": "Xewiti pikaxetawe'erieka, tsepa 'iya miyuwairiya tixaiti karayuyeitiati, tsepa miyuwairiya miwarayexeiyaniki Kakaiyari niuki tuayametemama, tsepa waikawa miyu'iyaritia yuheinitsi hepaitsita."
-          },
-          {
-            "verse_number": 19,
-            "text": "Kemi'ane miya mi'ane kaniyuta'ireni, tita waiyarieyatsie mitimieme xeikia kana'eriwani, tamu'utsie katiwiyati."
-          },
-          {
-            "verse_number": 20,
-            "text": "Merikite, Kiritsitu matia xika xe'ukwini, para tawari xemikakuyuitiarieniki hehekwamete kwiepa memitama kememite'ikitiarie, ¿titayari 'aumi 'axete'u'uwa kwiepa memitama kememitexe'aitia:"
-          },
-          {
-            "verse_number": 21,
-            "text": "«Tixai pepika'ikumaiwani 'iki, pepika'ikwaka 'iya, pepika'imayiani 'iki»?"
-          },
-          {
-            "verse_number": 22,
-            "text": "Miki 'aitsikate naiti teiteri kememite'aita kememite'ikita kanihikitini, miki naiti katinitiximiki tikumayiiwati."
-          },
-          {
-            "verse_number": 23,
-            "text": "Kememiteyurie, timaiweme niukieya hepai katini'eniiriikini, kememiteyumaiwe'erie, tiku'itawati tixaiti mikarayuyeitia, karima kememiyurie yuwaiyari. Peru kememiteyurie, tixaiti pikatiyunaki'erie wai tita mireuhiwe'erie hepaitsita."
-          }
-        ]
-      },
-      {
-        "chapter_number": 3,
-        "verses": [
-          {
-            "verse_number": 1,
-            "text": "Xika Kiritsitu matia xe'anuku'uitiarieni, taheima timiemeki xekeneyuwairiyani, hakewa meka Kiritsitu, Kakaiyari tserieta 'akaiti."
-          },
-          {
-            "verse_number": 2,
-            "text": "Taheima timiemeki xekeneyu'iyaritiaka, kwiepa timiemeki pikatixai."
-          },
-          {
-            "verse_number": 3,
-            "text": "Xeme xekaniukwiniri, kexemite'ayeneniere, xekani'awietsieka Kiritsitu hamatia, Kakaiyari hetsie xemitewiyaki."
-          },
-          {
-            "verse_number": 4,
-            "text": "Kiritsitu kanitatukaritini, kepauka matsiikiti mayani, 'anata xeme hamatiana xematsiikiti xekanakinikuni witsimiraku'anetsie."
-          },
-          {
-            "verse_number": 5,
-            "text": "'Ayumieme xekenayuyeitiaka kexemitekumaiwakai yuwaiyaritsie mikite timiemeki: xepika'ikumaiwani mikaxe'iya mikaxekina, xepikateyukahiwe'erieka, xepikatehiwe'erieka tita 'aixia mikati'anene, tita mikatixepini, kemi'ane mitihiwe'erie tita mikatipinieya tetexi muwarayexeiya hepai kaniyianemiki."
-          },
-          {
-            "verse_number": 6,
-            "text": "Mipai memiteyurieki, 'ayumieme Kakaiyari haxia kaniwapitiamiki miki yamemikatekahu."
-          },
-          {
-            "verse_number": 7,
-            "text": "Xemeri kepauka mipai xeteyurieti 'axemu'uwakai 'anapaiti, yaxeikia xekateniyuriekaitini kememite'u'uwa."
-          },
-          {
-            "verse_number": 8,
-            "text": "Peru hiki matsi xeketeneuhayewa 'ikita naime: kexemiteyuka'uxiwe'eriekai, kexemiteyuhaxiatiakai, 'axakexemiteyuriekukai, 'axakexemutiyuanekai hipame wahepaitsita, niuki 'axamanuyine kexemitexiatiakai yutetaki."
-          },
-          {
-            "verse_number": 9,
-            "text": "Xepikateyu'itaiyani, xekenehiwa miki tewi miye'i, xekahe'eriwati kexemiteyuriekai meripaiti."
-          },
-          {
-            "verse_number": 10,
-            "text": "Mihekwa pita xekenanakatiki, xehekwariyarieximeti yemeki kexemiteyurie hiki, xemimaikaki Kakaiyari, mixe'utawewi hepai xe'aneneti xemakineki."
-          },
-          {
-            "verse_number": 11,
-            "text": "'Iyatsie tiwiyati tsepaneti mikiriyeku, mihuriyu, tsepa mu'iniatsie huriyutsixi waxitekiyaki, tsepa mika'u'iniatsie, tsepa 'ateewa kiekatari, tsepa wairiyarika miti'uximaya, tsepa miyuni'a, Kiritsitu naiti kanihikitini, yunaime wahetsie katiniwiyani."
-          },
-          {
-            "verse_number": 12,
-            "text": "'Ayumieme nepaine, Kakaiyari mixe'anuyexeiki, teiterimama xemihikiki, xeminaki'eriwaki, xeteyukanenimayati xekenakini yu'iyaritsie, mihekwa xe'anakatiti, 'aixia xeketeneu'iyarini, xepikateyukatawe'erieka, xeketeneuyukanaki'erieka meta 'axeketeneutewini xekaha'ati."
-          },
-          {
-            "verse_number": 13,
-            "text": "Xekeneyunewieka, xeketeneuyuyehiwirieka xika xewiti 'itaniukimani xeime. Ti'aitame kemitixeheuyehiwiri, xemeta hepaina xekeneyiaka."
-          },
-          {
-            "verse_number": 14,
-            "text": "Xe'ixewiriyati naime, xeketeneyukanaki'erieka, miki kanihikitini xemuyuxewiriyaniki mi'ayumieme."
-          },
-          {
-            "verse_number": 15,
-            "text": "Kiritsitu kemitixepitia yu'iyaritsie xemika'uximatiariekaki, ketixe'aitiaka xe'iyaritsie, xekaniuta'inierieni yu'iyaritsie xemika'uximatiariekaki, xeiwaiyari xemihikiki. Miki meta, pamipariyutsi teyupitiwamete xekenakini."
-          },
-          {
-            "verse_number": 16,
-            "text": "Kiritsitu niukieya xehetsie keheyekani waikawa, naimeki xetemaiwawekaku: Mikiki xeketeneyi'ikitiaka meta xekeneyutuikani, Kakaiyari kwikarieyaki, niawari Kakaiyari hepaitsita manuyineki, kwikari 'Iyaritsie timieme hepaitsita manuyineki xeteyikihiaweti, xekeneutikwikani, yu'iyaritsie xe'iniawati Kakaiyari, pamipariyutsi xe'ipitiati."
-          },
-          {
-            "verse_number": 17,
-            "text": "Naime tsepa tita xemiteyurie, tsepa xemutiniuka tsepa xemitekumaiwa, naime xeketeneyurieka Ti'aitame Ketsutsi xemiemetetiti, miki hetsia xeparewiekaku, pamipariyutsi xekenepitiaka Kakaiyari mita'ukiyari."
-          },
-          {
-            "verse_number": 18,
-            "text": "'Ukari xekeniwareu'enieka yikinama, kemireuyewetse Ti'aitame hetsie xetewiyati."
-          },
-          {
-            "verse_number": 19,
-            "text": "'Ukitsi meta, xekeniwanaki'erieka yi'iitama, 'axaxepikatewakihiaweni."
-          },
-          {
-            "verse_number": 20,
-            "text": "Türi meta, yaxeketenekahuni naime kememitexekihiawe xepaapamata, mipai pireuyewetse, mipai xeteyuriekaku kaninaki'aka Ti'aitame."
-          },
-          {
-            "verse_number": 21,
-            "text": "Xeme meta xemiwapaapama, xepikawahaxiatiaka yuniwema, kapa me'utiwairipieniki."
-          },
-          {
-            "verse_number": 22,
-            "text": "Xeme wairiyarika te'uximayatamete, yaxeketenekahuni naime kememitexe'aitia xekutsiyarima kwiepa memitama. Wahixie xeikia yaxepikateyurieka xewanaki'atsitianike teiteri, 'aixia 'iyariki pita xeketene'uximayaka Ti'aitame xe'ayemakati."
-          },
-          {
-            "verse_number": 23,
-            "text": "Tsepa tita xemiteyurie, yu'iyariki yaxeketeneyurieka Ti'aitame hetsiemieme, teiteri wahetsiemieme pikatixai,"
-          },
-          {
-            "verse_number": 24,
-            "text": "mipai xetemaiti Ti'aitame pixetipitiani tita xehetsie mitinakeniki. Xeme Kiritsitu hetsiemieme xekateni'uximayaka Ti'aitame."
-          },
-          {
-            "verse_number": 25,
-            "text": "Kemi'ane 'axamitiuyuri miki 'axamiti'aneki katinakapitiariemiki kemitiuyuri, Kakaiyari yiki pikatiwaxeiya yunaime teiteri."
-          }
-        ]
-      },
-      {
-        "chapter_number": 4,
-        "verses": [
-          {
-            "verse_number": 1,
-            "text": "Xemeta xemiwakutsiyarima, kemitiheitserie xeketeniwapitiaka te'uximayatamete, yaxeikia xewayurieti, mipai xetemaiti, xemeta taheima xemeixeiyaki yukutsiyari."
-          },
-          {
-            "verse_number": 2,
-            "text": "Xepikatehayewani xeyunenewieti: nenewieriki xekenayeneniereni, pamipariyutsi xe'ipitiati."
-          },
-          {
-            "verse_number": 3,
-            "text": "Kepauka xemiyunenewie, tahetsiemiemeta xekeneyunenewieka, Kakaiyari kitenie mireuyepieniki tahetsiemieme, tita niuki miti'awietsiekai Kiritsitu hepaitsita temitekuxataniki, mipai nemitiyurieneki nepanutahiiya hiki."
-          },
-          {
-            "verse_number": 4,
-            "text": "Xekeneyunenewieka nemihekiataniki tita miti'awietsiekai, kemireuyewetse yanemitikuxataniki."
-          },
-          {
-            "verse_number": 5,
-            "text": "Xetemaiwaweti xekeneyiaka yuri memikate'erie xewakihiaweti, kepauka xemiyiwawe 'aixia xemiteyurieniki, yemeki mipai xeketeneuyuri."
-          },
-          {
-            "verse_number": 6,
-            "text": "Kexemitekuxata, 'aixia xete'u'iyariti xeketenekuxatani 'aixia ha'anemeki, xeniuki kahamurimeki. 'Ana mipai xepiyiwaweni kehepai 'aixia miyini xemiwata'eiyaki yuxexuime."
-          },
-          {
-            "verse_number": 7,
-            "text": "Naime kenemitiuyuri katinixetaxatiamiki Tikiku, miki kanita'iwatini teminaki'erie, tiparewiwame yamitikamie kanihikitini, tahepai katini'uximayaka Ti'aitame hetsiemieme."
-          },
-          {
-            "verse_number": 8,
-            "text": "Xemitemaikaki tahepaitsita, xe'iyari mutuikarieniki, 'ayumieme nekanenuni'amiki xehetsia,"
-          },
-          {
-            "verse_number": 9,
-            "text": "'Unetsimu mame, mikita kanita'iwatini teminaki'erie, yakatinikamieni, xehetsia miemetiti. 'Ena kemitiyiane naime mekatenixetaxatiakuni."
-          },
-          {
-            "verse_number": 10,
-            "text": "Kanixewairitiaka 'Aritsitariku nehepai muwiyarie, Marikuxi Werunawe 'iwaya yatewa pixewairitia. Xepite'aitiarie hepaitsitana, xika xehetsia nuani, xekeneutanaki'eri."
-          },
-          {
-            "verse_number": 11,
-            "text": "Ketsutsi meta Kutsitu mititewa kanixewairitiaka, huriyutsixi watsata 'iki xeikia nehamatia mekateni'uximayaka Kakaiyari 'ena ti'aitati mayaniki, mekaneninitiaka neminewairiyaniki miki."
-          },
-          {
-            "verse_number": 12,
-            "text": "'Epapiraxi xehetsia mimieme kanixewairitiaka, Kiritsitu Ketsutsi hetsiemieme ti'uximayati, yuheyemeki xehetsiemieme katiniyu'uxitiaka yunenewieti, mipai 'utaiti, xemikakuyuitiarieniki xe'aye'ati, yemeki xeyuwairiyati naimeki kemitinake Kakaiyari."
-          },
-          {
-            "verse_number": 13,
-            "text": "Nekanihekiatanikeyu ka'uxeti kemiti'uximaya xehetsiemieme, rautitseyatari wahetsiemieme meta hierapuritari wahetsiemieme."
-          },
-          {
-            "verse_number": 14,
-            "text": "Rukaxi kanixewairitiaka tiyu'uayemawame neminaki'erie, Remaxi meta pixewairitia."
-          },
-          {
-            "verse_number": 15,
-            "text": "Xekeniwawairitiaka 'iwamarixi rautitseyatari, metatsiere Nimipatsi meta miki memiyutixexeiriwa kiitana yunaime."
-          },
-          {
-            "verse_number": 16,
-            "text": "Kepauka 'iki xapa mititeriwarieni xehixie, xekeniwaruhuritia rautitseyatari memiyutixexeiriwa mikita memititeriwaniki, meta xeme Rautitseya mieme xapa xekeneutiteriwa."
-          },
-          {
-            "verse_number": 17,
-            "text": "'Ipai xeketeneutahiawi 'Arukipu, kene'akweriwayurieka 'ahiritiarika, kepemitiuhiritiarie Ti'aitame hetsie pemeye'atianiki petiwiyati."
-          },
-          {
-            "verse_number": 18,
-            "text": "Ne Papuru nemamaki neti'utiati nekanixewairitiaka. Xekenena'eriwani kenemiranutahiiya. 'Aixia ketiuka'iyarini xehetsiemieme."
-          }
-        ]
-      }
-    ]
-  }
+  "nombre_biblia": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
+  "abrev": "Col",
+  "idioma": "Huichol",
+  "libro": [
+    {
+      "nombre": "Kurutsetari",
+      "capitulo": [
+        {
+          "numero": 1,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Ne Papuru, ta'iwa Timuteu matia, tekanixewairitiaka, ni'ariekame nekanihikitini Kiritsitu Ketsutsi hetsiemieme, mipai mitinakeki Kakaiyari,"
+            },
+            {
+              "numero": 2,
+              "texto": "tekanixewairitiaka ta'iwama yuri xemite'erie kurutsetari, Kakaiyari teiterimama xemihiki Kiritsitu hetsie xetewiyati, 'ipai teputiyuane: Kakaiyari mita'ukiyari Tati'aitiwame Ketsutsi Kiritsitu matia 'aixia mekete'u'iyarini xehetsiemieme, mekexepitiaka yu'iyaritsie xemika'uximatiariekaki."
+            },
+            {
+              "numero": 3,
+              "texto": "Tetanenewieti, taheyemeki xehepaitsita pamipariyutsi tekanipitiaka Kakaiyari, Tati'aitiwame Ketsutsi Kiritsitu 'ukiyarieya,"
+            },
+            {
+              "numero": 4,
+              "texto": "tekatenimarieka yuri kexemite'erie Kiritsitu Ketsutsi hetsie, kexemitewanaki'erie Kakaiyari teiterimama yunaime,"
+            },
+            {
+              "numero": 5,
+              "texto": "mipai xekateniyurieka 'amuweki xehetsiemieme tita miti'iwiyarie taheima, yaxete'ikwewieti. Xeme meripai xekaniu'enanani kemiti'iwiyarie, kuxaxatsiwakaku niuki 'aixia manuyine kemitiyuri,"
+            },
+            {
+              "numero": 6,
+              "texto": "miki niuki xehetsiapaiti kaninuani. Naitsarie kwiepa katinitixuaweririmeni, kanitaweririmeni yaxeikia kemitiuyi xehetsia, niuki kaniutsutiarieni 'iya tukaritsie kepauka xemu'enana, kepauka xemitehetima yuriki 'aixia kemitiuka'iyari Kakaiyari."
+            },
+            {
+              "numero": 7,
+              "texto": "'Epapiraxi kemitixe'uta'ikitia, miki tahepai katini'uximayatametini, tekaninaki'erieka, yakatinikamieni Kiritsitu parewiwameya hikititi xehetsiemieme."
+            },
+            {
+              "numero": 8,
+              "texto": "Miki katatiniutaxatiani kexemiteyukanaki'erie 'Iyaritsie xetewiyati."
+            },
+            {
+              "numero": 9,
+              "texto": "Yatetehetimaika 'anapaiti hikike, tame 'ayumieme tepikatehayewa tetanenewieti xehetsiemieme, mipai tete'iwawirieti Kakaiyari, xemihipineniki yaxetemaiti tita mitinake Kakaiyari, naimeki xetemaiwaweti, 'Iyaritsie timieme xetemaiti naimeki,"
+            },
+            {
+              "numero": 10,
+              "texto": "'axemu'uwaniki meta kemireuyewetse Ti'aitame hetsia miemete xeteyuriekaku 'aixia mitiutixuxuawereniki 'aixia kememite'u'uwa, Tepiwawirie xemitiwaweririmeniki kexemite'imate Kakaiyari."
+            },
+            {
+              "numero": 11,
+              "texto": "Tepiwawirie xemitirikariyarieniki, naimeki xetirikawiti, 'iya kemititirikaiye mariweti, para xemiyiwaweniki xemite'uka'eniwaniki, xemite'ukanenewiekaki naime hepaitsita,"
+            },
+            {
+              "numero": 12,
+              "texto": "xeyutemamawieti pamipariyutsi xemipitiakaki ta'ukiyari. Miki yiwemete katanayeitiani, tahetsie mitinakeniki tita Kakaiyari teiterimama wahetsie mitinakeni hekiaripa memu'uwa."
+            },
+            {
+              "numero": 13,
+              "texto": "Kakaiyari Kataniutawikweitsitiani, yiriya heitserie mikahexeiyaniki tahepaitsita. Kataniupata, kemi'ane minaki'erie tati'aitiwame mayaniki, nu'ayatiti."
+            },
+            {
+              "numero": 14,
+              "texto": "Mikitsie tetewiyati tekaniuxinarieni, kemitareuyehiwiri 'axatemite'uyuriki."
+            },
+            {
+              "numero": 15,
+              "texto": "Tepikayiwawe temixeiyaki Kakaiyari, peru miki kani'ikitsikayatini, kanimexiakametini heitserie hexeiyati tita mitiunetiarie hepaitsita."
+            },
+            {
+              "numero": 16,
+              "texto": "Hetsiena tiwiyati, naiti katiniunetiarieni, tita taheima mitimieme, tita kwiepa mitimieme, tita temitexeiya, tita temikatexeiya, meta mamariwawemete, miki memitirikawi, te'aitamete, miki heitserie memexeiya: miki naiti katiniunetiarieni 'iya 'inetiaku, hetsiena mieme tiniunetiarienita."
+            },
+            {
+              "numero": 17,
+              "texto": "Miki 'akaniuyeikakaitini tixaiti katinetiariewekaku 'akuxi, naiti katiniyuxewini mikitsie tiwiyati."
+            },
+            {
+              "numero": 18,
+              "texto": "Miki kanitamu'utini, tewi waiyarieya hepai te'anenekaku, tame temitatixexeiriwa. Titsutiwame hikititi, miki mikite memanuku'uni wamexiakame kanihikitini, naimeki mexiakame mayaniki."
+            },
+            {
+              "numero": 19,
+              "texto": "Kakaiyari kemitiyuwairiya, naiti ke'aneti mihiki Kakaiyari, miki Kiritsitu hetsie 'akaniuweni."
+            },
+            {
+              "numero": 20,
+              "texto": "Mipaita katiniuyuwairiya, naime 'aixia mitiyurieniki Kiritsitu yatiyurienekaku, para naiti 'aixia mitixeiyarieniki miki kemitixeiya, kuruxitsie yuxuriya kemitiutayeuri, pipitia tita kwiepa mitimieme tita taheima mitimieme hamatiana 'aixia memiteyuxeiyaniki."
+            },
+            {
+              "numero": 21,
+              "texto": "Xemeta 'ana paiti xepiyupatakai xaitsie miemete xe'ayuyeitiati, kexemiteyikihiawekai, xekani'uxiwe'eriekaitini mexi 'axaxeteyuriekai."
+            },
+            {
+              "numero": 22,
+              "texto": "Hikirixia 'aixia xetexeiyarieti xekanayeitiarieni, miki tewititi yuwaiyaritsie mumiki, mipai katiniuyurieni mixe'aye'atianiki Kakaiyari hixie, hetsiena mieme xepatsiekaku, 'aixia xe'anenekaku, xehetsie karahiiwakaku."
+            },
+            {
+              "numero": 23,
+              "texto": "Mipai katiniyimiki xikate xeyuhayewa yuri xete'erieti, xetetsariya tirikaiyekaku xehetia, xetseiriyarieti xekakuyuaximeti, matsi xe'ikwewieti tita mitixata niuki 'aixia manuyine. Xekani'enieni miki niuki, kanihekiatsieka naitsarie kemiranetiarie muyuawi hetia, ne Papuru nekaniuhiritiarieni hepaitsitana."
+            },
+            {
+              "numero": 24,
+              "texto": "Hikitsiari ne nekaninetemawieka tsepa nemu'uximatiarie xehetsiemieme, nekaneye'atiani tita mireuyewetse nemu'uximatiariekaki, Kiritsitu kemitiu'uximatiarie, newaiyaritsie mipai nekatiniyurieneni miki waiyarieyatsie mieme, memiyutixexeiriwa mehikitikaku."
+            },
+            {
+              "numero": 25,
+              "texto": "Ne waparewiwame nekanayani, Kakaiyari keminetiuhiritia xehetsiemieme, 'aye'arikameki nemikuxataniki Kakaiyari niukieya,"
+            },
+            {
+              "numero": 26,
+              "texto": "miki niuki kani'awietsiekaitini, tukari manukatiatsie pikamatsiikikai, teiteri kepauka memanutiki mipai mepikatemaikai, matsi hiki matsiikiti kanayani, Kakaiyari teiterimama mipai memitemaikaki."
+            },
+            {
+              "numero": 27,
+              "texto": "Kakaiyari kaniuyuwairiya mipai mitiwa'ikitianiki miki, waikawameki witsikemiti'ane 'iki niuki mi'awietsiekai, kemitimariwe nuiwarite watsata. Kiritsitu xehetsie katiniwiyani, 'ayumieme xekanikwewieka witsimiti'ane, miki kanihikitini niuki mi'awietsiekai."
+            },
+            {
+              "numero": 28,
+              "texto": "Tame tekanihekiatani Kiritsitu, ketemitewaku'imaiya yunaime teiteri, ketemitewa'ikitia yunaime teiteri tetemaiwaweti naimeki, temiwaraye'atianiki yunaime teiteri me'aye'arikame Kiritsitu hetsie metewiyame."
+            },
+            {
+              "numero": 29,
+              "texto": "'Ayumieme netinine'uxitiaka, yemeki neti'uximayati, 'iya tirikaiyemeki keminetikuyuitiwa."
+            }
+          ]
+        },
+        {
+          "numero": 2,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Kaneuyeweka xemitemaikaki waikawa kenemitine'uxitia xehetsiemieme, rautitseyatari wahetsiemieme meta, hipameta keyupaimeti memikanetsixeiyawawe wahetsiemieme."
+            },
+            {
+              "numero": 2,
+              "texto": "Wa'iyari mituikarieniki, memiyutaxewireki meyunaki'erieti, memeuka'uniki yemeki yametemaiti kemitiheitserie, memeitimaniki tita Kakaiyari miti'awietakai, miki Kiritsitu kanihikitiniri,"
+            },
+            {
+              "numero": 3,
+              "texto": "hetsiena miti'awietsieki naiti kemireukawe Kakaiyari, mitimaiweniki mi'ayumieme meta mitiuyemaikaki."
+            },
+            {
+              "numero": 4,
+              "texto": "'Ipai nepaine, xewiti mikatixe'iriwiyaniki wit- sitiuniuti xeikia."
+            },
+            {
+              "numero": 5,
+              "texto": "Tsepa newaiyaritsie xehetsia nemika'uyeika, pita xehetsia nekaniuyeikani nexexeiyati ne'iyaritsie nenetemawieti, 'aixia xete'aitiariekame, xetsetse'ime yuri xete'erieti Kiritsitu hetsie."
+            },
+            {
+              "numero": 6,
+              "texto": "'Ayumieme, Ketsutsi kexemite'utanaki'eri Kiritsitu Ti'aitame time, yaxeikia hetsiena xetewiyati 'axekeneu'uwani."
+            },
+            {
+              "numero": 7,
+              "texto": "Hetsiena xeketenewiyani kiye kemitiwiya yunanayaritsie, kii kemitiwiya tetsariyatsie, heitseriemeki xekenetseiriyarieka yuri xete'erieti, xemite'u'ikitiarie hepai, pamipariyutsi xekenepitiaka Kakaiyari."
+            },
+            {
+              "numero": 8,
+              "texto": "Xekeneyukweriwayurieka kapa xewiti xe'unawaniki, timaiweme hepai tikuxatati, yaki xeikia tixe'iriwiyati teiteri wayeiyariki, hekwameki kwiepa memitama kememite'ikitiarie, peru Kiritsitu kemaine katikuxatati."
+            },
+            {
+              "numero": 9,
+              "texto": "Miki waiyarieyatsie 'akaniuweni naiti ke'aneti mihiki Kakaiyari."
+            },
+            {
+              "numero": 10,
+              "texto": "Xemeta hetsiena xetewiyati xekanaye'atiarieni, yunaiti memite'aita heitserie memexeiya kaniwamu'utini."
+            },
+            {
+              "numero": 11,
+              "texto": "Hetsiena xetewiyati xekaniu'iniaritiarieni miyatiniketi, peru mamá kemitiyuxiteke pikatixai, Kiritsitu pita kemitixe'u'iniaritia, kanixe'upitiani xemitehayewaki yaxeteyurieti teiteri wawaiyari kemitiwakuyuitiwa."
+            },
+            {
+              "numero": 12,
+              "texto": "Xeme xepu'iniaritiarie kepauka xemuka'iyarie hamatiana xemukateukie. Miki meta, kepauka xemuka'iyarie, xekananuku'uitiarieni yuri xete'erieti Kakaiyari tirikariyayatsie, yaxeikia kemirenukuketia Kiritsitu mikite watsata."
+            },
+            {
+              "numero": 13,
+              "texto": "Tsepa xemimikitetikai xeka'iniaritiariewaweti miki mame, kanixe'anutanieritiani xeheuyexiriweti kexemiteteiteri, Kiritsitu katatineuyehiwirieni naime ketemiteheuyexiriwekai."
+            },
+            {
+              "numero": 14,
+              "texto": "Ketemite'ataka'utia yakititi 'aitiarikatsie yatemitekahuniki, miki 'utiarika hixiapa 'uweti kemitatika'unakekai, Kiritsitu kaneyeitiani heihurieka yakititi, yukuruxitsie 'ikirapuximaka."
+            },
+            {
+              "verse_number": 15,
+              "text": "'Ixuriki miye'i hepai kaniwarewiwieni miki memite'aita heitserie memexeiya, wahekiatiati yunaime wahixie, kuruxitsie 'uyewieti, kaniwarehapani yu'utima, wara'iwaka."
+            },
+            {
+              "verse_number": 16,
+              "text": "Xewiti 'ayumieme pikaxexanetani tita xemitekwa'aki meta tita xemite'ieki, xemiwewieki 'ixiarari, yatini metsa mihekwa 'ixiarariyari, yatini 'uxipiya tukari kexemikate'iwewieki."
+            },
+            {
+              "verse_number": 17,
+              "text": "Miki tita 'umiramie 'etiriyaya katinihikitini, peru kemi'ane 'umamie, Kiritsitu kanihikitini."
+            },
+            {
+              "verse_number": 18,
+              "text": "Xewiti pikaxetawe'erieka, tsepa 'iya miyuwairiya tixaiti karayuyeitiati, tsepa miyuwairiya miwarayexeiyaniki Kakaiyari niuki tuayametemama, tsepa waikawa miyu'iyaritia yuheinitsi hepaitsita."
+            },
+            {
+              "verse_number": 19,
+              "text": "Kemi'ane miya mi'ane kaniyuta'ireni, tita waiyarieyatsie mitimieme xeikia kana'eriwani, tamu'utsie katiwiyati."
+            },
+            {
+              "verse_number": 20,
+              "text": "Merikite, Kiritsitu matia xika xe'ukwini, para tawari xemikakuyuitiarieniki hehekwamete kwiepa memitama kememite'ikitiarie, ¿titayari 'aumi 'axete'u'uwa kwiepa memitama kememitexe'aitia:"
+            },
+            {
+              "verse_number": 21,
+              "text": "«Tixai pepika'ikumaiwani 'iki, pepika'ikwaka 'iya, pepika'imayiani 'iki»?"
+            },
+            {
+              "verse_number": 22,
+              "text": "Miki 'aitsikate naiti teiteri kememite'aita kememite'ikita kanihikitini, miki naiti katinitiximiki tikumayiiwati."
+            },
+            {
+              "verse_number": 23,
+              "text": "Kememiteyurie, timaiweme niukieya hepai katini'eniiriikini, kememiteyumaiwe'erie, tiku'itawati tixaiti mikarayuyeitia, karima kememiyurie yuwaiyari. Peru kememiteyurie, tixaiti pikatiyunaki'erie wai tita mireuhiwe'erie hepaitsita."
+            }
+          ]
+        },
+        {
+          "numero": 3,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Xika Kiritsitu matia xe'anuku'uitiarieni, taheima timiemeki xekeneyuwairiyani, hakewa meka Kiritsitu, Kakaiyari tserieta 'akaiti."
+            },
+            {
+              "numero": 2,
+              "texto": "Taheima timiemeki xekeneyu'iyaritiaka, kwiepa timiemeki pikatixai."
+            },
+            {
+              "numero": 3,
+              "texto": "Xeme xekaniukwiniri, kexemite'ayeneniere, xekani'awietsieka Kiritsitu hamatia, Kakaiyari hetsie xemitewiyaki."
+            },
+            {
+              "numero": 4,
+              "texto": "Kiritsitu kanitatukaritini, kepauka matsiikiti mayani, 'anata xeme hamatiana xematsiikiti xekanakinikuni witsimiraku'anetsie."
+            },
+            {
+              "numero": 5,
+              "texto": "'Ayumieme xekenayuyeitiaka kexemitekumaiwakai yuwaiyaritsie mikite timiemeki: xepika'ikumaiwani mikaxe'iya mikaxekina, xepikateyukahiwe'erieka, xepikatehiwe'erieka tita 'aixia mikati'anene, tita mikatixepini, kemi'ane mitihiwe'erie tita mikatipinieya tetexi muwarayexeiya hepai kaniyianemiki."
+            },
+            {
+              "numero": 6,
+              "texto": "Mipai memiteyurieki, 'ayumieme Kakaiyari haxia kaniwapitiamiki miki yamemikatekahu."
+            },
+            {
+              "numero": 7,
+              "texto": "Xemeri kepauka mipai xeteyurieti 'axemu'uwakai 'anapaiti, yaxeikia xekateniyuriekaitini kememite'u'uwa."
+            },
+            {
+              "numero": 8,
+              "texto": "Peru hiki matsi xeketeneuhayewa 'ikita naime: kexemiteyuka'uxiwe'eriekai, kexemiteyuhaxiatiakai, 'axakexemiteyuriekukai, 'axakexemutiyuanekai hipame wahepaitsita, niuki 'axamanuyine kexemitexiatiakai yutetaki."
+            },
+            {
+              "numero": 9,
+              "texto": "Xepikateyu'itaiyani, xekenehiwa miki tewi miye'i, xekahe'eriwati kexemiteyuriekai meripaiti."
+            },
+            {
+              "numero": 10,
+              "texto": "Mihekwa pita xekenanakatiki, xehekwariyarieximeti yemeki kexemiteyurie hiki, xemimaikaki Kakaiyari, mixe'utawewi hepai xe'aneneti xemakineki."
+            },
+            {
+              "numero": 11,
+              "texto": "'Iyatsie tiwiyati tsepaneti mikiriyeku, mihuriyu, tsepa mu'iniatsie huriyutsixi waxitekiyaki, tsepa mika'u'iniatsie, tsepa 'ateewa kiekatari, tsepa wairiyarika miti'uximaya, tsepa miyuni'a, Kiritsitu naiti kanihikitini, yunaime wahetsie katiniwiyani."
+            },
+            {
+              "numero": 12,
+              "texto": "'Ayumieme nepaine, Kakaiyari mixe'anuyexeiki, teiterimama xemihikiki, xeminaki'eriwaki, xeteyukanenimayati xekenakini yu'iyaritsie, mihekwa xe'anakatiti, 'aixia xeketeneu'iyarini, xepikateyukatawe'erieka, xeketeneuyukanaki'erieka meta 'axeketeneutewini xekaha'ati."
+            },
+            {
+              "numero": 13,
+              "texto": "Xekeneyunewieka, xeketeneuyuyehiwirieka xika xewiti 'itaniukimani xeime. Ti'aitame kemitixeheuyehiwiri, xemeta hepaina xekeneyiaka."
+            },
+            {
+              "numero": 14,
+              "texto": "Xe'ixewiriyati naime, xeketeneyukanaki'erieka, miki kanihikitini xemuyuxewiriyaniki mi'ayumieme."
+            },
+            {
+              "numero": 15,
+              "texto": "Kiritsitu kemitixepitia yu'iyaritsie xemika'uximatiariekaki, ketixe'aitiaka xe'iyaritsie, xekaniuta'inierieni yu'iyaritsie xemika'uximatiariekaki, xeiwaiyari xemihikiki. Miki meta, pamipariyutsi teyupitiwamete xekenakini."
+            },
+            {
+              "numero": 16,
+              "texto": "Kiritsitu niukieya xehetsie keheyekani waikawa, naimeki xetemaiwawekaku: Mikiki xeketeneyi'ikitiaka meta xekeneyutuikani, Kakaiyari kwikarieyaki, niawari Kakaiyari hepaitsita manuyineki, kwikari 'Iyaritsie timieme hepaitsita manuyineki xeteyikihiaweti, xekeneutikwikani, yu'iyaritsie xe'iniawati Kakaiyari, pamipariyutsi xe'ipitiati."
+            },
+            {
+              "numero": 17,
+              "texto": "Naime tsepa tita xemiteyurie, tsepa xemutiniuka tsepa xemitekumaiwa, naime xeketeneyurieka Ti'aitame Ketsutsi xemiemetetiti, miki hetsia xeparewiekaku, pamipariyutsi xekenepitiaka Kakaiyari mita'ukiyari."
+            },
+            {
+              "numero": 18,
+              "texto": "'Ukari xekeniwareu'enieka yikinama, kemireuyewetse Ti'aitame hetsie xetewiyati."
+            },
+            {
+              "numero": 19,
+              "texto": "'Ukitsi meta, xekeniwanaki'erieka yi'iitama, 'axaxepikatewakihiaweni."
+            },
+            {
+              "numero": 20,
+              "texto": "Türi meta, yaxeketenekahuni naime kememitexekihiawe xepaapamata, mipai pireuyewetse, mipai xeteyuriekaku kaninaki'aka Ti'aitame."
+            },
+            {
+              "numero": 21,
+              "texto": "Xeme meta xemiwapaapama, xepikawahaxiatiaka yuniwema, kapa me'utiwairipieniki."
+            },
+            {
+              "numero": 22,
+              "texto": "Xeme wairiyarika te'uximayatamete, yaxeketenekahuni naime kememitexe'aitia xekutsiyarima kwiepa memitama. Wahixie xeikia yaxepikateyurieka xewanaki'atsitianike teiteri, 'aixia 'iyariki pita xeketene'uximayaka Ti'aitame xe'ayemakati."
+            },
+            {
+              "numero": 23,
+              "texto": "Tsepa tita xemiteyurie, yu'iyariki yaxeketeneyurieka Ti'aitame hetsiemieme, teiteri wahetsiemieme pikatixai,"
+            },
+            {
+              "numero": 24,
+              "texto": "mipai xetemaiti Ti'aitame pixetipitiani tita xehetsie mitinakeniki. Xeme Kiritsitu hetsiemieme xekateni'uximayaka Ti'aitame."
+            },
+            {
+              "verse_number": 25,
+              "text": "Kemi'ane 'axamitiuyuri miki 'axamiti'aneki katinakapitiariemiki kemitiuyuri, Kakaiyari yiki pikatiwaxeiya yunaime teiteri."
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

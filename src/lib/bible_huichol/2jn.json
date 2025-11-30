@@ -1,24 +1,68 @@
 {
-  "abbrev": "2jn",
-  "name": "2 Wani (Segunda Epístola de Juan - Huichol)",
-  "language": "Huichol",
-  "chapters": [
+  "nombre_biblia": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
+  "abrev": "2Jn",
+  "idioma": "Huichol",
+  "libro": [
     {
-      "chapter": 1,
-      "verses": [
-        "Ne nemixe'ukiyari, nekanixewairitiaka 'uka pemanayexeiyarie 'aniwema meta, yuriki nekanixenaki'erieka -ne xeikia pikatixai, matsi tanaiti temeitima tita yuri miraine tepixenaki'erie-,",
-        "tita yuri miraine tahetsie miyekaki meta, mitatsiteitaki yuheyemeki:",
-        "Kakaiyari ta'ukiyari, Ketsutsi Kiritsitu ta'ukiyari nu'aya, yuriki me'utiyuati meteyukanaki'erieti, 'aixia mekete'u'iyarini xehetsiemieme, mekexenenimayaka, mekexepitiaka yu'iyaritsie xemika'uximatiariekaki.",
-        "Waikawa nepinetemawiekai nemitimarieki 'aniwema hipati tita yuri mirainetsie metewiyati memu'uwaki, 'aitsika ta'ukiyari hetsia mieme ketemite'upitiarie.",
-        "Hikiri 'uka hekwameki nemati'aitiati nepikamati'utiirie, miki 'aitsika tsutiapai temeixeiyakai nepimati'utiirie pita. 'Ipai nepimatiwawirie, tanaiti temitanaki'eriekaki.",
-        "'Ipai tekateniyurieka xika teteyukanaki'erieka: Miki ta'ukiyari mi'u'itiarie kepauka temeixeiyakai. Miki hekwameki kemiti'u'itiarie, 'ipai miki miki pemi'enieniki: pemitanaki'eriekaki.",
-        "Waika tewi xeikia memipukawanawatiwe kwiepa, mepiwa'aitiani, Ketsutsi Kiritsitu pikaheuyewetse tewi hikiki kaxite yu'iyarieya kaniyeyeika. Miki tewi, 'axatiuxeiyarieme meta 'axati'uximayatame.",
-        "Pikene'a'iwiyani, yuri pemikati'uwixieniki, miki 'aixia pepitiyu'uwaniki miki kwinimieme Kakaiyari 'aixia miki piwatewahe.",
-        "Kemi'ane tewi mipai mitiwanawe, pika'umati'enieni Ketsutsi Kiritsitu hekwameya mititawewieni, 'atsimikaheuyewetse Kakaiyari hetsia. Kemi'ane miki mititawewieni, miki yuheyemeki Kakaiyari hetsie meta nu'aya hetsie mi'aneni.",
-        "Kemi'ane tewi xehetsia nuani, pika'umatiani, 'ipai pikayukawixieni, kapa xehetsie piyanani.",
-        "Kapa xehetsie mitiyana miki, mitayutatuati miki 'axamitiyurie tita.",
-        "Waikawa niuki kwinimieme nemikatekuxatiani, peru pikanaheuyewi nekanixekuxaxatiwani kiyeximama meta tsukuamama. Matsi nepinatinake yuyani xehetsia nemireye'axieni, mipai matsi temitakuxatiani, miki tatemawierika kanimarika.",
-        "'Uka pemanayexeiyarie 'aniwema yu'iitama memiyuyuwairiya Kakaiyari hetsiemieme, xehetsiena mipai memixewairitiaka."
+      "nombre": "2 Wani",
+      "capitulo": [
+        {
+          "numero": 1,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Ne nemixe'ukiyari, nekanixewairitiaka 'uka pemanayexeiyarie 'aniwema meta, yuriki nekanixenaki'erieka -ne xeikia pikatixai, matsi tanaiti temeitima tita yuri miraine tepixenaki'erie-,"
+            },
+            {
+              "numero": 2,
+              "texto": "tita yuri miraine tahetsie miyekaki meta, mitatsiteitaki yuheyemeki:"
+            },
+            {
+              "numero": 3,
+              "texto": "Kakaiyari ta'ukiyari, Ketsutsi Kiritsitu ta'ukiyari nu'aya, yuriki me'utiyuati meteyukanaki'erieti, 'aixia mekete'u'iyarini xehetsiemieme, mekexenenimayaka, mekexepitiaka yu'iyaritsie xemika'uximatiariekaki."
+            },
+            {
+              "numero": 4,
+              "texto": "Waikawa nepinetemawiekai nemitimarieki 'aniwema hipati tita yuri mirainetsie metewiyati memu'uwaki, 'aitsika ta'ukiyari hetsia mieme ketemite'upitiarie."
+            },
+            {
+              "numero": 5,
+              "texto": "Hikiri 'uka hekwameki nemati'aitiati nepikamati'utiirie, miki 'aitsika tsutiapai temeixeiyakai nepimati'utiirie pita. 'Ipai nepimatiwawirie, tanaiti temitanaki'eriekaki."
+            },
+            {
+              "numero": 6,
+              "texto": "'Ipai tekateniyurieka xika teteyukanaki'erieka: Miki ta'ukiyari mi'u'itiarie kepauka temeixeiyakai. Miki hekwameki kemiti'u'itiarie, 'ipai miki miki pemi'enieniki: pemitanaki'eriekaki."
+            },
+            {
+              "numero": 7,
+              "texto": "Waika tewi xeikia memipukawanawatiwe kwiepa, mepiwa'aitiani, Ketsutsi Kiritsitu pikaheuyewetse tewi hikiki kaxite yu'iyarieya kaniyeyeika. Miki tewi, 'axatiuxeiyarieme meta 'axati'uximayatame."
+            },
+            {
+              "numero": 8,
+              "texto": "Pikene'a'iwiyani, yuri pemikati'uwixieniki, miki 'aixia pepitiyu'uwaniki miki kwinimieme Kakaiyari 'aixia miki piwatewahe."
+            },
+            {
+              "numero": 9,
+              "texto": "Kemi'ane tewi mipai mitiwanawe, pika'umati'enieni Ketsutsi Kiritsitu hekwameya mititawewieni, 'atsimikaheuyewetse Kakaiyari hetsia. Kemi'ane miki mititawewieni, miki yuheyemeki Kakaiyari hetsie meta nu'aya hetsie mi'aneni."
+            },
+            {
+              "numero": 10,
+              "texto": "Kemi'ane tewi xehetsia nuani, pika'umatiani, 'ipai pikayukawixieni, kapa xehetsie piyanani."
+            },
+            {
+              "numero": 11,
+              "texto": "Kapa xehetsie mitiyana miki, mitayutatuati miki 'axamitiyurie tita."
+            },
+            {
+              "numero": 12,
+              "texto": "Waikawa niuki kwinimieme nemikatekuxatiani, peru pikanaheuyewi nekanixekuxaxatiwani kiyeximama meta tsukuamama. Matsi nepinatinake yuyani xehetsia nemireye'axieni, mipai matsi temitakuxatiani, miki tatemawierika kanimarika."
+            },
+            {
+              "numero": 13,
+              "texto": "'Uka pemanayexeiyarie 'aniwema yu'iitama memiyuyuwairiya Kakaiyari hetsiemieme, xehetsiena mipai memixewairitiaka."
+            }
+          ]
+        }
       ]
     }
   ]

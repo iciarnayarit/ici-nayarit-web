@@ -1,41 +1,106 @@
 {
-  "file_name": "hch_2TI.pdf",
-  "book": "2 Timuteu",
-  "language_note": "Huichol language (Wixárika)",
-  "chapters": {
-    "1": {
-      "title": "Kemitihekiatani Kiritsitu hepaitsita",
-      "verses": {
-        "1": "Ne **Papuru Kiritsitu Ketsutsi ni'arieya** nekanihikitini mipai mitinakeki Kakaiyari, mipai mutayiki meripaiti kename tukari xuaweni Kiritsitu Ketsutsi hetsie tiwiyakaku.",
-        "2": "nekamaniwairitiaka **Timuteu** pemineniwe nemimatsinaki'erie: Kakaiyari mita'ukiyari meta Kiritsitu Ketsutsi mitati'aitiwame 'aixia mekete' nekete'u'iyarini 'ahetsiemieme, mekematsinenimayaka meta meke-matsipitiaka 'a'iyaritsie pemika'uximatiariekaki.",
-        "3": "Miki nepayexeiya Kakaiyari ne'iyari 'itiyakaku, ne'ukiyarimata ke- memiteheyexeiyakai. Miki pamipariyutsi nekanipitiaka nematsiha'eriwati nekatihayewati tukariki tikariki kepauka neminenenewie.",
-        "4": "Yuheyemeki nepimatsiheuxeiyamiki nematsiha'eriwati kepemitiutatsuakakai pe'ahiwerieti, xika nematsi'uxeiyake nepinetemawiekakeyu yemeki.",
-        "5": "Nepimatsiha'eriwa **yuri kepemiti'erie** yaki pekatikuxatati, mipai yuri tiuta'erieka meri 'apukatei 'akutsi **Ruhira** meta 'awarutsi **'Eunitsi**. Yuri nepiti'erie 'ekita wahepai yuri pemiti'erieki.",
-        "6": "'Ayumieme mipai nepimaraye'eritiwa pemikaratitimaiyaniki, pe'atatuati yaketineyurieneni Kakaiyari kemimatiupitia 'ahetsie ne'utimeku.",
-        "7": "Kakaiyari kemitatiumi pikatatsi'upitia ta'iyaritsie temimamakaki, matsi pita 'iyari pitatsi'umi mitirikaiye, tatsipitiati temitetakanaki'eriekaki meta temitsetseiyeniki.",
-        "8": "'Ayumieme pepika'atewiyani peti-hekiatati Tati'aitiwame hepaitsita, meta ne pepikanetsitewiyani, tsepa nemanutahiiya hetsiana nemimiemeki.",
-        "9": "'Apita, 'ekita niuki 'aixia manuyinetsie mieme matsi ketinekwineni, petinewieti Kakaiyari matsitirikariyakaku.",
-        "10": "Miki mitatsi'utawikweitsi kanihikitini kemi'ane mitatsi'uta'ini temipatsiekaki hetsiena miemeki, tita temiteyuriekai tame mikiki 'atsipikatiuyuri, matsi mipai mitiyuwairiyakaiki yikimana meta 'aixia mitiuka'iyariki. Mipai katiniuka'iy."
-      }
-    },
-    "2": {
-      "title": "Texto adicional (posiblemente de los Capítulos 2 y 4)",
-      "verses": {
-        "1": "Tita pemitiu'eni netikuxatakaku tehekiatamete yumiireme wahixie, miki keniwayetuiri teiteri yamemitekahu, mikita memiyiwaweniki mipai memitewati'ikitianiki hipame. **2Ti 2:3** iv **2Ti 2:12**",
-        "2": "Ketinekwineni 'ekita pe'amieneti Kiritsitu Ket- sutsi hetsiemieme, kuya 'aixia mitiuka'iyari hepai peyianeti.",
-        "3": "Kemi'ane mikuya pikayuwiyania yu'uximayatsika kuwewieneti yikimana, matsi ninaki'aritiamikini kemi'ane mitahiawixi kuya mayaniki.",
-        "4": "Yaxeikia nanautsame, kuruna pika'anutiketsiyarieni x...",
-        "5": "Kene'ata'una pemikati'akahiwe'eriekaki temari wahepai, mipai pita ketine'amexiitiaka, heitseriemeki yapemitikamieniki, kepemaine yapemitiyurieneniki, pemiti'akanaki'eriekaki, miki memehiawe Ti'aitame wa'iyari 'itiyatikaikaku, miki wahamatia 'axeikia yaxeketeneyurieka 'aixia xemiteyuxeiyaniki.",
-        "6": "Memikatemaiwawe niuki kememitexiatia 'at- simekatemaiti, miki kenexani'erieka mipai peti- maiti, niuki metixiatiame mepiyutakwini xeikia.",
-        "7": "Kaneuyeweka kemi'ane Ti'aitame hetsiemieme miti'uximayatame mikayumieneni, mat...",
-        "8": "Miki 'utiarikaki Kakaiyari tewiyari paye'ani piha'aritsieka 'aixia mitiyurieneniki naimeki tsepa kemititita.",
-        "9": "**Niuki kenekuxatani**",
-        "10": "Kakaiyari hixie, Kiritsitu Ketsutsi hixie kemi'ane 'itsikametiti miwatahiawe memayeyuyuri mikite yunaime, miki munuaximeki ti'aitametiti, mipai nema- tinihiritiaka:",
-        "11": "Niuki kene'ayumiemetini kenekuxatani."
-      }
+  "nombre_biblia": "KAKAIYARI NIUKIEYA XAPAYARI WIXARIKAKI",
+  "abrev": "2Ti",
+  "idioma": "Huichol",
+  "libro": [
+    {
+      "nombre": "2 Timuteu",
+      "capitulo": [
+        {
+          "numero": 1,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Ne Papuru Kiritsitu Ketsutsi ni'arieya nekanihikitini mipai mitinakeki Kakaiyari, mipai mutayiki meripaiti kename tukari xuaweni Kiritsitu Ketsutsi hetsie tiwiyakaku."
+            },
+            {
+              "numero": 2,
+              "texto": "nekamaniwairitiaka Timuteu pemineniwe nemimatsinaki'erie: Kakaiyari mita'ukiyari meta Kiritsitu Ketsutsi mitati'aitiwame 'aixia mekete' nekete'u'iyarini 'ahetsiemieme, mekematsinenimayaka meta meke-matsipitiaka 'a'iyaritsie pemika'uximatiariekaki."
+            },
+            {
+              "numero": 3,
+              "texto": "Miki nepayexeiya Kakaiyari ne'iyari 'itiyakaku, ne'ukiyarimata ke- memiteheyexeiyakai. Miki pamipariyutsi nekanipitiaka nematsiha'eriwati nekatihayewati tukariki tikariki kepauka neminenenewie."
+            },
+            {
+              "numero": 4,
+              "texto": "Yuheyemeki nepimatsiheuxeiyamiki nematsiha'eriwati kepemitiutatsuakakai pe'ahiwerieti, xika nematsi'uxeiyake nepinetemawiekakeyu yemeki."
+            },
+            {
+              "numero": 5,
+              "texto": "Nepimatsiha'eriwa yuri kepemiti'erie yaki pekatikuxatati, mipai yuri tiuta'erieka meri 'apukatei 'akutsi Ruhira meta 'awarutsi 'Eunitsi. Yuri nepiti'erie 'ekita wahepai yuri pemiti'erieki."
+            },
+            {
+              "numero": 6,
+              "texto": "'Ayumieme mipai nepimaraye'eritiwa pemikaratitimaiyaniki, pe'atatuati yaketineyurieneni Kakaiyari kemimatiupitia 'ahetsie ne'utimeku."
+            },
+            {
+              "numero": 7,
+              "texto": "Kakaiyari kemitatiumi pikatatsi'upitia ta'iyaritsie temimamakaki, matsi pita 'iyari pitatsi'umi mitirikaiye, tatsipitiati temitetakanaki'eriekaki meta temitsetseiyeniki."
+            },
+            {
+              "numero": 8,
+              "texto": "'Ayumieme pepika'atewiyani peti-hekiatati Tati'aitiwame hepaitsita, meta ne pepikanetsitewiyani, tsepa nemanutahiiya hetsiana nemimiemeki."
+            },
+            {
+              "numero": 9,
+              "texto": "'Apita, 'ekita niuki 'aixia manuyinetsie mieme matsi ketinekwineni, petinewieti Kakaiyari matsitirikariyakaku."
+            },
+            {
+              "numero": 10,
+              "texto": "Miki mitatsi'utawikweitsi kanihikitini kemi'ane mitatsi'uta'ini temipatsiekaki hetsiena miemeki, tita temiteyuriekai tame mikiki 'atsipikatiuyuri, matsi mipai mitiyuwairiyakaiki yikimana meta 'aixia mitiuka'iyariki. Mipai katiniuka'iy."
+            }
+          ]
+        },
+        {
+          "numero": 2,
+          "versiculos": [
+            {
+              "numero": 1,
+              "texto": "Tita pemitiu'eni netikuxatakaku tehekiatamete yumiireme wahixie, miki keniwayetuiri teiteri yamemitekahu, mikita memiyiwaweniki mipai memitewati'ikitianiki hipame."
+            },
+            {
+              "numero": 2,
+              "texto": "Ketinekwineni 'ekita pe'amieneti Kiritsitu Ket- sutsi hetsiemieme, kuya 'aixia mitiuka'iyari hepai peyianeti."
+            },
+            {
+              "numero": 3,
+              "texto": "Kemi'ane mikuya pikayuwiyania yu'uximayatsika kuwewieneti yikimana, matsi ninaki'aritiamikini kemi'ane mitahiawixi kuya mayaniki."
+            },
+            {
+              "numero": 4,
+              "texto": "Yaxeikia nanautsame, kuruna pika'anutiketsiyarieni x..."
+            },
+            {
+              "numero": 5,
+              "texto": "Kene'ata'una pemikati'akahiwe'eriekaki temari wahepai, mipai pita ketine'amexiitiaka, heitseriemeki yapemitikamieniki, kepemaine yapemitiyurieneniki, pemiti'akanaki'eriekaki, miki memehiawe Ti'aitame wa'iyari 'itiyatikaikaku, miki wahamatia 'axeikia yaxeketeneyurieka 'aixia xemiteyuxeiyaniki."
+            },
+            {
+              "numero": 6,
+              "texto": "Memikatemaiwawe niuki kememitexiatia 'at- simekatemaiti, miki kenexani'erieka mipai peti- maiti, niuki metixiatiame mepiyutakwini xeikia."
+            },
+            {
+              "numero": 7,
+              "texto": "Kaneuyeweka kemi'ane Ti'aitame hetsiemieme miti'uximayatame mikayumieneni, mat..."
+            },
+            {
+              "numero": 8,
+              "texto": "Miki 'utiarikaki Kakaiyari tewiyari paye'ani piha'aritsieka 'aixia mitiyurieneniki naimeki tsepa kemititita."
+            },
+            {
+              "numero": 9,
+              "texto": "Niuki kenekuxatani"
+            },
+            {
+              "numero": 10,
+              "texto": "Kakaiyari hixie, Kiritsitu Ketsutsi hixie kemi'ane 'itsikametiti miwatahiawe memayeyuyuri mikite yunaime, miki munuaximeki ti'aitametiti, mipai nema- tinihiritiaka:"
+            },
+            {
+              "numero": 11,
+              "texto": "Niuki kene'ayumiemetini kenekuxatani."
+            }
+          ]
+        }
+      ]
     }
-  },
-  "notes": {
-    "translator_note": "KAKAƗYARI NIUKIEYA XAPAYARI WIXARIKAKƗ The Holy Bible in the in Huichol language of Mexico, 2020 edition La Santa Biblia en..."
-  }
+  ]
 }
