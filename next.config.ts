@@ -1,4 +1,7 @@
 import type {NextConfig} from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
+ 
+const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -15,6 +18,11 @@ const nextConfig: NextConfig = {
         hostname: 'placehold.co',
         port: '',
         pathname: '/**',
+      },
+      {
+        hostname: "cdn.sanity.io",
+        protocol: "https",
+        port: "",
       },
       {
         protocol: 'https',
@@ -51,4 +59,4 @@ const nextConfig: NextConfig = {
 };
 
 // Force rebuild to clear cache
-export default nextConfig;
+export default withNextIntl(nextConfig);
