@@ -1,14 +1,35 @@
-import type { Metadata } from 'next';
 import { Toaster } from '@/app/[locale]/components/ui/toaster';
-import '../globals.css';
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
-import {getMessages} from "next-intl/server";
-import {NextIntlClientProvider} from "next-intl";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import type { Metadata } from 'next';
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import '../globals.css';
 
 export const metadata: Metadata = {
   title: 'ICIAR Nayarit',
   description: 'Somos una Iglesia Cristiana Interdenominacional comprometida con compartir el amor de Cristo en Nayarit.',
+  keywords: [
+    'Cristianismo',
+    'ICIAR Iglesia Central - Portales',
+    'Doctrina',
+    'Himno',
+    'Logotipo',
+    'Himnario',
+    'Dios',
+    'Oración',
+    'Escuela dominical',
+    'Iglesia',
+    'Vida',
+    'Biblia',
+    'Himnario ICIAR',
+    'Rector',
+    'RISING',
+    'iglesia iciar',
+    'iciar portales',
+    'tabernáculo la mansión iciar',
+    'puntos doctrinales iciar',
+  ],
 };
 
 export default async function RootLayout({
