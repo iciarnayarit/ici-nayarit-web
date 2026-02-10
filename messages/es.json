@@ -86,7 +86,7 @@
   "Bible": {
     "select_book": "Seleccionar libro",
     "chapter": "Capítulo",
-    "view_saved_verses": "Ver Versículos Guardados",
+    "view_saved_verses": "Versículos Guardados",
     "previous_chapter": "Capítulo anterior",
     "next_chapter": "Siguiente capítulo",
     "loading": "Cargando...",
@@ -154,7 +154,7 @@
     "mark_uncompleted": "Marcar como no completado",
     "mark_completed": "Marcar como completado",
     "back": "Regresar",
-    "view_saved_verses": "Ver Versículos Guardados",
+    "view_saved_verses": "Versículos Guardados",
     "completed": "{percentage}% completado ({completedDays} de {totalDays} días)"
   },
   "ContactSection": {
