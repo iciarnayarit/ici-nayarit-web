@@ -60,6 +60,9 @@ export default function Header() {
           <Link href="/planes" className="text-foreground/80 hover:text-foreground transition-colors">
             Planes
           </Link>
+          <Link href="/doctrina" className="text-foreground/80 hover:text-foreground transition-colors">
+            Doctrina
+          </Link>
           <Link href="/templos" className="text-foreground/80 hover:text-foreground transition-colors">
             Templos
           </Link>
@@ -94,6 +97,9 @@ export default function Header() {
                 </Link>
                 <Link href="/planes" className="flex w-full items-center py-2 text-lg font-semibold">
                     Planes
+                </Link>
+                <Link href="/doctrina" className="flex w-full items-center py-2 text-lg font-semibold">
+                    Doctrina
                 </Link>
                 <Link href="/templos" className="flex w-full items-center py-2 text-lg font-semibold">
                     Templos
