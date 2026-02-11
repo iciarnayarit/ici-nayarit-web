@@ -1,8 +1,10 @@
+
 import { Toaster } from '@/app/components/ui/toaster';
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from 'next';
 import './globals.css';
+import { AudioProvider } from './context/AudioContext';
  
 type Props = {
   children: React.ReactNode;
@@ -58,7 +60,9 @@ export default async function RootLayout({children}: Props) {
             <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
           </head>
           <body className="font-body antialiased">
-            {children}
+            <AudioProvider>
+              {children}
+            </AudioProvider>
             <Toaster />
             <SpeedInsights />
             <Analytics />
