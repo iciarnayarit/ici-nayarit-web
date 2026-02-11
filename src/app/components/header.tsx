@@ -63,9 +63,9 @@ export default function Header() {
           <Link href="/templos" className="text-foreground/80 hover:text-foreground transition-colors">
             Templos
           </Link>
-          <Link href="/videos" className="text-foreground/80 hover:text-foreground transition-colors">
+          {/* <Link href="/videos" className="text-foreground/80 hover:text-foreground transition-colors">
             Videos
-          </Link>
+          </Link> */}
           <Link href="/radio" className="text-foreground/80 hover:text-foreground transition-colors">
             Radio
           </Link>
@@ -98,9 +98,9 @@ export default function Header() {
                 <Link href="/templos" className="flex w-full items-center py-2 text-lg font-semibold">
                     Templos
                 </Link>
-                <Link href="/videos" className="flex w-full items-center py-2 text-lg font-semibold">
+                {/* <Link href="/videos" className="flex w-full items-center py-2 text-lg font-semibold">
                     Videos
-                </Link>
+                </Link> */}
                 <Link href="/radio" className="flex w-full items-center py-2 text-lg font-semibold">
                     Radio
                 </Link>

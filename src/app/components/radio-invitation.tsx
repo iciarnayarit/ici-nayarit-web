@@ -23,7 +23,7 @@ export default function RadioInvitation() {
       <div className="relative container mx-auto px-4 md:px-6 text-center text-white z-20">
         <h2 className="text-3xl font-bold font-headline mb-4">Escucha la radio en vivo y las predicaciones todos los días.</h2>
         <p className="text-lg mb-8">
-          Los horarios programados de las predicaciones son: 7:00 a.m., 11:00 a.m., 3:00 p.m., 7:00 p.m. y 11:00 p.m. ¡Será de gran bendición para todos!
+          Los horarios programados de las predicaciones son: 7:00 a.m., 11:00 a.m., 3:00 p.m., 7:00 p.m. y 11:00 p.m.
         </p>
         <div className="flex justify-center gap-4">
           <Button onClick={handleWhatsAppClick} style={{ backgroundColor: 'purple', color: 'white' }}>

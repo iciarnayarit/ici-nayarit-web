@@ -2,6 +2,7 @@
 "use client";
 
 import { createContext, useContext, useRef, useState, ReactNode, useEffect } from 'react';
+import '../../lib/firebase';
 
 type AudioContextType = {
   audioRef: React.RefObject<HTMLAudioElement>;

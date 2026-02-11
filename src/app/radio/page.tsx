@@ -12,6 +12,7 @@ import {
   Volume2Icon,
   VolumeXIcon,
 } from "lucide-react";
+import Image from "next/image";
 
 export default function RadioPage() {
   const { isPlaying, togglePlayPause, audioRef } = useAudio();
@@ -68,8 +69,12 @@ export default function RadioPage() {
               </span>
             </div>
           </div>
-
           <div className="text-center text-gray-500 mb-4">
+            <a href="https://icipdrgdl.com/" target="_blank" rel="noopener noreferrer">
+              <div className="rounded-lg overflow-hidden mb-4">
+                <Image src="https://i.imgur.com/m7jgIpR.jpeg" alt="Radio Logo" width={400} height={250} className="w-full" />
+              </div>
+            </a>
             Escuchanos las 24 horas
           </div>
 
