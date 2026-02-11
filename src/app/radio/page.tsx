@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/app/components/ui/card";
 import { Button } from "@/app/components/ui/button";
-import Image from "next/image";
 import { useAudio } from "@/app/context/AudioContext";
+import AudioVisualizer from "@/app/components/AudioVisualizer";
 import {
   PlayIcon,
   PauseIcon,
@@ -17,6 +17,12 @@ export default function RadioPage() {
   const { isPlaying, togglePlayPause, audioRef } = useAudio();
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.5);
+
+  useEffect(() => {
+    if (!isPlaying) {
+      togglePlayPause();
+    }
+  }, []);
 
   const toggleMute = () => {
     if (audioRef.current) {
@@ -63,19 +69,12 @@ export default function RadioPage() {
             </div>
           </div>
 
-          <div className="relative mb-4">
-            <Image
-              src="https://i.imgur.com/L21cWDK.jpeg"
-              alt="microphone"
-              width={400}
-              height={300}
-              className="rounded-lg"
-              layout="responsive"
-            />
-          </div>
-
           <div className="text-center text-gray-500 mb-4">
             Escuchanos las 24 horas
+          </div>
+
+          <div className="flex justify-center items-center mb-4">
+            <AudioVisualizer />
           </div>
 
           <div className="flex justify-center items-center space-x-4 mb-4">
@@ -84,7 +83,7 @@ export default function RadioPage() {
             </Button>
             <Button
               size="lg"
-              className="rounded-full w-16 h-16"
+              className="rounded-full w-16 h-16 bg-blue-500 hover:bg-blue-600"
               onClick={togglePlayPause}
             >
               {isPlaying ? (
