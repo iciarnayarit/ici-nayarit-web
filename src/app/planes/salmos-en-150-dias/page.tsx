@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import ps from '@/app/lib/bible_rvr/ps.json';
+import Link from 'next/link';
 
 const bibleData: { [key: string]: any } = {
     'salmos': ps,
@@ -237,7 +238,7 @@ export default function PsalmsIn150DaysPlanPage() {
                 &larr; Regresar
             </Button>
             <Link href="/biblia/guardados">
-                <Button variant="outline">Versículos Guardados</Button>
+              <Button variant="outline">Versículos Guardados</Button>
             </Link>
         </div>
         <h1 className="text-4xl font-bold font-headline text-center mb-4">
