@@ -66,6 +66,9 @@ export default function Header() {
           <Link href="/videos" className="text-foreground/80 hover:text-foreground transition-colors">
             Videos
           </Link>
+          <Link href="/radio" className="text-foreground/80 hover:text-foreground transition-colors">
+            Radio
+          </Link>
           <Link href="/#download" className="text-foreground/80 hover:text-foreground transition-colors">
             App
           </Link>
@@ -97,6 +100,9 @@ export default function Header() {
                 </Link>
                 <Link href="/videos" className="flex w-full items-center py-2 text-lg font-semibold">
                     Videos
+                </Link>
+                <Link href="/radio" className="flex w-full items-center py-2 text-lg font-semibold">
+                    Radio
                 </Link>
                 <Link href="/#download" className="flex w-full items-center py-2 text-lg font-semibold">
                     App

@@ -6,8 +6,8 @@ import Image from 'next/image';
 export default function RadioInvitation() {
 
   const handleWhatsAppClick = () => {
-    const whatsappUrl = `https://icipdrgdl.com/`;
-    window.open(whatsappUrl, '_blank');
+    const whatsappUrl = `/radio`;
+    window.location.href = whatsappUrl;
   };
 
   return (
@@ -21,9 +21,9 @@ export default function RadioInvitation() {
       />
       <div className="absolute inset-0 bg-black/60 z-10"></div>
       <div className="relative container mx-auto px-4 md:px-6 text-center text-white z-20">
-        <h2 className="text-3xl font-bold font-headline mb-4">Les invitamos a escuchar la radio y las predicaciones todos los días.</h2>
+        <h2 className="text-3xl font-bold font-headline mb-4">Escucha la radio en vivo y las predicaciones todos los días.</h2>
         <p className="text-lg mb-8">
-          Los horarios programados de las predicaciones son: 7:00 a.m., 11:00 a.m., 3:00 p.m., 7:00 p.m. y 11:00 p.m. ¡Será de gran bendición para todos! 
+          Los horarios programados de las predicaciones son: 7:00 a.m., 11:00 a.m., 3:00 p.m., 7:00 p.m. y 11:00 p.m. ¡Será de gran bendición para todos!
         </p>
         <div className="flex justify-center gap-4">
           <Button onClick={handleWhatsAppClick} style={{ backgroundColor: 'purple', color: 'white' }}>
