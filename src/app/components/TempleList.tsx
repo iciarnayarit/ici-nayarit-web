@@ -1,15 +1,15 @@
-
-import { templeLocations } from "@/app/lib/temples-data";
-import { Card, CardContent } from "@/app/components/ui/card";
+"use client";
 import { Button } from "@/app/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import { Card, CardContent } from "@/app/components/ui/card";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger
 } from "@/app/components/ui/dropdown-menu";
-import { Share2, ClipboardCopy } from "lucide-react";
+import { templeLocations } from "@/app/lib/temples-data";
+import { ClipboardCopy, Share2 } from "lucide-react";
 
 export const TempleList = () => {
 

@@ -1,18 +1,17 @@
-
 "use client";
-import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/app/components/ui/card";
-import { Button } from "@/app/components/ui/button";
-import { useAudio } from "@/app/context/AudioContext";
 import AudioVisualizer from "@/app/components/AudioVisualizer";
+import { Button } from "@/app/components/ui/button";
+import { Card, CardContent } from "@/app/components/ui/card";
+import { useAudio } from "@/app/context/AudioContext";
 import {
-  PlayIcon,
-  PauseIcon,
   FastForwardIcon,
+  PauseIcon,
+  PlayIcon,
   Volume2Icon,
   VolumeXIcon,
 } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState, type ChangeEvent } from "react";
 
 export default function RadioPage() {
   const { isPlaying, togglePlayPause, audioRef } = useAudio();
@@ -23,7 +22,7 @@ export default function RadioPage() {
     if (!isPlaying) {
       togglePlayPause();
     }
-  }, []);
+  }, [isPlaying, togglePlayPause]);
 
   const toggleMute = () => {
     if (audioRef.current) {
@@ -33,7 +32,7 @@ export default function RadioPage() {
     }
   };
 
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVolumeChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (audioRef.current) {
       const newVolume = parseFloat(e.target.value);
       audioRef.current.volume = newVolume;
