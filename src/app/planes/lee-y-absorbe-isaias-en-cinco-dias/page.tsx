@@ -3,7 +3,7 @@ import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Progress } from '@/app/components/ui/progress';
 import { useToast } from '@/app/hooks/use-toast';
-import { allPlanData } from '@/lib/reading-plan-data';
+import { leeYAbsorbeIsaiasEnCincoDias as planDays } from '@/lib/reading-plan-data/lee-y-absorbe-isaias-en-cinco-dias';
 import { Bookmark, CheckCircle2, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -89,8 +89,6 @@ const bibleData: { [key: string]: any } = {
     'hebreos': hb, 'santiago': jm, '1 pedro': pe1, '2 pedro': pe2, '1 juan': jn1, '2 juan': jn2, '3 juan': jn3,
     'judas': jd, 'apocalipsis': re,
 };
-
-const planDays = allPlanData['lee-y-absorbe-isaias-en-cinco-dias'];
 
 interface PassageVerse {
     book: string;
@@ -233,7 +231,18 @@ export default function LeeYAbsorbeIsaiasEnCincoDiasPlanPage() {
           }
           continue;
         }
-  
+        
+        match = part.match(/^(\d+):(\d+)$/);
+        if (match) {
+            const chapter = parseInt(match[1], 10);
+            const verse = parseInt(match[2], 10);
+            const verses = book.chapters[chapter - 1] || [];
+            if (verses[verse - 1]) {
+                allVerses.push({ book: currentBookKey, chapter, verse: verse, text: verses[verse - 1] });
+            }
+            continue;
+        }
+
         match = part.match(/^(\d+)-(\d+)$/);
         if (match) {
           const startChapter = parseInt(match[1], 10);
@@ -283,7 +292,7 @@ export default function LeeYAbsorbeIsaiasEnCincoDiasPlanPage() {
                 return (
                     <div key={index} className="flex items-start gap-2">
                         <p className="flex-grow">
-                            <sup className="font-bold mr-2">{v.chapter}:{v.verse}</sup>
+                            <sup className="font-bold mr-2">{v.verse}</sup>
                             {v.text}
                         </p>
                         <Button
@@ -333,10 +342,10 @@ export default function LeeYAbsorbeIsaiasEnCincoDiasPlanPage() {
             </Link>
         </div>
         <h1 className="text-4xl font-bold font-headline text-center mb-4">
-            Lee y Absorbe Isaías en Cinco Días
+        Lee y Absorbe Isaías en Cinco Días
         </h1>
         <p className="text-center text-muted-foreground mb-8">
-          Un plan intensivo para sumergirte en el libro de Isaías.
+        Un plan intensivo para sumergirte en el libro de Isaías.
         </p>
 
         <div className="mb-8">

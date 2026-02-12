@@ -3,7 +3,7 @@ import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Progress } from '@/app/components/ui/progress';
 import { useToast } from '@/app/hooks/use-toast';
-import { isaiasEsforzandoseMenos as planDays } from '@/lib/reading-plan-data/isaias-esforzandose-menos';
+import { laEpifaniaDeCristo as planDays } from '@/lib/reading-plan-data/la-epifania-de-cristo';
 import { Bookmark, CheckCircle2, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -102,7 +102,7 @@ interface SavedVerse {
   reference: string;
 }
 
-export default function IsaiasEsforzandoseMenosPlanPage() {
+export default function LaEpifaniaDeCristoPlanPage() {
   const [completedDays, setCompletedDays] = useState<number[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
@@ -342,10 +342,10 @@ export default function IsaiasEsforzandoseMenosPlanPage() {
             </Link>
         </div>
         <h1 className="text-4xl font-bold font-headline text-center mb-4">
-        Isaías: Esforzándose Menos y Confiando en Dios
+        La Epifanía de Cristo
         </h1>
         <p className="text-center text-muted-foreground mb-8">
-        Aprende a confiar en Dios y a descansar en su soberanía.
+        Un plan para reflexionar sobre la manifestación de Cristo al mundo.
         </p>
 
         <div className="mb-8">

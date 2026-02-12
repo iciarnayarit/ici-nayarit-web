@@ -3,7 +3,7 @@ import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Progress } from '@/app/components/ui/progress';
 import { useToast } from '@/app/hooks/use-toast';
-import { allPlanData } from '@/lib/reading-plan-data';
+import { cuaresma2026 as planDays } from '@/lib/reading-plan-data/cuaresma-2026-mateo-y-salmos';
 import { Bookmark, CheckCircle2, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -90,8 +90,6 @@ const bibleData: { [key: string]: any } = {
     'judas': jd, 'apocalipsis': re,
 };
 
-const planDays = allPlanData['cuaresma-2026-mateo-y-salmos'];
-
 interface PassageVerse {
     book: string;
     chapter: number;
@@ -104,7 +102,7 @@ interface SavedVerse {
   reference: string;
 }
 
-export default function Cuaresma2026MateoYSalmosPlanPage() {
+export default function Cuaresma2026PlanPage() {
   const [completedDays, setCompletedDays] = useState<number[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
@@ -233,7 +231,18 @@ export default function Cuaresma2026MateoYSalmosPlanPage() {
           }
           continue;
         }
-  
+        
+        match = part.match(/^(\d+):(\d+)$/);
+        if (match) {
+            const chapter = parseInt(match[1], 10);
+            const verse = parseInt(match[2], 10);
+            const verses = book.chapters[chapter - 1] || [];
+            if (verses[verse - 1]) {
+                allVerses.push({ book: currentBookKey, chapter, verse: verse, text: verses[verse - 1] });
+            }
+            continue;
+        }
+
         match = part.match(/^(\d+)-(\d+)$/);
         if (match) {
           const startChapter = parseInt(match[1], 10);
@@ -283,7 +292,7 @@ export default function Cuaresma2026MateoYSalmosPlanPage() {
                 return (
                     <div key={index} className="flex items-start gap-2">
                         <p className="flex-grow">
-                            <sup className="font-bold mr-2">{v.chapter}:{v.verse}</sup>
+                            <sup className="font-bold mr-2">{v.verse}</sup>
                             {v.text}
                         </p>
                         <Button
@@ -333,10 +342,10 @@ export default function Cuaresma2026MateoYSalmosPlanPage() {
             </Link>
         </div>
         <h1 className="text-4xl font-bold font-headline text-center mb-4">
-            Cuaresma 2026 | Guiado, Mateo y Salmos
+        Cuaresma 2026 | Viaje Guiado a través de Mateo y Salmos
         </h1>
         <p className="text-center text-muted-foreground mb-8">
-          Un plan de lectura para la Cuaresma.
+        Un plan de lectura para la Cuaresma.
         </p>
 
         <div className="mb-8">

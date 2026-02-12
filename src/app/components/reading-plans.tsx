@@ -16,7 +16,7 @@ const plans = [
     id: '1',
     titleKey: 'Amor',
     descriptionKey: 'Explora lo que la Biblia dice sobre el amor en este plan.',
-    imageUrl: 'https://i.imgur.com/t7lYtDk.png',
+    imageUrl: 'https://i.imgur.com/uNso09D.png',
     slug: 'amor'
   },
   {
@@ -53,6 +53,97 @@ const plans = [
     descriptionKey: 'Un plan para fortalecer tu fe.',
     imageUrl: 'https://i.imgur.com/6MKV0Rz.png',
     slug: 'territorio-de-fe'
+  },
+  {
+    id: '7',
+    titleKey: 'Isaías: Esforzándose Menos y Confiando en Dios',
+    descriptionKey: 'Aprende a confiar en Dios y a descansar en su soberanía.',
+    imageUrl: 'https://i.imgur.com/MGDweky.jpeg',
+    slug: 'isaias-esforzandose-menos'
+  },
+  {
+    id: '8',
+    titleKey: 'Salvación: Un Estudio en Isaías',
+    descriptionKey: 'Profundiza en el tema de la salvación en el libro de Isaías.',
+    imageUrl: 'https://i.imgur.com/mudqr7s.png',
+    slug: 'salvacion-un-estudio-en-isaias'
+  },
+  {
+    id: '9',
+    titleKey: 'Inmersión en Isaías',
+    descriptionKey: 'Sumérgete en la riqueza teológica y profética de Isaías.',
+    imageUrl: 'https://i.imgur.com/HhxFX0O.jpeg',
+    slug: 'inmersion-en-isaias'
+  },
+  {
+    id: '10',
+    titleKey: 'Lee y Absorbe Isaías en Cinco Días',
+    descriptionKey: 'Un plan intensivo para sumergirte en el libro de Isaías.',
+    imageUrl: 'https://i.imgur.com/1zzId1r.png',
+    slug: 'lee-y-absorbe-isaias-en-cinco-dias'
+  },
+  {
+    id: '11',
+    titleKey: 'A Través de la Biblia: Isaías',
+    descriptionKey: 'Un recorrido completo por el libro de Isaías.',
+    imageUrl: 'https://i.imgur.com/4lrUcm9.jpeg',
+    slug: 'a-traves-de-la-biblia-isaias'
+  },
+  {
+    id: '12',
+    titleKey: 'Sobre Esta Roca',
+    descriptionKey: 'Un estudio sobre la iglesia y su fundamento en Cristo.',
+    imageUrl: 'https://i.imgur.com/7yNe695.jpeg',
+    slug: 'sobre-esta-roca'
+  },
+  {
+    id: '13',
+    titleKey: 'Cuaresma 2026 | Viaje Guiado a través de Mateo y Salmos',
+    descriptionKey: 'Un plan de lectura para la Cuaresma.',
+    imageUrl: 'https://i.imgur.com/4lrUcm9.jpeg',
+    slug: 'cuaresma-2026-mateo-y-salmos'
+  },
+  {
+    id: '14',
+    titleKey: 'Los Milagros de Jesús',
+    descriptionKey: 'Descubre el poder y la compasión de Jesús a través de sus milagros.',
+    imageUrl: 'https://i.imgur.com/vU2lVVf.jpeg',
+    slug: 'los-milagros-de-jesus'
+  },
+  {
+    id: '15',
+    titleKey: 'La Epifanía de Cristo',
+    descriptionKey: 'Un plan para reflexionar sobre la manifestación de Cristo al mundo.',
+    imageUrl: 'https://i.imgur.com/s1Wj9dh.png',
+    slug: 'la-epifania-de-cristo'
+  },
+  {
+    id: '16',
+    titleKey: 'Proyecto Bíblico | Cómo Buscar el Reino',
+    descriptionKey: 'Aprende a buscar el reino de Dios en tu vida diaria.',
+    imageUrl: 'https://i.imgur.com/4lrUcm9.jpeg',
+    slug: 'proyecto-biblico-como-buscar-el-reino'
+  },
+  {
+    id: '17',
+    titleKey: 'Tierra Santa',
+    descriptionKey: 'Un viaje virtual por los lugares santos de la Biblia.',
+    imageUrl: 'https://i.imgur.com/41hK38Z.jpeg',
+    slug: 'tierra-santa'
+  },
+  {
+    id: '18',
+    titleKey: 'De Estéril a Fructífero',
+    descriptionKey: 'Descubre cómo Dios puede traer fruto a tu vida.',
+    imageUrl: 'https://i.imgur.com/Q4JOPWm.png',
+    slug: 'de-esteril-a-fructifero'
+  },
+  {
+    id: '19',
+    titleKey: 'UNCOMMEN: Corazones Ansiosos',
+    descriptionKey: 'Un plan para hombres sobre cómo lidiar con la ansiedad.',
+    imageUrl: 'https://i.imgur.com/t7lYtDk.png',
+    slug: 'uncommen-corazones-ansiosos'
   },
   {
     id: '36',
