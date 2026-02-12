@@ -3,6 +3,47 @@ import Footer from "@/app/components/footer";
 import Header from "@/app/components/header";
 import DefinicionesIci from "../components/definiciones-ici";
 import TextBible from "../components/text-bible";
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'ICIAR - Doctrina',
+  description: 'Conoce los fundamentos de nuestra Fe.',
+  keywords: [
+    'Cristianismo',
+    'ICIAR Iglesia Central - Portales',
+    'Doctrina',
+    'Himno',
+    'Logotipo',
+    'Himnario',
+    'Dios',
+    'Oración',
+    'Escuela dominical',
+    'Iglesia',
+    'Vida',
+    'Biblia',
+    'Himnario ICIAR',
+    'Rector',
+    'RISING',
+    'iglesia iciar',
+    'iciar portales',
+    'tabernáculo la mansión iciar',
+    'puntos doctrinales iciar',
+    'ici makis',
+    'ici hot',
+    'ici puebla',
+    'ici radio canada',
+    'ici tou tv',
+    'ici rdi',
+    'ici tout tv',
+    'bryan adams ma place est ici',
+    'ici première',
+    'cici',
+    'ici tele',
+    'ici rdi en direct',
+    'ici télé',
+    'ici tout.tv',
+  ],
+};
 
 export default function DoctrinaPage() {
   return (
