@@ -342,7 +342,7 @@ export default function ReadingPlans() {
                     className="object-cover"
                   />
                   <div className="absolute top-2 right-2 flex gap-2">
-                    <Button
+                    {/* <Button
                       variant="ghost"
                       size="icon"
                       className="bg-white/50 hover:bg-white/75"
@@ -353,7 +353,7 @@ export default function ReadingPlans() {
                     >
                       <Download className="h-6 w-6 text-black" />
                       <span className="sr-only">Descargar Plan</span>
-                    </Button>
+                    </Button> */}
                     <Button
                       variant="ghost"
                       size="icon"
