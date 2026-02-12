@@ -14,9 +14,9 @@ export default function TextBible() {
       />
       <div className="absolute inset-0 bg-black/60 z-10"></div>
       <div className="relative container mx-auto px-4 md:px-6 text-center text-white z-20">
-        <h2 className="text-3xl font-bold font-headline mb-4">Todo lo puedo en Cristo que me fortalece. Orando sin cesar venceremos</h2>
+        <h2 className="text-3xl font-bold font-headline mb-4">Todo lo puedo en Cristo que me fortalece.</h2>
         <p className="text-lg mb-8">
-          Bienvenidos a su casa espiritual
+        Orando sin cesar venceremos
         </p>
       </div>
     </section>

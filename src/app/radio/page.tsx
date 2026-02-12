@@ -22,7 +22,11 @@ export default function RadioPage() {
     if (!isPlaying) {
       togglePlayPause();
     }
-  }, [isPlaying, togglePlayPause]);
+  }, []);
+
+  const handlePlayPause = () => {
+    togglePlayPause();
+  };
 
   const toggleMute = () => {
     if (audioRef.current) {
@@ -88,7 +92,7 @@ export default function RadioPage() {
             <Button
               size="lg"
               className="rounded-full w-16 h-16 bg-blue-500 hover:bg-blue-600"
-              onClick={togglePlayPause}
+              onClick={handlePlayPause}
             >
               {isPlaying ? (
                 <PauseIcon className="h-8 w-8" />
