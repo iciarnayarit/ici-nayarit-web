@@ -1,3 +1,17 @@
+import { amor } from './reading-plan-data/amor';
+import { ansiedad } from './reading-plan-data/ansiedad';
+import { enojo } from './reading-plan-data/enojo';
+import { sanidad } from './reading-plan-data/sanidad';
+import { territorioDeFe } from './reading-plan-data/territorio-de-fe';
+import { palabraDeDios } from './reading-plan-data/palabra-de-dios';
+import { mentirasCreibles } from './reading-plan-data/mentiras-creibles';
+import { desdeElPrincipioHastaElAmenMarzo } from './reading-plan-data/desde-el-principio-hasta-el-amen-marzo';
+import { discipulado } from './reading-plan-data/discipulado';
+import { cuaresma2026MateoYSalmos } from './reading-plan-data/cuaresma-2026-mateo-y-salmos';
+import { elEvangelioDeIsaias } from './reading-plan-data/el-evangelio-de-isaias';
+import { isaiasEsforzandoseMenos } from './reading-plan-data/isaias-esforzandose-menos';
+import { leeYAbsorbeIsaiasEnCincoDias } from './reading-plan-data/lee-y-absorbe-isaias-en-cinco-dias';
+import { esperanza } from './reading-plan-data/esperanza';
 // This file will store the data for all reading plans.
 import {bookOrder, chaptersInBook} from './bible-data';
 
@@ -53,6 +67,20 @@ const generateClassicPlan = () => {
 };
 
 export const allPlanData: { [key: string]: any[] } = {
+    'amor': amor,
+    'ansiedad': ansiedad,
+    'enojo': enojo,
+    'sanidad': sanidad,
+    'territorio-de-fe': territorioDeFe,
+    'palabra-de-dios': palabraDeDios,
+    'mentiras-creibles': mentirasCreibles,
+    'desde-el-principio-hasta-el-amen-marzo': desdeElPrincipioHastaElAmenMarzo,
+    'discipulado': discipulado,
+    'cuaresma-2026-mateo-y-salmos': cuaresma2026MateoYSalmos,
+    'el-evangelio-de-isaias': elEvangelioDeIsaias,
+    'isaias-esforzandose-menos': isaiasEsforzandoseMenos,
+    'lee-y-absorbe-isaias-en-cinco-dias': leeYAbsorbeIsaiasEnCincoDias,
+    'esperanza': esperanza,
     'proverbios-sabiduria-diaria': Array.from({ length: 31 }, (_, i) => ({
         day: i + 1,
         reading: `Proverbios ${i + 1}`,

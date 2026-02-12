@@ -1,3 +1,4 @@
+import Chat from '@/app/components/chat';
 import CenteredImage from '@/app/components/centered-image'; // Import the new component
 import DailyVerse from '@/app/components/daily-verse';
 import DownloadApp from '@/app/components/download-app';

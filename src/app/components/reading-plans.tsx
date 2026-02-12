@@ -14,83 +14,125 @@ import { useEffect, useState } from 'react';
 const plans = [
   {
     id: '1',
+    titleKey: 'Amor',
+    descriptionKey: 'Explora lo que la Biblia dice sobre el amor en este plan.',
+    imageUrl: 'https://i.imgur.com/t7lYtDk.png',
+    slug: 'amor'
+  },
+  {
+    id: '2',
+    titleKey: 'Ansiedad',
+    descriptionKey: 'Encuentra paz y consuelo en la palabra de Dios cuando te sientas ansioso.',
+    imageUrl: 'https://i.imgur.com/SUnm3Ek.png',
+    slug: 'ansiedad'
+  },
+  {
+    id: '3',
+    titleKey: 'Sanidad',
+    descriptionKey: 'Descubre el poder de Dios para sanar tu corazón, mente y cuerpo.',
+    imageUrl: 'https://i.imgur.com/PAwKtCw.png',
+    slug: 'sanidad'
+  },
+  {
+    id: '4',
+    titleKey: 'Enojo',
+    descriptionKey: 'Aprende a lidiar con el enojo de una manera saludable y bíblica.',
+    imageUrl: 'https://i.imgur.com/wYQR2K9.jpeg',
+    slug: 'enojo'
+  },
+  {
+    id: '5',
+    titleKey: 'Esperanza',
+    descriptionKey: 'Encuentra esperanza en las promesas de Dios, sin importar lo que estés enfrentando.',
+    imageUrl: 'https://i.imgur.com/s1Wj9dh.png',
+    slug: 'esperanza'
+  },
+  {
+    id: '6',
+    titleKey: 'Territorio de Fe',
+    descriptionKey: 'Un plan para fortalecer tu fe.',
+    imageUrl: 'https://i.imgur.com/6MKV0Rz.png',
+    slug: 'territorio-de-fe'
+  },
+  {
+    id: '36',
     titleKey: 'Viaje a través de Juan',
     descriptionKey: 'Explora la vida y las enseñanzas de Jesús en este plan de 30 días.',
     imageUrl: 'https://images.unsplash.com/photo-1603284569248-821525309698?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxyZWFkaW5nJTIwYm9va3xlbnwwfHx8fDE3NjM1ODc0Nzd8MA&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'viaje-a-traves-de-juan'
   },
   {
-    id: '2',
+    id: '37',
     titleKey: 'Proverbios: Una Dosis Diaria de Sabiduría',
     descriptionKey: 'Obtén sabiduría práctica para la vida diaria con un capítulo de Proverbios cada día.',
     imageUrl: 'https://images.unsplash.com/photo-1646598990880-cb5b64582f2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxiaWJsZSUyMHRhYmxlfGVufDB8fHx8MTc2MzU4NzQ3N3ww&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'proverbios-sabiduria-diaria'
   },
   {
-    id: '3',
+    id: '38',
     titleKey: 'La Historia de la Redención',
     descriptionKey: 'Sigue la gran narrativa de la Biblia desde Génesis hasta Apocalipsis.',
     imageUrl: 'https://images.unsplash.com/photo-1692685820393-fcf174d59b2f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsYW5kc2NhcGUlMjBqb3VybmV5fGVufDB8fHx8MTc2MzU4NzQ3N3ww&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'la-historia-de-la-redencion'
   },
   {
-    id: '4',
+    id: '39',
     titleKey: 'Plan de la Biblia en un Año (Clásico)',
     descriptionKey: 'Lecturas diarias: Antiguo Testamento + Nuevo Testamento (1–3 capítulos al día).',
     imageUrl: 'https://i.imgur.com/mm2tx3n.png',
     slug: 'biblia-en-un-ano-clasico'
   },
   {
-    id: '5',
+    id: '40',
     titleKey: 'Plan Cronológico',
     descriptionKey: 'Ordena los eventos tal como ocurrieron históricamente.',
     imageUrl: 'https://i.imgur.com/YWlQCbQ.png',
     slug: 'plan-cronologico'
   },
   {
-    id: '6',
+    id: '41',
     titleKey: 'Plan de “Un Evangelio al Mes”',
     descriptionKey: 'Fortalece tu relación con Jesús y tu comprensión de su ministerio.',
     imageUrl: 'https://i.imgur.com/ASc0Xj0.png',
     slug: 'un-evangelio-al-mes'
   },
   {
-    id: '7',
+    id: '42',
     titleKey: 'Plan Temático',
     descriptionKey: 'Cada mes un tema: Fe, Oración, El Espíritu Santo, La iglesia, Sabiduría, Evangelismo.',
     imageUrl: 'https://i.imgur.com/XWW0el7.jpeg',
     slug: 'plan-tematico'
   },
   {
-    id: '8',
+    id: '43',
     titleKey: 'Salmos en 150 Días',
     descriptionKey: 'Un salmo por día. Perfecto para fortalecer la oración y la adoración.',
     imageUrl: 'https://i.imgur.com/Ttvfam9.png',
     slug: 'salmos-en-150-dias'
   },
   {
-    id: '9',
+    id: '44',
     titleKey: 'Nuevo Testamento en 90 Días',
     descriptionKey: 'Un ritmo excelente para nuevos creyentes o grupos de estudio. Lectura diaria: 3 capítulos.',
     imageUrl: 'https://i.imgur.com/iR823lO.jpeg',
     slug: 'nuevo-testamento-en-90-dias'
   },
   {
-    id: '10',
+    id: '45',
     titleKey: 'Antiguo Testamento en 180 Días',
     descriptionKey: 'Lectura profunda pero alcanzable. Muy útil para liderazgo y discipulado.',
     imageUrl: 'https://i.imgur.com/XhKVju1.png',
     slug: 'antiguo-testamento-en-180-dias'
   },
   {
-    id: '11',
+    id: '46',
     titleKey: 'Plan “Toda la Biblia con Jesús en el Centro”',
     descriptionKey: 'Un plan cristocéntrico. Lecturas que conectan directamente con la obra de Cristo.',
     imageUrl: 'https://i.imgur.com/iR823lO.jpeg',
     slug: 'toda-la-biblia-con-jesus-en-el-centro'
   },
   {
-    id: '12',
+    id: '47',
     titleKey: '10 Días para Renovar tu Fe',
     descriptionKey: 'Este plan de 10 días te guía por pasajes clave del Antiguo y del Nuevo Testamento para fortalecer tu relación con Dios, renovar tu mente y profundizar en tu vida espiritual. A través de los Evangelios, Salmos, Proverbios, Hechos y las cartas apostólicas, experimentarás un recorrido equilibrado que combina enseñanza, sabiduría, adoración y crecimiento práctico en Cristo. Es un plan perfecto para reiniciar tu vida devocional, comenzar un nuevo hábito o compartirlo con tu familia o grupo de estudio.',
     imageUrl: 'https://i.imgur.com/pIdxDkl.jpeg',
