@@ -234,140 +234,140 @@ export default function DoctrinaPage() {
                 <p>Llamamos atributos naturales a aquellas cualidades o perfecciones divinas que pertenecen a la naturaleza de Dios. Son aquellas perfecciones que no expresan acción.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">OMNISCIENCIA</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Omnisciencia</p>
                 <p>Es el atributo por el cual Dios conoce de manera absolutamente perfecta todas las cosas pasadas, presentes y futuras, tanto respecto de sí mismo, como en relación de sus criaturas.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">OMNIPOTENCIA</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Omnipotencia</p>
                 <p>Es el atributo por el cual Dios puede hacer de manera independiente, absoluta e ilimitada, todas las cosas posibles y consecuentes con su naturaleza perfecta.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">OMNIPRESENCIA</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Omnipresencia</p>
                 <p>La Omnipresencia es el atributo por el cual Dios está presente en todas partes de manera constante, potencial y esencial, sin restricción alguna.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">ETERNIDAD</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Eternidad</p>
                 <p>La eternidad es el atributo por el cual Dios existe por sí mismo, sin principio ni fin, de manera uniforme y simultánea.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">INFINIDAD</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Infinidad</p>
                 <p>La Infinidad es el atributo por el cual Dios posee esencialmente todas las perfecciones de manera suprema, ilimitada e inagotable.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">INMENSIDAD</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Inmensidad</p>
                 <p>La Inmensidad es el atributo por el cual Dios existe por encima de todo espacio, de manera incontenible, ilimitada e inconmensurable.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">INMUTABILIDAD</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Inmutabilidad</p>
                 <p>La Inmutabilidad es el atributo por el cual Dios es siempre el mismo, tanto en esencia como en carácter de manera absoluta.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">VIDA</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Vida</p>
                 <p>La Vida es el atributo por el cual Dios es substancialmente activo de manera inmanente y trascendente, constante e ilimitada.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">INTELIGENCIA</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Inteligencia</p>
                 <p>La Inteligencia es el atributo por el cual Dios entiende esencialmente todas las cosas respecto de sí mismo y de la creación de manera simultánea, ilimitada y perfecta.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">VOLUNTAD</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Voluntad</p>
                 <p>La Voluntad es el atributo por el cual Dios se determina de manera independiente, inmutable y perfecta para realizar todo cuanto quiere.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">ATRIBUTOS MORALES</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Atributos Morales</p>
                 <p>Llamamos atributos morales aquellas cualidades o perfecciones divinas que manifiestan el carácter moral de la deidad. Son aquellas cualidades que expresan acción, implicando el ejercicio de su voluntad.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">SABIDURÍA</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Sabiduría</p>
                 <p>La Sabiduría es el atributo por el cual Dios provee y utiliza los mejores medios para lograr los más excelentes fines de manera absoluta, incalculable e inagotable.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">VERDAD</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Verdad</p>
                 <p>La Verdad o veracidad es el atributo por el cual Dios revela todo cuanto le place acerca de sí mismo y de lo creado, de manera ciertísima, inmutable e inmejorable.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">FIDELIDAD</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Fidelidad</p>
                 <p>La Fidelidad es el atributo por el cual Dios se consagra a lograr la consumación de todos sus decretos y veredictos y a cumplir todas sus promesas de manera leal, infalible y constante.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">SANTIDAD</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Santidad</p>
                 <p>Es el atributo por el cual Dios aborrece y rechaza el mal y ama y realiza el bien, de manera substancial, eficiente y absoluta.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JUSTICIA</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Justicia</p>
                 <p>La Justicia es el atributo por el cual Dios rige a la creación, dando a cada cual lo que le corresponde, legislando, recompensando y castigando de manera imparcial o inalterable.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">PACIENCIA</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Paciencia</p>
                 <p>La Justicia es el atributo por el cual Dios tolera a sus criaturas, aguardándolas de manera constante.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">AMOR</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Amor</p>
                 <p>El Amor es el atributo por el cual Dios establece relaciones con sus criaturas para concederles todo el bien posible, de manera desinteresada, incesante y perfecta.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">BONDAD</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Bondad</p>
                 <p>La Bondad es el atributo por el cual Dios comunica la mayor felicidad posible a todas sus criaturas, de manera espontánea, incesante y perfecta.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">MISERICORDIA</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Misericordia</p>
                 <p>La Misericordia es el atributo por el cual Dios se compadece siempre de sus criaturas y está dispuesto a perdonar a los pecadores de manera completa y soberana.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVA NISI</p>
-                <p>JEHOVÁ ES MI BANDERA. <br />GENESIS 17:15.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehova Nisi</p>
+                <p>Jehová Es Mi Bandera. <br />Genesis 17:15.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVÁ SHALOM</p>
-                <p>JEHOVA ES PAZ. <br />JUECES 6:24.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehová Shalom</p>
+                <p>Jehova Es Paz. <br />Jueces 6:24.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVÁ YIRE</p>
-                <p>JEHOVA ES LA PAZ. <br />GN. 22:13-14.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehová Yire</p>
+                <p>Jehova Es La Paz. <br />Gn. 22:13-14.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVÁ TZIDKENU</p>
-                <p>JEHOVÁ JUSTICIA NUESTRA. <br />JEREMÍAS 23:6.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehová Tzidkenu</p>
+                <p>Jehová Justicia Nuestra. <br />Jeremías 23:6.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVÁ TZURI</p>
-                <p>JEHOVÁ ES MI ROCA. <br />DT. 32:4.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehová Tzuri</p>
+                <p>Jehová Es Mi Roca. <br />Dt. 32:4.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVÁ RO´I</p>
-                <p>JEHOVÁ ES MI PASTOR. <br />SALMO 23</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehová Ro'i</p>
+                <p>Jehová Es Mi Pastor. <br />Salmo 23.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVÁ TZ´BAOT</p>
-                <p>JEHOVA DE LOS EJERCITOS. <br />SALMO 146:7, 11.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehová Tz'baot</p>
+                <p>Jehova De Los Ejercitos. <br />Salmo 146:7, 11.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVÁ SHAMMA</p>
-                <p>JEHOVÁ ESTÁ ALLI. <br />EZEQUIEL 48:35.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehová Shamma</p>
+                <p>Jehová Está Alli. <br />Ezequiel 48:35.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVÁ ROFE</p>
-                <p>JEHOVÁ EL SANADOR. <br />EXODO 15:26</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehová Rofe</p>
+                <p>Jehová El Sanador. <br />Exodo 15:26.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">OLAM</p>
-                <p>DIOS ETERNO. <br />GENESIS 21:33.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Olam</p>
+                <p>Dios Eterno. <br />Genesis 21:33.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">JEHOVÁ ELOHIM</p>
-                <p>JEHOVÁ ES Dios. <br />Genesis 2:4.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">Jehová Elohim</p>
+                <p>Jehová Es Dios. <br />Genesis 2:4.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">EL SHADAY</p>
-                <p>DIOS TODOPODEROSO / OMNIPOTENTE. <br />GN. 17.1.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">El Shaday</p>
+                <p>Dios Todopoderoso / Omnipotente. <br />Gn. 17.1.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">EL ROÍ</p>
-                <p>DIOS QUE ME VE. <br />GENESIS 16:13-14. JN. 1:48.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">El Roí</p>
+                <p>Dios Que Me Ve. <br />Genesis 16:13-14. Jn. 1:48.</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-md">
-                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">EL ELYÓN</p>
-                <p>DIOS ALTÍSIMO. <br />GENESIS 14:19-22. DT. 4:35-37.</p>
+                <p className="text-2xl md:text-3xl font-serif text-yellow-600 mb-4">El Elyón</p>
+                <p>Dios Altísimo. <br />Genesis 14:19-22. Dt. 4:35-37.</p>
               </div>
             </div>
           </section>
