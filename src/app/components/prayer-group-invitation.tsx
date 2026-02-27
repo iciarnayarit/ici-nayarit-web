@@ -19,14 +19,14 @@ export default function PrayerGroupInvitation() {
         objectFit="cover"
         className="z-0"
       />
-      <div className="absolute inset-0 bg-black/60 z-10"></div>
+      <div className="absolute inset-0 bg-gray-900/60 z-10"></div>
       <div className="relative container mx-auto px-4 md:px-6 text-center text-white z-20">
-        <h2 className="text-3xl font-bold font-headline mb-4">Únete a nuestro Grupo de Oración y Lectura Bíblica</h2>
-        <p className="text-lg mb-8">
+        <h2 className="font-display text-4xl font-bold text-white mb-2">Únete a nuestro Grupo de Oración y Lectura Bíblica</h2>
+        <p className="text-lg mb-8 text-gray-300">
           Te invitamos a unirte a nuestro grupo de oración y lectura de la Biblia, de lunes a sábado de 5:30 a.m. a 6:00 a.m. ¡Comienza tu día con fe y comunidad!
         </p>
         <div className="flex justify-center gap-4">
-          <Button onClick={handleWhatsAppClick} style={{ backgroundColor: 'purple', color: 'white' }}>
+          <Button onClick={handleWhatsAppClick} className="bg-[#B88A44] hover:bg-[#a07939] text-white font-bold py-3 px-8 rounded-full transition-colors focus:outline-none text-sm">
             <MessageCircle className="mr-2 h-4 w-4" />
             Enviar WhatsApp
           </Button>

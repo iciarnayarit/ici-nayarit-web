@@ -79,22 +79,20 @@ export default function DailyVerse() {
 
 
   return (
-    <section id="verse" className="w-full py-20 md:py-32 lg:py-40 bg-background">
-      <div className="container mx-auto px-4 md:px-6 text-center">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl font-headline font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">
-            Versículo del Día
-          </h2>
-          <blockquote className="text-2xl font-headline font-bold text-foreground md:text-4xl lg:text-5xl tracking-tight">
+    <section id="verse" className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <h2 className="font-display text-4xl font-bold text-[#B88A44] mb-2 italic">Versículo del Día</h2>
+          <blockquote className="font-serif text-3xl font-medium text-gray-800 my-8">
             “{verse.text}”
           </blockquote>
-          <p className="mt-6 text-lg text-muted-foreground font-body">
+          <p className="text-lg text-gray-500 font-light">
             {verse.reference}
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline">
+                <Button className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-full transition-colors focus:outline-none text-sm">
                   <Share2 className="mr-2 h-4 w-4" />
                   Compartir
                 </Button>

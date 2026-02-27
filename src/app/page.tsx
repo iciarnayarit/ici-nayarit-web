@@ -1,26 +1,31 @@
-import Chat from '@/app/components/chat';
-import CenteredImage from '@/app/components/centered-image'; // Import the new component
-import DailyVerse from '@/app/components/daily-verse';
-import DownloadApp from '@/app/components/download-app';
-import Footer from '@/app/components/footer';
-import Header from '@/app/components/header';
-import PrayerGroupInvitation from "@/app/components/prayer-group-invitation";
-import ReadingPlans from '@/app/components/reading-plans';
-import RadioInvitation from './components/radio-invitation';
+'use client';
 
-export default function Home() {
+import Bible from '@/app/components/bible';
+import CenteredImage from '@/app/components/centered-image';
+import Contact from '@/app/components/contact-section';
+import DailyVerse from '@/app/components/daily-verse';
+import Definiciones from '@/app/components/definiciones-ici';
+import DownloadApp from '@/app/components/download-app';
+import PrayerGroupInvitation from '@/app/components/prayer-group-invitation';
+import RadioInvitation from '@/app/components/radio-invitation';
+import ReadingPlans from '@/app/components/reading-plans';
+import RegisterInvitation from '@/app/components/register-invitation';
+import TextBible from '@/app/components/text-bible';
+import Header from './components/header';
+import Footer from './components/footer';
+
+export default function Page() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <main className="flex-1">
       <Header />
-      <main className="flex-1">
-        <RadioInvitation />
-        <ReadingPlans />
-        <PrayerGroupInvitation />
-        <DailyVerse />
-        <DownloadApp />
-        <CenteredImage imageUrl="https://i.imgur.com/ma3EXHG.png" altText="Wycliffe" />
-      </main>
+      <RadioInvitation />
+      <DailyVerse />
+      <Bible />
+      <PrayerGroupInvitation />
+      <ReadingPlans />
+      <DownloadApp />
+      <CenteredImage imageUrl="https://i.imgur.com/ma3EXHG.png" altText="Wycliffe" width={48} height={48} />
       <Footer />
-    </div>
+    </main>
   );
 }

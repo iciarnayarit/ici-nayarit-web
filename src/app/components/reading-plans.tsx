@@ -402,18 +402,18 @@ export default function ReadingPlans() {
   };
 
   return (
-    <section id="plans" className="w-full py-20 md:py-32">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="max-w-3xl mx-auto text-center mb-12">
-          <h2 className="text-3xl font-headline font-bold tracking-tight sm:text-4xl md:text-5xl">
+    <section id="plans" className="py-20 bg-[#F9FAFB]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="font-display text-4xl font-bold text-[#B88A44] mb-2 italic">
             Planes de Lectura y Devocionales
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="text-lg text-gray-500 font-light">
             Crece en tu fe con planes que se ajustan a tu vida.
           </p>
-          <div className="mt-4">
+          <div className="mt-8">
             <Link href="/planes/guardados">
-              <Button>Planes Guardados</Button>
+              <Button className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-full transition-colors focus:outline-none text-sm">Planes Guardados</Button>
             </Link>
           </div>
         </div>
@@ -421,11 +421,11 @@ export default function ReadingPlans() {
           {plans.map((plan) => {
             const isSaved = savedPlans.includes(plan.id);
             const button = (
-              <Button variant="outline" className="w-full">Comenzar Plan</Button>
+              <Button className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-full transition-colors focus:outline-none text-sm w-full">Comenzar Plan</Button>
             );
             return (
-              <Card key={plan.id} className="flex flex-col overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="relative h-48 w-full">
+              <Card key={plan.id} className="bg-white p-6 rounded-lg shadow-md border-t-4 border-transparent hover:border-[#B88A44] transition-colors duration-300 flex flex-col">
+                <div className="relative h-48 w-full mb-4 rounded-lg overflow-hidden">
                   <Image
                     src={plan.imageUrl}
                     alt={plan.titleKey}
@@ -433,50 +433,38 @@ export default function ReadingPlans() {
                     className="object-cover"
                   />
                   <div className="absolute top-2 right-2 flex gap-2">
-                    {/* <Button
-                      variant="ghost"
-                      size="icon"
-                      className="bg-white/50 hover:bg-white/75"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDownloadPlan(plan);
-                      }}
-                    >
-                      <Download className="h-6 w-6 text-black" />
-                      <span className="sr-only">Descargar Plan</span>
-                    </Button> */}
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="bg-white/50 hover:bg-white/75"
+                      className="bg-white/50 hover:bg-white/75 rounded-full"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleSharePlan(plan);
                       }}
                     >
-                      <Share2 className="h-6 w-6 text-black" />
+                      <Share2 className="h-5 w-5 text-black" />
                       <span className="sr-only">Compartir plan</span>
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="bg-white/50 hover:bg-white/75"
+                      className="bg-white/50 hover:bg-white/75 rounded-full"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleSavePlan(plan);
                       }}
                     >
-                      <Bookmark className={`h-6 w-6 text-black ${isSaved ? 'fill-current' : ''}`} />
+                      <Bookmark className={`h-5 w-5 ${isSaved ? 'fill-current text-[#B88A44]' : 'text-black'}`} />
                       <span className="sr-only">Guardar plan</span>
                     </Button>
                   </div>
                 </div>
-                <CardHeader>
-                  <CardTitle className="font-headline">{plan.titleKey}</CardTitle>
-                  <CardDescription>{plan.descriptionKey}</CardDescription>
+                <CardHeader className="p-0 mb-4">
+                  <CardTitle className="font-display text-xl font-bold text-[#B88A44] mb-2">{plan.titleKey}</CardTitle>
+                  <CardDescription className="text-gray-600 text-sm leading-relaxed">{plan.descriptionKey}</CardDescription>
                 </CardHeader>
-                <CardContent className="flex-grow"></CardContent>
-                <CardFooter>
+                <CardContent className="flex-grow p-0"></CardContent>
+                <CardFooter className="p-0 mt-auto">
                   {plan.slug ? (
                     <Link href={`/planes/${plan.slug}`} className="w-full">
                       {button}

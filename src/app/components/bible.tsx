@@ -183,13 +183,13 @@ export default function Bible() {
   const chapters = chaptersPerBook[selectedBook] ? Array.from({ length: chaptersPerBook[selectedBook] }, (_, i) => i + 1) : [];
 
   return (
-    <section id="bible" className="w-full py-12 md:py-24 lg:py-32 bg-card">
+    <section id="bible" className="w-full py-12 md:py-24 lg:py-32 bg-white">
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-4xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
                 <div className="flex gap-4">
                 <Select value={selectedBook} onValueChange={handleBookChange}>
-                    <SelectTrigger className="w-full sm:w-[200px]">
+                    <SelectTrigger className="w-full sm:w-[200px] bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-4 rounded-full transition-colors focus:outline-none text-sm">
                     <SelectValue placeholder="Seleccionar libro" />
                     </SelectTrigger>
                     <SelectContent>
@@ -199,7 +199,7 @@ export default function Bible() {
                     </SelectContent>
                 </Select>
                 <Select value={selectedChapter.toString()} onValueChange={(val) => setSelectedChapter(Number(val))}>
-                    <SelectTrigger className="w-full sm:w-[200px]">
+                    <SelectTrigger className="w-full sm:w-[200px] bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-4 rounded-full transition-colors focus:outline-none text-sm">
                     <SelectValue placeholder="Capítulo" />
                     </SelectTrigger>
                     <SelectContent>
@@ -210,19 +210,19 @@ export default function Bible() {
                 </Select>
                 </div>
                 <Link href="/biblia/guardados">
-                    <Button variant="outline">Versículos Guardados</Button>
+                    <Button className="bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-8 rounded-full transition-colors focus:outline-none text-sm">Versículos Guardados</Button>
                 </Link>
             </div>
 
             <div className="relative">
-                <Button onClick={goToPreviousChapter} disabled={selectedChapter === 1} variant="outline" className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(100%+8px)]">
+                <Button onClick={goToPreviousChapter} disabled={selectedChapter === 1} className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(100%+8px)] bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold p-3 rounded-full transition-colors focus:outline-none text-sm">
                     <ChevronLeft className="h-6 w-6" />
                 </Button>
 
                 <Card>
                     <CardContent className="p-6 md:p-8">
-                        <h2 className="text-3xl font-bold font-headline mb-6 text-center">{selectedBook} {selectedChapter}</h2>
-                        <div className="space-y-4 text-left font-body text-lg md:text-xl leading-relaxed">
+                        <h2 className="text-3xl font-bold font-display text-center mb-6 text-[#B88A44]">{selectedBook} {selectedChapter}</h2>
+                        <div className="space-y-4 text-left font-serif text-lg md:text-xl leading-relaxed text-gray-800">
                         {isLoading ? (
                         <p>Cargando...</p>
                         ) : verses.length > 0 ? (
@@ -230,7 +230,7 @@ export default function Bible() {
                             const reference = `${selectedBook} ${selectedChapter}:${index + 1}`;
                             const isSaved = savedVerses.some(v => v.reference === reference);
                             return (
-                                <div key={index} className="flex items-start gap-2">
+                                <div key={index} className="flex items-start gap-2 group">
                                     <p className="flex-grow">
                                         <sup className="font-bold mr-2">{index + 1}</sup>{verse}
                                     </p>
@@ -239,7 +239,7 @@ export default function Bible() {
                                         size="icon"
                                         onClick={() => handleShareVerse(verse, index + 1)}
                                     >
-                                        <Share2 className="h-6 w-6 text-gray-400" />
+                                        <Share2 className="h-6 w-6 text-gray-400 group-hover:text-[#B88A44]" />
                                         <span className="sr-only">Compartir versículo</span>
                                     </Button>
                                     <Button
@@ -247,7 +247,7 @@ export default function Bible() {
                                         size="icon"
                                         onClick={() => handleSaveVerse(verse, index + 1)}
                                     >
-                                        <Bookmark className={`h-6 w-6 ${isSaved ? 'fill-current text-black' : 'text-gray-400'}`} />
+                                        <Bookmark className={`h-6 w-6 ${isSaved ? 'fill-current text-[#B88A44]' : 'text-gray-400 group-hover:text-[#B88A44]'}`} />
                                         <span className="sr-only">Guardar versículo</span>
                                     </Button>
                                 </div>
@@ -260,7 +260,7 @@ export default function Bible() {
                     </CardContent>
                 </Card>
 
-                <Button onClick={goToNextChapter} disabled={selectedChapter === totalChapters} variant="outline" className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[calc(100%+8px)]">
+                <Button onClick={goToNextChapter} disabled={selectedChapter === totalChapters} className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-[calc(100%+8px)] bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold p-3 rounded-full transition-colors focus:outline-none text-sm">
                     <ChevronRight className="h-6 w-6" />
                 </Button>
             </div>

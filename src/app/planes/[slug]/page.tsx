@@ -1,6 +1,10 @@
+'use client';
+
 import { bibleData } from '@/lib/bible-data';
 import { allPlanData } from '@/lib/reading-plan-data';
-import { ReadingDay } from '@/lib/reading-plan-data';
+import { palabraDeDios } from '@/lib/reading-plan-data';
+import { useState, useEffect } from 'react';
+import { Button } from '@/app/components/ui/button';
 
 interface PassageVerse {
   book: string;
@@ -76,29 +80,66 @@ const handleReadPassage = (reading: string): PassageVerse[] => {
 };
 
 export default function PlanDetailPage({ params }: { params: { slug: string } }) {
-  const planData: ReadingDay[] = allPlanData[params.slug];
+  const planData: palabraDeDios[] = allPlanData[params.slug];
+  const [completedDays, setCompletedDays] = useState<number[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`completedDays_${params.slug}`);
+    if (saved) {
+      setCompletedDays(JSON.parse(saved));
+    }
+  }, [params.slug]);
+
+  const handleToggleCompleteDay = (day: number) => {
+    const updatedCompletedDays = completedDays.includes(day)
+      ? completedDays.filter(d => d !== day)
+      : [...completedDays, day];
+    
+    setCompletedDays(updatedCompletedDays);
+    localStorage.setItem(`completedDays_${params.slug}`, JSON.stringify(updatedCompletedDays));
+  };
 
   if (!planData) {
-    return <div>Plan no encontrado</div>;
+    return <div className="text-center py-12">Plan no encontrado</div>;
   }
+
+  const planTitle = params.slug.replace(/-/g, ' ');
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12">
-      <h1 className="text-4xl font-bold mb-4">{params.slug.replace(/-/g, ' ')}</h1>
+      <h1 className="text-4xl font-bold mb-4 capitalize">{planTitle}</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {planData.map((day) => (
-          <div key={day.day} className="border rounded-lg p-4">
-            <h2 className="text-2xl font-bold mb-2">Día {day.day}</h2>
-            <p className="text-lg mb-4">{day.reading}</p>
-            <div>
-              {handleReadPassage(day.reading).map((verse, index) => (
-                <p key={index} className="mb-2">
-                  <span className="font-bold">{verse.book} {verse.chapter}:{verse.verse}</span> {verse.text}
-                </p>
-              ))}
-            </div>
-          </div>
-        ))}
+        {planData.map((day) => {
+            const isCompleted = completedDays.includes(day.day);
+            return (
+              <div key={day.day} className={`border rounded-lg p-4 flex flex-col transition-colors ${isCompleted ? 'bg-yellow-50' : 'bg-white'}`}>
+                <h2 className="text-2xl font-bold mb-2">Día {day.day}</h2>
+                <p className="text-lg mb-4 text-gray-700">{day.reading}</p>
+                <div className="flex-grow mb-4 prose prose-sm max-w-none">
+                    <details>
+                        <summary className="cursor-pointer text-sm font-semibold text-gray-600">Ver pasaje</summary>
+                        <div className="mt-2 space-y-2">
+                            {handleReadPassage(day.reading).map((verse, index) => (
+                                <p key={index} className="text-sm">
+                                    <span className="font-bold">{verse.book} {verse.chapter}:{verse.verse}</span> {verse.text}
+                                </p>
+                            ))}
+                        </div>
+                    </details>
+                </div>
+                <Button
+                    onClick={() => handleToggleCompleteDay(day.day)}
+                    className={`w-full font-bold py-2 px-4 rounded transition-colors ${
+                        isCompleted
+                        ? 'bg-[#B88A44] text-white hover:bg-yellow-600'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                >
+                    {isCompleted ? 'Completado' : 'Marcar como completado'}
+                </Button>
+              </div>
+            )
+        })}
       </div>
     </div>
   );
