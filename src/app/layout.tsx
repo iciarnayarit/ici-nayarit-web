@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const metadata: Metadata = {
-  title: 'ICIAR Nayarit',
+  title: 'ICIAR Pacifico Norte',
   description: 'Somos una Iglesia Cristiana Interdenominacional comprometida con compartir el amor de Cristo en Nayarit.',
   keywords: [
     'Cristianismo',

@@ -32,30 +32,50 @@ export const TempleList = () => {
     const twitterText = `¡Echa un vistazo a este templo! ${selectedTemple.nameKey}`;
     const textToCopy = `Templo: ${selectedTemple.nameKey}\nDirección: ${selectedTemple.addressKey}\nGoogle Maps: ${googleMapsUrl}`;
 
+    const templesByState = templeLocations.reduce((acc, temple) => {
+        const { state } = temple;
+        if (!acc[state]) {
+            acc[state] = [];
+        }
+        acc[state].push(temple);
+        return acc;
+    }, {} as Record<string, typeof templeLocations>);
+
+    const renderTempleList = (temples: typeof templeLocations) => (
+        <div className="flex flex-col space-y-4">
+            {temples.map((temple, index) => (
+                <Card key={index} onClick={() => setSelectedTemple(temple)} className={`cursor-pointer ${selectedTemple.nameKey === temple.nameKey ? 'border-primary' : ''}`}>
+                    <CardContent className="p-4">
+                        <h3 className="font-bold">{temple.nameKey}</h3>
+                        <p className="text-sm text-gray-500">{temple.addressKey}</p>
+                        {isMobile && selectedTemple.nameKey === temple.nameKey && (
+                            <div className="mt-4">
+                                <iframe
+                                    key={selectedTemple.nameKey}
+                                    src={selectedTemple.embedUrl}
+                                    width="100%"
+                                    height="300"
+                                    style={{ border: 0 }}
+                                    allowFullScreen={false}
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                ></iframe>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    );
+
     if (isMobile) {
         return (
-            <div className="flex flex-col space-y-4">
-                {templeLocations.map((temple, index) => (
-                    <Card key={index} onClick={() => setSelectedTemple(temple)} className="cursor-pointer">
-                        <CardContent className="p-4">
-                            <h3 className="font-bold">{temple.nameKey}</h3>
-                            <p className="text-sm text-gray-500">{temple.addressKey}</p>
-                            {selectedTemple.nameKey === temple.nameKey && (
-                                <div className="mt-4">
-                                    <iframe
-                                        key={selectedTemple.nameKey}
-                                        src={selectedTemple.embedUrl}
-                                        width="100%"
-                                        height="300"
-                                        style={{ border: 0 }}
-                                        allowFullScreen={false}
-                                        loading="lazy"
-                                        referrerPolicy="no-referrer-when-downgrade"
-                                    ></iframe>
-                                </div>
-                            )}
-                        </CardContent>
-                    </Card>
+            <div>
+                {Object.entries(templesByState).map(([state, temples]) => (
+                    <div key={state} className="mb-8">
+                        <h2 className="text-2xl font-bold mb-4">{state}</h2>
+                        {renderTempleList(temples)}
+                    </div>
                 ))}
             </div>
         )
@@ -64,13 +84,11 @@ export const TempleList = () => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
             <div className="md:col-span-4 flex flex-col space-y-4">
-                {templeLocations.map((temple, index) => (
-                    <Card key={index} onClick={() => setSelectedTemple(temple)} className={`cursor-pointer ${selectedTemple.nameKey === temple.nameKey ? 'border-primary' : ''}`}>
-                        <CardContent className="p-4">
-                            <h3 className="font-bold">{temple.nameKey}</h3>
-                            <p className="text-sm text-gray-500">{temple.addressKey}</p>
-                        </CardContent>
-                    </Card>
+                {Object.entries(templesByState).map(([state, temples]) => (
+                    <div key={state}>
+                        <h2 className="text-2xl font-bold mb-4">{state}</h2>
+                        {renderTempleList(temples)}
+                    </div>
                 ))}
             </div>
             <div className="md:col-span-8 sticky top-20 self-start">

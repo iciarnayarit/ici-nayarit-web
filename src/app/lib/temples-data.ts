@@ -6,6 +6,7 @@ export interface TempleLocation {
   shareMapUrl: string; // Direct link to Google Maps for sharing
   lat: number;
   lng: number;
+  state: "Nayarit" | "Jalisco";
 }
 
 export const templeLocations: TempleLocation[] = [
@@ -16,6 +17,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/6Kip1iPxvM5AhL8N8", // Replace with actual share link
     lat: 21.4699799,
     lng: -104.869766,
+    state: "Nayarit",
   },
   {
     nameKey: "Templo Getsemaní",
@@ -24,6 +26,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/8wicjsPaJa8HDjuWA", // Replace with actual share link
     lat: 21.95684,
     lng: -105.1305671,
+    state: "Nayarit",
   },
   {
     nameKey: "Templo en El Limón",
@@ -32,6 +35,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/225tfwZ7PJ2rt8Z66", // Replace with actual share link
     lat: 22.0262817,
     lng: -104.4889973,
+    state: "Nayarit",
   },
   {
     nameKey: "Misión en Aguamilpa",
@@ -40,6 +44,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/MN4TYvg9T9nTejdy7", // Replace with actual share link
     lat: 20.9211375,
     lng: -105.0333833,
+    state: "Nayarit",
   },
   {
     nameKey: "Misión en El Naranjo",
@@ -48,6 +53,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/jkVHbG9zE2TwWu5s7", // Replace with actual share link
     lat: 22.0342524,
     lng: -104.5952352,
+    state: "Nayarit",
   },
   {
     nameKey: "Iglesia en Cofradia de Pericos",
@@ -56,6 +62,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/fqCA8UDdwX9z7fuV8", // Replace with actual share link
     lat: 22.054665,
     lng: -104.5427297,
+    state: "Nayarit",
   },
   {
     nameKey: "Misión en Los Cuervitos",
@@ -64,6 +71,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/QdScKMiQPf5GryzK7", // Replace with actual share link
     lat: 22.0131784,
     lng: -104.4385575,
+    state: "Nayarit",
   },
   {
     nameKey: "Misión en San Miguel Huaixtita",
@@ -72,6 +80,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/yYYZSFDQ8udHGdTQA", // Replace with actual share link
     lat: 22.0701906,
     lng: -104.3200482,
+    state: "Jalisco",
   },
   {
     nameKey: "Misión en Ixtlán del Río",
@@ -80,6 +89,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/Qyjb9dyrMxKHEceUA", // Replace with actual share link
     lat: 21.0367558,
     lng: -104.3684997,
+    state: "Nayarit",
   },
   {
     nameKey: "Misión en Puerta Azul",
@@ -88,6 +98,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/wNoRsnsfsGYEr8rk6", // Replace with actual share link
     lat: 21.8304533,
     lng: -105.1766387,
+    state: "Nayarit",
   },
   {
     nameKey: "Templo en la Col. el Ahualamo",
@@ -96,6 +107,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/Z2Li4f2EYBdXEoPH9", // Replace with actual share link
     lat: 21.168132,
     lng: -104.6268319,
+    state: "Nayarit",
   },
   {
     nameKey: "Misión en El Saucito",
@@ -104,6 +116,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/VSoJAdTLk38bPbxVA", // Replace with actual share link
     lat: 22.3329563,
     lng: -104.3828876,
+    state: "Nayarit",
   },
   {
     nameKey: "Misión en Rancho Viejo",
@@ -112,6 +125,7 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/hQf6fXetMcjmPKAp8", // Replace with actual share link
     lat: 22.3427354,
     lng: -104.4417034,
+    state: "Nayarit",
   },
   {
     nameKey: "Misión en El Pintadeño",
@@ -120,5 +134,6 @@ export const templeLocations: TempleLocation[] = [
     shareMapUrl: "https://maps.app.goo.gl/2wrGeavx6TeyDd9NA", // Replace with actual share link
     lat: 22.3427354,
     lng: -104.4417034,
+    state: "Nayarit",
   }
 ];

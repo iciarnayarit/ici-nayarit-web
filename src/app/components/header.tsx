@@ -9,10 +9,11 @@ const navLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/biblia', label: 'Biblia' },
   { href: '/doctrina', label: 'Doctrina' },
-  { href: '/radio', label: 'Radio' },
   //{ href: '/comunidad', label: 'Comunidad' },
   { href: '/templos', label: 'Templos' },
-  //{ href: '/avisos', label: 'Avisos' },
+  { href: '/radio', label: 'Radio' },
+  { href: '/avisos', label: 'Avisos' },
+  { href: '/recursos', label: 'Recursos' },
 ];
 
 const NavLink = ({ href, label, currentPath }: { href: string; label: string; currentPath: string }) => {
@@ -34,7 +35,7 @@ const Header = () => {
         <div className="flex items-center justify-between h-20">
           <div className="flex-shrink-0">
             <Link href="/" className="font-display font-bold text-2xl text-gray-900 tracking-wide">
-              ICIAR <span className="text-[#B88A44]">Nayarit</span>
+              ICIAR <span className="text-[#B88A44]">Pacifico Norte</span>
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-10">

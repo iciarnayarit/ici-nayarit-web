@@ -3,7 +3,7 @@ import Header from '@/app/components/header';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'ICIAR Nayarit',
+  title: 'ICIAR Pacifico del Norte',
   description: 'Somos una Iglesia Cristiana Interdenominacional comprometida con compartir el amor de Cristo en Nayarit.',
   keywords: [
     'Cristianismo',

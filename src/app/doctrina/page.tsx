@@ -5,7 +5,7 @@ import Header from '@/app/components/header';
 import Footer from '@/app/components/footer';
 
 export const metadata: Metadata = {
-  title: 'Doctrina de la Iglesia - ICIAR Nayarit',
+  title: 'Doctrina de la Iglesia - ICIAR Pacifico Norte',
   description: 'Conoce los fundamentos de nuestra Fe.',
 };
 

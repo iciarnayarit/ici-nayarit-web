@@ -21,12 +21,12 @@ import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 
 const InfoCard = ({ icon, title, description, href }: { icon: React.ReactNode, title: string, description: string, href: string }) => (
-  <Link href={href} className="block bg-[#FBF5E9] p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+  <Link href={href} className="block bg-[#FBF5E9] p-4 sm:p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
     <div className="flex items-center justify-center h-12 w-12 rounded-full bg-white mb-4 shadow-inner">
         {icon}
     </div>
-    <h3 className="text-lg font-bold text-gray-800 mb-2">{title}</h3>
-    <p className="text-sm text-gray-600">{description}</p>
+    <h3 className="text-md sm:text-lg font-bold text-gray-800 mb-2">{title}</h3>
+    <p className="text-xs sm:text-sm text-gray-600">{description}</p>
   </Link>
 );
 
@@ -107,30 +107,15 @@ export default function RadioPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Share2 className="h-5 w-5 text-gray-600" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <Heart className="h-5 w-5 text-gray-600" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div className="relative h-64 md:h-80 w-full rounded-2xl overflow-hidden shadow-2xl mb-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 md:py-12">
+        <div className="relative h-56 sm:h-64 md:h-80 w-full rounded-2xl overflow-hidden shadow-2xl mb-8">
             <Image 
                 src="https://i.imgur.com/m7jgIpR.jpeg" 
                 alt="Microphone"
                 fill
                 className="object-cover"
             />
-            <div className="absolute inset-0 bg-black/50 flex flex-col justify-end p-8">
+            <div className="absolute inset-0 bg-black/50 flex flex-col justify-end p-4 sm:p-8">
                 <div className="flex items-center space-x-3 mb-2">
                     <span className="relative flex h-3 w-3">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -138,15 +123,15 @@ export default function RadioPage() {
                     </span>
                     <span className="text-white font-semibold text-sm tracking-widest uppercase">EN VIVO</span>
                 </div>
-                <h1 className="text-white text-4xl md:text-6xl font-bold">PDR Radio</h1>
-                <p className="text-white/80 text-lg md:text-xl">Palabra de Restauración</p>
+                <h1 className="text-white text-3xl sm:text-4xl md:text-6xl font-bold">PDR Radio</h1>
+                <p className="text-white/80 text-md sm:text-lg md:text-xl">Palabra de Restauración</p>
             </div>
         </div>
 
-        <div className="bg-white p-6 md:p-8 rounded-2xl shadow-xl mb-8">
+        <div className="bg-white p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl mb-8">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Escúchanos las 24 horas</h2>
-            <p className="text-gray-500">Sintonía espiritual para tu vida diaria</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Escúchanos las 24 horas</h2>
+            <p className="text-gray-500 text-sm sm:text-base">Sintonía espiritual para tu vida diaria</p>
           </div>
 
           <div className="w-full flex justify-center items-center h-12 mb-4">
@@ -163,38 +148,38 @@ export default function RadioPage() {
           
           <div className="flex justify-between items-center">
             <Button variant="ghost" size="icon" onClick={toggleMute} className="text-gray-500 hover:text-[#B88A44] rounded-full">
-                {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
+                {isMuted ? <VolumeX className="h-5 w-5 sm:h-6 sm:w-6" /> : <Volume2 className="h-5 w-5 sm:h-6 sm:w-6" />}
             </Button>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
                 <Button variant="ghost" size="icon" onClick={handleRewind} className="text-gray-500 hover:text-[#B88A44] rounded-full">
-                    <RotateCcw className="h-7 w-7" />
+                    <RotateCcw className="h-6 w-6 sm:h-7 sm:w-7" />
                 </Button>
                 <Button
                     size="icon"
-                    className="rounded-full w-20 h-20 bg-[#B88A44] hover:bg-amber-600 shadow-lg text-white"
+                    className="rounded-full w-16 h-16 sm:w-20 sm:h-20 bg-[#B88A44] hover:bg-amber-600 shadow-lg text-white"
                     onClick={handlePlayPause}
                 >
-                    {isPlaying ? <Pause className="h-9 w-9" /> : <Play className="h-9 w-9 ml-1" />}
+                    {isPlaying ? <Pause className="h-8 w-8 sm:h-9 sm:w-9" /> : <Play className="h-8 w-8 sm:h-9 sm:w-9 ml-1" />}
                 </Button>
                 <Button variant="ghost" size="icon" onClick={handleForward} className="text-gray-500 hover:text-[#B88A44] rounded-full">
-                    <RotateCw className="h-7 w-7" />
+                    <RotateCw className="h-6 w-6 sm:h-7 sm:w-7" />
                 </Button>
             </div>
             
-            <Button variant="ghost" className="text-gray-500 hover:text-[#B88A44] rounded-full">
-                <ListMusic className="h-6 w-6 mr-2" />
-                <span className="font-semibold">PROGRAMACIÓN</span>
+            <Button variant="ghost" className="text-gray-500 hover:text-[#B88A44] rounded-full px-2 sm:px-4">
+                <ListMusic className="h-5 w-5 sm:h-6 sm:w-6 lg:mr-2" />
+                <span className="font-semibold hidden lg:inline">PROGRAMACIÓN</span>
             </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           <InfoCard 
             href="/comunidad" 
             icon={<Users className="h-6 w-6 text-[#B88A44]" />} 
             title="Comunidad" 
-            description="Únete a nuestra congregación en Nayarit y sé parte del cambio." 
+            description="Únete a nuestra congregación en Pacifico Norte y sé parte del cambio." 
           />
           <InfoCard 
             href="/doctrina" 
