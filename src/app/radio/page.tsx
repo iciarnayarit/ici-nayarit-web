@@ -5,13 +5,11 @@ import { useAudio } from "@/app/context/AudioContext";
 import {
   BookOpen,
   Calendar,
-  Heart,
   ListMusic,
   Pause,
   Play,
   RotateCcw,
   RotateCw,
-  Share2,
   Users,
   Volume2,
   VolumeX,
@@ -107,21 +105,6 @@ export default function RadioPage() {
 
   return (
     <div className="bg-gray-50 min-h-screen">
-      <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 sm:h-20">
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" className="rounded-full hidden sm:inline-flex">
-                <Share2 className="h-5 w-5 text-gray-600" />
-              </Button>
-              <Button variant="ghost" size="icon" className="rounded-full hidden sm:inline-flex">
-                <Heart className="h-5 w-5 text-gray-600" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 md:py-12">
         <div className="relative h-56 sm:h-64 md:h-80 w-full rounded-2xl overflow-hidden shadow-2xl mb-8">
             <Image 
