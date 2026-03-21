@@ -5,67 +5,23 @@ import { Progress } from '@/app/components/ui/progress';
 import { useToast } from '@/app/hooks/use-toast';
 import { Bookmark, CheckCircle2, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
-
-// Import all Old Testament bible_rvr books
-import c1 from '@/app/lib/bible_rvr/1-chronicles.json';
-import k1 from '@/app/lib/bible_rvr/1-kings.json';
-import sa1 from '@/app/lib/bible_rvr/1-samuel.json';
-import c2 from '@/app/lib/bible_rvr/2-chronicles.json';
-import k2 from '@/app/lib/bible_rvr/2-kings.json';
-import sa2 from '@/app/lib/bible_rvr/2-samuel.json';
-import am from '@/app/lib/bible_rvr/am.json';
-import dn from '@/app/lib/bible_rvr/dn.json';
-import dt from '@/app/lib/bible_rvr/dt.json';
-import ec from '@/app/lib/bible_rvr/ec.json';
-import et from '@/app/lib/bible_rvr/et.json';
-import ex from '@/app/lib/bible_rvr/ex.json';
-import ez from '@/app/lib/bible_rvr/ez.json';
-import ezr from '@/app/lib/bible_rvr/ezr.json';
-import gn from '@/app/lib/bible_rvr/gn.json';
-import hg from '@/app/lib/bible_rvr/hg.json';
-import hk from '@/app/lib/bible_rvr/hk.json';
-import ho from '@/app/lib/bible_rvr/ho.json';
-import is from '@/app/lib/bible_rvr/is.json';
-import jl from '@/app/lib/bible_rvr/jl.json';
-import jn from '@/app/lib/bible_rvr/jn.json';
-import job from '@/app/lib/bible_rvr/job.json';
-import jr from '@/app/lib/bible_rvr/jr.json';
-import js from '@/app/lib/bible_rvr/js.json';
-import jud from '@/app/lib/bible_rvr/jud.json';
-import lm from '@/app/lib/bible_rvr/lm.json';
-import lv from '@/app/lib/bible_rvr/lv.json';
-import mi from '@/app/lib/bible_rvr/mi.json';
-import ml from '@/app/lib/bible_rvr/ml.json';
-import na from '@/app/lib/bible_rvr/na.json';
-import ne from '@/app/lib/bible_rvr/ne.json';
-import nm from '@/app/lib/bible_rvr/nm.json';
-import ob from '@/app/lib/bible_rvr/ob.json';
-import prv from '@/app/lib/bible_rvr/prv.json';
-import ps from '@/app/lib/bible_rvr/ps.json';
-import rt from '@/app/lib/bible_rvr/rt.json';
-import so from '@/app/lib/bible_rvr/so.json';
-import zc from '@/app/lib/bible_rvr/zc.json';
-import zp from '@/app/lib/bible_rvr/zp.json';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import Link from 'next/link';
+import { Skeleton } from '@/app/components/ui/skeleton';
+import { bibleData as staticBibleData } from '@/lib/bible-data';
 
-const bibleData: { [key: string]: any } = {
-    'génesis': gn, 'éxodo': ex, 'levítico': lv, 'números': nm, 'deuteronomio': dt, 'josué': js, 'jueces': jud, 'rut': rt,
-    '1 samuel': sa1, '2 samuel': sa2, '1 reyes': k1, '2 reyes': k2, '1 crónicas': c1, '2 crónicas': c2, 'esdras': ezr,
-    'nehemías': ne, 'ester': et, 'job': job, 'salmos': ps, 'proverbios': prv, 'eclesiastés': ec, 'cantar de los cantares': so,
-    'isaías': is, 'jeremías': jr, 'lamentaciones': lm, 'ezequiel': ez, 'daniel': dn, 'oseas': ho, 'joel': jl,
-    'amós': am, 'abdías': ob, 'jonás': jn, 'miqueas': mi, 'nahúm': na, 'habacuc': hk, 'sofonías': zp, 'hageo': hg,
-    'zacarías': zc, 'malaquías': ml,
+const bibleFileMap: { [key: string]: string } = {
+    'génesis': 'gn', 'éxodo': 'ex', 'levítico': 'lv', 'números': 'nm', 'deuteronomio': 'dt', 'josué': 'js', 'jueces': 'jud', 'rut': 'rt',
+    '1 samuel': '1-samuel', '2 samuel': '2-samuel', '1 reyes': '1-kings', '2 reyes': '2-kings', '1 crónicas': '1-chronicles', '2 crónicas': '2-chronicles', 'esdras': 'ezr',
+    'nehemías': 'ne', 'ester': 'et', 'job': 'job', 'salmos': 'ps', 'proverbios': 'prv', 'eclesiastés': 'ec', 'cantar de los cantares': 'so',
+    'isaías': 'is', 'jeremías': 'jr', 'lamentaciones': 'lm', 'ezequiel': 'ez', 'daniel': 'dn', 'oseas': 'ho', 'joel': 'jl',
+    'amós': 'am', 'abdías': 'ob', 'jonás': 'jn', 'miqueas': 'mi', 'nahúm': 'na', 'habacuc': 'hk', 'sofonías': 'zp', 'hageo': 'hg',
+    'zacarías': 'zc', 'malaquías': 'ml',
 };
 
-const bookOrderOT = [
-    'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio', 'Josué', 'Jueces', 'Rut', '1 Samuel', '2 Samuel',
-    '1 Reyes', '2 Reyes', '1 Crónicas', '2 Crónicas', 'Esdras', 'Nehemías', 'Ester', 'Job', 'Salmos', 'Proverbios',
-    'Eclesiastés', 'Cantares', 'Isaías', 'Jeremías', 'Lamentaciones', 'Ezequiel', 'Daniel', 'Oseas', 'Joel',
-    'Amós', 'Abdías', 'Jonás', 'Miqueas', 'Nahúm', 'Habacuc', 'Sofonías', 'Hageo', 'Zacarías', 'Malaquías'
-];
+const bookOrderOT = Object.keys(staticBibleData).filter(book => staticBibleData[book].testament === 'OT');
 
-const chaptersInBook = (bookName: string) => bibleData[bookName.toLowerCase()]?.chapters?.length || 0;
+const chaptersInBook = (bookName: string) => staticBibleData[bookName.toLowerCase()]?.chapters || 0;
 
 const generateOT180DaysPlan = () => {
     const plan = [];
@@ -119,6 +75,9 @@ export default function OT180DaysPlanPage() {
   const [completedDays, setCompletedDays] = useState<number[]>([]);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
+  const [verses, setVerses] = useState<PassageVerse[]>([]);
+  const [loading, setLoading] = useState(false);
+  const bibleCache = useRef<{ [key: string]: any }>({});
   
   const router = useRouter();
   const { toast } = useToast();
@@ -131,6 +90,102 @@ export default function OT180DaysPlanPage() {
       setSavedVerses(JSON.parse(saved));
     }
   }, []);
+
+  const getBookData = async (bookName: string) => {
+    if (bibleCache.current[bookName]) {
+        return bibleCache.current[bookName];
+    }
+    const fileName = bibleFileMap[bookName.toLowerCase()];
+    if (fileName) {
+        try {
+            const module = await import(`@/app/lib/bible_rvr/${fileName}.json`);
+            const bookData = module.default;
+            bibleCache.current[bookName] = bookData;
+            return bookData;
+        } catch (error) {
+            console.error(`Error loading book: ${bookName}`, error);
+            return null;
+        }
+    }
+    return null;
+  }
+
+  const handleReadPassage = async (reading: string): Promise<PassageVerse[]> => {
+    const allVerses: PassageVerse[] = [];
+    let currentBookKey = '';
+  
+    const references = reading.split(';').map(r => r.trim());
+  
+    for (const ref of references) {
+      let passage = ref;
+      const bookMatch = ref.match(/^(\d?\s?[a-zA-Záéíóúñ]+)\s/);
+  
+      if (bookMatch && bookMatch[1]) {
+        const bookName = bookMatch[1].trim().toLowerCase();
+        if (bibleFileMap[bookName]) {
+          currentBookKey = bookName;
+          passage = ref.substring(bookMatch[0].length).trim();
+        }
+      }
+  
+      if (!currentBookKey) continue;
+  
+      const book = await getBookData(currentBookKey);
+      if (!book) continue;
+  
+      const passageParts = passage.split(',').map(p => p.trim());
+  
+      for (const part of passageParts) {
+        let match;
+  
+        match = part.match(/^(\d+)-(\d+)$/);
+        if (match) {
+          const startChapter = parseInt(match[1], 10);
+          const endChapter = parseInt(match[2], 10);
+          for (let c = startChapter; c <= endChapter; c++) {
+            const verses = book.chapters[c - 1] || [];
+            verses.forEach((text: string, i: number) => {
+              allVerses.push({ book: currentBookKey, chapter: c, verse: i + 1, text });
+            });
+          }
+          continue;
+        }
+        
+        match = part.match(/^(\d+):(\d+)$/);
+        if (match) {
+            const chapter = parseInt(match[1], 10);
+            const verse = parseInt(match[2], 10);
+            const chapterVerses = book.chapters[chapter - 1] || [];
+            if(chapterVerses[verse-1]) {
+                allVerses.push({ book: currentBookKey, chapter, verse, text: chapterVerses[verse - 1] });
+            }
+            continue;
+        }
+  
+        match = part.match(/^(\d+)$/);
+        if (match) {
+          const chapter = parseInt(match[1], 10);
+          const verses = book.chapters[chapter - 1] || [];
+          verses.forEach((text: string, i: number) => {
+            allVerses.push({ book: currentBookKey, chapter, verse: i + 1, text });
+          });
+        }
+      }
+    }
+    return allVerses;
+  };
+
+  useEffect(() => {
+    if (selectedDay !== null) {
+      const dayData = planDays.find(d => d.day === selectedDay);
+      if (dayData) {
+        setLoading(true);
+        handleReadPassage(dayData.reading)
+          .then(setVerses)
+          .finally(() => setLoading(false));
+      }
+    }
+  }, [selectedDay, planDays]);
 
   const toggleDayCompletion = (day: number) => {
     setCompletedDays(
@@ -207,74 +262,9 @@ export default function OT180DaysPlanPage() {
     }
   };
 
-  const handleReadPassage = (reading: string): PassageVerse[] => {
-    const allVerses: PassageVerse[] = [];
-    let currentBookKey = '';
-  
-    const references = reading.split(';').map(r => r.trim());
-  
-    for (const ref of references) {
-      let passage = ref;
-      const bookMatch = ref.match(/^(\d?\s?[a-zA-Záéíóúñ]+)\s/);
-  
-      if (bookMatch && bookMatch[1]) {
-        const bookName = bookMatch[1].trim().toLowerCase();
-        if (bibleData[bookName]) {
-          currentBookKey = bookName;
-          passage = ref.substring(bookMatch[0].length).trim();
-        }
-      }
-  
-      if (!currentBookKey) continue;
-  
-      const book = bibleData[currentBookKey];
-      const passageParts = passage.split(',').map(p => p.trim());
-  
-      for (const part of passageParts) {
-        let match;
-  
-        match = part.match(/^(\d+)-(\d+)$/);
-        if (match) {
-          const startChapter = parseInt(match[1], 10);
-          const endChapter = parseInt(match[2], 10);
-          for (let c = startChapter; c <= endChapter; c++) {
-            const verses = book.chapters[c - 1] || [];
-            verses.forEach((text: string, i: number) => {
-              allVerses.push({ book: currentBookKey, chapter: c, verse: i + 1, text });
-            });
-          }
-          continue;
-        }
-        
-        match = part.match(/^(\d+):(\d+)$/);
-        if (match) {
-            const chapter = parseInt(match[1], 10);
-            const verse = parseInt(match[2], 10);
-            const chapterVerses = book.chapters[chapter - 1] || [];
-            if(chapterVerses[verse-1]) {
-                allVerses.push({ book: currentBookKey, chapter, verse, text: chapterVerses[verse - 1] });
-            }
-            continue;
-        }
-  
-        match = part.match(/^(\d+)$/);
-        if (match) {
-          const chapter = parseInt(match[1], 10);
-          const verses = book.chapters[chapter - 1] || [];
-          verses.forEach((text: string, i: number) => {
-            allVerses.push({ book: currentBookKey, chapter, verse: i + 1, text });
-          });
-        }
-      }
-    }
-    return allVerses;
-  };
-
-  if (selectedDay) {
+  if (selectedDay !== null) {
     const dayData = planDays.find(d => d.day === selectedDay);
     if (!dayData) return null;
-
-    const verses = handleReadPassage(dayData.reading);
 
     return (
       <div className="container mx-auto px-4 py-12 md:px-6">
@@ -287,7 +277,13 @@ export default function OT180DaysPlanPage() {
           
           <Card>
             <CardContent className="p-6 space-y-4 text-lg leading-relaxed">
-              {verses.length > 0 ? verses.map((v, index) => {
+              {loading ? (
+                <div className="space-y-4">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ) : verses.length > 0 ? verses.map((v, index) => {
                 const reference = `${v.book} ${v.chapter}:${v.verse}`;
                 const isSaved = savedVerses.some(sv => sv.reference === reference);
                 return (
@@ -319,11 +315,13 @@ export default function OT180DaysPlanPage() {
           </Card>
           <div className="flex justify-center mt-6">
             <Button onClick={() => {
-                toggleDayCompletion(selectedDay);
+                if (selectedDay !== null) {
+                    toggleDayCompletion(selectedDay);
+                }
                 setSelectedDay(null);
-            }}>
+            }} disabled={loading}>
                 <CheckCircle2 className="mr-2 h-4 w-4" />
-                {completedDays.includes(selectedDay) ? 'Marcar como no completado' : 'Marcar como completado'}
+                {selectedDay !== null && completedDays.includes(selectedDay) ? 'Marcar como no completado' : 'Marcar como completado'}
             </Button>
           </div>
         </div>

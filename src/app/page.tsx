@@ -11,13 +11,11 @@ import RadioInvitation from '@/app/components/radio-invitation';
 import ReadingPlans from '@/app/components/reading-plans';
 import RegisterInvitation from '@/app/components/register-invitation';
 import TextBible from '@/app/components/text-bible';
-import Header from './components/header';
 import Footer from './components/footer';
 
 export default function Page() {
   return (
     <main className="flex-1">
-      <Header />
       <RadioInvitation />
       <DailyVerse />
       <Bible />

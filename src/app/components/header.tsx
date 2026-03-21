@@ -9,9 +9,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
 } from '@/app/components/ui/dropdown-menu';
 import { Button } from '@/app/components/ui/button';
+import { Show, UserButton, SignInButton, SignUpButton, SignOutButton } from '@clerk/nextjs';
 
 const navLinks = [
   { href: '/', label: 'Inicio' },
@@ -49,29 +49,39 @@ const Header = () => {
             {navLinks.map((link) => (
               <NavLink key={link.href} {...link} currentPath={currentPath} />
             ))}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <User className="h-5 w-5 text-gray-600" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem>
-                    <Link href="#" className='w-full flex items-center'>
-                        <UserPlus className="h-4 w-4 mr-2" />
-                        Crear Cuenta
-                    </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                    <Link href="#" className='w-full flex items-center'>
+            <Show
+              when="signed-in"
+              fallback={
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full">
+                      <User className="h-5 w-5 text-gray-600" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <SignUpButton mode="modal">
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                          <UserPlus className="h-4 w-4 mr-2" />
+                          Crear Cuenta
+                      </DropdownMenuItem>
+                    </SignUpButton>
+                    <SignInButton mode="modal">
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         <LogIn className="h-4 w-4 mr-2" />
                         Iniciar Sesión
-                    </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                      </DropdownMenuItem>
+                    </SignInButton>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              }
+            >
+              <UserButton afterSignOutUrl="/" />
+            </Show>
           </div>
           <div className="md:hidden flex items-center">
+            <Show when="signed-in">
+              <UserButton afterSignOutUrl="/" />
+            </Show>
             <button onClick={() => setIsOpen(!isOpen)} className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none">
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -87,12 +97,29 @@ const Header = () => {
               </Link>
             ))}
             <div className="border-t border-gray-200 my-2"></div>
-             <Link href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50">
-                  Crear Cuenta
-              </Link>
-              <Link href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50">
-                  Iniciar Sesión
-              </Link>
+            <Show
+              when="signed-in"
+              fallback={
+                <>
+                  <SignUpButton mode="modal">
+                    <span className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 cursor-pointer">
+                        Crear Cuenta
+                    </span>
+                  </SignUpButton>
+                  <SignInButton mode="modal">
+                    <span className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 cursor-pointer">
+                        Iniciar Sesión
+                    </span>
+                  </SignInButton>
+                </>
+              }
+            >
+              <SignOutButton>
+                  <span className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 cursor-pointer">
+                    Cerrar Sesión
+                  </span>
+              </SignOutButton>
+            </Show>
           </div>
         </div>
       )}
