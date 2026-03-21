@@ -9,10 +9,11 @@ const navLinks = [
   { href: '/', label: 'Inicio' },
   { href: '/biblia', label: 'Biblia' },
   { href: '/doctrina', label: 'Doctrina' },
-  { href: '/radio', label: 'Radio' },
   //{ href: '/comunidad', label: 'Comunidad' },
   { href: '/templos', label: 'Templos' },
-  //{ href: '/avisos', label: 'Avisos' },
+  { href: '/radio', label: 'Radio' },
+  { href: '/avisos', label: 'Avisos' },
+  { href: '/recursos', label: 'Recursos' },
 ];
 
 const NavLink = ({ href, label, currentPath }: { href: string; label: string; currentPath: string }) => {
