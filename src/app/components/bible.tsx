@@ -3,7 +3,7 @@ import { Button } from '@/app/components/ui/button';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { useToast } from '@/app/hooks/use-toast';
-import { Bookmark, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
+import { Bookmark, ChevronLeft, ChevronRight, Share2, Image as ImageIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -66,6 +66,8 @@ export default function Bible() {
   const [verses, setVerses] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
+  const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
+  const [isToolbarOpen, setIsToolbarOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -95,6 +97,12 @@ export default function Bible() {
 
     fetchChapter();
   }, [selectedBook, selectedChapter]);
+
+  const handleVerseClick = (verseNumber: number) => {
+    const newSelectedVerse = verseNumber === selectedVerse ? null : verseNumber;
+    setSelectedVerse(newSelectedVerse);
+    setIsToolbarOpen(newSelectedVerse !== null);
+  };
 
   const handleSaveVerse = (verseText: string, verseNumber: number) => {
     const reference = `${selectedBook} ${selectedChapter}:${verseNumber}`;
@@ -220,6 +228,40 @@ export default function Bible() {
                 </Button>
 
                 <Card>
+                    {isToolbarOpen && (
+                        <div className="flex justify-center items-center gap-4 pt-4 border-b">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                    if (selectedVerse) {
+                                        handleShareVerse(verses[selectedVerse - 1], selectedVerse);
+                                    }
+                                }}
+                            >
+                                <Share2 className="h-6 w-6 text-gray-500" />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                    if (selectedVerse) {
+                                        handleSaveVerse(verses[selectedVerse - 1], selectedVerse);
+                                    }
+                                }}
+                            >
+                                <Bookmark className={`h-6 w-6 ${savedVerses.some(v => v.reference === `${selectedBook} ${selectedChapter}:${selectedVerse}`) ? 'fill-current text-[#B88A44]' : 'text-gray-500'}`} />
+                            </Button>
+                            <Link href={`/biblia/generador?verse=${encodeURIComponent(verses[selectedVerse ? selectedVerse - 1 : 0])}&reference=${encodeURIComponent(`${selectedBook} ${selectedChapter}:${selectedVerse}`)}`}>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                >
+                                    <ImageIcon className="h-6 w-6 text-gray-500" />
+                                </Button>
+                            </Link>
+                        </div>
+                    )}
                     <CardContent className="p-6 md:p-8">
                         <h2 className="text-3xl font-bold font-display text-center mb-6 text-[#B88A44]">{selectedBook} {selectedChapter}</h2>
                         <div className="space-y-4 text-left font-serif text-lg md:text-xl leading-relaxed text-gray-800">
@@ -231,25 +273,9 @@ export default function Bible() {
                             const isSaved = savedVerses.some(v => v.reference === reference);
                             return (
                                 <div key={index} className="flex items-start gap-2 group">
-                                    <p className="flex-grow">
+                                    <p className={`flex-grow cursor-pointer ${selectedVerse === index + 1 ? 'underline' : ''}`} onClick={() => handleVerseClick(index + 1)}>
                                         <sup className="font-bold mr-2">{index + 1}</sup>{verse}
                                     </p>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleShareVerse(verse, index + 1)}
-                                    >
-                                        <Share2 className="h-6 w-6 text-gray-400 group-hover:text-[#B88A44]" />
-                                        <span className="sr-only">Compartir versículo</span>
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => handleSaveVerse(verse, index + 1)}
-                                    >
-                                        <Bookmark className={`h-6 w-6 ${isSaved ? 'fill-current text-[#B88A44]' : 'text-gray-400 group-hover:text-[#B88A44]'}`} />
-                                        <span className="sr-only">Guardar versículo</span>
-                                    </Button>
                                 </div>
                             );
                         })

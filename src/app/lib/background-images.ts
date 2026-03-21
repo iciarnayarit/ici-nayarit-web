@@ -1,0 +1,22 @@
+export const backgroundImages = [
+    "https://i.imgur.com/4f3j3b1.jpeg",
+    "https://i.imgur.com/sDkXv1L.jpeg",
+    "https://i.imgur.com/R5gV5A8.jpeg",
+    "https://i.imgur.com/yWl6wLd.jpeg",
+    "https://i.imgur.com/k9d8v7f.jpeg",
+    "https://i.imgur.com/gH2s4jF.jpeg",
+    "https://i.imgur.com/J7z5c8M.jpeg",
+    "https://i.imgur.com/pX3T4sE.jpeg",
+    "https://i.imgur.com/n6t7y3r.jpeg",
+    "https://i.imgur.com/bC8d9fG.jpeg",
+    "https://i.imgur.com/eA2b4gH.jpeg",
+    "https://i.imgur.com/tS3e5hJ.jpeg",
+    "https://i.imgur.com/uJ4f6kK.jpeg",
+    "https://i.imgur.com/vK5g7lL.jpeg",
+    "https://i.imgur.com/wL6h8mN.jpeg",
+    "https://i.imgur.com/xM7i9nO.jpeg",
+    "https://i.imgur.com/zN8j0pP.jpeg",
+    "https://i.imgur.com/aP9k1qQ.jpeg",
+    "https://i.imgur.com/bQ0l2rR.jpeg",
+    "https://i.imgur.com/cR1m3sS.jpeg"
+];
