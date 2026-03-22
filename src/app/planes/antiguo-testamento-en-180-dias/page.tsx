@@ -19,9 +19,20 @@ const bibleFileMap: { [key: string]: string } = {
     'zacarías': 'zc', 'malaquías': 'ml',
 };
 
-const bookOrderOT = Object.keys(staticBibleData).filter(book => staticBibleData[book].testament === 'OT');
+// Hardcoded OT book order matching exact keys in staticBibleData
+const bookOrderOT = [
+    'génesis', 'éxodo', 'levítico', 'números', 'deuteronomio', 'josué', 'jueces', 'rut',
+    '1 samuel', '2 samuel', '1 reyes', '2 reyes', '1 crónicas', '2 crónicas', 'esdras',
+    'nehemías', 'ester', 'job', 'salmos', 'proverbios', 'eclesiastés', 'cantar de los cantares',
+    'isaías', 'jeremías', 'lamentaciones', 'ezequiel', 'daniel', 'oseas', 'joel',
+    'amós', 'abdías', 'jonás', 'miqueas', 'nahúm', 'habacuc', 'sofonías', 'hageo',
+    'zacarías', 'malaquías'
+];
 
-const chaptersInBook = (bookName: string) => staticBibleData[bookName.toLowerCase()]?.chapters || 0;
+const chaptersInBook = (bookName: string): number => {
+    if (!bookName) return 0;
+    return staticBibleData[bookName.toLowerCase()]?.chapters?.length || 0;
+};
 
 const generateOT180DaysPlan = () => {
     const plan = [];

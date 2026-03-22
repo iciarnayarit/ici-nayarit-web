@@ -18,9 +18,19 @@ const bibleFileMap: { [key: string]: string } = {
     'judas': 'jd', 'apocalipsis': 're',
 };
 
-const bookOrderNT = Object.keys(staticBibleData).filter(book => staticBibleData[book].testament === 'NT');
+// Hardcoded NT book order matching exact keys in staticBibleData
+const bookOrderNT = [
+    'mateo', 'marcos', 'lucas', 'juan', 'hechos', 'romanos',
+    '1 corintios', '2 corintios', 'gálatas', 'efesios', 'filipenses', 'colosenses',
+    '1 tesalonicenses', '2 tesalonicenses', '1 timoteo', '2 timoteo', 'tito', 'filemón',
+    'hebreos', 'santiago', '1 pedro', '2 pedro', '1 juan', '2 juan', '3 juan',
+    'judas', 'apocalipsis',
+];
 
-const chaptersInBook = (bookName: string) => staticBibleData[bookName.toLowerCase()]?.chapters || 0;
+const chaptersInBook = (bookName: string): number => {
+    if (!bookName) return 0;
+    return staticBibleData[bookName.toLowerCase()]?.chapters?.length || 0;
+};
 
 const generateNT90DaysPlan = () => {
     const plan = [];
