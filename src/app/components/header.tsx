@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, User, LogIn, UserPlus } from 'lucide-react';
@@ -35,7 +35,12 @@ const NavLink = ({ href, label, currentPath }: { href: string; label: string; cu
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const currentPath = usePathname();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200/50">
@@ -75,12 +80,12 @@ const Header = () => {
                 </DropdownMenu>
               }
             >
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             </Show>
           </div>
           <div className="md:hidden flex items-center">
             <Show when="signed-in">
-              <UserButton afterSignOutUrl="/" />
+              <UserButton />
             </Show>
             <button onClick={() => setIsOpen(!isOpen)} className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none">
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

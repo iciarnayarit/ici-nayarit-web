@@ -15,6 +15,13 @@ import { esperanza } from './esperanza';
 import { tierraSanta } from './tierra-santa';
 import { deEsterilAFructifero } from './de-esteril-a-fructifero';
 import { uncommenCorazonesAnsiosos } from './uncommen-corazones-ansiosos';
+
+export {
+    amor, ansiedad, enojo, sanidad, territorioDeFe, palabraDeDios, mentirasCreibles,
+    desdeElPrincipioHastaElAmenMarzo, discipulado, cuaresma2026, elEvangelioDeIsaias,
+    isaiasEsforzandoseMenos, leeYAbsorbeIsaiasEnCincoDias, esperanza, tierraSanta,
+    deEsterilAFructifero, uncommenCorazonesAnsiosos
+};
 import { bookOrder, chaptersInBook } from '../bible-data';
 
 export interface ReadingDay {
