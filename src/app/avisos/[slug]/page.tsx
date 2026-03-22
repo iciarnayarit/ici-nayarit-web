@@ -4,8 +4,9 @@ import Link from 'next/link';
 import Footer from '@/app/components/footer';
 import { Calendar, MapPin, Clock, ArrowLeft } from 'lucide-react';
 
-export default function AvisoDetailPage({ params }: { params: { slug: string } }) {
-  const announcement = allAnnouncements.find(a => slugify(a.title) === params.slug);
+export default async function AvisoDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
+  const announcement = allAnnouncements.find(a => slugify(a.title) === resolvedParams.slug);
 
   if (!announcement) {
     notFound();

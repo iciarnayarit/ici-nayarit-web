@@ -4,12 +4,13 @@ import Link from 'next/link';
 import Footer from '@/app/components/footer';
 import { ArrowLeft, Download } from 'lucide-react';
 
-export default function RecursoDetailPage({ params }: { params: { slug: string } }) {
+export default async function RecursoDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = await params;
   // Find the resource
-  const resource = resourceItems.find(r => slugify(r.title) === params.slug);
+  const resource = resourceItems.find(r => slugify(r.title) === resolvedParams.slug);
   
   // Check if it's the featured resource (Manual Doctrinario)
-  const isFeatured = params.slug === slugify("Manual Doctrinario Anual 2024");
+  const isFeatured = resolvedParams.slug === slugify("Manual Doctrinario Anual 2024");
 
   if (!resource && !isFeatured) {
     notFound();

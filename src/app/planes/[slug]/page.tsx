@@ -3,8 +3,9 @@
 import { bibleData } from '@/lib/bible-data';
 import { allPlanData } from '@/lib/reading-plan-data';
 import { palabraDeDios } from '@/lib/reading-plan-data';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { Button } from '@/app/components/ui/button';
+import { ReadingDay } from '@/lib/reading-plan-data';
 
 interface PassageVerse {
   book: string;
@@ -79,16 +80,17 @@ const handleReadPassage = (reading: string): PassageVerse[] => {
   return allVerses;
 };
 
-export default function PlanDetailPage({ params }: { params: { slug: string } }) {
-  const planData: palabraDeDios[] = allPlanData[params.slug];
+export default function PlanDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const resolvedParams = use(params);
+  const planData: ReadingDay[] = allPlanData[resolvedParams.slug];
   const [completedDays, setCompletedDays] = useState<number[]>([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem(`completedDays_${params.slug}`);
+    const saved = localStorage.getItem(`completedDays_${resolvedParams.slug}`);
     if (saved) {
       setCompletedDays(JSON.parse(saved));
     }
-  }, [params.slug]);
+  }, [resolvedParams.slug]);
 
   const handleToggleCompleteDay = (day: number) => {
     const updatedCompletedDays = completedDays.includes(day)
@@ -96,14 +98,14 @@ export default function PlanDetailPage({ params }: { params: { slug: string } })
       : [...completedDays, day];
     
     setCompletedDays(updatedCompletedDays);
-    localStorage.setItem(`completedDays_${params.slug}`, JSON.stringify(updatedCompletedDays));
+    localStorage.setItem(`completedDays_${resolvedParams.slug}`, JSON.stringify(updatedCompletedDays));
   };
 
   if (!planData) {
     return <div className="text-center py-12">Plan no encontrado</div>;
   }
 
-  const planTitle = params.slug.replace(/-/g, ' ');
+  const planTitle = resolvedParams.slug.replace(/-/g, ' ');
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12">
