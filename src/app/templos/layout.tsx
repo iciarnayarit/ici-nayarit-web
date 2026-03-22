@@ -1,5 +1,4 @@
 import Footer from '@/app/components/footer';
-import Header from '@/app/components/header';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -49,7 +48,6 @@ type Props = {
 export default function TemplosLayout({children}: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Header />
       <main className="flex-1 py-8">{children}</main>
       <Footer />
     </div>

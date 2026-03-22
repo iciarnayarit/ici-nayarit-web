@@ -49,8 +49,8 @@ export default function Footer() {
             <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
                 <p className="text-xs text-gray-400">© {year} ICIAR Nayarit. Todos los derechos reservados.</p>
                 <div className="flex space-x-4 mt-4 md:mt-0">
-                    <a className="text-xs text-gray-400 hover:text-[#B88A44]" href="#">Privacidad</a>
-                    <a className="text-xs text-gray-400 hover:text-[#B88A44]" href="#">Términos</a>
+                    <a className="text-xs text-gray-400 hover:text-[#B88A44]" href="https://clerk.com/legal/privacy" target="_blank" rel="noopener noreferrer">Privacidad</a>
+                    <a className="text-xs text-gray-400 hover:text-[#B88A44]" href="https://clerk.com/legal/terms" target="_blank" rel="noopener noreferrer">Términos</a>
                 </div>
             </div>
         </div>

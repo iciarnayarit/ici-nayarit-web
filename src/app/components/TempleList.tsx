@@ -9,16 +9,22 @@ import {
     DropdownMenuTrigger
 } from "@/app/components/ui/dropdown-menu";
 import { templeLocations } from "@/app/lib/temples-data";
-import { ClipboardCopy, Share2 } from "lucide-react";
+import { ClipboardCopy, Share2, Bookmark } from "lucide-react";
 import { useState } from "react";
 import { useIsMobile } from "@/app/hooks/use-mobile";
 
 export const TempleList = () => {
     const [selectedTemple, setSelectedTemple] = useState(templeLocations[0]);
+    const [savedTemples, setSavedTemples] = useState<string[]>([]);
     const isMobile = useIsMobile();
 
     const handleShareInteraction = (e: React.MouseEvent) => {
         e.stopPropagation();
+    };
+
+    const toggleSave = (e: React.MouseEvent, nameKey: string) => {
+        e.stopPropagation();
+        setSavedTemples(prev => prev.includes(nameKey) ? prev.filter(n => n !== nameKey) : [...prev, nameKey]);
     };
 
     const handleCopy = (text: string) => {
@@ -81,7 +87,11 @@ export const TempleList = () => {
                                 <h3 className="font-bold">{selectedTemple.nameKey}</h3>
                                 <p className="text-sm text-gray-500">{selectedTemple.addressKey}</p>
                             </div>
-                            <DropdownMenu>
+                            <div className="flex gap-2">
+                                <Button variant="ghost" size="icon" onClick={(e) => toggleSave(e, selectedTemple.nameKey)} className="hover:bg-transparent active:bg-transparent">
+                                    <Bookmark className={`h-5 w-5 transition-colors ${savedTemples.includes(selectedTemple.nameKey) ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-500 fill-none'}`} />
+                                </Button>
+                                <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" size="icon" onClick={handleShareInteraction}>
                                         <Share2 className="h-5 w-5" />
@@ -121,6 +131,7 @@ export const TempleList = () => {
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
+                            </div>
                         </div>
                         <div className="mt-4">
                             <iframe

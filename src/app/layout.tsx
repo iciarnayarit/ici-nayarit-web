@@ -5,6 +5,8 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import './globals.css';
+import Header from './components/header';
+import { AudioProvider } from './context/AudioContext';
 
 type Props = {
   children: React.ReactNode;
@@ -67,23 +69,13 @@ export default async function RootLayout({ children }: Props) {
           />
         </head>
         <body className="font-body antialiased">
-          <header className="flex justify-end items-center p-4 gap-4 h-16">
-            <Show when="signed-out">
-              <SignInButton />
-              <SignUpButton>
-                <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </Show>
-            <Show when="signed-in">
-              <UserButton />
-            </Show>
-          </header>
-          {children}
-          <Toaster />
-          <SpeedInsights />
-          <Analytics />
+          <AudioProvider>
+            <Header />
+            {children}
+            <Toaster />
+            <SpeedInsights />
+            <Analytics />
+          </AudioProvider>
         </body>
       </html>
     </ClerkProvider>

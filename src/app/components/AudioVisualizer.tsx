@@ -20,6 +20,13 @@ const AudioVisualizer = () => {
 
     let animationFrameId: number;
 
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
     const draw = () => {
       animationFrameId = requestAnimationFrame(draw);
 
@@ -27,24 +34,26 @@ const AudioVisualizer = () => {
 
       canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const barWidth = (canvas.width / bufferLength) * 2;
+      // Usar solo el 70% de las frecuencias (las partes altas suelen estar vacías)
+      const visibleBars = Math.floor(bufferLength * 0.7);
+      const barWidth = canvas.width / visibleBars;
       let x = 0;
 
-      const activeBars = dataArray.filter(d => d > 0).length;
-      const scaleFactor = isPlaying ? Math.max(0.5, 1 - (activeBars / bufferLength)) : 1;
+      const activeBars = dataArray.filter((d, i) => i < visibleBars && d > 0).length;
+      const scaleFactor = isPlaying ? Math.max(0.5, 1 - (activeBars / visibleBars)) : 1;
 
-      for (let i = 0; i < bufferLength; i++) {
-        const barHeight = (dataArray[i] / 2) * scaleFactor;
+      for (let i = 0; i < visibleBars; i++) {
+        const barHeight = (dataArray[i] / 255) * canvas.height * scaleFactor;
 
         canvasCtx.fillStyle = '#B88A44'; // Gold color to match the design
         canvasCtx.fillRect(
           x,
           canvas.height - barHeight,
-          barWidth,
+          Math.max(1, barWidth - 1),
           barHeight
         );
 
-        x += barWidth + 2;
+        x += barWidth;
       }
     };
 
@@ -56,10 +65,11 @@ const AudioVisualizer = () => {
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', resizeCanvas);
     };
   }, [analyser, isPlaying]);
 
-  return <canvas ref={canvasRef} width="300" height="80" />;
+  return <canvas ref={canvasRef} className="w-full h-full" />;
 };
 
 export default AudioVisualizer;

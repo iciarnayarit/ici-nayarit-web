@@ -58,6 +58,8 @@
     "embla-carousel-react": "^8.6.0",
     "firebase": "^12.9.0",
     "genkit": "^1.20.0",
+    "googleapis": "^171.4.0",
+    "html-to-image": "^1.11.13",
     "install": "^0.13.0",
     "jspdf": "^3.0.4",
     "jspdf-autotable": "^5.0.2",

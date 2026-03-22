@@ -1,0 +1,49 @@
+{
+  "sessions": {
+    "14d92d8e-8b35-45ae-92c8-9912db51f2f8": {
+      "user_message_count": 2,
+      "agent_message_count": 28,
+      "start_timestamp": "2026-02-10T23:36:37.188Z",
+      "end_timestamp": "2026-02-10T23:39:50.388Z",
+      "markdown_size_bytes": 11060,
+      "provider": "gemini-cli",
+      "last_updated": "2026-03-21T09:09:39Z"
+    },
+    "478cecc4-bcea-411d-825e-5351d76f3f3d": {
+      "user_message_count": 19,
+      "agent_message_count": 81,
+      "start_timestamp": "2025-11-20T00:32:54-07:00",
+      "end_timestamp": "2025-11-20T11:51:54-07:00",
+      "markdown_size_bytes": 116501,
+      "provider": "copilotide",
+      "last_updated": "2026-03-21T09:09:39Z"
+    },
+    "6a51f20a-6612-409c-bd5d-048490939f49": {
+      "user_message_count": 10,
+      "agent_message_count": 70,
+      "start_timestamp": "2026-02-10T17:29:45.555Z",
+      "end_timestamp": "2026-02-10T22:31:16.194Z",
+      "markdown_size_bytes": 46150,
+      "provider": "gemini-cli",
+      "last_updated": "2026-03-21T09:09:39Z"
+    },
+    "ebd22a41-16c5-4fe6-a8af-7f56804bc255": {
+      "user_message_count": 1,
+      "agent_message_count": 0,
+      "start_timestamp": "2026-02-03T14:09:28-07:00",
+      "end_timestamp": "2026-02-03T14:09:28-07:00",
+      "markdown_size_bytes": 244,
+      "provider": "copilotide",
+      "last_updated": "2026-03-21T09:09:39Z"
+    },
+    "f9c4d2a2-0bcd-4a34-b31a-2816c330d4e1": {
+      "user_message_count": 1,
+      "agent_message_count": 0,
+      "start_timestamp": "2025-11-20T01:15:54-07:00",
+      "end_timestamp": "2025-11-20T01:15:54-07:00",
+      "markdown_size_bytes": 228,
+      "provider": "copilotide",
+      "last_updated": "2026-03-21T09:09:39Z"
+    }
+  }
+}

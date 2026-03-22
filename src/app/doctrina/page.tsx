@@ -1,7 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import DoctrinaClientPage from './DoctrinaClientPage';
-import Header from '@/app/components/header';
 import Footer from '@/app/components/footer';
 
 export const metadata: Metadata = {
@@ -12,7 +11,6 @@ export const metadata: Metadata = {
 const DoctrinaPage = () => {
   return (
     <>
-      <Header />
       <DoctrinaClientPage />
       <Footer />
     </>

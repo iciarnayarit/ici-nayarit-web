@@ -1,86 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Star, Download, Film, FileText, Wrench, Package, ArrowRight, BookOpen, DownloadCloud, ExternalLink, Scissors, Headphones, Mail } from 'lucide-react';
-import Header from '@/app/components/header';
+import { Star, Download, Film, FileText, Wrench, Package, ArrowRight, BookOpen, DownloadCloud, ExternalLink, Scissors, Headphones, Mail, Bookmark, Share2 } from 'lucide-react';
 import Footer from '@/app/components/footer';
-
-const resourceItems = [
-    {
-        category: 'MULTIMEDIA - SERMÓN',
-        title: 'Viviendo en Santidad',
-        description: 'Serie de sermones sobre el caminar diario del creyente en el mundo...',
-        imageUrl: 'https://i.imgur.com/PvDorVd.png',
-        actionLabel: 'Ver ahora',
-        actionIcon: ArrowRight,
-        link: '#',
-        badge: '48:20'
-    },
-    {
-        category: 'DOCUMENTO - GUÍA',
-        title: 'Guía de Estudio Bíblico',
-        description: 'Material complementario para el estudio personal de la epístola a los...',
-        imageUrl: 'https://i.imgur.com/pIdxDkl.jpeg',
-        actionLabel: 'Descargar',
-        actionIcon: DownloadCloud,
-        link: '#',
-        badge: 'PDF'
-    },
-    {
-        category: 'HERRAMIENTA - INTERACTIVA',
-        title: 'Línea del Tiempo Bíblica',
-        description: 'Explora los eventos clave de la Biblia de manera cronológica y visual.',
-        imageUrl: 'https://i.imgur.com/iR823lO.jpeg',
-        actionLabel: 'Acceder',
-        actionIcon: ExternalLink,
-        link: '#'
-    },
-    {
-        category: 'DESCARGA - DISEÑO',
-        title: 'Wallpapers ICIAR',
-        description: 'Fondos de pantalla oficiales para tu celular y computadora con versícul...',
-        imageUrl: 'https://i.imgur.com/Ttvfam9.png',
-        actionLabel: 'Descargar Pack',
-        actionIcon: Download,
-        link: '#'
-    },
-    {
-        category: 'DOCUMENTO - BOLETÍN',
-        title: 'Boletín Mensual Mayo',
-        description: 'Noticias, eventos y planes de oración para el mes de Mayo en Nayarit.',
-        imageUrl: 'https://i.imgur.com/YWlQCbQ.png',
-        actionLabel: 'Leer Boletín',
-        actionIcon: BookOpen,
-        link: '#'
-    },
-    {
-        category: 'DESCARGA - LOGOS',
-        title: 'Identidad Visual ICIAR',
-        description: 'Logos en alta resolución, fuentes y manual de uso para congregaciones...',
-        imageUrl: 'https://i.imgur.com/ZrwSADZ.png',
-        actionLabel: 'Kit de Marca',
-        actionIcon: Download,
-        link: '#'
-    },
-    {
-        category: 'HERRAMIENTA - GENERADOR',
-        title: 'Creador de Imágenes',
-        description: 'Herramienta web para crear versículos visuales con el logo de...',
-        imageUrl: 'https://i.imgur.com/NZYoeBJ.jpeg',
-        actionLabel: 'Abrir Creador',
-        actionIcon: Scissors,
-        link: '#'
-    },
-    {
-        category: 'MULTIMEDIA - AUDIO',
-        title: 'Podcast: Fe y Cultura',
-        description: 'Conversaciones semanales sobre cómo vivir la fe en la cultura mayorita.',
-        imageUrl: 'https://i.imgur.com/iR823lO.jpeg',
-        actionLabel: 'Escuchar Audio',
-        actionIcon: Headphones,
-        link: '#'
-    }
-];
+import Link from 'next/link';
+import { resourceItems, slugify } from '@/app/lib/resources-data';
 
 const filters = [
   { label: 'Todos', icon: Package },
@@ -90,12 +14,37 @@ const filters = [
   { label: 'Descargas', icon: Download },
 ];
 
+const ITEMS_PER_PAGE = 8;
+
 export default function RecursosPage() {
   const [activeFilter, setActiveFilter] = useState('Todos');
   const [filteredResources, setFilteredResources] = useState(resourceItems);
+  const [savedRecursos, setSavedRecursos] = useState<string[]>([]);
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+
+  const toggleSave = (e: React.MouseEvent, title: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSavedRecursos(prev => prev.includes(title) ? prev.filter(t => t !== title) : [...prev, title]);
+  };
+
+  const handleShare = async (e: React.MouseEvent, title: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = `${window.location.origin}/recursos`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: `Recurso: ${title}`, url });
+      } catch (err) {}
+    } else {
+      navigator.clipboard.writeText(url);
+      alert('Enlace copiado al portapapeles');
+    }
+  };
 
   const handleFilterClick = (filterLabel: string) => {
     setActiveFilter(filterLabel);
+    setVisibleCount(ITEMS_PER_PAGE); // reset pagination on filter change
 
     if (filterLabel === 'Todos') {
       setFilteredResources(resourceItems);
@@ -119,9 +68,11 @@ export default function RecursosPage() {
     setFilteredResources(newFilteredResources);
   };
 
+  const visibleResources = filteredResources.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredResources.length;
+
   return (
     <>
-      <Header />
       <div className="bg-[#F9FAFB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           
@@ -147,8 +98,14 @@ export default function RecursosPage() {
                             <Download className="w-5 h-5 mr-2" />
                             Descargar PDF
                         </button>
-                        <button className="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                        <Link href={`/recursos/${slugify("Manual Doctrinario Anual 2024")}`} className="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg transition-colors inline-block">
                             Ver Detalles
+                        </Link>
+                        <button onClick={(e) => toggleSave(e, "Manual Doctrinario Anual 2024")} className="bg-white/20 hover:bg-white/20 p-3 rounded-lg transition-none flex items-center justify-center">
+                            <Bookmark className={`w-5 h-5 transition-colors ${savedRecursos.includes("Manual Doctrinario Anual 2024") ? 'text-[#B88A44] fill-[#B88A44]' : 'text-white fill-none'}`} />
+                        </button>
+                        <button onClick={(e) => handleShare(e, "Manual Doctrinario Anual 2024")} className="bg-white/20 hover:bg-white/30 text-white p-3 rounded-lg transition-colors flex items-center justify-center">
+                            <Share2 className="w-5 h-5" />
                         </button>
                     </div>
                 </div>
@@ -168,9 +125,17 @@ export default function RecursosPage() {
           </div>
 
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {filteredResources.map((item, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col">
+            {visibleResources.map((item, index) => (
+              <Link href={`/recursos/${slugify(item.title)}`} key={index} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col cursor-pointer">
                 <div className="relative h-48">
+                  <div className="absolute top-2 left-2 z-10 flex gap-2">
+                     <div role="button" onClick={(e) => toggleSave(e, item.title)} className="p-2 bg-white/90 rounded-full shadow-sm backdrop-blur-sm cursor-pointer transition-colors">
+                       <Bookmark className={`w-4 h-4 transition-colors ${savedRecursos.includes(item.title) ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-700 fill-none'}`} />
+                     </div>
+                     <div role="button" onClick={(e) => handleShare(e, item.title)} className="p-2 bg-white/90 rounded-full hover:bg-white text-gray-700 hover:text-[#B88A44] transition-colors shadow-sm backdrop-blur-sm cursor-pointer">
+                       <Share2 className="w-4 h-4" />
+                     </div>
+                  </div>
                   <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover"/>
                   {item.badge && (
                     <span className={`absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded ${item.badge === 'PDF' ? 'bg-[#B88A44] text-white' : 'bg-black/60 text-white'}`}>
@@ -182,14 +147,26 @@ export default function RecursosPage() {
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{item.category}</p>
                   <h3 className="text-lg font-bold text-gray-800 mb-2 font-display">{item.title}</h3>
                   <p className="text-sm text-gray-600 mb-4 flex-grow">{item.description}</p>
-                  <a href={item.link} className="w-full mt-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-lg flex items-center justify-center transition-colors text-sm">
+                  <div className="w-full mt-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-lg flex items-center justify-center transition-colors text-sm">
                     <item.actionIcon className="w-4 h-4 mr-2" />
                     {item.actionLabel}
-                  </a>
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </section>
+
+          {/* Load More */}
+          {hasMore && (
+            <div className="text-center mt-12">
+              <button
+                onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}
+                className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-full transition-colors focus:outline-none text-sm"
+              >
+                Cargar más recursos
+              </button>
+            </div>
+          )}
 
           <section className="bg-white rounded-2xl shadow-lg p-8 md:p-12 mt-16 text-center">
             <h2 className="text-3xl font-bold text-gray-800 mb-3 font-display">¿No encuentras lo que buscas?</h2>
