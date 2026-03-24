@@ -82,29 +82,34 @@ export default function RecursosPage() {
           >
             <div className="absolute inset-0 bg-slate-800 opacity-80"></div>
             <div className="relative z-10 md:flex items-center">
-                <div className="md:w-3/5">
+                <div className="md:w-full">
                     <div className="flex items-center text-[#E5C573] text-sm font-semibold mb-3">
                         <Star className="w-5 h-5 mr-2" />
                         <span>RECURSO DESTACADO</span>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-bold font-display mb-4">
-                        Manual Doctrinario <span className="text-[#E5C573]">Anual 2024</span>
+                        Plan de Predicación <span className="text-[#E5C573]">Anual 2026</span>
                     </h1>
-                    <p className="text-lg text-gray-200 mb-8 max-w-xl">
-                        Guía completa para el crecimiento espiritual y enseñanzas doctrinales de este año. Incluye planes de estudio, lecturas diarias y guías para grupos pequeños.
+                    <p className="text-lg text-gray-200 mb-8 max-w-2xl">
+                        Calendario oficial y ejes temáticos para la exposición de la Palabra durante el año 2026. Una guía indispensable para la unidad doctrinal en todas nuestras congregaciones.
                     </p>
                     <div className="flex flex-wrap gap-4">
-                        <button className="bg-[#B88A44] hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg flex items-center transition-colors">
+                        <a 
+                            href="/recursos/Plan de predicación - 2026.pdf" 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-[#B88A44] hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg flex items-center transition-colors"
+                        >
                             <Download className="w-5 h-5 mr-2" />
                             Descargar PDF
-                        </button>
-                        <Link href={`/recursos/${slugify("Manual Doctrinario Anual 2024")}`} className="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg transition-colors inline-block">
+                        </a>
+                        <Link href={`/recursos/${slugify("Plan de Predicación 2026")}`} className="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-6 rounded-lg transition-colors inline-block">
                             Ver Detalles
                         </Link>
-                        <button onClick={(e) => toggleSave(e, "Manual Doctrinario Anual 2024")} className="bg-white/20 hover:bg-white/20 p-3 rounded-lg transition-none flex items-center justify-center">
-                            <Bookmark className={`w-5 h-5 transition-colors ${savedRecursos.includes("Manual Doctrinario Anual 2024") ? 'text-[#B88A44] fill-[#B88A44]' : 'text-white fill-none'}`} />
+                        <button onClick={(e) => toggleSave(e, "Plan de Predicación 2026")} className="bg-white/20 hover:bg-white/20 p-3 rounded-lg transition-none flex items-center justify-center">
+                            <Bookmark className={`w-5 h-5 transition-colors ${savedRecursos.includes("Plan de Predicación 2026") ? 'text-[#B88A44] fill-[#B88A44]' : 'text-white fill-none'}`} />
                         </button>
-                        <button onClick={(e) => handleShare(e, "Manual Doctrinario Anual 2024")} className="bg-white/20 hover:bg-white/30 text-white p-3 rounded-lg transition-colors flex items-center justify-center">
+                        <button onClick={(e) => handleShare(e, "Plan de Predicación 2026")} className="bg-white/20 hover:bg-white/30 text-white p-3 rounded-lg transition-colors flex items-center justify-center">
                             <Share2 className="w-5 h-5" />
                         </button>
                     </div>
@@ -126,33 +131,44 @@ export default function RecursosPage() {
 
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {visibleResources.map((item, index) => (
-              <Link href={`/recursos/${slugify(item.title)}`} key={index} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col cursor-pointer">
-                <div className="relative h-48">
-                  <div className="absolute top-2 left-2 z-10 flex gap-2">
-                     <div role="button" onClick={(e) => toggleSave(e, item.title)} className="p-2 bg-white/90 rounded-full shadow-sm backdrop-blur-sm cursor-pointer transition-colors">
-                       <Bookmark className={`w-4 h-4 transition-colors ${savedRecursos.includes(item.title) ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-700 fill-none'}`} />
-                     </div>
-                     <div role="button" onClick={(e) => handleShare(e, item.title)} className="p-2 bg-white/90 rounded-full hover:bg-white text-gray-700 hover:text-[#B88A44] transition-colors shadow-sm backdrop-blur-sm cursor-pointer">
-                       <Share2 className="w-4 h-4" />
-                     </div>
-                  </div>
-                  <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover"/>
-                  {item.badge && (
-                    <span className={`absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded ${item.badge === 'PDF' ? 'bg-[#B88A44] text-white' : 'bg-black/60 text-white'}`}>
-                      {item.badge}
-                    </span>
-                  )}
+              <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col relative">
+                <div className="absolute top-2 left-2 z-20 flex gap-2">
+                   <button 
+                     onClick={(e) => toggleSave(e, item.title)} 
+                     className="p-2 bg-white/90 rounded-full shadow-sm backdrop-blur-sm cursor-pointer transition-colors hover:bg-white z-30"
+                     aria-label="Guardar"
+                   >
+                     <Bookmark className={`w-4 h-4 transition-colors ${savedRecursos.includes(item.title) ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-700 fill-none'}`} />
+                   </button>
+                   <button 
+                     onClick={(e) => handleShare(e, item.title)} 
+                     className="p-2 bg-white/90 rounded-full hover:bg-white text-gray-700 hover:text-[#B88A44] transition-colors shadow-sm backdrop-blur-sm cursor-pointer z-30"
+                     aria-label="Compartir"
+                   >
+                     <Share2 className="w-4 h-4" />
+                   </button>
                 </div>
-                <div className="p-5 flex-grow flex flex-col">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{item.category}</p>
-                  <h3 className="text-lg font-bold text-gray-800 mb-2 font-display">{item.title}</h3>
-                  <p className="text-sm text-gray-600 mb-4 flex-grow">{item.description}</p>
-                  <div className="w-full mt-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-lg flex items-center justify-center transition-colors text-sm">
-                    <item.actionIcon className="w-4 h-4 mr-2" />
-                    {item.actionLabel}
+                
+                <Link href={`/recursos/${slugify(item.title)}`} className="flex flex-col h-full">
+                  <div className="relative h-48">
+                    <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover"/>
+                    {item.badge && (
+                      <span className={`absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded ${item.badge === 'PDF' ? 'bg-[#B88A44] text-white' : 'bg-black/60 text-white'}`}>
+                        {item.badge}
+                      </span>
+                    )}
                   </div>
-                </div>
-              </Link>
+                  <div className="p-5 flex-grow flex flex-col">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{item.category}</p>
+                    <h3 className="text-lg font-bold text-gray-800 mb-2 font-display">{item.title}</h3>
+                    <p className="text-sm text-gray-600 mb-4 flex-grow">{item.description}</p>
+                    <div className="w-full mt-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-lg flex items-center justify-center transition-colors text-sm">
+                      <item.actionIcon className="w-4 h-4 mr-2" />
+                      {item.actionLabel}
+                    </div>
+                  </div>
+                </Link>
+              </div>
             ))}
           </section>
 

@@ -9,24 +9,24 @@ export default async function RecursoDetailPage({ params }: { params: Promise<{ 
   // Find the resource
   const resource = resourceItems.find(r => slugify(r.title) === resolvedParams.slug);
   
-  // Check if it's the featured resource (Manual Doctrinario)
-  const isFeatured = resolvedParams.slug === slugify("Manual Doctrinario Anual 2024");
+  // Check if it's the featured resource (Plan de Predicación 2026)
+  const isFeatured = resolvedParams.slug === slugify("Plan de Predicación 2026");
 
   if (!resource && !isFeatured) {
     notFound();
   }
 
-  // If it's featured, use custom data since it's not in the array
+  // If it's featured, use custom data since it's not in the array (OR use from array if available)
   const item = resource || {
-    category: 'DOCUMENTO - MANUAL',
-    title: 'Manual Doctrinario Anual 2024',
-    description: 'Guía completa para el crecimiento espiritual y enseñanzas doctrinales de este año. Incluye planes de estudio, lecturas diarias y guías para grupos pequeños.',
-    imageUrl: 'https://i.imgur.com/YhJc6R0.jpeg',
+    category: 'DOCUMENTO - PLAN',
+    title: 'Plan de Predicación Anual 2026',
+    description: 'Calendario oficial y ejes temáticos para la exposición de la Palabra durante el año 2026. Una guía indispensable para la unidad doctrinal en todas nuestras congregaciones.',
+    imageUrl: '/images/announcements/congress.png',
     actionLabel: 'Descargar PDF',
-    link: '#',
+    link: '/recursos/Plan de predicación - 2026.pdf',
     badge: 'PDF',
-    content: 'Este manual incluye planes de estudio, lecturas diarias y guías para grupos pequeños diseñadas específicamente para edificar a la iglesia a lo largo de todo el año. Nos enfocaremos en los 14 puntos doctrinales para afirmar los cimientos de nuestra fe cristiana. Recomendamos estudiar este libro en conjunto con toda la congregación.',
-    actionIcon: undefined
+    content: 'Este plan de predicación ha sido diseñado para guiar a nuestras congregaciones en un estudio sistemático y profundo de las Escrituras durante todo el año 2026, asegurando que cubramos los temas doctrinales y prácticos esenciales para la vida cristiana. Recomendamos seguir este calendario para mantener la unidad en las enseñanzas a nivel presbiterial.',
+    actionIcon: Download
   };
 
   const ActionIcon = item.actionIcon ? item.actionIcon : (isFeatured ? Download : null);
@@ -65,7 +65,12 @@ export default async function RecursoDetailPage({ params }: { params: Promise<{ 
               </div>
 
               <div className="border-t border-gray-100 pt-8 flex flex-col sm:flex-row gap-4">
-                <a href={item.link} className="bg-[#B88A44] hover:bg-opacity-90 text-white font-bold py-4 px-8 rounded-xl flex items-center justify-center transition-colors text-lg flex-grow sm:flex-grow-0">
+                <a 
+                  href={item.link} 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-[#B88A44] hover:bg-opacity-90 text-white font-bold py-4 px-8 rounded-xl flex items-center justify-center transition-colors text-lg flex-grow sm:flex-grow-0"
+                >
                   {ActionIcon && <ActionIcon className="w-5 h-5 mr-3" />}
                   {item.actionLabel}
                 </a>
