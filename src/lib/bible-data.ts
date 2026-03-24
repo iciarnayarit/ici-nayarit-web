@@ -65,6 +65,116 @@ import tt from '@/app/lib/bible_rvr/tt.json';
 import zc from '@/app/lib/bible_rvr/zc.json';
 import zp from '@/app/lib/bible_rvr/zp.json';
 
+export interface PassageVerse {
+    book: string;
+    chapter: number;
+    verse: number;
+    text: string;
+}
+
+export const handleReadPassage = (reading: string): PassageVerse[] => {
+    const allVerses: PassageVerse[] = [];
+    let currentBookKey = '';
+
+    const references = reading.split(';').map(r => r.trim());
+
+    for (const ref of references) {
+        let passage = ref;
+        // Handle books with numbers and accents (e.g., 1 Corintios, Éxodo)
+        const bookMatch = ref.match(/^(\d?\s?[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?:\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*)\s/);
+
+        if (bookMatch && bookMatch[1]) {
+            const bookName = bookMatch[1].trim().toLowerCase();
+            if (bibleData[bookName]) {
+                currentBookKey = bookName;
+                passage = ref.substring(bookMatch[0].length).trim();
+            }
+        }
+
+        if (!currentBookKey) continue;
+
+        const book = bibleData[currentBookKey];
+        const passageParts = passage.split(',').map(p => p.trim());
+
+        for (const part of passageParts) {
+            let match;
+
+            // Handle Chapter:StartVerse-EndVerse (e.g., 12:1-14)
+            match = part.match(/^(\d+):(\d+)-(\d+)$/);
+            if (match) {
+                const chapter = parseInt(match[1], 10);
+                const startVerse = parseInt(match[2], 10);
+                const endVerse = parseInt(match[3], 10);
+                const verses = book.chapters[chapter - 1] || [];
+                for (let i = startVerse; i <= endVerse; i++) {
+                    if (verses[i - 1]) {
+                        allVerses.push({ book: currentBookKey, chapter, verse: i, text: verses[i - 1] });
+                    }
+                }
+                continue;
+            }
+
+            // Handle Chapter:Verse (e.g., 22:1)
+            match = part.match(/^(\d+):(\d+)$/);
+            if (match) {
+                const chapter = parseInt(match[1], 10);
+                const verse = parseInt(match[2], 10);
+                const verses = book.chapters[chapter - 1] || [];
+                if (verses[verse - 1]) {
+                    allVerses.push({ book: currentBookKey, chapter, verse, text: verses[verse - 1] });
+                }
+                continue;
+            }
+
+            // Handle Chapter-Chapter (e.g., 18-19) - Full chapters
+            match = part.match(/^(\d+)-(\d+)$/);
+            if (match) {
+                const startChapter = parseInt(match[1], 10);
+                const endChapter = parseInt(match[2], 10);
+                for (let c = startChapter; c <= endChapter; c++) {
+                    const verses = book.chapters[c - 1] || [];
+                    verses.forEach((text: string, i: number) => {
+                        allVerses.push({ book: currentBookKey, chapter: c, verse: i + 1, text });
+                    });
+                }
+                continue;
+            }
+
+            // Handle Chapter:Verse-Chapter:Verse (e.g., 18:1-19:42)
+            match = part.match(/^(\d+):(\d+)-(\d+):(\d+)$/);
+            if (match) {
+                const startChapter = parseInt(match[1], 10);
+                const startVerse = parseInt(match[2], 10);
+                const endChapter = parseInt(match[3], 10);
+                const endVerse = parseInt(match[4], 10);
+
+                for (let c = startChapter; c <= endChapter; c++) {
+                    const verses = book.chapters[c - 1] || [];
+                    const sV = c === startChapter ? startVerse : 1;
+                    const eV = c === endChapter ? endVerse : verses.length;
+                    for (let i = sV; i <= eV; i++) {
+                        if (verses[i - 1]) {
+                            allVerses.push({ book: currentBookKey, chapter: c, verse: i, text: verses[i - 1] });
+                        }
+                    }
+                }
+                continue;
+            }
+
+            // Handle Single Chapter (e.g., 12)
+            match = part.match(/^(\d+)$/);
+            if (match) {
+                const chapter = parseInt(match[1], 10);
+                const verses = book.chapters[chapter - 1] || [];
+                verses.forEach((text: string, i: number) => {
+                    allVerses.push({ book: currentBookKey, chapter, verse: i + 1, text });
+                });
+            }
+        }
+    }
+    return allVerses;
+};
+
 export const bibleData: { [key: string]: any } = {
     'génesis': gn, 'éxodo': ex, 'levítico': lv, 'números': nm, 'deuteronomio': dt, 'josué': js, 'jueces': jud, 'rut': rt,
     '1 samuel': sa1, '2 samuel': sa2, '1 reyes': k1, '2 reyes': k2, '1 crónicas': c1, '2 crónicas': c2, 'esdras': ezr,

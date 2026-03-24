@@ -135,9 +135,11 @@ export default function Bible() {
     const [theme, setTheme] = useState<'light' | 'sepia' | 'dark'>('light');
 
     const [isToolbarOpen, setIsToolbarOpen] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const { toast } = useToast();
 
     useEffect(() => {
+        setMounted(true);
         const saved = localStorage.getItem('savedVerses');
         if (saved) {
             setSavedVerses(JSON.parse(saved));
@@ -408,7 +410,7 @@ export default function Bible() {
     };
 
     const getRelativeTime = (dateString: string) => {
-        if (!dateString) return '';
+        if (!mounted || !dateString) return '';
         const date = new Date(dateString);
         const now = new Date();
         const diff = now.getTime() - date.getTime();
@@ -541,7 +543,7 @@ export default function Bible() {
     };
 
     return (
-        <section id="bible" suppressHydrationWarning className={`w-full py-12 md:py-24 lg:py-32 transition-colors duration-500 ${themeStyles.bg}`}>
+        <section id="bible" className={`w-full py-12 md:py-24 lg:py-32 transition-colors duration-500 ${themeStyles.bg}`}>
             <div className="container mx-auto px-4 md:px-6">
                 <div className={`mx-auto transition-all duration-700 ease-in-out flex flex-col xl:flex-row gap-8 ${isNoteOpen ? 'max-w-[1400px]' : 'max-w-4xl'}`}>
 
@@ -928,7 +930,9 @@ export default function Bible() {
                                         <h3 className={`text-xl font-bold ${themeStyles.title}`}>{editingNoteId ? 'Editar Reflexión' : 'Añadir Nota'}</h3>
                                         <div className="flex items-center gap-1.5 text-gray-400">
                                             <Clock className="w-3.5 h-3.5" />
-                                            <span suppressHydrationWarning className="text-[11px] font-medium">Guardado automáticamente: {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                            <span className="text-[11px] font-medium">
+                                                {mounted && `Guardado automáticamente: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
+                                            </span>
                                         </div>
                                     </div>
 

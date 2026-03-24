@@ -76,7 +76,7 @@ export default function BibleReader() {
             {showToolbar && selection && (
                 <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-2xl z-50 w-full max-w-sm p-4">
                     <div className="flex justify-between items-center mb-4">
-                        <p className="text-sm font-semibold">Currently Selected:</p>
+                        <p className="text-sm font-semibold">Seleccionado:</p>
                         <button onClick={() => setShowToolbar(false)} className="text-gray-500 hover:text-gray-800">
                             <X size={20} />
                         </button>
@@ -87,7 +87,7 @@ export default function BibleReader() {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                                 <Highlighter className="text-gray-700" size={24} />
-                                <span className="font-semibold text-lg">Highlight</span>
+                                <span className="font-semibold text-lg">Subrayar</span>
                             </div>
                             <div className="flex space-x-2">
                                 {highlightColors.map(color => (
@@ -97,15 +97,15 @@ export default function BibleReader() {
                         </div>
                         <div className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
                             <Share className="text-gray-700" size={24} />
-                            <span className="font-semibold text-lg">Share</span>
+                            <span className="font-semibold text-lg">Compartir</span>
                         </div>
                         <div className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
                             <BookOpen className="text-gray-700" size={24} />
-                            <span className="font-semibold text-lg">Compare</span>
+                            <span className="font-semibold text-lg">Comparar</span>
                         </div>
                         <div onClick={handleCopy} className="flex items-center space-x-3 cursor-pointer p-2 rounded-md hover:bg-gray-100">
                             <Copy className="text-gray-700" size={24} />
-                            <span className="font-semibold text-lg">Copy</span>
+                            <span className="font-semibold text-lg">Copiar</span>
                         </div>
                     </div>
 
@@ -113,8 +113,8 @@ export default function BibleReader() {
                         <div className="bg-gray-100 p-3 rounded-lg flex items-center space-x-4">
                             <Book className="text-red-700" size={32} />
                             <div>
-                                <p className="text-sm font-semibold">Want to have your highlights saved across all your devices?</p>
-                                <a href="#" className="text-sm text-blue-600 font-bold underline">Sign up or sign in</a>
+                                <p className="text-sm font-semibold">¿Quieres tener tus subrayados guardados en todos tus dispositivos?</p>
+                                <a href="#" className="text-sm text-blue-600 font-bold underline">Registrate o inicia sesión</a>
                             </div>
                         </div>
                     </div>

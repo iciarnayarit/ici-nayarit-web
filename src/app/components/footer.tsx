@@ -1,8 +1,14 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Footer() {
+  const [mounted, setMounted] = useState(false);
   const year = new Date().getFullYear();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <footer className="bg-white border-t border-gray-200 pt-16 pb-8">
@@ -47,7 +53,7 @@ export default function Footer() {
                 </div>
             </div>
             <div className="border-t border-gray-200 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p className="text-xs text-gray-400" suppressHydrationWarning>© {year} ICIAR Nayarit. Todos los derechos reservados.</p>
+                <p className="text-xs text-gray-400">© {mounted ? year : '2025'} ICIAR Nayarit. Todos los derechos reservados.</p>
                 <div className="flex space-x-4 mt-4 md:mt-0">
                     <a className="text-xs text-gray-400 hover:text-[#B88A44]" href="https://clerk.com/legal/privacy" target="_blank" rel="noopener noreferrer">Privacidad</a>
                     <a className="text-xs text-gray-400 hover:text-[#B88A44]" href="https://clerk.com/legal/terms" target="_blank" rel="noopener noreferrer">Términos</a>
