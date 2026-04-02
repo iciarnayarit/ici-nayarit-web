@@ -262,63 +262,63 @@ export const plans = [
     id: '49',
     titleKey: 'Domingo de Resurrección',
     descriptionKey: 'Recorre los relatos de la tumba vacía, las apariciones de Jesús resucitado y el mensaje que transforma el mundo: Cristo ha resucitado.',
-    imageUrl: 'https://images.unsplash.com/photo-1521106047354-5a5b85e819ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1636563130142-ad73109b044a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'domingo-de-resurreccion'
   },
   {
     id: '50',
-    titleKey: 'Sábado Santo',
+    titleKey: 'Sábado de Silencio',
     descriptionKey: 'Un día de silencio, espera y fidelidad. Medita en el reposo sagrado que siguió a la cruz y precede a la resurrección.',
-    imageUrl: 'https://images.unsplash.com/photo-1504052434569-70ad5836ab65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1614112552042-e80654a8d3b4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'sabado-santo'
   },
   {
     id: '51',
     titleKey: 'Las Siete Palabras de Jesús en la Cruz',
     descriptionKey: 'Siete días de reflexión profunda sobre cada una de las palabras que Jesús pronunció desde la cruz: perdón, salvación, amor, angustia, humanidad, redención y entrega.',
-    imageUrl: 'https://images.unsplash.com/photo-1548438294-1ad5d5f4f063?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1763336315393-30d893783e5d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'siete-palabras-cruz'
   },
   {
     id: '52',
-    titleKey: 'Viernes Santo',
+    titleKey: 'Viernes de Muerte del Señor Jesús',
     descriptionKey: 'Recorre los cuatro evangelios en el día más solemne de la historia: el juicio, el camino al Gólgota, la crucifixión, la muerte y la sepultura de Jesús.',
-    imageUrl: 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1756043571550-481b1554f802?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'viernes-santo'
   },
   {
     id: '53',
-    titleKey: 'Jueves Santo',
+    titleKey: 'Jueves de Mesa del Señor Jesús',
     descriptionKey: 'Vive el último día de Jesús con sus discípulos: la Última Cena, el lavatorio de pies, el discurso de despedida, la oración en Getsemaní y el arresto.',
-    imageUrl: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1700465867132-bd61db9a5f5d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'jueves-santo'
   },
   {
     id: '54',
-    titleKey: 'Miércoles de Retiro',
+    titleKey: 'Miércoles de Descanso del Señor Jesús',
     descriptionKey: 'Un día de silencio y reflexión: el complot de los líderes religiosos, la traición de Judas y la soberana paz de Jesús que prepara la Pascua aun en medio de la oscuridad.',
-    imageUrl: 'https://images.unsplash.com/photo-1476611338391-6f395a0dd82e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1681651204430-820391187e62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'miercoles-retiro'
   },
   {
     id: '55',
-    titleKey: 'Martes de la Controversia',
+    titleKey: 'Martes de Controversia del Señor Jesús',
     descriptionKey: 'El día más intenso de la Semana Santa: parábolas que confrontan, debates que asombran, los siete ayes contra la hipocresía y la profecía sobre el fin de los tiempos.',
-    imageUrl: 'https://images.unsplash.com/photo-1499084732479-de2c02d45fcc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1745005394951-222e7de4570f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'martes-controversia'
   },
   {
     id: '56',
     titleKey: 'Lunes de Autoridad',
     descriptionKey: 'Jesús actúa con plena autoridad: maldice la higuera sin fruto, purifica el templo, sana a los necesitados y silencia a quienes cuestionan su poder.',
-    imageUrl: 'https://images.unsplash.com/photo-1548625149-720754c0bf87?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1767020569779-90678644779b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'lunes-autoridad'
   },
   {
     id: '57',
     titleKey: 'Entrada Triunfal',
     descriptionKey: 'El Domingo de Ramos: Jesús entra en Jerusalén como Rey cumpliendo la profecía de Zacarías, recibido con palmas, mantos y el clamor de ¡Hosanna!',
-    imageUrl: 'https://images.unsplash.com/photo-1519491516540-f7f07a4e3017?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
+    imageUrl: 'https://images.unsplash.com/photo-1578322046359-4c1c34551b2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080',
     slug: 'entrada-triunfal'
   }
 ];
