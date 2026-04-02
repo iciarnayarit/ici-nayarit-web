@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import Bible from '@/app/components/bible';
 import CenteredImage from '@/app/components/centered-image';
 import Contact from '@/app/components/contact-section';
@@ -19,7 +20,9 @@ export default function Page() {
     <main className="flex-1">
       <RadioInvitation />
       <DailyVerse />
-      <Bible />
+      <Suspense fallback={<div className="min-h-[200px]" />}>
+        <Bible />
+      </Suspense>
       <PrayerGroupInvitation />
       <ReadingPlans />
       <DownloadApp />
