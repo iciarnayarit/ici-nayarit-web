@@ -24,6 +24,8 @@ export default function Page() {
       <ReadingPlans />
       <DownloadApp />
       <section className="w-full py-12 md:py-24 lg:py-32 flex justify-center items-center bg-white">
+        <div className="flex flex-col items-center gap-8">
+          <p className="text-xs font-black text-gray-400 uppercase tracking-[0.3em]">Partners</p>
         <div className="flex items-center justify-center gap-8">
           <a href="https://www.iciar.app" target="_blank" rel="noopener noreferrer">
             <NextImage src="https://i.imgur.com/qdJZ8ei.png" alt="Wycliffe" width={100} height={100} className="h-24 w-auto object-contain hover:opacity-80 transition-opacity" />
@@ -37,6 +39,7 @@ export default function Page() {
           <a href="https://icipdrgdl.com/" target="_blank" rel="noopener noreferrer">
             <NextImage src="https://i.imgur.com/Q06gpuP.png" alt="PDR Radio" width={100} height={100} className="h-24 w-auto object-contain hover:opacity-80 transition-opacity" />
           </a>
+        </div>
         </div>
       </section>
       <Footer />

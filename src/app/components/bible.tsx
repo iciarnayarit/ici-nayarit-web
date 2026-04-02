@@ -13,7 +13,8 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { toPng } from 'html-to-image';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 const books = [
     "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué",
@@ -29,6 +30,152 @@ const books = [
     "Hebreos", "Santiago", "1 Pedro", "2 Pedro", "1 Juan", "2 Juan",
     "3 Juan", "Judas", "Apocalipsis"
 ];
+
+// ── Bible versions ────────────────────────────────────────────────────────────
+type VersionId =
+    | 'rvr' | 'rvg'
+    | 'kjv' | 'asv' | 'bbe'
+    | 'ar'  | 'de'  | 'el' | 'eo' | 'fi' | 'fi_pr'
+    | 'fr'  | 'ko'  | 'pt_aa' | 'pt_acf' | 'pt_nvi'
+    | 'ro'  | 'ru'  | 'vi' | 'zh_cuv' | 'zh_ncv'
+    | 'huichol';
+
+const VERSIONS: { id: VersionId; label: string; lang: string }[] = [
+    // Español
+    { id: 'rvr',    label: 'Reina-Valera 1960',          lang: 'ES' },
+    { id: 'rvg',    label: 'Reina-Valera Gómez',         lang: 'ES' },
+    // Inglés
+    { id: 'kjv',    label: 'King James Version',         lang: 'EN' },
+    { id: 'asv',    label: 'American Standard',          lang: 'EN' },
+    { id: 'bbe',    label: 'Bible Basic English',        lang: 'EN' },
+    // Otros idiomas
+    { id: 'ar',     label: 'Árabe (Smith & Van Dyke)',   lang: 'AR' },
+    { id: 'de',     label: 'Alemán (Schlachter)',        lang: 'DE' },
+    { id: 'el',     label: 'Griego (Textus Receptus)',   lang: 'EL' },
+    { id: 'eo',     label: 'Esperanto',                  lang: 'EO' },
+    { id: 'fi',     label: 'Finés (1776)',               lang: 'FI' },
+    { id: 'fi_pr',  label: 'Finés (PR)',                 lang: 'FI' },
+    { id: 'fr',     label: 'Francés (APEE)',             lang: 'FR' },
+    { id: 'ko',     label: 'Coreano (개역한글)',          lang: 'KO' },
+    { id: 'pt_aa',  label: 'Portugués (Almeida Atual.)', lang: 'PT' },
+    { id: 'pt_acf', label: 'Portugués (Almeida Fiel)',   lang: 'PT' },
+    { id: 'pt_nvi', label: 'Portugués (NVI)',            lang: 'PT' },
+    { id: 'ro',     label: 'Rumano (Cornilescu)',        lang: 'RO' },
+    { id: 'ru',     label: 'Ruso (Sinodal)',             lang: 'RU' },
+    { id: 'vi',     label: 'Vietnamita',                 lang: 'VI' },
+    { id: 'zh_cuv',   label: 'Chino (CUV)',               lang: 'ZH'  },
+    { id: 'zh_ncv',   label: 'Chino (NCV)',               lang: 'ZH'  },
+    { id: 'huichol',  label: 'Huichol (Wixárika)',        lang: 'HCH' },
+];
+
+/** 0-based canonical book index (same order used by all single-file Bibles). */
+const BOOK_INDEX: { [key: string]: number } = {
+    "Génesis":0,"Éxodo":1,"Levítico":2,"Números":3,"Deuteronomio":4,
+    "Josué":5,"Jueces":6,"Rut":7,"1 Samuel":8,"2 Samuel":9,
+    "1 Reyes":10,"2 Reyes":11,"1 Crónicas":12,"2 Crónicas":13,
+    "Esdras":14,"Nehemías":15,"Ester":16,"Job":17,"Salmos":18,
+    "Proverbios":19,"Eclesiastés":20,"Cantares":21,"Isaías":22,
+    "Jeremías":23,"Lamentaciones":24,"Ezequiel":25,"Daniel":26,
+    "Oseas":27,"Joel":28,"Amós":29,"Abdías":30,"Jonás":31,
+    "Miqueas":32,"Nahúm":33,"Habacuc":34,"Sofonías":35,"Hageo":36,
+    "Zacarías":37,"Malaquías":38,"Mateo":39,"Marcos":40,"Lucas":41,
+    "Juan":42,"Hechos":43,"Romanos":44,"1 Corintios":45,"2 Corintios":46,
+    "Gálatas":47,"Efesios":48,"Filipenses":49,"Colosenses":50,
+    "1 Tesalonicenses":51,"2 Tesalonicenses":52,"1 Timoteo":53,
+    "2 Timoteo":54,"Tito":55,"Filemón":56,"Hebreos":57,"Santiago":58,
+    "1 Pedro":59,"2 Pedro":60,"1 Juan":61,"2 Juan":62,"3 Juan":63,
+    "Judas":64,"Apocalipsis":65,
+};
+
+/** Maps Spanish book name → Huichol file abbreviation (only valid files). */
+const HUICHOL_BOOK_MAP: Record<string, string> = {
+    "1 Crónicas":"1ch",  "1 Corintios":"1co",  "1 Juan":"1jn",   "1 Reyes":"1ki",
+    "1 Pedro":"1pe",     "1 Samuel":"1sa",      "1 Tesalonicenses":"1th",
+    "2 Crónicas":"2ch",  "2 Corintios":"2co",  "2 Juan":"2jn",   "2 Reyes":"2ki",
+    "2 Pedro":"2pe",     "2 Samuel":"2sa",      "2 Tesalonicenses":"2th", "2 Timoteo":"2ti",
+    "3 Juan":"3jn",
+    "Amós":"amo",        "Colosenses":"col",    "Daniel":"dan",   "Eclesiastés":"ecc",
+    "Efesios":"eph",     "Ester":"est",         "Esdras":"ezr",   "Gálatas":"gal",
+    "Habacuc":"hab",     "Hageo":"hag",         "Hebreos":"heb",  "Oseas":"hos",
+    "Isaías":"isa",      "Santiago":"jas",      "Jueces":"jdg",   "Jeremías":"jer",
+    "Juan":"jhn",        "Joel":"jol",          "Jonás":"jon",    "Lamentaciones":"lam",
+    "Levítico":"lev",    "Malaquías":"mal",     "Mateo":"mat",    "Miqueas":"mic",
+    "Abdías":"oba",      "Filemón":"phm",       "Filipenses":"php","Apocalipsis":"rev",
+    "Romanos":"rom",     "Rut":"rut",           "Cantares":"sng", "Tito":"tit",
+    "Zacarías":"zec",    "Sofonías":"zep",
+};
+
+/** Per-file dynamic loaders for the Huichol Bible. */
+const HUICHOL_LOADERS: Record<string, () => Promise<unknown>> = {
+    "1ch": () => import("@/app/lib/bible_huichol/1ch.json"),
+    "1co": () => import("@/app/lib/bible_huichol/1co.json"),
+    "1jn": () => import("@/app/lib/bible_huichol/1jn.json"),
+    "1ki": () => import("@/app/lib/bible_huichol/1ki.json"),
+    "1pe": () => import("@/app/lib/bible_huichol/1pe.json"),
+    "1sa": () => import("@/app/lib/bible_huichol/1sa.json"),
+    "1th": () => import("@/app/lib/bible_huichol/1th.json"),
+    "2ch": () => import("@/app/lib/bible_huichol/2ch.json"),
+    "2co": () => import("@/app/lib/bible_huichol/2co.json"),
+    "2jn": () => import("@/app/lib/bible_huichol/2jn.json"),
+    "2ki": () => import("@/app/lib/bible_huichol/2ki.json"),
+    "2pe": () => import("@/app/lib/bible_huichol/2pe.json"),
+    "2sa": () => import("@/app/lib/bible_huichol/2sa.json"),
+    "2th": () => import("@/app/lib/bible_huichol/2th.json"),
+    "2ti": () => import("@/app/lib/bible_huichol/2ti.json"),
+    "3jn": () => import("@/app/lib/bible_huichol/3jn.json"),
+    "amo": () => import("@/app/lib/bible_huichol/amo.json"),
+    "col": () => import("@/app/lib/bible_huichol/col.json"),
+    "dan": () => import("@/app/lib/bible_huichol/dan.json"),
+    "ecc": () => import("@/app/lib/bible_huichol/ecc.json"),
+    "eph": () => import("@/app/lib/bible_huichol/eph.json"),
+    "est": () => import("@/app/lib/bible_huichol/est.json"),
+    "ezr": () => import("@/app/lib/bible_huichol/ezr.json"),
+    "gal": () => import("@/app/lib/bible_huichol/gal.json"),
+    "hab": () => import("@/app/lib/bible_huichol/hab.json"),
+    "hag": () => import("@/app/lib/bible_huichol/hag.json"),
+    "heb": () => import("@/app/lib/bible_huichol/heb.json"),
+    "hos": () => import("@/app/lib/bible_huichol/hos.json"),
+    "isa": () => import("@/app/lib/bible_huichol/isa.json"),
+    "jas": () => import("@/app/lib/bible_huichol/jas.json"),
+    "jdg": () => import("@/app/lib/bible_huichol/jdg.json"),
+    "jer": () => import("@/app/lib/bible_huichol/jer.json"),
+    "jhn": () => import("@/app/lib/bible_huichol/jhn.json"),
+    "jol": () => import("@/app/lib/bible_huichol/jol.json"),
+    "jon": () => import("@/app/lib/bible_huichol/jon.json"),
+    "lam": () => import("@/app/lib/bible_huichol/lam.json"),
+    "lev": () => import("@/app/lib/bible_huichol/lev.json"),
+    "mal": () => import("@/app/lib/bible_huichol/mal.json"),
+    "mat": () => import("@/app/lib/bible_huichol/mat.json"),
+    "mic": () => import("@/app/lib/bible_huichol/mic.json"),
+    "oba": () => import("@/app/lib/bible_huichol/oba.json"),
+    "phm": () => import("@/app/lib/bible_huichol/phm.json"),
+    "php": () => import("@/app/lib/bible_huichol/php.json"),
+    "rev": () => import("@/app/lib/bible_huichol/rev.json"),
+    "rom": () => import("@/app/lib/bible_huichol/rom.json"),
+    "rut": () => import("@/app/lib/bible_huichol/rut.json"),
+    "sng": () => import("@/app/lib/bible_huichol/sng.json"),
+    "tit": () => import("@/app/lib/bible_huichol/tit.json"),
+    "zec": () => import("@/app/lib/bible_huichol/zec.json"),
+    "zep": () => import("@/app/lib/bible_huichol/zep.json"),
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function parseHuicholChapter(raw: any, chapterIdx: number): string[] {
+    const d = raw.default ?? raw;
+    // Format A: { libro: [...], ... } where libro is an array
+    if (Array.isArray(d.libro)) {
+        const cap = d.libro[0]?.capitulo?.[chapterIdx];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (cap?.versiculos ?? []).map((v: any) => v.texto as string).filter(Boolean);
+    }
+    // Format B: { book: { chapters: [{ verses: [...] }] } }
+    if (d.book?.chapters) {
+        const cap = d.book.chapters[chapterIdx];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (cap?.verses ?? []).map((v: any) => v.text as string).filter(Boolean);
+    }
+    return [];
+}
 
 const bookFileMap: { [key: string]: string } = {
     "Génesis": "gn", "Éxodo": "ex", "Levítico": "lv", "Números": "nm", "Deuteronomio": "dt",
@@ -77,14 +224,126 @@ interface CustomNote {
     tags?: string[];
 }
 
+type ElementKey = 'ref' | 'verse' | 'website';
+
+function GridOverlay({ visible, snapX, snapY }: { visible: boolean; snapX: boolean; snapY: boolean }) {
+    if (!visible) return null;
+    return (
+        <>
+            <div className="absolute inset-0 pointer-events-none z-10" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+            <div className="absolute inset-0 pointer-events-none z-10" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)', backgroundSize: '6px 6px' }} />
+            <div
+                className="absolute top-0 bottom-0 left-1/2 w-px pointer-events-none z-20 transition-[background-color,box-shadow] duration-75"
+                style={{
+                    transform: 'translateX(-50%)',
+                    backgroundColor: snapX ? 'rgba(250,204,21,0.95)' : 'rgba(255,255,255,0.4)',
+                    boxShadow: snapX ? '0 0 8px 2px rgba(250,204,21,0.65)' : 'none',
+                }}
+            />
+            <div
+                className="absolute left-0 right-0 top-1/2 h-px pointer-events-none z-20 transition-[background-color,box-shadow] duration-75"
+                style={{
+                    transform: 'translateY(-50%)',
+                    backgroundColor: snapY ? 'rgba(250,204,21,0.95)' : 'rgba(255,255,255,0.4)',
+                    boxShadow: snapY ? '0 0 8px 2px rgba(250,204,21,0.65)' : 'none',
+                }}
+            />
+            <div className="absolute left-1/2 top-1/2 pointer-events-none z-20" style={{ transform: 'translate(-50%,-50%)' }}>
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-75 ${snapX && snapY ? 'border-yellow-400 bg-yellow-400/20 scale-125' : 'border-white/60 bg-white/10'}`}>
+                    <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-75 ${snapX && snapY ? 'bg-yellow-400' : 'bg-white/80'}`} />
+                </div>
+                {(snapX || snapY) && (
+                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 text-[8px] font-black px-2 py-0.5 rounded-full whitespace-nowrap shadow-md pointer-events-none" style={{ backgroundColor: 'rgba(250,204,21,1)', color: '#000' }}>
+                        {snapX && snapY ? 'CENTRADO ✓' : snapX ? 'CENTRO H ✓' : 'CENTRO V ✓'}
+                    </span>
+                )}
+            </div>
+        </>
+    );
+}
+
+function DraggableText({ children, position, onPositionChange, className, style, isSelected, onSelect, label, onDragStart, onDragEnd, onSnapChange }: {
+    children: React.ReactNode;
+    position: { x: number; y: number };
+    onPositionChange: (pos: { x: number; y: number }) => void;
+    className?: string;
+    style?: React.CSSProperties;
+    isSelected?: boolean;
+    onSelect?: () => void;
+    label?: string;
+    onDragStart?: () => void;
+    onDragEnd?: () => void;
+    onSnapChange?: (snapX: boolean, snapY: boolean) => void;
+}) {
+    const [dragging, setDragging] = useState(false);
+    const SNAP_ZONE = 10;
+
+    const handlePointerDown = useCallback((e: React.PointerEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onSelect?.();
+        setDragging(true);
+        onDragStart?.();
+        const el = e.currentTarget as HTMLElement;
+        el.setPointerCapture(e.pointerId);
+        const startX = e.clientX - position.x;
+        const startY = e.clientY - position.y;
+
+        const onMove = (ev: PointerEvent) => {
+            let newX = ev.clientX - startX;
+            let newY = ev.clientY - startY;
+            const sx = Math.abs(newX) < SNAP_ZONE;
+            const sy = Math.abs(newY) < SNAP_ZONE;
+            if (sx) newX = 0;
+            if (sy) newY = 0;
+            onSnapChange?.(sx, sy);
+            onPositionChange({ x: newX, y: newY });
+        };
+        const onUp = () => {
+            setDragging(false);
+            onDragEnd?.();
+            onSnapChange?.(false, false);
+            document.removeEventListener('pointermove', onMove);
+            document.removeEventListener('pointerup', onUp);
+        };
+        document.addEventListener('pointermove', onMove);
+        document.addEventListener('pointerup', onUp);
+    }, [position, onPositionChange, onSelect, onDragStart, onDragEnd, onSnapChange]);
+
+    return (
+        <div
+            onPointerDown={handlePointerDown}
+            onClick={(e) => e.stopPropagation()}
+            className={`cursor-grab active:cursor-grabbing select-none touch-none relative transition-[opacity,filter] duration-100 ${dragging ? 'opacity-75 drop-shadow-2xl z-50' : ''} ${className ?? ''}`}
+            style={{
+                ...style,
+                transform: `translate(${position.x}px, ${position.y}px)`,
+                outline: isSelected ? '2px dashed rgba(255,255,255,0.8)' : 'none',
+                outlineOffset: '4px',
+                borderRadius: '4px',
+                zIndex: dragging ? 50 : undefined,
+                scale: dragging ? '1.04' : '1',
+            }}
+        >
+            {isSelected && label && (
+                <span className="absolute -top-6 left-0 text-[9px] bg-white text-blue-600 font-black px-2 py-0.5 rounded-full whitespace-nowrap shadow-md z-50 pointer-events-none">
+                    {label}
+                </span>
+            )}
+            {children}
+        </div>
+    );
+}
+
 export default function Bible() {
+    const [selectedVersion, setSelectedVersion] = useState<VersionId>('rvr');
     const [selectedBook, setSelectedBook] = useState('Génesis');
     const [selectedChapter, setSelectedChapter] = useState(1);
     const [verses, setVerses] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
     const [highlightedVerses, setHighlightedVerses] = useState<Record<string, string>>({});
-    const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
+    const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
     const [savedChapters, setSavedChapters] = useState<{ book: string; chapter: number; verses: string[] }[]>([]);
 
     // Note State
@@ -103,10 +362,25 @@ export default function Bible() {
     const [imgInput, setImgInput] = useState("");
     const [savedSelection, setSavedSelection] = useState<Range | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const customColorRef = useRef<HTMLInputElement>(null);
     const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
     const [socialFormat, setSocialFormat] = useState<'vertical' | 'horizontal'>('vertical');
 
     const [isStudioOpen, setIsStudioOpen] = useState(false);
+    const [dragPos, setDragPos] = useState({ ref: { x: 0, y: 0 }, verse: { x: 0, y: 0 }, website: { x: 0, y: 0 } });
+    const [isCanvasDragging, setIsCanvasDragging] = useState(false);
+    const [activeSnap, setActiveSnap] = useState({ x: false, y: false });
+    const resetDragPos = () => setDragPos({ ref: { x: 0, y: 0 }, verse: { x: 0, y: 0 }, website: { x: 0, y: 0 } });
+
+    const [selectedElement, setSelectedElement] = useState<ElementKey | null>(null);
+    const [elementStyles, setElementStyles] = useState<Record<ElementKey, { fontSize: number; fontWeight: string; color: string; textAlign: string }>>({
+        ref:     { fontSize: 10, fontWeight: '800', color: 'auto', textAlign: 'center' },
+        verse:   { fontSize: 24, fontWeight: '700', color: 'auto', textAlign: 'center' },
+        website: { fontSize: 8,  fontWeight: '900', color: 'auto', textAlign: 'center' },
+    });
+    const updateElement = (key: ElementKey, patch: Partial<{ fontSize: number; fontWeight: string; color: string; textAlign: string }>) =>
+        setElementStyles(s => ({ ...s, [key]: { ...s[key], ...patch } }));
+    const elementColorRef = useRef<HTMLInputElement>(null);
     const [studioTheme, setStudioTheme] = useState({
         bgColor: '#2563EB',
         bgImage: null as string | null,
@@ -116,17 +390,69 @@ export default function Bible() {
         orientation: 'vertical' as 'vertical' | 'horizontal' | 'square',
         motionEffects: false
     });
+    const [selectedPlatform, setSelectedPlatform] = useState<'instagram' | 'facebook' | 'youtube' | 'tiktok' | null>(null);
+    const [isPersonalizarOpen, setIsPersonalizarOpen] = useState(false);
+
+    const autoColor = studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000000' : '#FFFFFF';
+    const resolveColor = (color: string) => color === 'auto' ? 'inherit' : color;
 
     const DEFAULT_GALLERY = [
         'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&q=80',
-        'https://images.unsplash.com/photo-1444464666168-49d633b86797?w=600&q=80',
+        'https://images.unsplash.com/photo-1502082553048-f009c37129b9?w=600&q=80',
         'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80',
-        'https://images.unsplash.com/photo-1606787620819-8bdf0c44c293?w=600&q=80'
+        'https://images.unsplash.com/photo-1606787620819-8bdf0c44c293?w=600&q=80',
+        // Naturaleza / cielos
+        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600&q=80',
+        'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80',
+        'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=600&q=80',
+        // Montañas y paisajes
+        'https://images.unsplash.com/photo-1470770903676-69b98201ea1c?w=600&q=80',
+        'https://images.unsplash.com/photo-1548407260-da850faa41e3?w=600&q=80',
+        // Luz y amanecer
+        'https://images.unsplash.com/photo-1490750967868-88df5691cc5e?w=600&q=80',
+        'https://images.unsplash.com/photo-1532274402911-5a369e4c4bb5?w=600&q=80',
+        // Cruz y fe
+        'https://images.unsplash.com/photo-1529070538774-1843cb3265df?w=600&q=80',
+        // Agua / río
+        'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=600&q=80',
+        // Cielo estrellado
+        'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&q=80',
     ];
 
     const [studioGallery, setStudioGallery] = useState(DEFAULT_GALLERY);
+    const [galleryVisibleCount, setGalleryVisibleCount] = useState(6);
+    const [swatchesExpanded, setSwatchesExpanded] = useState(false);
+    const [studioTab, setStudioTab] = useState<'formato' | 'fondo' | 'texto'>('formato');
+
+    const ALL_SWATCHES = [
+        // Negros y blancos
+        '#FFFFFF', '#000000',
+        // Primarios
+        '#EF4444', // rojo
+        '#F97316', // naranja
+        '#EAB308', // amarillo
+        '#22C55E', // verde
+        '#3B82F6', // azul
+        '#8B5CF6', // violeta
+        // Variantes oscuras
+        '#991B1B', '#9A3412', '#854D0E', '#166534', '#1D4ED8', '#5B21B6',
+        // Pasteles
+        '#FEE2E2', '#FFEDD5', '#FEF9C3', '#DCFCE7', '#DBEAFE', '#EDE9FE',
+    ];
 
     const [showColorPicker, setShowColorPicker] = useState(false);
+
+    // El versículo activo es el último que se seleccionó (para notas y studio)
+    const activeVerse = selectedVerses.length > 0 ? selectedVerses[selectedVerses.length - 1] : null;
+
+    // Texto combinado de todos los versículos seleccionados (ordenados)
+    const selectedVersesText = [...selectedVerses].sort((a, b) => a - b).map(v => verses[v - 1]).join(' ');
+    const selectedVersesRef = (() => {
+        const s = [...selectedVerses].sort((a, b) => a - b);
+        if (s.length === 0) return `${selectedBook} ${selectedChapter}`;
+        if (s.length === 1) return `${selectedBook} ${selectedChapter}:${s[0]}`;
+        return `${selectedBook} ${selectedChapter}:${s[0]}-${s[s.length - 1]}`;
+    })();
     const [selectedHighlightColor, setSelectedHighlightColor] = useState('blue');
 
     // Typography State
@@ -137,6 +463,28 @@ export default function Bible() {
     const [isToolbarOpen, setIsToolbarOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { toast } = useToast();
+    const searchParams = useSearchParams();
+
+    // Navigate to a specific book/chapter/verse from URL params (e.g. from global search)
+    useEffect(() => {
+        const book = searchParams.get('book');
+        const chapter = searchParams.get('chapter');
+        const verse = searchParams.get('verse');
+        if (book && books.includes(book)) {
+            setSelectedBook(book);
+            setSelectedChapter(chapter ? parseInt(chapter) : 1);
+            if (verse) {
+                const verseNum = parseInt(verse);
+                // Highlight the verse after a short delay so the chapter loads first
+                setTimeout(() => {
+                    setSelectedVerses([verseNum]);
+                    const el = document.getElementById(`verse-${verseNum}`);
+                    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 500);
+            }
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     useEffect(() => {
         setMounted(true);
@@ -171,12 +519,57 @@ export default function Bible() {
         const fetchChapter = async () => {
             setIsLoading(true);
             try {
-                const bookFileName = bookFileMap[selectedBook];
-                if (bookFileName) {
-                    const bookModule = await import(`@/app/lib/bible_rvr/${bookFileName}.json`);
-                    const chapterVerses = bookModule.chapters[selectedChapter - 1] || [];
-                    setVerses(chapterVerses);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                let raw: any;
+
+                if (selectedVersion === 'rvr') {
+                    const bookFileName = bookFileMap[selectedBook];
+                    if (!bookFileName) { setVerses([]); return; }
+                    raw = await import(`@/app/lib/bible_rvr/${bookFileName}.json`);
+                    setVerses((raw.default ?? raw).chapters?.[selectedChapter - 1] ?? []);
+                    return;
                 }
+
+                if (selectedVersion === 'huichol') {
+                    const fileAbbr = HUICHOL_BOOK_MAP[selectedBook];
+                    const loader = fileAbbr ? HUICHOL_LOADERS[fileAbbr] : null;
+                    if (!loader) { setVerses([]); return; }
+                    raw = await loader();
+                    setVerses(parseHuicholChapter(raw, selectedChapter - 1));
+                    return;
+                }
+
+                // Single-file Bibles — load once, index by canonical book order
+                const idx = BOOK_INDEX[selectedBook] ?? 0;
+
+                const versionFileMap: Record<string, () => Promise<unknown>> = {
+                    rvg:    () => import(`@/app/lib/bible_es_rvg/es-rvg.json`),
+                    kjv:    () => import(`@/app/lib/bible_kjv/en_kjv.json`),
+                    asv:    () => import(`@/app/lib/bible_eng_asv/eng_asv.json`),
+                    bbe:    () => import(`@/app/lib/bible_bbe/en_bbe.json`),
+                    ar:     () => import(`@/app/lib/bible_ar_svd/ar_svd.json`),
+                    de:     () => import(`@/app/lib/bible_de_schlachter/de_schlachter.json`),
+                    el:     () => import(`@/app/lib/bible_el_greek/el_greek.json`),
+                    eo:     () => import(`@/app/lib/bible_eo_esperanto/eo_esperanto.json`),
+                    fi:     () => import(`@/app/lib/bible_fi_finnish/fi_finnish.json`),
+                    fi_pr:  () => import(`@/app/lib/bible_fi_pr/fi_pr.json`),
+                    fr:     () => import(`@/app/lib/bible_fr_apee/fr_apee.json`),
+                    ko:     () => import(`@/app/lib/bible_ko_ko/ko_ko.json`),
+                    pt_aa:  () => import(`@/app/lib/bible_pt_aa/pt_aa.json`),
+                    pt_acf: () => import(`@/app/lib/bible_pt_acf/pt_acf.json`),
+                    pt_nvi: () => import(`@/app/lib/bible_pt_nvi/pt_nvi.json`),
+                    ro:     () => import(`@/app/lib/bible_ro_cornilescu/ro_cornilescu.json`),
+                    ru:     () => import(`@/app/lib/bible_ru_synodal/ru_synodal.json`),
+                    vi:     () => import(`@/app/lib/bible_vi_vietnamese/vi_vietnamese.json`),
+                    zh_cuv: () => import(`@/app/lib/bible_zh_cuv/zh_cuv.json`),
+                    zh_ncv: () => import(`@/app/lib/bible_zh_ncv/zh_ncv.json`),
+                };
+                const loader = versionFileMap[selectedVersion];
+                if (!loader) { setVerses([]); return; }
+                raw = await loader();
+
+                const arr = raw.default ?? raw;
+                setVerses(arr[idx]?.chapters?.[selectedChapter - 1] ?? []);
             } catch (error) {
                 console.error("Failed to load chapter:", error);
                 setVerses([]);
@@ -186,20 +579,24 @@ export default function Bible() {
         };
 
         fetchChapter();
-    }, [selectedBook, selectedChapter]);
+    }, [selectedBook, selectedChapter, selectedVersion]);
 
     const handleVerseClick = (verseNumber: number) => {
-        const newSelectedVerse = verseNumber === selectedVerse ? null : verseNumber;
-        setSelectedVerse(newSelectedVerse);
-        setIsToolbarOpen(newSelectedVerse !== null);
+        const isAlreadySelected = selectedVerses.includes(verseNumber);
+        const newSelectedVerses = isAlreadySelected
+            ? selectedVerses.filter(v => v !== verseNumber)
+            : [...selectedVerses, verseNumber];
+
+        setSelectedVerses(newSelectedVerses);
+        setIsToolbarOpen(newSelectedVerses.length > 0);
         setShowColorPicker(false);
 
-        // Set active color to saved preference if highlighted, else default blue
-        if (newSelectedVerse) {
-            const reference = `${selectedBook} ${selectedChapter}:${newSelectedVerse}`;
+        if (newSelectedVerses.length > 0) {
+            const lastVerse = newSelectedVerses[newSelectedVerses.length - 1];
+            const reference = `${selectedBook} ${selectedChapter}:${lastVerse}`;
             setSelectedHighlightColor(highlightedVerses[reference] || 'blue');
         } else {
-            setIsNoteOpen(false); // Esconde el menú derecho al deseleccionar
+            setIsNoteOpen(false);
         }
     };
 
@@ -283,6 +680,12 @@ export default function Bible() {
     };
 
     const handleDownloadPreview = async () => {
+        // Deselect element so outlines/labels don't appear in the export
+        setSelectedElement(null);
+
+        // Wait for React to re-render without selection indicators
+        await new Promise(r => setTimeout(r, 120));
+
         const node = document.getElementById(`preview-${studioTheme.orientation}`);
         if (!node) {
             toast({ title: "Error", description: "No se encontró el contenedor visual.", variant: "destructive" });
@@ -291,17 +694,10 @@ export default function Bible() {
 
         toast({ title: "Generando imagen..." });
 
-        // FIX: Workaround for SecurityError (Failed to read 'cssRules')
-        // Temporarily disable stylesheets that don't allow rule access
+        // Temporarily disable cross-origin stylesheets that cause SecurityError
         const disabledSheets: (HTMLStyleElement | HTMLLinkElement)[] = [];
-        const styleSheets = Array.from(document.styleSheets);
-
-        styleSheets.forEach(sheet => {
-            try {
-                // Try to access rules to check for SecurityError
-                const rules = sheet.cssRules;
-            } catch (e) {
-                // If it fails, it's cross-origin and will break html-to-image
+        Array.from(document.styleSheets).forEach(sheet => {
+            try { sheet.cssRules; } catch {
                 if (sheet.ownerNode instanceof HTMLStyleElement || sheet.ownerNode instanceof HTMLLinkElement) {
                     sheet.ownerNode.disabled = true;
                     disabledSheets.push(sheet.ownerNode);
@@ -309,13 +705,34 @@ export default function Bible() {
             }
         });
 
+        // Capture exact rendered size to avoid black margins from CSS centering/transforms
+        const rect = node.getBoundingClientRect();
+
+        // Temporarily override styles so the capture is pixel-perfect
+        const prevBorderRadius = node.style.borderRadius;
+        const prevOverflow = node.style.overflow;
+        node.style.borderRadius = '0';
+        node.style.overflow = 'hidden';
+
         try {
-            // Increase pixelRatio slightly for clearer outputs, scale down any huge native fonts
             const dataUrl = await toPng(node, {
                 quality: 1,
                 pixelRatio: 3,
                 cacheBust: true,
                 fontEmbedCSS: '',
+                width: Math.round(rect.width),
+                height: Math.round(rect.height),
+                style: {
+                    margin: '0',
+                    padding: node.style.padding || '',
+                    borderRadius: '0',
+                    overflow: 'hidden',
+                    maxWidth: 'none',
+                    transform: 'none',
+                    position: 'relative',
+                    left: '0',
+                    top: '0',
+                },
             });
             const link = document.createElement('a');
             link.download = `ici-nayarit-${studioTheme.orientation}.png`;
@@ -324,12 +741,11 @@ export default function Bible() {
             toast({ title: "¡Imagen descargada exitosamente!" });
         } catch (err) {
             console.error("Error generating image:", err);
-            toast({ title: "Error al descargar la imagen", description: "Ocurrió un error de seguridad en el navegador.", variant: "destructive" });
+            toast({ title: "Error al descargar la imagen", description: "Ocurrió un error al exportar.", variant: "destructive" });
         } finally {
-            // Restore disabled stylesheets
-            disabledSheets.forEach(node => {
-                node.disabled = false;
-            });
+            node.style.borderRadius = prevBorderRadius;
+            node.style.overflow = prevOverflow;
+            disabledSheets.forEach(s => { s.disabled = false; });
         }
     };
 
@@ -367,7 +783,7 @@ export default function Bible() {
                 id: Date.now().toString(),
                 title: noteTitle.trim(),
                 text: noteContent.trim(),
-                reference: `${selectedBook} ${selectedChapter}:${selectedVerse}`,
+                reference: `${selectedBook} ${selectedChapter}:${activeVerse}`,
                 date: new Date().toISOString(),
                 tags: noteTags
             };
@@ -507,6 +923,8 @@ export default function Bible() {
     const handleBookChange = (book: string) => {
         setSelectedBook(book);
         setSelectedChapter(1);
+        setSelectedVerses([]);
+        setIsNoteOpen(false);
     };
 
     const totalChapters = chaptersPerBook[selectedBook] || 1;
@@ -514,12 +932,16 @@ export default function Bible() {
     const goToNextChapter = () => {
         if (selectedChapter < totalChapters) {
             setSelectedChapter(selectedChapter + 1);
+            setSelectedVerses([]);
+            setIsNoteOpen(false);
         }
     };
 
     const goToPreviousChapter = () => {
         if (selectedChapter > 1) {
             setSelectedChapter(selectedChapter - 1);
+            setSelectedVerses([]);
+            setIsNoteOpen(false);
         }
     };
 
@@ -545,14 +967,38 @@ export default function Bible() {
     return (
         <section id="bible" className={`w-full py-12 md:py-24 lg:py-32 transition-colors duration-500 ${themeStyles.bg}`}>
             <div className="container mx-auto px-4 md:px-6">
-                <div className={`mx-auto transition-all duration-700 ease-in-out flex flex-col xl:flex-row gap-8 ${isNoteOpen ? 'max-w-[1400px]' : 'max-w-4xl'}`}>
+                {!isStudioOpen && (!isNoteOpen ? (
+                <div key="bible-view" className="mx-auto max-w-4xl animate-in fade-in slide-in-from-left-4 duration-300">
 
-                    {/* LADO IZQUIERDO: BIBLIA */}
-                    <div className={`transition-all duration-700 w-full ${isNoteOpen ? 'xl:w-1/2' : 'max-w-4xl mx-auto'}`}>
-                        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-                            <div className="flex gap-4">
+                    {/* BIBLIA */}
+                    <div className="w-full">
+                        <div className="flex flex-col gap-4 mb-8">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <Select value={selectedVersion} onValueChange={v => { setSelectedVersion(v as VersionId); setSelectedVerses([]); }}>
+                                    <SelectTrigger className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-4 rounded-full transition-colors focus:outline-none text-sm min-h-[44px]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {VERSIONS.map(v => (
+                                            <SelectItem key={v.id} value={v.id}>
+                                                <span className="flex items-center gap-2">
+                                                    <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${
+                                                        v.lang === 'ES' ? 'bg-amber-100 text-amber-700' :
+                                                        v.lang === 'EN' ? 'bg-blue-100 text-blue-700' :
+                                                        v.lang === 'PT' ? 'bg-green-100 text-green-700' :
+                                                        v.lang === 'ZH' || v.lang === 'KO' ? 'bg-red-100 text-red-700' :
+                                                        v.lang === 'RU'  ? 'bg-indigo-100 text-indigo-700' :
+                                                        v.lang === 'HCH' ? 'bg-orange-100 text-orange-700' :
+                                                        'bg-gray-100 text-gray-600'
+                                                    }`}>{v.lang}</span>
+                                                    {v.label}
+                                                </span>
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                                 <Select value={selectedBook} onValueChange={handleBookChange}>
-                                    <SelectTrigger className="w-full sm:w-[200px] bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-4 rounded-full transition-colors focus:outline-none text-sm">
+                                    <SelectTrigger className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-4 rounded-full transition-colors focus:outline-none text-sm min-h-[44px]">
                                         <SelectValue placeholder="Seleccionar libro" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -561,8 +1007,8 @@ export default function Bible() {
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <Select value={selectedChapter.toString()} onValueChange={(val) => setSelectedChapter(Number(val))}>
-                                    <SelectTrigger className="w-full sm:w-[200px] bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-4 rounded-full transition-colors focus:outline-none text-sm">
+                                <Select value={selectedChapter.toString()} onValueChange={(val) => { setSelectedChapter(Number(val)); setSelectedVerses([]); setIsNoteOpen(false); }}>
+                                    <SelectTrigger className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-4 rounded-full transition-colors focus:outline-none text-sm min-h-[44px]">
                                         <SelectValue placeholder="Capítulo" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -572,9 +1018,11 @@ export default function Bible() {
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <Link href="/biblia/guardados">
-                                <Button className="bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-8 rounded-full transition-colors focus:outline-none text-sm">Versículos Guardados</Button>
-                            </Link>
+                            <div className="flex justify-end">
+                                <Link href="/biblia/guardados">
+                                    <Button className="w-full sm:w-auto bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-8 rounded-full transition-colors focus:outline-none text-sm min-h-[44px]">Versículos Guardados</Button>
+                                </Link>
+                            </div>
                         </div>
 
                         <div className="relative">
@@ -582,13 +1030,36 @@ export default function Bible() {
                                 <ChevronLeft className="h-6 w-6" />
                             </Button>
 
-                            <Card className={`border md:rounded-[40px] overflow-visible relative mt-8 transition-colors duration-500 ${themeStyles.card}`}>
+                            <Card className={`border md:rounded-[40px] overflow-visible relative mt-8 transition-colors duration-500 ${themeStyles.card}`}
+                                onClick={(e) => {
+                                    const target = e.target as HTMLElement;
+                                    // Clear selection when clicking on the card background (not on a verse element)
+                                    if (!target.closest('[data-verse]')) {
+                                        setSelectedVerses([]);
+                                        setIsToolbarOpen(false);
+                                        setShowColorPicker(false);
+                                    }
+                                }}
+                            >
                                 <CardContent className="px-6 pt-12 pb-8 md:px-16 md:pt-[100px] md:pb-16 relative overflow-visible">
                                     {/* Header Area */}
                                     <div className="flex justify-between items-start mb-12">
                                         <div>
                                             <h2 className={`text-3xl md:text-[34px] font-bold font-sans tracking-tight mb-2 ${themeStyles.title}`}>{selectedBook} {selectedChapter}</h2>
-                                            <p className={`text-xs md:text-[13px] font-bold ${themeStyles.subtitle}`}>La creación • Reina-Valera 1960</p>
+                                            <p className={`text-xs md:text-[13px] font-bold flex items-center gap-2 ${themeStyles.subtitle}`}>
+                                                {VERSIONS.find(v => v.id === selectedVersion)?.label ?? 'Reina-Valera 1960'}
+                                                {(() => {
+                                                    const lang = VERSIONS.find(v => v.id === selectedVersion)?.lang ?? 'ES';
+                                                    const cls = lang === 'ES' ? 'bg-amber-100 text-amber-700' :
+                                                        lang === 'EN' ? 'bg-blue-100 text-blue-700' :
+                                                        lang === 'PT' ? 'bg-green-100 text-green-700' :
+                                                        lang === 'ZH' || lang === 'KO' ? 'bg-red-100 text-red-700' :
+                                                        lang === 'RU'  ? 'bg-indigo-100 text-indigo-700' :
+                                                        lang === 'HCH' ? 'bg-orange-100 text-orange-700' :
+                                                        'bg-gray-100 text-gray-600';
+                                                    return <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${cls}`}>{lang}</span>;
+                                                })()}
+                                            </p>
                                         </div>
                                         <div className="flex gap-3">
                                             {/*
@@ -662,13 +1133,22 @@ export default function Bible() {
                                     <div
                                         className={`space-y-4 text-left font-sans transition-all duration-500 ${themeStyles.text} ${getLineHeightClass()}`}
                                         style={{ fontSize: `${(fontSize / 100) * 16}px` }}
+                                        onClick={(e) => {
+                                            // If the click target is the container itself (not a verse), clear selection
+                                            if (e.target === e.currentTarget) {
+                                                setSelectedVerses([]);
+                                                setIsToolbarOpen(false);
+                                                setShowColorPicker(false);
+                                            }
+                                        }}
                                     >
                                         {isLoading ? (
                                             <p>Cargando...</p>
                                         ) : verses.length > 0 ? (
                                             verses.map((verse, index) => {
                                                 const reference = `${selectedBook} ${selectedChapter}:${index + 1}`;
-                                                const isSelected = selectedVerse === index + 1;
+                                                const isSelected = selectedVerses.includes(index + 1);
+                                                const isLastSelected = selectedVerses.length > 0 && selectedVerses[selectedVerses.length - 1] === index + 1;
                                                 const isHighlighted = highlightedVerses[reference];
                                                 const activeColorId = isSelected ? selectedHighlightColor : isHighlighted;
 
@@ -687,10 +1167,10 @@ export default function Bible() {
                                                     : `${themeStyles.buttonHover} py-1.5 cursor-pointer`;
 
                                                 return (
-                                                    <div key={index} className={`relative rounded-xl transition-all duration-200 ${containerClasses}`}>
-                                                        {/* Appears Above the Line When Selected */}
-                                                        {isSelected && (
-                                                            <div className="absolute -top-[52px] left-1/4 -translate-x-1/2 bg-[#1F2937] shadow-xl rounded-[10px] flex items-center px-1.5 py-1 z-30 transition-all font-sans">
+                                                    <div key={index} id={`verse-${index + 1}`} data-verse={index + 1} className={`relative rounded-xl transition-all duration-200 ${containerClasses}`}>
+                                                        {/* Toolbar: solo aparece sobre el último versículo seleccionado */}
+                                                        {isLastSelected && (
+                                                            <div className="absolute -top-[52px] left-1/2 -translate-x-1/2 bg-[#1F2937] shadow-xl rounded-[10px] flex items-center px-1.5 py-1 z-30 transition-all font-sans max-w-[calc(100vw-2rem)] overflow-x-auto">
                                                                 {/* Triangle pointer */}
                                                                 <div className="absolute -bottom-[5px] left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-[#1F2937] rotate-45 rounded-sm"></div>
 
@@ -712,11 +1192,17 @@ export default function Bible() {
                                                                                     key={c.id}
                                                                                     onClick={(e) => {
                                                                                         e.stopPropagation();
-                                                                                        handleHighlightSubmit(reference, c.id);
+                                                                                        const newHighlights = { ...highlightedVerses };
+                                                                                        selectedVerses.forEach(v => {
+                                                                                            newHighlights[`${selectedBook} ${selectedChapter}:${v}`] = c.id;
+                                                                                        });
+                                                                                        setHighlightedVerses(newHighlights);
+                                                                                        localStorage.setItem('highlightedVerses', JSON.stringify(newHighlights));
+                                                                                        setSelectedHighlightColor(c.id);
                                                                                         setShowColorPicker(false);
-                                                                                        toast({ title: 'Resaltado guardado' });
+                                                                                        toast({ title: selectedVerses.length > 1 ? `${selectedVerses.length} versículos resaltados` : 'Resaltado guardado' });
                                                                                     }}
-                                                                                    className={`w-6 h-6 rounded-full transition-transform hover:scale-110 ${c.color} ${selectedHighlightColor === c.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+                                                                                    className={`w-8 h-8 rounded-full transition-transform hover:scale-110 ${c.color} ${selectedHighlightColor === c.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
                                                                                 />
                                                                             ))}
                                                                         </div>
@@ -735,23 +1221,38 @@ export default function Bible() {
                                                                         <StickyNote className="h-3.5 w-3.5" /> Note
                                                                     </button>
                                                                     <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleSaveVerse(verse, index + 1); }}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            selectedVerses.forEach(v => handleSaveVerse(verses[v - 1], v));
+                                                                        }}
                                                                         className="p-2 hover:bg-white/10 rounded-md transition-colors"
                                                                     >
                                                                         {(() => {
-                                                                            const ref = `${selectedBook} ${selectedChapter}:${index + 1}`;
-                                                                            const isSaved = savedVerses.some(v => v.reference === ref);
-                                                                            return <Bookmark className={`h-3.5 w-3.5 transition-all ${isSaved ? 'fill-white text-white' : 'fill-none text-gray-300'}`} />;
+                                                                            const allSaved = selectedVerses.every(v =>
+                                                                                savedVerses.some(sv => sv.reference === `${selectedBook} ${selectedChapter}:${v}`)
+                                                                            );
+                                                                            return <Bookmark className={`h-3.5 w-3.5 transition-all ${allSaved ? 'fill-white text-white' : 'fill-none text-gray-300'}`} />;
                                                                         })()}
                                                                     </button>
                                                                     <div className="w-px h-5 bg-white/10 mx-1"></div>
                                                                     <button
-                                                                        onClick={async (e) => { e.stopPropagation(); await navigator.clipboard.writeText(verse); toast({ title: "Copiado" }); }}
+                                                                        onClick={async (e) => {
+                                                                            e.stopPropagation();
+                                                                            const sorted = [...selectedVerses].sort((a, b) => a - b);
+                                                                            const text = sorted.map(v => `${v} ${verses[v - 1]}`).join('\n');
+                                                                            await navigator.clipboard.writeText(text);
+                                                                            toast({ title: "Copiado" });
+                                                                        }}
                                                                         className="p-2 hover:bg-white/10 rounded-md text-gray-300 hover:text-white transition-colors">
                                                                         <Copy className="h-4 w-4" />
                                                                     </button>
                                                                     <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleShareVerse(verse, index + 1); }}
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            const sorted = [...selectedVerses].sort((a, b) => a - b);
+                                                                            const combinedText = sorted.map(v => verses[v - 1]).join(' ');
+                                                                            handleShareVerse(combinedText, sorted[0]);
+                                                                        }}
                                                                         className="p-2 hover:bg-white/10 rounded-md text-gray-300 hover:text-white transition-colors">
                                                                         <Share2 className="h-4 w-4" />
                                                                     </button>
@@ -766,7 +1267,27 @@ export default function Bible() {
                                                 );
                                             })
                                         ) : (
-                                            <p>No se encontró el contenido de este capítulo.</p>
+                                            selectedVersion === 'huichol' ? (
+                                                <div className="flex flex-col items-center text-center py-12 px-6 gap-5">
+                                                    <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center text-3xl select-none">
+                                                        🌿
+                                                    </div>
+                                                    <div className="max-w-sm">
+                                                        <p className="text-base font-black text-gray-800 leading-snug mb-2">
+                                                            En proceso de traducción
+                                                        </p>
+                                                        <p className="text-sm text-gray-500 leading-relaxed">
+                                                            Este libro aún se está traduciendo al idioma Wixárika (Huichol).
+                                                            Estamos trabajando para integrarlo lo más pronto posible.
+                                                        </p>
+                                                        <p className="text-xs text-orange-500 font-bold mt-4 tracking-wide uppercase">
+                                                            ¡Muchas gracias por tu paciencia! 🙏
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <p className="text-sm text-gray-400">No se encontró el contenido de este capítulo.</p>
+                                            )
                                         )}
                                     </div>
 
@@ -790,573 +1311,620 @@ export default function Bible() {
                         </div>
                     </div>
 
-                    {/* LADO DERECHO: AÑADIR NOTA (Visible cuando se selecciona "Note") */}
-                    {isNoteOpen && selectedVerse !== null && (
-                        <div className="w-full xl:w-1/2 flex flex-col md:flex-row gap-6 animate-in slide-in-from-right-8 duration-500 fade-in h-fit mt-8 xl:mt-0 relative top-0 xl:top-[80px]">
-
-                            {/* Columna Izquierda del Panel de Notas: Contexto y Recientes */}
-                            <div className="w-full md:w-5/12 flex flex-col gap-6">
-                                {/* Contexto Bíblico */}
-                                <Card className={`border-0 rounded-2xl shadow-sm ${themeStyles.card}`}>
-                                    <CardContent className="p-6">
-                                        <div className="flex items-center justify-between mb-5">
-                                            <div className={`flex items-center gap-2 font-bold ${themeStyles.title}`}>
-                                                <BookOpen className="w-5 h-5 text-blue-600" />
-                                                <span>Contexto Bíblico</span>
-                                            </div>
-                                            <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded-full">{selectedBook.toUpperCase()} {selectedChapter}:{selectedVerse}</span>
-                                        </div>
-                                        <div className="relative mb-6">
-                                            <span className="absolute -left-2 -top-2 text-4xl text-gray-200">"</span>
-                                            <p className={`text-lg font-serif italic relative z-10 pl-4 ${themeStyles.title}`}>
-                                                {verses[selectedVerse - 1]}
-                                            </p>
-                                            <span className="absolute right-0 -bottom-6 text-4xl text-gray-200">"</span>
-                                        </div>
-
-                                        {/* Referencia Cruzada (Comentado temporalmente por solicitud del usuario) */}
-                                        {/*
-                               <div className="bg-[#F8FAFC] border border-[#F1F5F9] rounded-xl p-4 mb-6 relative z-10">
-                                   <h5 className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">Referencia Cruzada</h5>
-                                   <p className="text-[13px] text-gray-600 leading-relaxed font-medium">Juan 1:5 - "La luz en las tinieblas resplandece, y las tinieblas no prevalecieron contra ella."</p>
-                               </div>
-
-                               <div className="flex gap-3">
-                                   <button className="flex-1 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-bold transition-colors">Ver Capitulo</button>
-                                   <button className="flex-1 py-2 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-bold transition-colors">Comparar</button>
-                               </div>
-                               */}
-                                    </CardContent>
-                                </Card>
-
-                                {/* Notas Recientes */}
-                                <Card className={`border-0 rounded-2xl shadow-sm ${themeStyles.card}`}>
-                                    <CardContent className="p-6">
-                                        <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Notas Recientes</h5>
-
-                                        <div className="flex flex-col gap-4 overflow-y-auto max-h-[250px] pr-2">
-                                            {notes.length > 0 ? (
-                                                notes.slice(0, 5).map((note, index) => (
-                                                    <div
-                                                        key={note.id}
-                                                        onClick={() => handleEditNote(note)}
-                                                        className={`border-l-2 pl-3 cursor-pointer hover:bg-gray-50 transition-colors py-1 ${index === 0 ? 'border-blue-500' : 'border-gray-200'}`}
-                                                    >
-                                                        <h6 className={`text-[13px] font-bold ${themeStyles.title}`}>{note.title}</h6>
-                                                        <p className="text-[11px] text-gray-400 mt-0.5">{note.reference} • {getRelativeTime(note.date)}</p>
-                                                    </div>
-                                                ))
-                                            ) : (
-                                                <p className="text-xs text-gray-400 italic">No hay notas guardadas aún.</p>
-                                            )}
-                                        </div>
-                                    </CardContent>
-                                </Card>
-
-                                {/* Social Network Generator */}
-                                <Card className={`border-0 rounded-2xl shadow-sm ${themeStyles.card}`}>
-                                    <CardContent className="p-6">
-                                        <div className="flex items-center gap-2 mb-6">
-                                            <Share2 className="w-4 h-4 text-blue-500" />
-                                            <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Recursos para Redes Sociales</h5>
-                                        </div>
-
-                                        {/* Toggle Format */}
-                                        <div className="flex bg-[#F8F9FA] p-1 rounded-xl mb-6">
-                                            <button
-                                                onClick={() => setSocialFormat('vertical')}
-                                                className={`flex-1 flex justify-center py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${socialFormat === 'vertical' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}
-                                            >
-                                                Vertical
-                                            </button>
-                                            <button
-                                                onClick={() => setSocialFormat('horizontal')}
-                                                className={`flex-1 flex justify-center py-2 text-[10px] font-bold uppercase tracking-wider rounded-lg transition-all ${socialFormat === 'horizontal' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400'}`}
-                                            >
-                                                Horizontal
-                                            </button>
-                                        </div>
-
-                                        {/* Preview Box */}
-                                        <div
-                                            className={`relative rounded-xl flex flex-col items-center justify-center p-6 text-center mx-auto mb-6 shadow-md transition-all duration-300 overflow-hidden ${socialFormat === 'vertical' ? 'aspect-[9/16] w-[85%]' : 'aspect-video w-full'}`}
-                                            style={{
-                                                backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor,
-                                                backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none',
-                                                backgroundSize: 'cover',
-                                                backgroundPosition: 'center'
-                                            }}
-                                        >
-                                            {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
-                                            <p className="font-serif italic text-2xl leading-relaxed relative z-10 transition-colors" style={{ color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}>
-                                                “{verses[selectedVerse - 1]}”
-                                            </p>
-                                            <p className="text-[9px] font-black uppercase tracking-[0.2em] mt-6 relative z-10 transition-colors" style={{ color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF', opacity: 0.7 }}>
-                                                {selectedBook} {selectedChapter}:{selectedVerse}
-                                            </p>
-
-                                            <button className="absolute bottom-6 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:bg-white/20 hover:text-white transition-colors z-10">
-                                                <Eye className="w-4 h-4" />
-                                            </button>
-                                        </div>
-
-                                        {/* Social Buttons */}
-                                        <div className="flex gap-2 mb-4">
-                                            <button className="flex-1 py-2 border border-gray-200 rounded-xl flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors">
-                                                <Instagram className="w-4 h-4" />
-                                            </button>
-                                            <button className="flex-1 py-2 border border-gray-200 rounded-xl flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors">
-                                                {/* TikTok Style SVG SVG */}
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" /></svg>
-                                            </button>
-                                            <button className="flex-1 py-2 border border-gray-200 rounded-xl flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors">
-                                                <Facebook className="w-4 h-4" />
-                                            </button>
-                                        </div>
-
-                                        {/* Personalizar */}
-                                        <button onClick={() => setIsStudioOpen(true)} className="w-full bg-[#EEF2FF] hover:bg-[#E0E7FF] text-blue-600 text-xs font-bold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
-                                            <Palette className="w-3.5 h-3.5" />
-                                            Personalizar
-                                        </button>
-                                    </CardContent>
-                                </Card>
-                            </div>
-
-                            {/* Columna Derecha del Panel de Notas: Editor */}
-                            <Card className={`border-0 rounded-2xl shadow-sm w-full md:w-7/12 flex-1 flex flex-col ${themeStyles.card}`}>
-                                <CardContent className="p-6 flex-1 flex flex-col">
-                                    <div className="flex items-center justify-between mb-8">
-                                        <h3 className={`text-xl font-bold ${themeStyles.title}`}>{editingNoteId ? 'Editar Reflexión' : 'Añadir Nota'}</h3>
-                                        <div className="flex items-center gap-1.5 text-gray-400">
-                                            <Clock className="w-3.5 h-3.5" />
-                                            <span className="text-[11px] font-medium">
-                                                {mounted && `Guardado automáticamente: ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-6">
-                                        <label className="text-[10px] font-black text-[#9CA3AF] uppercase tracking-widest mb-2 block">Título de la reflexión</label>
-                                        <input
-                                            type="text"
-                                            value={noteTitle}
-                                            onChange={(e) => setNoteTitle(e.target.value)}
-                                            placeholder="Ej: El poder de la palabra creadora"
-                                            className="w-full bg-transparent border-0 border-b border-gray-200 text-[#111827] text-lg font-bold placeholder-gray-300 focus:ring-0 focus:border-blue-500 px-0 pb-2 transition-colors focus:outline-none"
-                                        />
-                                    </div>
-
-                                    {/* Rich Text Toolbar */}
-                                    <div className="flex items-center gap-4 bg-[#F8F9FA] rounded-xl p-3 mb-6">
-                                        <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('bold'); }} className="text-gray-600 hover:text-black transition-colors" title="Negrita"><Bold className="w-[18px] h-[18px]" /></button>
-                                        <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('italic'); }} className="text-gray-600 hover:text-black transition-colors" title="Cursiva"><Italic className="w-[18px] h-[18px]" /></button>
-                                        <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('insertUnorderedList'); }} className="text-gray-600 hover:text-black transition-colors" title="Lista"><List className="w-[18px] h-[18px]" /></button>
-
-                                        <Popover open={isLinkPopoverOpen} onOpenChange={setIsLinkPopoverOpen}>
-                                            <PopoverTrigger asChild>
-                                                <button
-                                                    type="button"
-                                                    onMouseDown={(e) => { e.preventDefault(); saveCurrentSelection(); }}
-                                                    onClick={() => setIsLinkPopoverOpen(true)}
-                                                    className="text-gray-600 hover:text-black transition-colors"
-                                                    title="Enlace"
-                                                >
-                                                    <LinkIcon className="w-[18px] h-[18px]" />
-                                                </button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-80 p-4 rounded-xl shadow-xl border-gray-100" sideOffset={12}>
-                                                <div className="flex flex-col gap-3">
-                                                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Añadir Enlace</label>
-                                                    <div className="flex gap-2">
-                                                        <input
-                                                            type="url"
-                                                            autoFocus
-                                                            value={linkInput}
-                                                            onChange={(e) => setLinkInput(e.target.value)}
-                                                            placeholder="https://..."
-                                                            className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500"
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'Enter') {
-                                                                    e.preventDefault();
-                                                                    confirmLink();
-                                                                } else if (e.key === 'Escape') {
-                                                                    setIsLinkPopoverOpen(false);
-                                                                }
-                                                            }}
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            onClick={confirmLink}
-                                                            className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg transition-colors"
-                                                        >
-                                                            Insertar
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </PopoverContent>
-                                        </Popover>
-
-                                        <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('formatBlock', 'blockquote'); }} className="text-gray-600 hover:text-black transition-colors" title="Cita"><Quote className="w-[18px] h-[18px]" /></button>
-                                        <div className="w-px h-5 bg-gray-300 mx-1"></div>
-
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            ref={fileInputRef}
-                                            onChange={handleImageUpload}
-                                        />
-                                        <button
-                                            type="button"
-                                            onMouseDown={(e) => { e.preventDefault(); saveCurrentSelection(); }}
-                                            onClick={() => fileInputRef.current?.click()}
-                                            className="text-gray-600 hover:text-black transition-colors"
-                                            title="Añadir Imagen"
-                                        >
-                                            <ImgIcon className="w-[18px] h-[18px]" />
-                                        </button>
-                                    </div>
-
-                                    {/* Editor Body */}
-                                    <style>{`
-                                .rich-text-editor ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
-                                .rich-text-editor blockquote { border-left: 4px solid #E5E7EB; padding-left: 1rem; color: #6B7280; font-style: italic; }
-                                .rich-text-editor img { max-width: 100%; border-radius: 0.5rem; margin-top: 1rem; }
-                                .rich-text-editor a { color: #3B82F6; text-decoration: underline; }
-                            `}</style>
-                                    <div className="relative w-full flex-1 min-h-[200px]">
-                                        {(!noteContent || noteContent === '<br>') && (
-                                            <div className="absolute top-0 left-0 text-gray-300 pointer-events-none text-base">Escribe lo que Dios puso en tu corazón...</div>
-                                        )}
-                                        <div
-                                            ref={contentEditableRef}
-                                            contentEditable
-                                            onInput={(e) => setNoteContent(e.currentTarget.innerHTML)}
-                                            className="w-full h-full bg-transparent border-0 p-0 text-gray-600 text-base focus:outline-none overflow-y-auto rich-text-editor"
-                                        />
-                                    </div>
-
-                                    <div className="mt-6 border-t border-gray-100 pt-6">
-                                        {/* Tags */}
-                                        <div className="flex flex-wrap items-center gap-2 mb-8">
-                                            {noteTags.map((tag, i) => (
-                                                <span key={i} className="bg-[#EEF2FF] text-blue-600 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-colors group">
-                                                    #{tag}
-                                                    <button onClick={() => handleRemoveTag(tag)} className="text-blue-400 opacity-50 hover:opacity-100 hover:text-black transition-all">
-                                                        <X className="w-3 h-3" />
-                                                    </button>
-                                                </span>
-                                            ))}
-
-                                            {isAddingTag ? (
-                                                <input
-                                                    type="text"
-                                                    autoFocus
-                                                    value={tagInput}
-                                                    onChange={e => setTagInput(e.target.value)}
-                                                    onKeyDown={e => {
-                                                        if (e.key === 'Enter') {
-                                                            e.preventDefault();
-                                                            handleAddTag();
-                                                        } else if (e.key === 'Escape') {
-                                                            setIsAddingTag(false);
-                                                        }
-                                                    }}
-                                                    onBlur={handleAddTag}
-                                                    className="border border-blue-500 text-blue-600 outline-none text-xs font-bold px-3 py-1.5 rounded-full w-[120px] bg-[#EEF2FF] transition-colors"
-                                                    placeholder="tag..."
-                                                />
-                                            ) : (
-                                                <button onClick={() => setIsAddingTag(true)} className="border border-dashed border-gray-300 text-gray-400 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:border-gray-500 hover:text-gray-600 transition-colors">
-                                                    + Añadir Tag
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        {/* Acciones para limpiar contenido del editor al cancelar */}
-                                        <div className="flex items-center justify-end gap-6 mt-6 border-t border-gray-100 pt-6">
-                                            <button onClick={handleClearNoteFields} className="text-sm font-bold text-rose-500 hover:text-rose-700 transition-colors">Limpiar</button>
-                                            <button onClick={() => { handleClearNoteFields(); setIsNoteOpen(false); }} className="text-sm font-bold text-gray-500 hover:text-gray-800 transition-colors">Cancelar</button>
-                                            <button onClick={handleSaveCustomNote} className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-3 px-6 rounded-xl flex items-center gap-2 shadow-sm transition-colors shadow-blue-500/20">
-                                                <Save className="w-4 h-4" /> Guardar Nota
-                                            </button>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    )}
-
                 </div>
-                {/* Social Asset Preview Studio Modal */}
-                {isStudioOpen && selectedVerse !== null && (
-                    <div className="fixed inset-0 z-50 flex p-0 md:p-4 lg:p-8" style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(4px)' }}>
-                        <div className="w-full h-full bg-white rounded-none md:rounded-[2rem] shadow-2xl flex flex-col overflow-hidden border-0 md:border border-gray-100 animate-in fade-in zoom-in-95 duration-200">
+                ) : (
+                <div key="note-view" className="animate-in fade-in slide-in-from-right-8 duration-300">
+                    <div className="w-full h-[calc(100svh-6rem)] bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
+
                             {/* Header */}
-                            <div className="flex items-center justify-between px-4 lg:px-8 py-4 border-b border-gray-100 bg-white z-10 shrink-0">
-                                <div>
-                                    <p className="text-[9px] lg:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1.5 lg:gap-2">
-                                        STUDIO <span className="text-gray-300">/</span> {selectedBook} {selectedChapter}:{selectedVerse}
-                                    </p>
-                                    <h2 className="text-lg lg:text-[22px] font-black text-gray-900 tracking-tight leading-none">Social Asset Preview</h2>
+                            <div className="flex items-center justify-between px-5 lg:px-10 py-4 border-b border-gray-100 bg-white shrink-0">
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={() => { handleClearNoteFields(); setIsNoteOpen(false); }}
+                                        className="flex items-center gap-1.5 text-gray-400 hover:text-gray-800 transition-colors group"
+                                    >
+                                        <ChevronLeft className="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" />
+                                        <span className="text-xs font-bold hidden sm:inline">Volver</span>
+                                    </button>
+                                    <div className="w-px h-7 bg-gray-100"></div>
+                                    <div>
+                                        <p className="text-[9px] lg:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5 flex items-center gap-1.5">
+                                            <StickyNote className="w-3 h-3" />
+                                            NOTAS <span className="text-gray-300">/</span> {selectedBook} {selectedChapter}:{activeVerse}
+                                        </p>
+                                        <h2 className="text-base lg:text-xl font-black text-gray-900 tracking-tight leading-none">
+                                            {editingNoteId ? 'Editar Reflexión' : 'Nueva Nota'}
+                                        </h2>
+                                    </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <button onClick={() => setIsStudioOpen(false)} className="p-2 lg:px-5 lg:py-2.5 rounded-xl text-xs lg:text-[13px] font-bold text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors flex items-center justify-center">
-                                        <span className="hidden sm:inline">Cancelar</span>
-                                        <span className="sm:hidden"><X className="w-4 h-4" /></span>
+                                    <button onClick={handleClearNoteFields} className="hidden sm:flex px-3 lg:px-4 py-2 rounded-xl text-xs font-bold text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition-colors items-center gap-1.5">
+                                        Limpiar
                                     </button>
-                                    <button onClick={handleDownloadPreview} className="px-4 lg:px-6 py-2 lg:py-2.5 bg-blue-600 text-white rounded-xl text-xs lg:text-[13px] font-bold hover:bg-blue-700 flex items-center gap-2 shadow-lg shadow-blue-600/20 transition-colors">
-                                        <Download className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
-                                        <span className="hidden sm:inline">Descargar</span>
+                                    <button onClick={handleSaveCustomNote} className="px-4 lg:px-6 py-2 lg:py-2.5 bg-blue-600 text-white rounded-xl text-xs lg:text-[13px] font-bold hover:bg-blue-700 flex items-center gap-2 shadow-md shadow-blue-600/20 transition-colors">
+                                        <Save className="w-3.5 h-3.5" />
+                                        <span className="hidden sm:inline">Guardar Nota</span>
+                                        <span className="sm:hidden">Guardar</span>
                                     </button>
                                 </div>
                             </div>
 
                             {/* Body */}
                             <div className="flex-1 flex flex-col lg:flex-row overflow-hidden bg-[#F8FAFC]">
-                                {/* Left: Previews Grid */}
-                                <div className="flex-1 overflow-y-auto p-4 lg:p-12 custom-scrollbar">
-                                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto">
-                                        {/* Vertical Column */}
-                                        <div className={`flex-col gap-4 ${studioTheme.orientation !== 'vertical' ? 'hidden xl:flex' : 'flex'}`}>
-                                            <div className="flex justify-between items-center text-[10px] font-bold text-gray-500 uppercase tracking-widest px-2">
-                                                <span className="flex items-center gap-2">
-                                                    <div className="w-3 h-4 bg-gray-300 rounded-sm"></div>
-                                                    VERTICAL (9:16)
-                                                </span>
-                                                <span className="text-blue-400 font-black">TIKTOK • STORY</span>
-                                            </div>
-                                            <div id="preview-vertical" className="w-full max-w-[340px] mx-auto xl:max-w-none aspect-[9/16] rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl overflow-hidden relative flex flex-col items-center justify-center p-8 lg:p-10 text-center transition-all duration-300"
-                                                style={{
-                                                    backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor,
-                                                    backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none',
-                                                    backgroundSize: 'cover', backgroundPosition: 'center',
-                                                    color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF'
-                                                }}
-                                            >
-                                                {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
-                                                <p className="text-[10px] font-bold uppercase tracking-[0.2em] relative z-10 mb-8 opacity-80">
-                                                    {selectedBook} {selectedChapter}:{selectedVerse}
-                                                </p>
-                                                <p className="font-serif relative z-10 w-full leading-tight transition-all duration-300"
-                                                    style={{
-                                                        fontSize: `${studioTheme.fontSize * 1.5}px`,
-                                                        fontWeight: studioTheme.fontWeight,
-                                                        textAlign: studioTheme.alignment
-                                                    }}
+
+                                {/* Left Sidebar */}
+                                <div className="w-full lg:w-80 xl:w-96 bg-white border-b lg:border-b-0 lg:border-r border-gray-100 flex flex-col overflow-y-auto shrink-0">
+
+                                    {/* Verse context */}
+                                    <div className="p-5 border-b border-gray-50">
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                                            <BookOpen className="w-3 h-3" /> Versículo seleccionado
+                                        </p>
+                                        <div className="relative bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-5">
+                                            <span className="absolute left-3 top-2 text-5xl text-blue-200 font-serif leading-none select-none">"</span>
+                                            <p className="text-[13px] font-serif italic text-gray-700 leading-relaxed relative z-10 pt-3 px-2">
+                                                {selectedVersesText || verses[(activeVerse ?? 1) - 1]}
+                                            </p>
+                                            <span className="absolute right-3 bottom-1 text-5xl text-blue-200 font-serif leading-none select-none">"</span>
+                                            <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-4 text-right">{selectedVersesRef}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* ── Social Asset Preview ── */}
+                                    <div className="p-5 border-b border-gray-50">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                                <ShareIcon className="w-3 h-3" /> Recursos para redes sociales
+                                            </p>
+                                        </div>
+
+                                        {/* Format Toggle */}
+                                        <div className="flex bg-gray-50 p-1 rounded-xl mb-4">
+                                            {(['vertical','horizontal'] as const).map(f => (
+                                                <button key={f} onClick={() => setSocialFormat(f)}
+                                                    className={`flex-1 py-2 text-[10px] font-bold rounded-lg transition-all ${socialFormat === f ? 'bg-white shadow-sm text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
+                                                    {f === 'vertical' ? 'Vertical' : 'Horizontal'}
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {/* Mini Preview */}
+                                        <div
+                                            className={`relative rounded-2xl flex flex-col items-center justify-center px-6 py-8 text-center mx-auto mb-4 shadow-md overflow-hidden transition-all duration-300 ${socialFormat === 'vertical' ? 'aspect-[9/16] w-[60%]' : 'aspect-video w-full'}`}
+                                            style={{
+                                                backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor,
+                                                backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none',
+                                                backgroundSize: 'cover', backgroundPosition: 'center',
+                                            }}
+                                        >
+                                            {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
+                                            <p className="font-serif italic text-sm leading-snug relative z-10" style={{ color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}>
+                                                "{selectedVersesText || verses[(activeVerse ?? 1) - 1]}"
+                                            </p>
+                                            <p className="text-[8px] font-black uppercase tracking-[0.2em] mt-4 relative z-10" style={{ color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}>
+                                                {selectedVersesRef}
+                                            </p>
+                                            <p className="text-[7px] font-black tracking-widest relative z-10 mt-2" style={{ color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}>
+                                                www.iciarnayarit.com
+                                            </p>
+                                        </div>
+
+                                        {/* Personalizar toggle */}
+                                        <button
+                                            onClick={() => { setIsPersonalizarOpen(false); setIsNoteOpen(false); setIsStudioOpen(true); setGalleryVisibleCount(6); setSwatchesExpanded(false); resetDragPos(); setSelectedPlatform(null); setStudioTab('formato'); }}
+                                            className="w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all bg-blue-50 text-blue-600 hover:bg-blue-100"
+                                        >
+                                            <Palette className="w-3.5 h-3.5" />
+                                            Personalizar
+                                        </button>
+
+                                    </div>
+
+                                    {/* Recent notes */}
+                                    <div className="p-5 flex-1">
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-1.5">
+                                            <Clock className="w-3 h-3" /> Notas recientes
+                                        </p>
+                                        <div className="flex flex-col gap-3">
+                                            {notes.length > 0 ? notes.slice(0, 6).map((note, i) => (
+                                                <button
+                                                    key={note.id}
+                                                    onClick={() => handleEditNote(note)}
+                                                    className={`text-left px-3 py-2.5 rounded-xl border transition-all hover:shadow-sm ${editingNoteId === note.id ? 'border-blue-300 bg-blue-50' : 'border-gray-100 bg-gray-50 hover:bg-white'}`}
                                                 >
-                                                    “{verses[selectedVerse - 1]}”
-                                                </p>
+                                                    <p className={`text-[12px] font-bold truncate ${editingNoteId === note.id ? 'text-blue-700' : 'text-gray-800'}`}>{note.title}</p>
+                                                    <p className="text-[10px] text-gray-400 mt-0.5">{note.reference} · {getRelativeTime(note.date)}</p>
+                                                    {(note.tags ?? []).length > 0 && (
+                                                        <div className="flex gap-1 mt-1.5 flex-wrap">
+                                                            {(note.tags ?? []).slice(0, 3).map(t => (
+                                                                <span key={t} className="text-[8px] font-bold bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">#{t}</span>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            )) : (
+                                                <p className="text-[11px] text-gray-400 italic text-center py-4">No hay notas aún.</p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Main Editor */}
+                                <div className="flex-1 min-h-[55vh] lg:min-h-0 overflow-y-auto">
+                                    <div className="max-w-3xl mx-auto p-6 lg:p-10 flex flex-col gap-6 h-full">
+
+                                        {/* Title */}
+                                        <div>
+                                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 block">Título de la reflexión</label>
+                                            <input
+                                                type="text"
+                                                value={noteTitle}
+                                                onChange={(e) => setNoteTitle(e.target.value)}
+                                                placeholder="Ej: El poder de la palabra creadora…"
+                                                className="w-full bg-transparent border-0 border-b-2 border-gray-200 text-gray-900 text-2xl font-bold placeholder-gray-200 focus:ring-0 focus:border-blue-500 px-0 pb-3 transition-colors focus:outline-none"
+                                            />
+                                        </div>
+
+                                        {/* Rich Text Toolbar */}
+                                        <div className="flex items-center gap-3 bg-white rounded-2xl px-5 py-3 shadow-sm border border-gray-100 sticky top-0 z-10">
+                                            <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('bold'); }} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" title="Negrita"><Bold className="w-4 h-4" /></button>
+                                            <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('italic'); }} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" title="Cursiva"><Italic className="w-4 h-4" /></button>
+                                            <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('insertUnorderedList'); }} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" title="Lista"><List className="w-4 h-4" /></button>
+                                            <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('formatBlock', 'blockquote'); }} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" title="Cita"><Quote className="w-4 h-4" /></button>
+                                            <div className="w-px h-5 bg-gray-200 mx-1"></div>
+                                            <Popover open={isLinkPopoverOpen} onOpenChange={setIsLinkPopoverOpen}>
+                                                <PopoverTrigger asChild>
+                                                    <button type="button" onMouseDown={(e) => { e.preventDefault(); saveCurrentSelection(); }} onClick={() => setIsLinkPopoverOpen(true)} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" title="Enlace"><LinkIcon className="w-4 h-4" /></button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-80 p-4 rounded-xl shadow-xl border-gray-100" sideOffset={12}>
+                                                    <div className="flex flex-col gap-3">
+                                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Añadir Enlace</label>
+                                                        <div className="flex gap-2">
+                                                            <input type="url" autoFocus value={linkInput} onChange={(e) => setLinkInput(e.target.value)} placeholder="https://..." className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-blue-500" onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); confirmLink(); } else if (e.key === 'Escape') { setIsLinkPopoverOpen(false); } }} />
+                                                            <button type="button" onClick={confirmLink} className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg transition-colors">Insertar</button>
+                                                        </div>
+                                                    </div>
+                                                </PopoverContent>
+                                            </Popover>
+                                            <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageUpload} />
+                                            <button type="button" onMouseDown={(e) => { e.preventDefault(); saveCurrentSelection(); }} onClick={() => fileInputRef.current?.click()} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" title="Imagen"><ImgIcon className="w-4 h-4" /></button>
+                                            <div className="ml-auto flex items-center gap-1.5 text-gray-400">
+                                                <Clock className="w-3 h-3" />
+                                                <span className="text-[10px] font-medium hidden sm:inline">
+                                                    {mounted ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                                </span>
                                             </div>
                                         </div>
 
-                                        {/* Horizontal & Square Column */}
-                                        <div className={`flex-col gap-6 lg:gap-10 ${studioTheme.orientation === 'vertical' ? 'hidden xl:flex' : 'flex'}`}>
-                                            {/* Horizontal */}
-                                            <div className={`flex-col gap-4 ${studioTheme.orientation !== 'horizontal' ? 'hidden xl:flex' : 'flex'}`}>
-                                                <div className="flex justify-between items-center text-[10px] font-bold text-gray-500 uppercase tracking-widest px-2">
-                                                    <span className="flex items-center gap-2">
-                                                        <div className="w-4 h-3 bg-gray-300 rounded-sm"></div>
-                                                        HORIZONTAL (16:9)
-                                                    </span>
-                                                    <span className="text-gray-400">FACEBOOK</span>
-                                                </div>
-                                                <div id="preview-horizontal" className="w-full max-w-[500px] mx-auto xl:max-w-none aspect-video rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl overflow-hidden relative flex flex-col items-center justify-center p-6 lg:p-8 text-center transition-all duration-300"
-                                                    style={{
-                                                        backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor,
-                                                        backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none',
-                                                        backgroundSize: 'cover', backgroundPosition: 'center',
-                                                        color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF'
-                                                    }}
-                                                >
-                                                    {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
-                                                    <p className="font-serif relative z-10 w-full transition-all duration-300 leading-tight"
-                                                        style={{
-                                                            fontSize: `${studioTheme.fontSize}px`,
-                                                            fontWeight: studioTheme.fontWeight,
-                                                            textAlign: studioTheme.alignment
-                                                        }}
-                                                    >
-                                                        “{verses[selectedVerse - 1]}”
-                                                    </p>
-                                                    <p className="text-[9px] font-bold uppercase tracking-[0.2em] relative z-10 mt-6 opacity-80">
-                                                        — {selectedBook} {selectedChapter}:{selectedVerse}
-                                                    </p>
-                                                </div>
-                                            </div>
+                                        {/* Editor Body */}
+                                        <style>{`
+                                            .note-modal-editor ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+                                            .note-modal-editor blockquote { border-left: 4px solid #E5E7EB; padding-left: 1rem; color: #6B7280; font-style: italic; margin: 0.5rem 0; }
+                                            .note-modal-editor img { max-width: 100%; border-radius: 0.75rem; margin-top: 1rem; }
+                                            .note-modal-editor a { color: #3B82F6; text-decoration: underline; }
+                                            .note-modal-editor p { min-height: 1.5em; }
+                                        `}</style>
+                                        <div className="relative flex-1 min-h-[260px] bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                                            {(!noteContent || noteContent === '<br>') && (
+                                                <p className="absolute top-6 left-6 text-gray-300 pointer-events-none text-base font-medium select-none">Escribe lo que Dios puso en tu corazón…</p>
+                                            )}
+                                            <div
+                                                ref={contentEditableRef}
+                                                contentEditable
+                                                onInput={(e) => setNoteContent(e.currentTarget.innerHTML)}
+                                                className="w-full h-full bg-transparent text-gray-700 text-base leading-relaxed focus:outline-none note-modal-editor"
+                                            />
+                                        </div>
 
-                                            {/* Square */}
-                                            <div className={`flex-col gap-4 ${studioTheme.orientation !== 'square' ? 'hidden xl:flex' : 'flex'}`}>
-                                                <div className="flex justify-between items-center text-[10px] font-bold text-gray-500 uppercase tracking-widest px-2">
-                                                    <span className="flex items-center gap-2">
-                                                        <div className="w-3.5 h-3.5 bg-gray-300 rounded-sm"></div>
-                                                        SQUARE (1:1)
+                                        {/* Tags */}
+                                        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+                                            <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-3">Etiquetas</p>
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                {noteTags.map((tag, i) => (
+                                                    <span key={i} className="bg-blue-50 text-blue-600 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-blue-100">
+                                                        #{tag}
+                                                        <button onClick={() => handleRemoveTag(tag)} className="text-blue-300 hover:text-blue-700 transition-colors"><X className="w-3 h-3" /></button>
                                                     </span>
-                                                    <span className="text-gray-400">FEED</span>
-                                                </div>
-                                                <div id="preview-square" className="w-full max-w-[300px] lg:max-w-[340px] aspect-square rounded-2xl lg:rounded-3xl shadow-lg lg:shadow-xl overflow-hidden relative flex flex-col items-center justify-center p-6 lg:p-8 text-center bg-gray-50 transition-all duration-300 mx-auto"
-                                                    style={{
-                                                        backgroundColor: studioTheme.bgImage ? 'transparent' : '#EEF2FF',
-                                                        backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none',
-                                                        backgroundSize: 'cover', backgroundPosition: 'center',
-                                                        color: studioTheme.bgImage || studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#2563EB'
-                                                    }}
-                                                >
-                                                    {studioTheme.bgImage && <div className="absolute inset-0 bg-white/80 backdrop-blur-sm" />}
-                                                    <p className="font-serif relative z-10 w-full mb-6 uppercase transition-all duration-300 leading-none"
-                                                        style={{
-                                                            fontSize: `${studioTheme.fontSize * 1.6}px`,
-                                                            fontWeight: '900',
-                                                            textAlign: studioTheme.alignment,
-                                                            color: studioTheme.bgImage ? '#2563EB' : 'inherit'
-                                                        }}
-                                                    >
-                                                        {verses[selectedVerse - 1]}
-                                                    </p>
-                                                    <div className="w-10 h-0.5 mx-auto bg-blue-600 opacity-50 mb-4 z-10 relative"></div>
-                                                    <p className="text-[10px] font-bold uppercase tracking-widest relative z-10 opacity-70" style={{ color: studioTheme.bgImage ? '#64748B' : 'inherit' }}>
-                                                        {selectedBook} {selectedChapter}:{selectedVerse}
-                                                    </p>
-                                                </div>
+                                                ))}
+                                                {isAddingTag ? (
+                                                    <input type="text" autoFocus value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); } else if (e.key === 'Escape') { setIsAddingTag(false); } }} onBlur={handleAddTag} className="border border-blue-400 text-blue-600 outline-none text-xs font-bold px-3 py-1.5 rounded-full w-[110px] bg-blue-50 transition-colors" placeholder="etiqueta…" />
+                                                ) : (
+                                                    <button onClick={() => setIsAddingTag(true)} className="border border-dashed border-gray-300 text-gray-400 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:border-blue-400 hover:text-blue-500 transition-colors">+ Añadir</button>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                ))}
+
+                {isStudioOpen && activeVerse !== null && (
+                    <div key="studio-view" className="animate-in fade-in slide-in-from-right-8 duration-300">
+                        <div className="w-full h-[calc(100svh-6rem)] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+
+                            {/* ── Header ── */}
+                            <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-white shrink-0">
+                                <div className="flex items-center gap-3">
+                                    <button onClick={() => setIsStudioOpen(false)} className="flex items-center gap-1.5 text-gray-400 hover:text-gray-900 transition-colors group">
+                                        <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+                                        <span className="text-xs font-bold hidden sm:inline">Volver</span>
+                                    </button>
+                                    <div className="w-px h-5 bg-gray-200" />
+                                    <div>
+                                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5">
+                                            <ImageIcon className="w-3 h-3" /> Editor · {selectedVersesRef}
+                                        </p>
+                                        <h2 className="text-sm font-black text-gray-900 leading-tight">Vista Previa de Publicación</h2>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={resetDragPos} className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors min-h-[36px]">
+                                        <X className="w-3.5 h-3.5" />
+                                        <span className="hidden sm:inline">Restablecer</span>
+                                    </button>
+                                    <button onClick={handleDownloadPreview} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-900/40 transition-colors">
+                                        <Download className="w-3.5 h-3.5" />
+                                        <span className="hidden sm:inline">Descargar imagen</span>
+                                        <span className="sm:hidden">Descargar</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* ── Body ── */}
+                            <div className="flex-1 flex flex-col-reverse lg:flex-row overflow-hidden">
+
+                                {/* Canvas Area */}
+                                <div className="flex-1 overflow-y-auto flex items-start justify-center p-4 lg:p-10 custom-scrollbar bg-gray-50">
+                                    <div className="flex flex-col items-center gap-4 w-full">
+                                        <p className="text-[10px] text-gray-400 select-none tracking-wide">
+                                            ✦ Arrastra los textos para reposicionarlos
+                                        </p>
+
+                                        {/* Vertical */}
+                                        <div className={`flex-col items-center gap-3 w-full ${studioTheme.orientation !== 'vertical' ? 'hidden' : 'flex'}`}>
+                                            <div className="flex items-center gap-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                                <div className="h-px w-8 bg-gray-200" />
+                                                Vertical 9:16 · TikTok / Historia
+                                                <div className="h-px w-8 bg-gray-200" />
+                                            </div>
+                                            <div id="preview-vertical" onPointerDown={() => setSelectedElement(null)}
+                                                className="w-full max-w-[280px] mx-auto aspect-[9/16] rounded-2xl shadow-2xl overflow-hidden relative flex flex-col items-center justify-center p-8 text-center ring-1 ring-white/10 transition-all duration-300"
+                                                style={{ backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor, backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
+                                            >
+                                                {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
+                                                <GridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
+                                                <DraggableText position={dragPos.ref} onPositionChange={(pos) => setDragPos(p => ({ ...p, ref: pos }))} isSelected={selectedElement === 'ref'} onSelect={() => { setSelectedElement('ref'); setStudioTab('texto'); }} label="Referencia" onDragStart={() => setIsCanvasDragging(true)} onDragEnd={() => setIsCanvasDragging(false)} onSnapChange={(sx, sy) => setActiveSnap({ x: sx, y: sy })}>
+                                                    <p className="uppercase tracking-[0.2em] z-20 mb-8 select-none" style={{ fontSize: `${elementStyles.ref.fontSize}px`, fontWeight: elementStyles.ref.fontWeight, textAlign: elementStyles.ref.textAlign as any, color: resolveColor(elementStyles.ref.color) }}>{selectedVersesRef}</p>
+                                                </DraggableText>
+                                                <DraggableText position={dragPos.verse} onPositionChange={(pos) => setDragPos(p => ({ ...p, verse: pos }))} isSelected={selectedElement === 'verse'} onSelect={() => { setSelectedElement('verse'); setStudioTab('texto'); }} label="Versículo" onDragStart={() => setIsCanvasDragging(true)} onDragEnd={() => setIsCanvasDragging(false)} onSnapChange={(sx, sy) => setActiveSnap({ x: sx, y: sy })}>
+                                                    <p className="font-serif z-20 w-full leading-tight select-none" style={{ fontSize: `${elementStyles.verse.fontSize}px`, fontWeight: elementStyles.verse.fontWeight, textAlign: elementStyles.verse.textAlign as any, color: resolveColor(elementStyles.verse.color) }}>"{selectedVersesText}"</p>
+                                                </DraggableText>
+                                                <DraggableText position={dragPos.website} onPositionChange={(pos) => setDragPos(p => ({ ...p, website: pos }))} isSelected={selectedElement === 'website'} onSelect={() => { setSelectedElement('website'); setStudioTab('texto'); }} label="Sitio web" onDragStart={() => setIsCanvasDragging(true)} onDragEnd={() => setIsCanvasDragging(false)} onSnapChange={(sx, sy) => setActiveSnap({ x: sx, y: sy })}>
+                                                    <p className="tracking-widest z-20 mt-6 select-none" style={{ fontSize: `${elementStyles.website.fontSize}px`, fontWeight: elementStyles.website.fontWeight, textAlign: elementStyles.website.textAlign as any, color: resolveColor(elementStyles.website.color) }}>www.iciarnayarit.com</p>
+                                                </DraggableText>
+                                            </div>
+                                        </div>
+
+                                        {/* Horizontal */}
+                                        <div className={`flex-col items-center gap-3 w-full ${studioTheme.orientation !== 'horizontal' ? 'hidden' : 'flex'}`}>
+                                            <div className="flex items-center gap-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                                <div className="h-px w-8 bg-gray-200" />
+                                                Horizontal 16:9 · Facebook / YouTube
+                                                <div className="h-px w-8 bg-gray-200" />
+                                            </div>
+                                            <div id="preview-horizontal" onPointerDown={() => setSelectedElement(null)}
+                                                className="w-full max-w-[560px] mx-auto aspect-video rounded-2xl shadow-2xl overflow-hidden relative flex flex-col items-center justify-center p-8 text-center ring-1 ring-white/10 transition-all duration-300"
+                                                style={{ backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor, backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
+                                            >
+                                                {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
+                                                <GridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
+                                                <DraggableText position={dragPos.verse} onPositionChange={(pos) => setDragPos(p => ({ ...p, verse: pos }))} isSelected={selectedElement === 'verse'} onSelect={() => { setSelectedElement('verse'); setStudioTab('texto'); }} label="Versículo" onDragStart={() => setIsCanvasDragging(true)} onDragEnd={() => setIsCanvasDragging(false)} onSnapChange={(sx, sy) => setActiveSnap({ x: sx, y: sy })}>
+                                                    <p className="font-serif z-20 w-full leading-tight select-none" style={{ fontSize: `${elementStyles.verse.fontSize}px`, fontWeight: elementStyles.verse.fontWeight, textAlign: elementStyles.verse.textAlign as any, color: resolveColor(elementStyles.verse.color) }}>"{selectedVersesText}"</p>
+                                                </DraggableText>
+                                                <DraggableText position={dragPos.ref} onPositionChange={(pos) => setDragPos(p => ({ ...p, ref: pos }))} isSelected={selectedElement === 'ref'} onSelect={() => { setSelectedElement('ref'); setStudioTab('texto'); }} label="Referencia" onDragStart={() => setIsCanvasDragging(true)} onDragEnd={() => setIsCanvasDragging(false)} onSnapChange={(sx, sy) => setActiveSnap({ x: sx, y: sy })}>
+                                                    <p className="uppercase tracking-[0.2em] z-20 mt-6 select-none" style={{ fontSize: `${elementStyles.ref.fontSize}px`, fontWeight: elementStyles.ref.fontWeight, textAlign: elementStyles.ref.textAlign as any, color: resolveColor(elementStyles.ref.color) }}>— {selectedVersesRef}</p>
+                                                </DraggableText>
+                                                <DraggableText position={dragPos.website} onPositionChange={(pos) => setDragPos(p => ({ ...p, website: pos }))} isSelected={selectedElement === 'website'} onSelect={() => { setSelectedElement('website'); setStudioTab('texto'); }} label="Sitio web" onDragStart={() => setIsCanvasDragging(true)} onDragEnd={() => setIsCanvasDragging(false)} onSnapChange={(sx, sy) => setActiveSnap({ x: sx, y: sy })}>
+                                                    <p className="tracking-widest z-20 mt-3 select-none" style={{ fontSize: `${elementStyles.website.fontSize}px`, fontWeight: elementStyles.website.fontWeight, textAlign: elementStyles.website.textAlign as any, color: resolveColor(elementStyles.website.color) }}>www.iciarnayarit.com</p>
+                                                </DraggableText>
+                                            </div>
+                                        </div>
+
+                                        {/* Square */}
+                                        <div className={`flex-col items-center gap-3 w-full ${studioTheme.orientation !== 'square' ? 'hidden' : 'flex'}`}>
+                                            <div className="flex items-center gap-2 text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                                <div className="h-px w-8 bg-gray-200" />
+                                                Cuadrado 1:1 · Feed
+                                                <div className="h-px w-8 bg-gray-200" />
+                                            </div>
+                                            <div id="preview-square" onPointerDown={() => setSelectedElement(null)}
+                                                className="w-full max-w-[380px] mx-auto aspect-square rounded-2xl shadow-2xl overflow-hidden relative flex flex-col items-center justify-center p-8 text-center ring-1 ring-white/10 transition-all duration-300"
+                                                style={{ backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor, backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
+                                            >
+                                                {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
+                                                <GridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
+                                                <DraggableText position={dragPos.ref} onPositionChange={(pos) => setDragPos(p => ({ ...p, ref: pos }))} isSelected={selectedElement === 'ref'} onSelect={() => { setSelectedElement('ref'); setStudioTab('texto'); }} label="Referencia" onDragStart={() => setIsCanvasDragging(true)} onDragEnd={() => setIsCanvasDragging(false)} onSnapChange={(sx, sy) => setActiveSnap({ x: sx, y: sy })}>
+                                                    <p className="uppercase tracking-[0.2em] z-20 mb-8 select-none" style={{ fontSize: `${elementStyles.ref.fontSize}px`, fontWeight: elementStyles.ref.fontWeight, textAlign: elementStyles.ref.textAlign as any, color: resolveColor(elementStyles.ref.color) }}>{selectedVersesRef}</p>
+                                                </DraggableText>
+                                                <DraggableText position={dragPos.verse} onPositionChange={(pos) => setDragPos(p => ({ ...p, verse: pos }))} isSelected={selectedElement === 'verse'} onSelect={() => { setSelectedElement('verse'); setStudioTab('texto'); }} label="Versículo" onDragStart={() => setIsCanvasDragging(true)} onDragEnd={() => setIsCanvasDragging(false)} onSnapChange={(sx, sy) => setActiveSnap({ x: sx, y: sy })}>
+                                                    <p className="font-serif z-20 w-full leading-tight select-none" style={{ fontSize: `${elementStyles.verse.fontSize}px`, fontWeight: elementStyles.verse.fontWeight, textAlign: elementStyles.verse.textAlign as any, color: resolveColor(elementStyles.verse.color) }}>"{selectedVersesText}"</p>
+                                                </DraggableText>
+                                                <DraggableText position={dragPos.website} onPositionChange={(pos) => setDragPos(p => ({ ...p, website: pos }))} isSelected={selectedElement === 'website'} onSelect={() => { setSelectedElement('website'); setStudioTab('texto'); }} label="Sitio web" onDragStart={() => setIsCanvasDragging(true)} onDragEnd={() => setIsCanvasDragging(false)} onSnapChange={(sx, sy) => setActiveSnap({ x: sx, y: sy })}>
+                                                    <p className="tracking-widest z-20 mt-6 select-none" style={{ fontSize: `${elementStyles.website.fontSize}px`, fontWeight: elementStyles.website.fontWeight, textAlign: elementStyles.website.textAlign as any, color: resolveColor(elementStyles.website.color) }}>www.iciarnayarit.com</p>
+                                                </DraggableText>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Right/Bottom: Settings Sidebar */}
-                                <div className="w-full lg:w-80 bg-white border-t lg:border-t-0 lg:border-l border-gray-100 p-6 lg:p-8 h-[45vh] lg:h-auto flex flex-col gap-8 lg:gap-10 overflow-y-auto shrink-0 custom-scrollbar z-20 relative shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] lg:shadow-[-10px_0_30px_-15px_rgba(0,0,0,0.05)] rounded-t-3xl lg:rounded-none">
-                                    <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-1 lg:hidden shrink-0"></div>
-                                    {/* Orientation */}
-                                    <div>
-                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-3">ORIENTATION</label>
-                                        <div className="flex bg-gray-50 p-1 rounded-xl">
-                                            <button onClick={() => setStudioTheme({ ...studioTheme, orientation: 'vertical' })} className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 text-[10px] font-bold rounded-lg transition-all ${studioTheme.orientation === 'vertical' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                                                <div className={`w-2 h-3 rounded-[2px] transition-colors ${studioTheme.orientation === 'vertical' ? 'bg-blue-600' : 'bg-gray-400'}`}></div> <span className="hidden sm:inline">Vertical</span><span className="sm:hidden">Vert</span>
+                                {/* ── Sidebar ── */}
+                                <div className="w-full lg:w-[300px] xl:w-[320px] bg-white flex flex-col overflow-hidden shrink-0 border-t lg:border-t-0 lg:border-l border-gray-100">
+
+                                    {/* Tab Bar */}
+                                    <div className="flex border-b border-gray-100 shrink-0 bg-gray-50/50">
+                                        {([
+                                            { id: 'formato', label: 'Formato' },
+                                            { id: 'fondo',   label: 'Fondo'   },
+                                            { id: 'texto',   label: 'Texto'   },
+                                        ] as const).map(tab => (
+                                            <button
+                                                key={tab.id}
+                                                onClick={() => setStudioTab(tab.id)}
+                                                className={`flex-1 py-3 text-[11px] font-black tracking-wide transition-all border-b-2 ${studioTab === tab.id ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-400 hover:text-gray-700'}`}
+                                            >
+                                                {tab.label}
                                             </button>
-                                            <button onClick={() => setStudioTheme({ ...studioTheme, orientation: 'horizontal' })} className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 text-[10px] font-bold rounded-lg transition-all ${studioTheme.orientation === 'horizontal' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                                                <div className={`w-3.5 h-2 rounded-[2px] transition-colors ${studioTheme.orientation === 'horizontal' ? 'bg-gray-800' : 'bg-gray-400'}`}></div> <span className="hidden sm:inline">Horizontal</span><span className="sm:hidden">Horiz</span>
-                                            </button>
-                                            <button onClick={() => setStudioTheme({ ...studioTheme, orientation: 'square' })} className={`flex-1 flex justify-center items-center gap-1.5 py-2.5 text-[10px] font-bold rounded-lg transition-all ${studioTheme.orientation === 'square' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-500 hover:text-gray-700'}`}>
-                                                <div className={`w-2.5 h-2.5 rounded-[2px] transition-colors ${studioTheme.orientation === 'square' ? 'bg-purple-600' : 'bg-gray-400'}`}></div> <span className="hidden sm:inline">Square</span><span className="sm:hidden">Cuadr</span>
-                                            </button>
-                                        </div>
+                                        ))}
                                     </div>
 
-                                    {/* Background Swatches */}
-                                    <div>
-                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-4">BACKGROUND SWATCHES</label>
-                                        <div className="flex flex-wrap gap-2 lg:gap-3">
-                                            {['#2563EB', '#0F172A', '#FFFFFF', '#FEF08A', '#10B981', '#F43F5E', '#6366F1', '#D1FAE5', '#94A3B8'].map(color => (
-                                                <button
-                                                    key={color}
-                                                    onClick={() => setStudioTheme({ ...studioTheme, bgColor: color, bgImage: null })}
-                                                    className={`w-10 h-10 aspect-square rounded-xl border ${studioTheme.bgColor === color && !studioTheme.bgImage ? 'ring-2 ring-offset-2 ring-blue-500 scale-105' : 'border-gray-200 hover:scale-105'} transition-all`}
-                                                    style={{ backgroundColor: color }}
-                                                />
-                                            ))}
-                                            <button className="w-10 h-10 aspect-square rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 border border-blue-200 hover:bg-blue-100 transition-colors shrink-0">
-                                                <Palette className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
+                                    {/* Tab Content */}
+                                    <div className="flex-1 overflow-y-auto custom-scrollbar">
 
-                                    {/* Background Gallery */}
-                                    <div>
-                                        <div className="flex items-center justify-between mb-4">
-                                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">BACKGROUND GALLERY</label>
-                                            <button onClick={() => document.getElementById('studio-upload')?.click()} className="text-[9px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-800 transition-colors">UPLOAD</button>
-                                            <input id="studio-upload" type="file" accept="image/*" className="hidden" onChange={(e) => {
-                                                const file = e.target.files?.[0];
-                                                if (!file) return;
-                                                const reader = new FileReader();
-                                                reader.onload = (ev) => {
-                                                    const newImage = ev.target?.result as string;
-                                                    setStudioTheme({ ...studioTheme, bgImage: newImage });
-                                                    setStudioGallery(prev => {
-                                                        if (prev.includes(newImage)) return prev;
-                                                        const next = [newImage, ...prev];
-                                                        // Only persist base64 user uploads (not the default Unsplash URLs)
-                                                        const userUploads = next.filter(img => img.startsWith('data:'));
-                                                        localStorage.setItem('studioGalleryUploads', JSON.stringify(userUploads));
-                                                        return next;
-                                                    });
-                                                };
-                                                reader.readAsDataURL(file);
-                                                e.target.value = '';
-                                            }} />
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            {studioGallery.map((url, idx) => (
-                                                <button
-                                                    key={url + idx}
-                                                    onClick={() => setStudioTheme({ ...studioTheme, bgImage: url })}
-                                                    className={`aspect-square rounded-xl bg-gray-100 bg-cover bg-center overflow-hidden border-2 transition-all ${studioTheme.bgImage === url ? 'border-blue-500 scale-105 shadow-md' : 'border-transparent hover:scale-105'}`}
-                                                    style={{ backgroundImage: `url(${url})` }}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
+                                        {/* ── Tab: Formato ── */}
+                                        {studioTab === 'formato' && (
+                                            <div className="p-5 flex flex-col gap-7">
+                                                {/* Orientation */}
+                                                <div>
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-3">Orientación</label>
+                                                    <div className="grid grid-cols-3 gap-2">
+                                                        {([
+                                                            { val: 'vertical',   lbl: 'Vertical',   hint: '9:16', icon: <div className="w-3 h-5 rounded-[3px] bg-current mx-auto mb-1" /> },
+                                                            { val: 'horizontal', lbl: 'Horizontal', hint: '16:9', icon: <div className="w-5 h-3 rounded-[3px] bg-current mx-auto mb-1" /> },
+                                                            { val: 'square',     lbl: 'Cuadrado',   hint: '1:1',  icon: <div className="w-4 h-4 rounded-[3px] bg-current mx-auto mb-1" /> },
+                                                        ] as const).map(({ val, lbl, hint, icon }) => (
+                                                            <button key={val} onClick={() => setStudioTheme({ ...studioTheme, orientation: val })}
+                                                                className={`flex flex-col items-center py-4 px-2 rounded-xl border-2 transition-all ${studioTheme.orientation === val ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-white'}`}
+                                                            >
+                                                                {icon}
+                                                                <span className="text-[10px] font-black block">{lbl}</span>
+                                                                <span className="text-[8px] font-medium text-current opacity-60">{hint}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
 
-                                    {/* Typography Settings */}
-                                    <div>
-                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-6">TYPOGRAPHY SETTINGS</label>
-
-                                        <div className="mb-6">
-                                            <div className="flex justify-between items-center mb-3">
-                                                <span className="text-[10px] font-bold text-gray-900 uppercase tracking-wider">FONT SIZE</span>
+                                                {/* Platform */}
+                                                <div>
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-3">Plataforma</label>
+                                                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                                                        {([
+                                                            { id: 'instagram', label: 'Instagram', orientation: 'square'    as const, hint: '1:1',  activeText: 'text-[#E1306C]', activeBg: 'bg-[#E1306C]/10', activeBorder: 'border-[#E1306C]', icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" strokeWidth="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg> },
+                                                            { id: 'facebook',  label: 'Facebook',  orientation: 'horizontal' as const, hint: '16:9', activeText: 'text-[#1877F2]', activeBg: 'bg-[#1877F2]/10', activeBorder: 'border-[#1877F2]', icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
+                                                            { id: 'twitter',   label: 'X',         orientation: 'square'    as const, hint: '1:1',  activeText: 'text-gray-900',  activeBg: 'bg-gray-900/10',   activeBorder: 'border-gray-900',   icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.25 2.25h6.986l4.265 5.639zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> },
+                                                            { id: 'pinterest', label: 'Pinterest', orientation: 'vertical'  as const, hint: '2:3',  activeText: 'text-[#E60023]', activeBg: 'bg-[#E60023]/10',  activeBorder: 'border-[#E60023]',  icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg> },
+                                                            { id: 'tiktok',    label: 'TikTok',    orientation: 'vertical'  as const, hint: '9:16', activeText: 'text-gray-900',  activeBg: 'bg-gray-900/10',   activeBorder: 'border-gray-900',   icon: <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.16 8.16 0 0 0 4.77 1.52V6.76a4.85 4.85 0 0 1-1-.07z"/></svg> },
+                                                        ] as const).map(({ id, label, orientation, hint, activeText, activeBg, activeBorder, icon }) => (
+                                                            <button key={id} onClick={() => {
+                                                                const isActive = selectedPlatform === id;
+                                                                setSelectedPlatform(isActive ? null : id);
+                                                                if (!isActive) setStudioTheme(t => ({ ...t, orientation }));
+                                                            }}
+                                                                className={`flex flex-col items-center justify-center gap-1 py-3 px-1 rounded-xl border-2 transition-all ${selectedPlatform === id ? `${activeBg} ${activeBorder} ${activeText}` : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-white'}`}
+                                                            >
+                                                                {icon}
+                                                                <span className="text-[8px] font-black tracking-wide leading-none">{label}</span>
+                                                                <span className="text-[7px] font-medium opacity-60 leading-none">{hint}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <input
-                                                type="range" min="16" max="48"
-                                                value={studioTheme.fontSize}
-                                                onChange={(e) => setStudioTheme({ ...studioTheme, fontSize: parseInt(e.target.value) })}
-                                                className="w-full accent-blue-600 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                            />
-                                        </div>
+                                        )}
 
-                                        <div className="mb-6">
-                                            <span className="text-[10px] font-bold text-gray-900 uppercase tracking-wider block mb-3">FONT WEIGHT</span>
-                                            <div className="flex gap-2">
-                                                {['300', '400', '700', '900'].map((w, index) => (
-                                                    <button
-                                                        key={w}
-                                                        onClick={() => setStudioTheme({ ...studioTheme, fontWeight: w })}
-                                                        className={`flex-1 py-1.5 text-[10px] font-bold rounded-full border transition-colors ${studioTheme.fontWeight === w ? 'border-blue-600 text-blue-600 bg-blue-50' : 'border-gray-200 text-gray-600 hover:bg-gray-50'}`}
-                                                    >
-                                                        {['Light', 'Regular', 'Bold', 'Black'][index]}
-                                                    </button>
-                                                ))}
+                                        {/* ── Tab: Fondo ── */}
+                                        {studioTab === 'fondo' && (
+                                            <div className="p-5 flex flex-col gap-7">
+                                                {/* Colors */}
+                                                <div>
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-3">Color de fondo</label>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        <button onClick={() => customColorRef.current?.click()} className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100 hover:bg-blue-100 transition-colors shrink-0" title="Personalizado">
+                                                            <Palette className="w-4 h-4" />
+                                                        </button>
+                                                        <input ref={customColorRef} type="color" className="sr-only" value={studioTheme.bgColor} onChange={(e) => setStudioTheme({ ...studioTheme, bgColor: e.target.value, bgImage: null })} />
+                                                        {(swatchesExpanded ? ALL_SWATCHES : ALL_SWATCHES.slice(0, 14)).map(color => (
+                                                            <button key={color} onClick={() => setStudioTheme({ ...studioTheme, bgColor: color, bgImage: null })}
+                                                                className={`w-9 h-9 rounded-xl border-2 transition-all ${studioTheme.bgColor === color && !studioTheme.bgImage ? 'ring-2 ring-offset-1 ring-blue-500 scale-110 border-transparent' : 'border-gray-100 hover:scale-105'}`}
+                                                                style={{ backgroundColor: color }}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                    {!swatchesExpanded && (
+                                                        <button onClick={() => setSwatchesExpanded(true)} className="mt-3 w-full py-2 rounded-xl border border-gray-100 text-[11px] font-bold text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                                                            Ver más colores
+                                                        </button>
+                                                    )}
+                                                </div>
+
+                                                {/* Gallery */}
+                                                <div>
+                                                    <div className="flex items-center justify-between mb-3">
+                                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Galería de fondos</label>
+                                                        <button onClick={() => document.getElementById('studio-upload')?.click()} className="text-[10px] font-black text-blue-500 hover:text-blue-700 flex items-center gap-1 transition-colors">
+                                                            <span>+ Subir</span>
+                                                        </button>
+                                                        <input id="studio-upload" type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                                            const file = e.target.files?.[0];
+                                                            if (!file) return;
+                                                            const reader = new FileReader();
+                                                            reader.onload = (ev) => {
+                                                                const newImage = ev.target?.result as string;
+                                                                setStudioTheme({ ...studioTheme, bgImage: newImage });
+                                                                setStudioGallery(prev => {
+                                                                    if (prev.includes(newImage)) return prev;
+                                                                    const next = [newImage, ...prev];
+                                                                    const userUploads = next.filter(img => img.startsWith('data:'));
+                                                                    localStorage.setItem('studioGalleryUploads', JSON.stringify(userUploads));
+                                                                    return next;
+                                                                });
+                                                            };
+                                                            reader.readAsDataURL(file);
+                                                            e.target.value = '';
+                                                        }} />
+                                                    </div>
+                                                    <div className="grid grid-cols-3 gap-2">
+                                                        {studioGallery.slice(0, galleryVisibleCount).map((url, idx) => (
+                                                            <div key={url + idx} className="relative group aspect-square">
+                                                                <button onClick={() => setStudioTheme({ ...studioTheme, bgImage: url })}
+                                                                    className={`w-full h-full rounded-xl bg-cover bg-center border-2 transition-all ${studioTheme.bgImage === url ? 'border-blue-500 scale-105 shadow-md' : 'border-transparent hover:scale-105'}`}
+                                                                    style={{ backgroundImage: `url(${url})` }}
+                                                                />
+                                                                <button onClick={(e) => { e.stopPropagation(); setStudioGallery(prev => { const next = prev.filter((_, i) => i !== idx); const userUploads = next.filter(img => img.startsWith('data:')); localStorage.setItem('studioGalleryUploads', JSON.stringify(userUploads)); return next; }); if (studioTheme.bgImage === url) setStudioTheme(t => ({ ...t, bgImage: '' })); }}
+                                                                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 hover:bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-10"
+                                                                    title="Eliminar"
+                                                                >
+                                                                    <X className="w-2.5 h-2.5" />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    {galleryVisibleCount < studioGallery.length && (
+                                                        <button onClick={() => setGalleryVisibleCount(prev => prev + 6)} className="w-full mt-3 py-2 rounded-xl border border-gray-100 text-[11px] font-bold text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-colors">
+                                                            Ver más ({studioGallery.length - galleryVisibleCount} restantes)
+                                                        </button>
+                                                    )}
+                                                    {studioTheme.bgImage && (
+                                                        <button onClick={() => setStudioTheme(t => ({ ...t, bgImage: null }))} className="w-full mt-2 py-2 rounded-xl text-[11px] font-bold text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                                            Quitar imagen de fondo
+                                                        </button>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
 
-                                        <div className="mb-8">
-                                            <span className="text-[10px] font-bold text-gray-900 uppercase tracking-wider block mb-3">ALIGNMENT</span>
-                                            <div className="flex gap-2">
-                                                {['left', 'center', 'right'].map((align: any) => (
-                                                    <button
-                                                        key={align}
-                                                        onClick={() => setStudioTheme({ ...studioTheme, alignment: align })}
-                                                        className={`w-10 h-10 rounded-xl flex items-center justify-center border transition-colors ${studioTheme.alignment === align ? 'bg-blue-50 border-blue-200 text-blue-600' : 'bg-gray-50 border-transparent text-gray-400 hover:bg-gray-100'}`}
-                                                    >
-                                                        <div className="flex flex-col gap-1 w-4">
-                                                            <div className={`h-0.5 bg-current rounded-full transition-all ${align === 'left' ? 'w-full' : align === 'center' ? 'w-full' : 'w-full'}`}></div>
-                                                            <div className={`h-0.5 bg-current rounded-full transition-all ${align === 'left' ? 'w-full' : align === 'center' ? 'w-2.5 mx-auto' : 'w-full ml-auto'}`}></div>
-                                                            <div className={`h-0.5 bg-current rounded-full transition-all ${align === 'left' ? 'w-2.5' : align === 'center' ? 'w-full' : 'w-3 ml-auto'}`}></div>
+                                        {/* ── Tab: Texto ── */}
+                                        {studioTab === 'texto' && (
+                                            <div className="p-5">
+                                                {selectedElement === null ? (
+                                                    <div className="flex flex-col items-center justify-center py-16 text-center gap-4">
+                                                        <div className="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100">
+                                                            <Type className="w-6 h-6 text-gray-300" />
                                                         </div>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-bold text-gray-500">Selecciona un texto</p>
+                                                            <p className="text-[11px] text-gray-400 mt-1">Toca cualquier texto del canvas<br />para editarlo aquí</p>
+                                                        </div>
+                                                        <div className="flex flex-col gap-2 w-full mt-2">
+                                                            {(['ref', 'verse', 'website'] as const).map(el => (
+                                                                <button key={el} onClick={() => setSelectedElement(el)}
+                                                                    className="w-full py-2.5 px-4 rounded-xl bg-gray-50 hover:bg-blue-50 hover:text-blue-600 text-gray-500 text-xs font-bold border border-gray-100 hover:border-blue-200 transition-all text-left flex items-center gap-2"
+                                                                >
+                                                                    <div className="w-1.5 h-1.5 rounded-full bg-current opacity-50" />
+                                                                    {el === 'ref' ? 'Referencia' : el === 'verse' ? 'Versículo' : 'Sitio web'}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col gap-6">
+                                                        {/* Element selector */}
+                                                        <div className="flex gap-1.5">
+                                                            {(['ref', 'verse', 'website'] as const).map(el => (
+                                                                <button key={el} onClick={() => setSelectedElement(el)}
+                                                                    className={`flex-1 py-2 text-[9px] font-black rounded-lg transition-all ${selectedElement === el ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                                                                >
+                                                                    {el === 'ref' ? 'Ref.' : el === 'verse' ? 'Verso' : 'Web'}
+                                                                </button>
+                                                            ))}
+                                                        </div>
 
-                                        <div className="bg-gray-50 rounded-2xl p-4 flex items-center justify-between border border-gray-100 cursor-pointer" onClick={() => setStudioTheme({ ...studioTheme, motionEffects: !studioTheme.motionEffects })}>
-                                            <div>
-                                                <h6 className="text-[11px] font-bold text-gray-900">Motion Effects</h6>
-                                                <p className="text-[10px] text-gray-400 mt-0.5">Slow float pan on video.</p>
+                                                        {/* Font Size */}
+                                                        <div>
+                                                            <div className="flex justify-between items-center mb-2">
+                                                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider">Tamaño</span>
+                                                                <span className="text-[11px] font-black text-blue-600 tabular-nums">{elementStyles[selectedElement].fontSize}px</span>
+                                                            </div>
+                                                            <input type="range" min="6" max="72" value={elementStyles[selectedElement].fontSize}
+                                                                onChange={(e) => updateElement(selectedElement, { fontSize: parseInt(e.target.value) })}
+                                                                className="w-full accent-blue-600 h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer"
+                                                            />
+                                                            <div className="flex justify-between text-[9px] text-gray-300 mt-1 font-medium">
+                                                                <span>6</span><span>72</span>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Font Weight */}
+                                                        <div>
+                                                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider block mb-2">Peso</span>
+                                                            <div className="grid grid-cols-4 gap-1.5">
+                                                                {[['300','Fino'],['400','Normal'],['700','Negrita'],['900','Negra']].map(([w, lbl]) => (
+                                                                    <button key={w} onClick={() => updateElement(selectedElement, { fontWeight: w })}
+                                                                        className={`py-2 text-[9px] font-bold rounded-lg border transition-all ${elementStyles[selectedElement].fontWeight === w ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-200'}`}
+                                                                    >{lbl}</button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Alignment */}
+                                                        <div>
+                                                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider block mb-2">Alineación</span>
+                                                            <div className="flex gap-2">
+                                                                {(['left', 'center', 'right'] as const).map((align) => (
+                                                                    <button key={align} onClick={() => updateElement(selectedElement, { textAlign: align })}
+                                                                        className={`flex-1 h-10 rounded-xl flex items-center justify-center border transition-all ${elementStyles[selectedElement].textAlign === align ? 'bg-blue-600 border-blue-600 text-white' : 'bg-gray-50 border-gray-100 text-gray-400 hover:border-gray-200'}`}
+                                                                    >
+                                                                        <div className="flex flex-col gap-1 w-4">
+                                                                            <div className="h-0.5 bg-current rounded-full w-full" />
+                                                                            <div className={`h-0.5 bg-current rounded-full ${align === 'left' ? 'w-2.5' : align === 'center' ? 'w-2.5 mx-auto' : 'w-2.5 ml-auto'}`} />
+                                                                            <div className="h-0.5 bg-current rounded-full w-full" />
+                                                                        </div>
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Color */}
+                                                        <div>
+                                                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-wider block mb-2">Color del texto</span>
+                                                            <div className="flex flex-wrap gap-2">
+                                                                <button onClick={() => updateElement(selectedElement, { color: 'auto' })} title="Automático (según fondo)"
+                                                                    className={`w-9 h-9 rounded-xl border-2 text-[9px] font-black flex items-center justify-center transition-all bg-gradient-to-br from-white to-gray-800 ${elementStyles[selectedElement].color === 'auto' ? 'border-blue-500 scale-110' : 'border-gray-200'}`}
+                                                                >A</button>
+                                                                {['#FFFFFF','#000000','#FEF08A','#93C5FD','#FCA5A5','#6EE7B7','#C4B5FD','#FED7AA'].map(c => (
+                                                                    <button key={c} onClick={() => updateElement(selectedElement, { color: c })}
+                                                                        className={`w-9 h-9 rounded-xl border-2 transition-all ${elementStyles[selectedElement].color === c ? 'border-blue-500 scale-110' : 'border-gray-100 hover:scale-105'}`}
+                                                                        style={{ backgroundColor: c }}
+                                                                    />
+                                                                ))}
+                                                                <button onClick={() => elementColorRef.current?.click()} title="Personalizado"
+                                                                    className="w-9 h-9 rounded-xl border-2 border-gray-100 bg-blue-50 flex items-center justify-center text-blue-500 hover:bg-blue-100 transition-colors"
+                                                                >
+                                                                    <Palette className="w-3.5 h-3.5" />
+                                                                </button>
+                                                                <input ref={elementColorRef} type="color" className="sr-only"
+                                                                    value={elementStyles[selectedElement].color === 'auto' ? autoColor : elementStyles[selectedElement].color}
+                                                                    onChange={(e) => updateElement(selectedElement, { color: e.target.value })}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <div className={`w-10 h-5 rounded-full transition-colors flex items-center px-0.5 ${studioTheme.motionEffects ? 'bg-blue-600' : 'bg-gray-300'}`}>
-                                                <div className={`w-4 h-4 bg-white rounded-full transition-transform shadow-sm ${studioTheme.motionEffects ? 'translate-x-5' : 'translate-x-0'}`}></div>
-                                            </div>
-                                        </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
