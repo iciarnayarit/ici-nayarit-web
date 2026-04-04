@@ -55,7 +55,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: Props) {
   return (
     <ClerkProvider localization={esES}>
-      <html className="scroll-smooth">
+      <html lang="es" className="scroll-smooth" suppressHydrationWarning>
         <head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link
@@ -68,7 +68,7 @@ export default async function RootLayout({ children }: Props) {
             rel="stylesheet"
           />
         </head>
-        <body className="font-body antialiased">
+        <body className="font-body antialiased" suppressHydrationWarning>
           <AudioProvider>
             <Header />
             {children}

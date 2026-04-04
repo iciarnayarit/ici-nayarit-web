@@ -106,10 +106,16 @@ interface Result {
 
 // ── Learned mappings helpers ─────────────────────────────────────────────────
 function getLearnedMappings(): LearnedMapping[] {
-    try { return JSON.parse(localStorage.getItem(LEARNED_KEY) ?? '[]'); } catch { return []; }
+    if (typeof window === 'undefined') return [];
+    try {
+        return JSON.parse(localStorage.getItem(LEARNED_KEY) ?? '[]');
+    } catch {
+        return [];
+    }
 }
 
 function saveLearnedMapping(query: string, href: string) {
+    if (typeof window === 'undefined') return;
     try {
         const current = getLearnedMappings();
         const existing = current.find(m => m.query === query);
@@ -205,9 +211,15 @@ function parseBibleRef(q: string): { book: string; chapter: number; verse?: numb
 }
 
 function getStoredRecent(): string[] {
-    try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]'); } catch { return []; }
+    if (typeof window === 'undefined') return [];
+    try {
+        return JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]');
+    } catch {
+        return [];
+    }
 }
 function addRecent(label: string) {
+    if (typeof window === 'undefined') return;
     try {
         const prev = getStoredRecent().filter(l => l !== label);
         localStorage.setItem(RECENT_KEY, JSON.stringify([label, ...prev].slice(0, 5)));

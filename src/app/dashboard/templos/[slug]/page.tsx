@@ -2,243 +2,282 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useParams, notFound } from 'next/navigation';
 import { Heart, Navigation, Bookmark, Phone, Share2, Clock, Map, Plus, Minus, MapPin } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { useToast } from '@/app/hooks/use-toast';
+import { getTempleBySlug } from '@/lib/temple-directory';
+import {
+  loadSavedTempleSlugs,
+  SAVED_TEMPLES_CHANGED_EVENT,
+  SAVED_TEMPLES_STORAGE_KEY,
+  toggleSavedTempleSlug,
+} from '@/lib/saved-temples';
+import { useAuth, useClerk } from '@clerk/nextjs';
+import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
 
-export default function TemplosDashboardPage() {
+export default function TemplosDashboardDetailPage() {
+  const params = useParams();
+  const slugParam = params?.slug;
+  const slug = typeof slugParam === 'string' ? slugParam : Array.isArray(slugParam) ? slugParam[0] : '';
+  const temple = slug ? getTempleBySlug(slug) : undefined;
+  const { toast } = useToast();
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { redirectToSignIn } = useClerk();
+
+  const [savedSlugs, setSavedSlugs] = useState<string[]>([]);
+
+  const refreshSaved = useCallback(() => {
+    setSavedSlugs(loadSavedTempleSlugs());
+  }, []);
+
+  useEffect(() => {
+    refreshSaved();
+  }, [refreshSaved]);
+
+  useEffect(() => {
+    const onChange = () => refreshSaved();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === SAVED_TEMPLES_STORAGE_KEY) refreshSaved();
+    };
+    window.addEventListener(SAVED_TEMPLES_CHANGED_EVENT, onChange);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(SAVED_TEMPLES_CHANGED_EVENT, onChange);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, [refreshSaved]);
+
+  if (!temple) {
+    notFound();
+  }
+
+  const isSaved = savedSlugs.includes(temple.slug);
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(temple.location)}`;
+
+  const handleToggleSave = () => {
+    const wasSaved = savedSlugs.includes(temple.slug);
+    if (
+      !ensureClerkSignedInForFavoriteAdd(
+        authLoaded,
+        isSignedIn === true,
+        redirectToSignIn,
+        wasSaved
+      )
+    ) {
+      return;
+    }
+    const next = toggleSavedTempleSlug(temple.slug);
+    setSavedSlugs(next);
+    toast({
+      title: wasSaved ? 'Templo quitado' : 'Templo guardado',
+      description: wasSaved
+        ? `${temple.name} ya no está en tus guardados.`
+        : `${temple.name} aparece en /dashboard/templos.`,
+    });
+  };
+
   return (
-    <div className="bg-[#F8F9FA] min-h-screen pb-16 w-full relative font-sans">
-      
-      {/* Top Header Breadcrumbs */}
-      <header className="px-6 md:px-10 py-5 w-full max-w-7xl mx-auto flex items-center bg-white border-b border-gray-200/50 hidden md:flex sticky top-0 z-20 shadow-sm mb-6">
+    <div className="relative min-h-screen w-full bg-[#F8F9FA] pb-16 font-sans">
+      <header className="sticky top-0 z-20 mb-6 hidden w-full max-w-7xl items-center border-b border-gray-200/50 bg-white px-6 py-5 shadow-sm md:mx-auto md:flex md:px-10">
         <div className="flex items-center gap-4 text-sm font-bold">
-          <Link href="/" className="text-gray-900 hover:text-blue-600 transition-colors">Azure Meridian</Link>
+          <Link href="/" className="text-gray-900 transition-colors hover:text-blue-600">
+            ICIAR
+          </Link>
           <span className="text-gray-300">|</span>
-          <span className="text-gray-500 font-medium">Dashboard</span>
-          <span className="text-blue-600 ml-4 font-bold tracking-wide">Temples</span>
+          <span className="font-medium text-gray-500">Dashboard</span>
+          <Link href="/dashboard/templos" className="ml-4 font-bold tracking-wide text-blue-600">
+            Templos
+          </Link>
         </div>
       </header>
 
-      <div className="px-6 md:px-10 max-w-7xl mx-auto space-y-8 mt-4 md:mt-0">
-        
-        {/* Hero Section */}
-        <div className="relative w-full h-[400px] rounded-[24px] md:rounded-[32px] overflow-hidden shadow-md group">
-          <Image 
-            src="https://images.unsplash.com/photo-1548625361-24838421ccec" 
-            alt="Temple Interior" 
-            fill 
+      <div className="mx-auto mt-4 max-w-7xl space-y-8 px-6 md:mt-0 md:px-10">
+        <div className="group relative h-[400px] w-full overflow-hidden rounded-[24px] shadow-md md:rounded-[32px]">
+          <Image
+            src={temple.image}
+            alt={temple.name}
+            fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             priority
+            sizes="(max-width: 1280px) 100vw, 1280px"
           />
-          {/* Content Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent p-8 md:p-12 flex flex-col justify-end">
-            <span className="bg-blue-600 text-white text-[9px] sm:text-[10px] font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full w-fit mb-4 shadow-sm">
-              Featured Sanctuary
-            </span>
-            <div className="flex justify-between items-end w-full">
-              <h1 className="text-white text-3xl md:text-5xl font-bold font-display tracking-tight leading-tight">
-                Azure Meridian Temple
+          <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-gray-900/90 via-gray-900/30 to-transparent p-8 md:p-12">
+            {temple.featured ? (
+              <span className="mb-4 w-fit rounded-full bg-blue-600 px-3.5 py-1.5 text-[9px] font-bold uppercase tracking-widest text-white shadow-sm sm:text-[10px]">
+                Destacado
+              </span>
+            ) : null}
+            <div className="flex w-full items-end justify-between">
+              <h1 className="font-display text-3xl font-bold leading-tight tracking-tight text-white md:text-5xl">
+                {temple.name}
               </h1>
-              <button className="w-12 h-12 bg-white/10 backdrop-blur-md rounded-xl border border-white/20 flex items-center justify-center hover:bg-white/20 transition-all hover:scale-105 shadow-lg group/heart">
-                <Heart className="w-5 h-5 text-white fill-white/80 group-hover/heart:fill-white transition-all transform group-hover/heart:scale-110" />
+              <button
+                type="button"
+                onClick={handleToggleSave}
+                className="group/heart flex h-12 w-12 items-center justify-center rounded-xl border border-white/20 bg-white/10 shadow-lg backdrop-blur-md transition-all hover:scale-105 hover:bg-white/20"
+                aria-label={isSaved ? 'Quitar de guardados' : 'Guardar templo'}
+              >
+                <Heart
+                  className={`h-5 w-5 text-white transition-all group-hover/heart:scale-110 ${isSaved ? 'fill-white' : 'fill-white/80 group-hover/heart:fill-white'}`}
+                />
               </button>
             </div>
           </div>
         </div>
 
-        {/* 2-Column Grid Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Left Column (Address & Services) */}
-          <div className="lg:col-span-2 space-y-6">
-            
-            {/* Address Card */}
-            <div className="bg-white rounded-[24px] p-6 lg:p-8 shadow-sm border border-gray-100 flex flex-col">
-              <div className="flex justify-between items-start mb-4">
-                <span className="text-[10px] sm:text-xs font-bold text-gray-400 uppercase tracking-widest">Address</span>
-                <span className="bg-green-50 text-green-600 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                  Open until 8:00 PM
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            <div className="flex flex-col rounded-[24px] border border-gray-100 bg-white p-6 shadow-sm lg:p-8">
+              <div className="mb-4 flex items-start justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 sm:text-xs">
+                  Dirección
+                </span>
+                <span className="flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1.5 text-[10px] font-bold text-green-600 sm:text-xs">
+                  <div className={`h-1.5 w-1.5 rounded-full ${temple.statusColor}`} />
+                  {temple.status}
                 </span>
               </div>
-              <h2 className="text-lg md:text-xl font-bold text-gray-900 leading-relaxed mb-8 max-w-sm">
-                1200 Cathedral Way,<br/>Meridian District, Portland, OR 97201
+              <h2 className="mb-8 max-w-2xl text-lg font-bold leading-relaxed text-gray-900 md:text-xl">
+                {temple.location}
               </h2>
-              
-              <div className="flex flex-col sm:flex-row items-center gap-4 mt-auto">
-                <button className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 md:py-3.5 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-transform hover:-translate-y-0.5 shadow-sm">
-                  <Navigation className="w-4 h-4 fill-white shrink-0" />
-                  <span>Get Directions</span>
+
+              <div className="mt-auto flex flex-col items-center gap-4 sm:flex-row">
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition-transform hover:-translate-y-0.5 hover:bg-blue-700 sm:flex-1 md:py-3.5"
+                >
+                  <Navigation className="h-4 w-4 shrink-0 fill-white" />
+                  <span>Cómo llegar</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={handleToggleSave}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 sm:flex-1 md:py-3.5"
+                >
+                  <Bookmark className={`h-4 w-4 shrink-0 ${isSaved ? 'fill-[#B88A44] text-[#B88A44]' : 'text-gray-500'}`} />
+                  <span className="truncate">{isSaved ? 'Quitar de mis templos' : 'Guardar en mis templos'}</span>
                 </button>
-                <button className="w-full sm:flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 py-3 md:py-3.5 px-4 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 border border-gray-200 transition-colors">
-                  <Bookmark className="w-4 h-4 text-gray-500 shrink-0" />
-                  <span className="truncate">Save to My Temples</span>
-                </button>
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <button className="flex-1 sm:flex-none w-12 h-12 border border-gray-200 rounded-xl flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors">
-                    <Phone className="w-4 h-4" />
+                <div className="flex w-full items-center gap-3 sm:w-auto">
+                  <button
+                    type="button"
+                    className="flex h-12 flex-1 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition-colors hover:bg-gray-50 sm:flex-none sm:w-12"
+                    aria-label="Teléfono (próximamente)"
+                  >
+                    <Phone className="h-4 w-4" />
                   </button>
-                  <button className="flex-1 sm:flex-none w-12 h-12 border border-gray-200 rounded-xl flex items-center justify-center text-gray-600 hover:bg-gray-50 transition-colors">
-                    <Share2 className="w-4 h-4" />
-                  </button>
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(temple.name + ' ' + temple.location)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-12 flex-1 items-center justify-center rounded-xl border border-gray-200 text-gray-600 transition-colors hover:bg-gray-50 sm:flex-none sm:w-12"
+                    aria-label="Compartir en mapa"
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </a>
                 </div>
               </div>
             </div>
 
-            {/* Service Times Card */}
-            <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden">
-              <div className="bg-gray-50/50 p-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 className="text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-widest">Service Times</h3>
-                <Clock className="w-4 h-4 text-gray-400" />
+            <div className="overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-sm">
+              <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 p-6">
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-gray-700 sm:text-xs">
+                  Horarios y cultos
+                </h3>
+                <Clock className="h-4 w-4 text-gray-400" />
               </div>
-              
-              <div className="divide-y divide-gray-100">
-                <div className="flex flex-col sm:flex-row sm:items-center p-6 gap-4 sm:gap-8">
-                  <div className="sm:w-32 font-bold text-gray-900">Sunday</div>
-                  <div className="flex flex-wrap gap-3">
-                    <span className="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[11px] font-bold">
-                      Morning Mass • 9:00 AM
-                    </span>
-                    <span className="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[11px] font-bold">
-                      Vespers • 5:30 PM
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center p-6 gap-4 sm:gap-8">
-                  <div className="sm:w-32 font-bold text-gray-900">Tuesday</div>
-                  <div className="flex flex-wrap gap-3">
-                    <span className="bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-[11px] font-bold">
-                      Midweek • 7:00 PM
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center p-6 gap-4 sm:gap-8">
-                  <div className="sm:w-32 font-bold text-gray-900">Saturday</div>
-                  <div className="flex flex-wrap gap-3">
-                    <span className="bg-purple-50 text-purple-600 px-4 py-1.5 rounded-full text-[11px] font-bold">
-                      Confession • 3:00 PM
-                    </span>
-                  </div>
-                </div>
+              <div className="p-6 text-sm leading-relaxed text-gray-600">
+                Los horarios detallados pueden variar. Confirma con la sede o en los avisos oficiales de la congregación.
               </div>
             </div>
-            
           </div>
 
-          {/* Right Column (Map) */}
-          <div className="bg-gray-200/50 rounded-[24px] shadow-sm border border-gray-100 flex flex-col relative overflow-hidden h-full min-h-[500px]">
-            <div className="bg-white p-6 border-b border-gray-100 flex justify-between items-center shadow-sm z-10 w-full shrink-0">
-              <h3 className="text-[11px] sm:text-xs font-bold text-gray-700 uppercase tracking-widest">Location Map</h3>
-              <Map className="w-4 h-4 text-gray-400" />
+          <div className="relative flex min-h-[500px] flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-gray-200/50 shadow-sm">
+            <div className="z-10 flex w-full shrink-0 items-center justify-between border-b border-gray-100 bg-white p-6 shadow-sm">
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-gray-700 sm:text-xs">Ubicación</h3>
+              <Map className="h-4 w-4 text-gray-400" />
             </div>
-            
-            {/* Phone Bezel Container */}
-            <div className="flex-1 flex items-center justify-center p-8 bg-gray-200 relative">
-              <div className="relative w-full max-w-[240px] aspect-[9/18] bg-white rounded-[32px] md:rounded-[40px] border-[6px] md:border-[10px] border-white shadow-xl overflow-hidden pointer-events-none group">
-                
-                {/* Fake map line graphics (using Tailwind gradients and shapes instead of heavy images) */}
+
+            <div className="relative flex flex-1 flex-col items-center justify-center bg-gray-200 p-8">
+              <a
+                href={mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pointer-events-auto z-[1] mb-4 rounded-xl bg-white px-4 py-2 text-xs font-bold text-blue-600 shadow-sm ring-1 ring-gray-200 hover:bg-blue-50"
+              >
+                Abrir en Google Maps
+              </a>
+              <div className="pointer-events-none relative aspect-[9/18] w-full max-w-[240px] overflow-hidden rounded-[32px] border-[6px] border-white shadow-xl md:rounded-[40px] md:border-[10px]">
                 <div className="absolute inset-0 bg-[#E5E9F0]">
-                  {/* Faux map streets */}
-                  <div className="absolute top-0 right-0 w-full h-full transform skew-x-12">
-                    <div className="h-full w-4 bg-white/70 ml-12 rotate-45 transform origin-top left-10 relative"></div>
-                    <div className="h-full w-2 bg-white/70 ml-24 rotate-45 transform origin-top left-24 relative absolute"></div>
-                    <div className="w-full h-8 bg-white/70 bottom-32 -rotate-12 absolute"></div>
-                    <div className="w-full h-3 bg-white/70 bottom-12 rotate-12 absolute"></div>
+                  <div className="absolute right-0 top-0 h-full w-full skew-x-12 transform">
+                    <div className="relative left-10 ml-12 h-full w-4 origin-top rotate-45 transform bg-white/70" />
+                    <div className="absolute left-24 ml-24 h-full w-2 origin-top rotate-45 transform bg-white/70" />
+                    <div className="absolute bottom-32 h-8 w-full -rotate-12 bg-white/70" />
+                    <div className="absolute bottom-12 h-3 w-full rotate-12 bg-white/70" />
                   </div>
-                  {/* Faux park / shapes */}
-                  <div className="absolute bottom-16 left-4 w-32 h-24 bg-green-100/50 rounded-2xl"></div>
+                  <div className="absolute bottom-16 left-4 h-24 w-32 rounded-2xl bg-green-100/50" />
                 </div>
-
-                {/* Map Pin */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                  <div className="w-8 h-8 md:w-10 md:h-10 text-blue-600 fill-blue-600 flex items-center justify-center">
-                     <MapPin className="w-full h-full" fill="currentColor" stroke="white" strokeWidth={1} />
+                <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 transform flex-col items-center">
+                  <div className="flex h-8 w-8 items-center justify-center fill-blue-600 text-blue-600 md:h-10 md:w-10">
+                    <MapPin className="h-full w-full" fill="currentColor" stroke="white" strokeWidth={1} />
                   </div>
-                  <div className="w-3 h-1 bg-black/20 rounded-[100%] blur-[1px] -mt-1"></div>
-                  {/* Pulse effect */}
-                  <div className="absolute bg-blue-500/30 w-12 h-12 rounded-full scale-150 -z-10 animate-ping"></div>
+                  <div className="-mt-1 h-1 w-3 rounded-[100%] bg-black/20 blur-[1px]" />
+                  <div className="-z-10 absolute h-12 w-12 scale-150 animate-ping rounded-full bg-blue-500/30" />
                 </div>
-                
-                {/* Top Notch simulator */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/3 h-4 bg-white rounded-b-xl shadow-sm z-20">
-                  <div className="absolute top-1.5 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gray-200 rounded-full"></div>
+                <div className="absolute left-1/2 top-0 z-20 h-4 w-1/3 -translate-x-1/2 transform rounded-b-xl bg-white shadow-sm">
+                  <div className="absolute left-1/2 top-1.5 h-1 w-8 -translate-x-1/2 transform rounded-full bg-gray-200" />
                 </div>
               </div>
-              
-              {/* Floating Zoom Controls for the "map" card overlay */}
-              <div className="absolute bottom-6 right-6 bg-white rounded-lg shadow-sm border border-gray-200 flex flex-row overflow-hidden pointer-events-auto">
-                <button className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-gray-900 border-r border-gray-200">
-                  <Plus className="w-4 h-4" />
+
+              <div className="pointer-events-auto absolute bottom-6 right-6 flex flex-row overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+                <button
+                  type="button"
+                  className="flex h-10 w-10 items-center justify-center border-r border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                  aria-label="Acercar (decorativo)"
+                >
+                  <Plus className="h-4 w-4" />
                 </button>
-                <button className="w-10 h-10 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-gray-900">
-                  <Minus className="w-4 h-4" />
+                <button
+                  type="button"
+                  className="flex h-10 w-10 items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                  aria-label="Alejar (decorativo)"
+                >
+                  <Minus className="h-4 w-4" />
                 </button>
               </div>
             </div>
-            
           </div>
         </div>
 
-        {/* Gallery Selection */}
         <div className="mt-8 pt-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-4">
+          <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
             <div>
-              <h2 className="text-sm font-bold text-gray-900 tracking-widest uppercase mb-1">Temple Gallery</h2>
-              <p className="text-xs text-gray-500 font-medium">Immersive views of our sanctuary and surrounding grounds.</p>
+              <h2 className="mb-1 text-sm font-bold uppercase tracking-widest text-gray-900">Galería</h2>
+              <p className="text-xs font-medium text-gray-500">Vistas del templo y sus alrededores.</p>
             </div>
-            <button className="text-blue-600 text-xs font-bold hover:text-blue-800 transition-colors shrink-0">
-              View All 24 Photos
-            </button>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group">
-              <div className="relative w-full h-48 md:h-64 overflow-hidden">
-                <Image 
-                  src="https://images.unsplash.com/photo-1507676184212-d0330a210fec" 
-                  alt="Interior" 
-                  fill 
-                  className="object-cover group-hover:scale-105 transition-transform duration-700" 
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="group overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+              <div className="relative h-48 w-full overflow-hidden md:h-64">
+                <Image
+                  src={temple.image}
+                  alt={`${temple.name} — vista`}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
               </div>
-              <div className="px-5 py-4 border-t border-gray-50">
-                <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Main Sanctuary</p>
+              <div className="border-t border-gray-50 px-5 py-4">
+                <p className="text-[9px] font-bold uppercase tracking-widest text-gray-400 sm:text-[10px]">
+                  {temple.name}
+                </p>
               </div>
             </div>
-            
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group">
-              <div className="relative w-full h-48 md:h-64 overflow-hidden">
-                <Image 
-                  src="https://images.unsplash.com/photo-1598902404092-2dfa84a6b262" 
-                  alt="Gardens" 
-                  fill 
-                  className="object-cover group-hover:scale-105 transition-transform duration-700" 
-                />
-              </div>
-              <div className="px-5 py-4 border-t border-gray-50">
-                <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">South Gardens</p>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group">
-              <div className="relative w-full h-48 md:h-64 overflow-hidden">
-                <Image 
-                  src="https://images.unsplash.com/photo-1497366216548-37526070297c" 
-                  alt="Lightwell" 
-                  fill 
-                  className="object-cover group-hover:scale-105 transition-transform duration-700" 
-                />
-              </div>
-              <div className="px-5 py-4 border-t border-gray-50">
-                <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest">The Lightwell</p>
-              </div>
-            </div>
-            
           </div>
         </div>
-
       </div>
     </div>
   );

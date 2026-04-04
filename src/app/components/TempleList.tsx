@@ -9,9 +9,17 @@ import {
     DropdownMenuTrigger
 } from "@/app/components/ui/dropdown-menu";
 import { templeLocations } from "@/app/lib/temples-data";
+import {
+    loadSavedLocalTempleNames,
+    SAVED_LOCAL_TEMPLE_NAMES_KEY,
+    SAVED_TEMPLES_CHANGED_EVENT,
+    toggleSavedLocalTempleName,
+} from "@/lib/saved-temples";
 import { ClipboardCopy, Share2, Bookmark, MapPin, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useAuth, useClerk } from "@clerk/nextjs";
 import { useIsMobile } from "@/app/hooks/use-mobile";
+import { ensureClerkSignedInForFavoriteAdd } from "@/lib/require-clerk-sign-in";
 
 const grouped = templeLocations.reduce<Record<string, typeof templeLocations>>((acc, temple) => {
     const m = temple.municipality;
@@ -34,6 +42,29 @@ export const TempleList = () => {
     const [savedTemples, setSavedTemples] = useState<string[]>([]);
     const [expandedMunicipalities, setExpandedMunicipalities] = useState<string[]>([]);
     const isMobile = useIsMobile();
+    const { isLoaded: authLoaded, isSignedIn } = useAuth();
+    const { redirectToSignIn } = useClerk();
+
+    const refreshSaved = useCallback(() => {
+        setSavedTemples(loadSavedLocalTempleNames());
+    }, []);
+
+    useEffect(() => {
+        refreshSaved();
+    }, [refreshSaved]);
+
+    useEffect(() => {
+        const onChange = () => refreshSaved();
+        const onStorage = (e: StorageEvent) => {
+            if (e.key === SAVED_LOCAL_TEMPLE_NAMES_KEY) refreshSaved();
+        };
+        window.addEventListener(SAVED_TEMPLES_CHANGED_EVENT, onChange);
+        window.addEventListener("storage", onStorage);
+        return () => {
+            window.removeEventListener(SAVED_TEMPLES_CHANGED_EVENT, onChange);
+            window.removeEventListener("storage", onStorage);
+        };
+    }, [refreshSaved]);
 
     const handleShareInteraction = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -41,7 +72,18 @@ export const TempleList = () => {
 
     const toggleSave = (e: React.MouseEvent, nameKey: string) => {
         e.stopPropagation();
-        setSavedTemples(prev => prev.includes(nameKey) ? prev.filter(n => n !== nameKey) : [...prev, nameKey]);
+        const alreadySaved = savedTemples.includes(nameKey);
+        if (
+            !ensureClerkSignedInForFavoriteAdd(
+                authLoaded,
+                isSignedIn === true,
+                redirectToSignIn,
+                alreadySaved
+            )
+        ) {
+            return;
+        }
+        setSavedTemples(toggleSavedLocalTempleName(nameKey));
     };
 
     const toggleMunicipality = (m: string) => {

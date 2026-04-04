@@ -6,22 +6,22 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import Footer from '@/app/components/footer';
 import { Calendar, MapPin, Clock, ArrowLeft, Bookmark, Share2 } from 'lucide-react';
+import { loadSavedAnnouncementTitles, persistSavedAnnouncementTitles } from '@/lib/saved-announcements';
+import { useAuth, useClerk } from '@clerk/nextjs';
+import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
 
 export default function AvisoDetailPage() {
   const params = useParams();
   const slug = params?.slug as string;
   const announcement = allAnnouncements.find(a => slugify(a.title) === slug);
   const [isSaved, setIsSaved] = useState(false);
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { redirectToSignIn } = useClerk();
 
   useEffect(() => {
-    // Client-side initialization of saved state
-    const saved = localStorage.getItem('savedAnnouncements');
-    if (saved) {
-      const savedList = JSON.parse(saved);
-      if (announcement) {
-        setIsSaved(savedList.includes(announcement.title));
-      }
-    }
+    if (!announcement) return;
+    const savedList = loadSavedAnnouncementTitles();
+    setIsSaved(savedList.includes(announcement.title));
   }, [announcement]);
 
   if (!announcement) {
@@ -29,17 +29,26 @@ export default function AvisoDetailPage() {
   }
 
   const toggleSave = () => {
-    const saved = localStorage.getItem('savedAnnouncements');
-    let savedList = saved ? JSON.parse(saved) : [];
-    
+    if (
+      !ensureClerkSignedInForFavoriteAdd(
+        authLoaded,
+        isSignedIn === true,
+        redirectToSignIn,
+        isSaved
+      )
+    ) {
+      return;
+    }
+    const list = loadSavedAnnouncementTitles();
+    let next: string[];
     if (isSaved) {
-      savedList = savedList.filter((t: string) => t !== announcement.title);
+      next = list.filter(t => t !== announcement.title);
       setIsSaved(false);
     } else {
-      savedList.push(announcement.title);
+      next = list.includes(announcement.title) ? list : [...list, announcement.title];
       setIsSaved(true);
     }
-    localStorage.setItem('savedAnnouncements', JSON.stringify(savedList));
+    persistSavedAnnouncementTitles(next);
   };
 
   const handleShare = async () => {

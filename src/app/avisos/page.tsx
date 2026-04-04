@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Calendar, MapPin, ArrowRight, Bell, Bookmark, Share2 } from 'lucide-react';
 import Footer from '@/app/components/footer';
 import { featuredAnnouncement, recentAnnouncements, slugify } from '@/app/lib/announcements';
+import { loadSavedAnnouncementTitles, persistSavedAnnouncementTitles } from '@/lib/saved-announcements';
+import { useAuth, useClerk } from '@clerk/nextjs';
+import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
 
 const ITEMS_PER_PAGE = 4;
 const filters = ['Todos', 'Eventos', 'Comunidad', 'Avisos', 'Misiones', 'Celebración'];
@@ -69,6 +72,12 @@ export default function AvisosPage() {
   const [activeTimeFilter, setActiveTimeFilter] = useState('Todos');
   const [savedAvisos, setSavedAvisos] = useState<string[]>([]);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { redirectToSignIn } = useClerk();
+
+  useEffect(() => {
+    setSavedAvisos(loadSavedAnnouncementTitles());
+  }, []);
 
   const handleFilterClick = (filter: string) => {
     setActiveFilter(filter);
@@ -78,7 +87,22 @@ export default function AvisosPage() {
   const toggleSave = (e: React.MouseEvent, title: string) => {
     e.preventDefault();
     e.stopPropagation();
-    setSavedAvisos(prev => prev.includes(title) ? prev.filter(t => t !== title) : [...prev, title]);
+    setSavedAvisos(prev => {
+      const alreadySaved = prev.includes(title);
+      if (
+        !ensureClerkSignedInForFavoriteAdd(
+          authLoaded,
+          isSignedIn === true,
+          redirectToSignIn,
+          alreadySaved
+        )
+      ) {
+        return prev;
+      }
+      const next = alreadySaved ? prev.filter(t => t !== title) : [...prev, title];
+      persistSavedAnnouncementTitles(next);
+      return next;
+    });
   };
 
   const handleShare = async (e: React.MouseEvent, title: string) => {

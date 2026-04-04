@@ -3,7 +3,7 @@
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, Megaphone, FileText, Building2, HelpCircle, Menu, X, Compass } from 'lucide-react';
+import { BookOpen, Megaphone, FileText, Building2, Menu, X, Compass } from 'lucide-react';
 import { Show, SignInButton } from '@clerk/nextjs';
 import Footer from '@/app/components/footer';
 
@@ -17,12 +17,28 @@ const sidebarLinks = [
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close sidebar on navigation in mobile
   useEffect(() => {
     setIsSidebarOpen(false);
   }, [pathname]);
+
+  if (!mounted) {
+    return (
+      <div
+        className="min-h-[calc(100vh-80px)] bg-[#F4F7F6]"
+        aria-busy="true"
+        aria-label="Cargando panel"
+      />
+    );
+  }
 
   return (
     <Show 
@@ -67,17 +83,44 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         )}
 
         {/* Sidebar */}
-        <aside className={`fixed inset-y-0 left-0 z-50 w-[280px] bg-white lg:bg-[#B88A44]/5 border-r border-gray-200 lg:border-[#B88A44]/20 flex flex-col justify-between transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 lg:flex lg:sticky lg:top-20 lg:h-[calc(100vh-80px)] overflow-y-auto shadow-2xl lg:shadow-none ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <aside
+          className={`fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col justify-between overflow-y-auto border-r border-gray-200 bg-white shadow-2xl transition-[transform,width] duration-300 ease-in-out lg:border-[#B88A44]/20 lg:bg-[#B88A44]/5 lg:shadow-none ${isDesktopSidebarCollapsed ? 'lg:w-20' : 'lg:w-[280px]'} lg:static lg:translate-x-0 lg:sticky lg:top-20 lg:h-[calc(100vh-80px)] ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
+        >
           <div>
-            {/* Mobile Sidebar Header Branding */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 lg:hidden">
-              <span className="font-bold text-lg text-[#B88A44]">Menú</span>
-              <button onClick={() => setIsSidebarOpen(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="w-6 h-6" />
+            {/* Mobile: cabecera del drawer */}
+            <div className="flex items-center justify-between border-b border-gray-100 p-6 lg:hidden">
+              <span className="text-lg font-bold text-[#B88A44]">Menú</span>
+              <button
+                type="button"
+                onClick={() => setIsSidebarOpen(false)}
+                className="text-gray-400 hover:text-gray-600"
+                aria-label="Cerrar menú"
+              >
+                <X className="h-6 w-6" />
               </button>
             </div>
 
-            <nav className="px-5 space-y-1.5 pt-6 lg:pt-10">
+            {/* Escritorio: hamburguesa para contraer / expandir */}
+            <div
+              className={`hidden border-b border-[#B88A44]/15 lg:flex ${isDesktopSidebarCollapsed ? 'justify-center px-2 py-3' : 'items-center justify-between px-4 py-3'}`}
+            >
+              {!isDesktopSidebarCollapsed ? (
+                <span className="text-xs font-bold uppercase tracking-widest text-[#B88A44]/80"></span>
+              ) : (
+                <span className="sr-only">Menú del panel</span>
+              )}
+              <button
+                type="button"
+                onClick={() => setIsDesktopSidebarCollapsed(v => !v)}
+                className="rounded-lg p-2 text-[#B88A44] transition-colors hover:bg-[#B88A44]/10"
+                aria-expanded={!isDesktopSidebarCollapsed}
+                aria-label={isDesktopSidebarCollapsed ? 'Expandir menú lateral' : 'Contraer menú lateral'}
+              >
+                <Menu className="h-5 w-5" />
+              </button>
+            </div>
+
+            <nav className={`space-y-1.5 px-5 pt-4 lg:pt-6 ${isDesktopSidebarCollapsed ? 'lg:px-2 lg:pt-4' : ''}`}>
               {sidebarLinks.map((link) => {
                 const isActive = pathname.startsWith(link.href);
                 const Icon = link.icon;
@@ -85,12 +128,15 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm font-semibold transition-all ${
+                    title={isDesktopSidebarCollapsed ? link.name : undefined}
+                    className={`flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold transition-all ${
+                      isDesktopSidebarCollapsed ? 'lg:justify-center lg:px-2' : ''
+                    } ${
                       isActive ? 'bg-[#B88A44]/10 text-[#B88A44] shadow-sm' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                   >
-                    <Icon className={`w-5 h-5 ${isActive ? 'text-[#B88A44]' : 'text-gray-400'}`} />
-                    {link.name}
+                    <Icon className={`h-5 w-5 shrink-0 ${isActive ? 'text-[#B88A44]' : 'text-gray-400'}`} />
+                    <span className={isDesktopSidebarCollapsed ? 'lg:sr-only' : ''}>{link.name}</span>
                   </Link>
                 );
               })}

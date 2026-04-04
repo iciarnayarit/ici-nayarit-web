@@ -4,6 +4,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/app/hooks/use-toast';
 import { bibleData, handleReadPassage } from '@/lib/bible-data';
 import { allPlanData, plans } from '@/lib/reading-plan-data';
+import { SAVED_PLANS_CHANGED_EVENT } from '@/lib/saved-reading-plans';
+import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
+import { useAuth, useClerk } from '@clerk/nextjs';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Bookmark, Download, Share2 } from 'lucide-react';
@@ -21,6 +24,8 @@ interface PassageVerse {
 
 export default function ReadingPlans() {
   const { toast } = useToast();
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { redirectToSignIn } = useClerk();
   const [savedPlans, setSavedPlans] = useState<string[]>([]);
 
   useEffect(() => {
@@ -31,8 +36,20 @@ export default function ReadingPlans() {
   }, []);
 
   const handleSavePlan = (plan: typeof plans[0]) => {
-    let updatedSavedPlans = [];
-    if (savedPlans.includes(plan.id)) {
+    const alreadySaved = savedPlans.includes(plan.id);
+    if (
+      !ensureClerkSignedInForFavoriteAdd(
+        authLoaded,
+        isSignedIn === true,
+        redirectToSignIn,
+        alreadySaved
+      )
+    ) {
+      return;
+    }
+
+    let updatedSavedPlans: string[] = [];
+    if (alreadySaved) {
       updatedSavedPlans = savedPlans.filter(id => id !== plan.id);
       toast({
         title: "Plan Eliminado",
@@ -48,6 +65,7 @@ export default function ReadingPlans() {
     setSavedPlans(updatedSavedPlans);
     const fullSavedPlans = plans.filter(p => updatedSavedPlans.includes(p.id));
     localStorage.setItem('savedPlans', JSON.stringify(fullSavedPlans));
+    window.dispatchEvent(new Event(SAVED_PLANS_CHANGED_EVENT));
   };
 
   const handleSharePlan = async (plan: typeof plans[0]) => {

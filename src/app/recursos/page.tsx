@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, Download, Film, FileText, Wrench, Package, ArrowRight, BookOpen, DownloadCloud, ExternalLink, Scissors, Headphones, Mail, Bookmark, Share2 } from 'lucide-react';
 import Footer from '@/app/components/footer';
 import Link from 'next/link';
 import { resourceItems, slugify } from '@/app/lib/resources-data';
+import { loadSavedResourceTitles, persistSavedResourceTitles } from '@/lib/saved-resources';
+import { useAuth, useClerk } from '@clerk/nextjs';
+import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
 
 const filters = [
   { label: 'Todos', icon: Package },
@@ -21,11 +24,32 @@ export default function RecursosPage() {
   const [filteredResources, setFilteredResources] = useState(resourceItems);
   const [savedRecursos, setSavedRecursos] = useState<string[]>([]);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { redirectToSignIn } = useClerk();
+
+  useEffect(() => {
+    setSavedRecursos(loadSavedResourceTitles());
+  }, []);
 
   const toggleSave = (e: React.MouseEvent, title: string) => {
     e.preventDefault();
     e.stopPropagation();
-    setSavedRecursos(prev => prev.includes(title) ? prev.filter(t => t !== title) : [...prev, title]);
+    setSavedRecursos(prev => {
+      const alreadySaved = prev.includes(title);
+      if (
+        !ensureClerkSignedInForFavoriteAdd(
+          authLoaded,
+          isSignedIn === true,
+          redirectToSignIn,
+          alreadySaved
+        )
+      ) {
+        return prev;
+      }
+      const next = alreadySaved ? prev.filter(t => t !== title) : [...prev, title];
+      persistSavedResourceTitles(next);
+      return next;
+    });
   };
 
   const handleShare = async (e: React.MouseEvent, title: string) => {

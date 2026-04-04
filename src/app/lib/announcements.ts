@@ -26,7 +26,7 @@ export const recentAnnouncements = [
     description: 'Cuarta sesión de capacitación sobre evangelismo.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/online-meeting.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -36,7 +36,7 @@ export const recentAnnouncements = [
     description: 'Tiempo de intercesión para el ministerio de música.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/music-event.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -76,7 +76,7 @@ export const recentAnnouncements = [
     description: 'Quinta sesión del programa de evangelismo general. Profundización en los ejes ministeriales.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/online-meeting-2.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -86,7 +86,7 @@ export const recentAnnouncements = [
     description: 'Comisión general de música.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/music-2.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -106,7 +106,7 @@ export const recentAnnouncements = [
     description: 'Sesión final de capacitación presbiterial sobre los ejes de la gran comisión.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/meeting.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -116,7 +116,7 @@ export const recentAnnouncements = [
     description: 'Intercesión semanal de música.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/music-event.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -133,10 +133,10 @@ export const recentAnnouncements = [
     category: 'Aviso',
     date: '25 Abril 2026',
     title: '[Varones] Guardia de oración',
-    description: 'Tiempo de oración estratégica para la sociedad de varones a través de nuestra plataforma online.',
+    description: 'Tiempo de oración estratégica para la sociedad de varones a través de nuestra plataforma en línea.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/online-meeting.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -146,7 +146,7 @@ export const recentAnnouncements = [
     description: 'Noche especial de intercesión y clamor para las damas de nuestro presbiterio.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/vigil.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -176,7 +176,7 @@ export const recentAnnouncements = [
     description: 'Espacio de oración diseñado para nuestros adolescentes e intermedios.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/online-meeting-2.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -186,7 +186,7 @@ export const recentAnnouncements = [
     description: 'Cierre mensual de oración de nuestra comisión de música. Un tiempo potente de intercesión ministerial.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/music-event.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
 
@@ -207,7 +207,7 @@ export const recentAnnouncements = [
     description: 'Comisión general de música. Intercesión profunda por la guitarras y el ministerio musical.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/music-2.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -238,7 +238,7 @@ export const recentAnnouncements = [
     description: 'Segunda sesión intensiva sobre los ejes de la gran comisión a cargo de la Comisión General de Evangelismo.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/online-meeting-2.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -258,7 +258,7 @@ export const recentAnnouncements = [
     description: 'Comisión general de música. Tiempo de intercesión por el ministerio.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/music-event.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -288,7 +288,7 @@ export const recentAnnouncements = [
     description: 'Vigilia de oración presbiterial organizada por la sociedad de damas para clamar por Nayarit.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/online-meeting-2.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -328,7 +328,7 @@ export const recentAnnouncements = [
     description: 'Tiempo dedicado a la oración con la juventud intermedia en preparación espiritual.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/vigil.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
   {
@@ -348,7 +348,7 @@ export const recentAnnouncements = [
     description: 'Tercera fase de capacitación estratégica sobre los ejes de la gran comisión.',
     link: 'Ver detalles',
     imageUrl: '/images/announcements/online-meeting.png',
-    location: 'Online',
+    location: 'En línea',
     time: 'Hora pendiente'
   },
 

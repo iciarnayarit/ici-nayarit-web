@@ -16,11 +16,16 @@ import { useEffect, useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
 import Link from 'next/link';
 import { handleReadPassage, PassageVerse } from '@/lib/bible-data';
+import { useAuth, useClerk } from '@clerk/nextjs';
+import { ensureClerkSignedIn, ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
 import { ReadingDay } from '@/lib/reading-plan-data';
 
 interface SavedVerse {
     text: string;
     reference: string;
+    source?: 'biblia' | 'plan';
+    planSlug?: string;
+    planTitle?: string;
 }
 
 interface CustomNote {
@@ -94,6 +99,8 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
 
     const router = useRouter();
     const { toast } = useToast();
+    const { isLoaded: authLoaded, isSignedIn } = useAuth();
+    const { redirectToSignIn } = useClerk();
 
     useEffect(() => {
         setMounted(true);
@@ -222,6 +229,10 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
 
         if (noteTags.length === 0) {
             toast({ title: "Faltan datos", description: "Por favor añade al menos un tag para guardar tu nota.", variant: "destructive" });
+            return;
+        }
+
+        if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
             return;
         }
 
@@ -369,7 +380,24 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
 
     const handleSaveVerse = (verse: PassageVerse) => {
         const reference = `${verse.book} ${verse.chapter}:${verse.verse}`;
-        const newVerse = { text: verse.text, reference };
+        const alreadyIn = savedVerses.some(v => v.reference === reference);
+        if (
+            !ensureClerkSignedInForFavoriteAdd(
+                authLoaded,
+                isSignedIn === true,
+                redirectToSignIn,
+                alreadyIn
+            )
+        ) {
+            return;
+        }
+        const newVerse: SavedVerse = {
+            text: verse.text,
+            reference,
+            source: 'plan',
+            planSlug,
+            planTitle: title,
+        };
 
         let updatedSavedVerses;
         if (savedVerses.some(v => v.reference === reference)) {

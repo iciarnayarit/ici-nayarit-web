@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/app/components/ui/dropdown-menu';
 import { Button } from '@/app/components/ui/button';
-import { Show, UserButton, SignOutButton } from '@clerk/nextjs';
+import { Show, UserButton, SignOutButton, SignInButton, SignUpButton } from '@clerk/nextjs';
 import GlobalSearch from '@/app/components/global-search';
 
 const mainLinks = [
@@ -182,12 +182,16 @@ const Header = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed">
-                        <UserPlus className="h-4 w-4 mr-2" /> Crear Cuenta
-                      </DropdownMenuItem>
-                      <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed">
-                        <LogIn className="h-4 w-4 mr-2" /> Iniciar Sesión
-                      </DropdownMenuItem>
+                      <SignUpButton mode="modal">
+                        <DropdownMenuItem className="cursor-pointer">
+                          <UserPlus className="h-4 w-4 mr-2" /> Crear Cuenta
+                        </DropdownMenuItem>
+                      </SignUpButton>
+                      <SignInButton mode="modal">
+                        <DropdownMenuItem className="cursor-pointer">
+                          <LogIn className="h-4 w-4 mr-2" /> Iniciar Sesión
+                        </DropdownMenuItem>
+                      </SignInButton>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 }
@@ -289,8 +293,22 @@ const Header = () => {
                 when="signed-in"
                 fallback={
                   <>
-                    <span className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 pointer-events-none cursor-not-allowed select-none">Crear Cuenta</span>
-                    <span className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 pointer-events-none cursor-not-allowed select-none">Iniciar Sesión</span>
+                    <SignUpButton mode="modal">
+                      <button
+                        type="button"
+                        className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-left text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
+                      >
+                        <UserPlus className="h-4 w-4 shrink-0" /> Crear Cuenta
+                      </button>
+                    </SignUpButton>
+                    <SignInButton mode="modal">
+                      <button
+                        type="button"
+                        className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-left text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
+                      >
+                        <LogIn className="h-4 w-4 shrink-0" /> Iniciar Sesión
+                      </button>
+                    </SignInButton>
                   </>
                 }
               >

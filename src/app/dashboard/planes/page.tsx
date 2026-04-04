@@ -1,185 +1,167 @@
 'use client';
 
 import Image from 'next/image';
-import { Bookmark, Plus } from 'lucide-react';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
+import DashboardSavedPlans from '@/app/dashboard/planes/dashboard-saved-plans';
+import { allPlanData, plans } from '@/lib/reading-plan-data';
 
-const plans = [
-  {
-    id: 1,
-    title: 'Amor',
-    category: 'RELACIONES',
-    color: 'bg-red-500',
-    days: '5 DÍAS',
-    description: 'Explora la naturaleza del amor incondicional a través de 1 Corintios 13.',
-    image: 'https://images.unsplash.com/photo-1518199266791-5375a83190e7',
-  },
-  {
-    id: 2,
-    title: 'Ansiedad',
-    category: 'PAZ MENTAL',
-    color: 'bg-blue-400',
-    days: '7 DÍAS',
-    description: 'Encuentra descanso para tu alma en medio de las tormentas de la vida.',
-    image: 'https://images.unsplash.com/photo-1505159940484-eb2b9f2588e2',
-  },
-  {
-    id: 3,
-    title: 'Sanidad',
-    category: 'RESTAURACIÓN',
-    color: 'bg-purple-500',
-    days: '10 DÍAS',
-    description: 'Un estudio bíblico sobre el poder restaurador de la fe y el perdón.',
-    image: 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88',
-  },
-  {
-    id: 4,
-    title: 'Propósito',
-    category: 'DIRECCIÓN',
-    color: 'bg-yellow-500',
-    days: '14 DÍAS',
-    description: 'Descubre el llamado único de Dios para tu vida en esta nueva temporada.',
-    image: 'https://images.unsplash.com/photo-1516245836543-20d2e8ce5baa',
-  },
-  {
-    id: 5,
-    title: 'Identidad',
-    category: 'FUNDAMENTOS',
-    color: 'bg-blue-600',
-    days: '3 DÍAS',
-    description: 'Afirmando quién eres en Cristo por encima de las etiquetas del mundo.',
-    image: 'https://images.unsplash.com/photo-1491841550275-ad7854e35ca6',
+const INITIAL_VISIBLE = 6;
+const LOAD_MORE_COUNT = 6;
+
+/** Plan de lectura por capítulos de Proverbios (alineado con el banner «Creciendo en Sabiduría»). */
+const FEATURED_PROVERBS_PLAN_SLUG = 'proverbios-sabiduria-diaria';
+
+const ACCENT_COLORS = [
+  'bg-red-500',
+  'bg-blue-400',
+  'bg-purple-500',
+  'bg-yellow-500',
+  'bg-blue-600',
+  'bg-emerald-500',
+  'bg-rose-500',
+  'bg-amber-500',
+] as const;
+
+const CATEGORY_LABELS = [
+  'LECTURA',
+  'DEVOCIONAL',
+  'ESTUDIO',
+  'TEMPORADA',
+  'CRECIMIENTO',
+  'COMUNIDAD',
+] as const;
+
+function daysLabel(slug: string): string {
+  const data = allPlanData[slug];
+  if (Array.isArray(data) && data.length > 0) {
+    const n = data.length;
+    return n === 1 ? '1 DÍA' : `${n} DÍAS`;
   }
-];
+  return 'GUÍA';
+}
 
 export default function PlanesPage() {
+  const total = plans.length;
+  const [visibleCount, setVisibleCount] = useState(() => Math.min(INITIAL_VISIBLE, total));
+
+  const visiblePlans = useMemo(() => plans.slice(0, visibleCount), [visibleCount]);
+  const hasMore = visibleCount < total;
+  const showing = Math.min(visibleCount, total);
+
+  const loadMore = () => {
+    if (!hasMore) return;
+    setVisibleCount(c => Math.min(c + LOAD_MORE_COUNT, total));
+  };
+
   return (
-    <div className="bg-[#F8F9FA] min-h-screen pb-20 w-full font-sans relative">
-      
-      <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10">
-        
-        {/* Featured Hero Banner */}
-        <div className="relative w-full h-[380px] rounded-3xl overflow-hidden shadow-md flex items-center">
-          <Image 
-            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b" 
-            alt="Mountains" 
-            fill 
+    <div className="relative min-h-screen w-full bg-[#F8F9FA] pb-20 font-sans">
+      <div className="mx-auto max-w-7xl space-y-10 p-6 md:p-10">
+        {/* Banner destacado */}
+        <div className="relative flex h-[380px] w-full items-center overflow-hidden rounded-3xl shadow-md">
+          <Image
+            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b"
+            alt="Paisaje montañoso"
+            fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/60 to-transparent"></div>
-          
-          <div className="relative z-10 p-8 md:p-14 max-w-2xl">
-            <span className="inline-block bg-blue-600/20 text-blue-300 border border-blue-500/30 text-[10px] font-black tracking-widest uppercase px-3.5 py-1.5 rounded-full mb-6">
-              FEATURED PLAN OF THE DAY
+          <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/60 to-transparent" />
+
+          <div className="relative z-10 max-w-2xl p-8 md:p-14">
+            <span className="mb-6 inline-block rounded-full border border-blue-500/30 bg-blue-600/20 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-300">
+              Plan destacado del día
             </span>
-            <h1 className="text-white text-4xl md:text-5xl font-bold leading-tight mb-4 tracking-tight">
+            <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl">
               Creciendo en Sabiduría
             </h1>
-            <p className="text-gray-300 text-sm md:text-base font-medium mb-10 max-w-md leading-relaxed">
+            <p className="mb-10 max-w-md text-sm font-medium leading-relaxed text-gray-300 md:text-base">
               Un viaje de 21 días a través de los Proverbios para encontrar claridad en un mundo complejo.
             </p>
             <div className="flex flex-wrap items-center gap-4">
-              <button className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 px-8 rounded-xl transition-colors shadow-sm text-sm">
-                Comenzar Plan
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold py-3.5 px-8 rounded-xl transition-colors backdrop-blur-sm text-sm">
-                Guardar
-              </button>
+              <Link
+                href={`/planes/${FEATURED_PROVERBS_PLAN_SLUG}`}
+                className="rounded-xl bg-blue-600 px-8 py-3.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-500"
+              >
+                Comenzar plan
+              </Link>
             </div>
           </div>
         </div>
 
-        {/* Section Header */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pt-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Browse Reading Plans</h2>
-            <p className="text-sm font-medium text-gray-500 mt-1">Discover curated paths for spiritual growth.</p>
-          </div>
-          
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Filter Pills */}
-            <div className="flex p-1 bg-white border border-gray-200 rounded-xl shadow-sm">
-              <button className="px-6 py-2.5 bg-blue-50 text-blue-600 text-[13px] font-bold rounded-lg transition-colors">All Plans</button>
-              <button className="px-6 py-2.5 text-gray-500 hover:text-gray-900 text-[13px] font-semibold rounded-lg transition-colors">Trending</button>
-              <button className="px-6 py-2.5 text-gray-500 hover:text-gray-900 text-[13px] font-semibold rounded-lg transition-colors">New</button>
-            </div>
-            
-            <button className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-2.5 rounded-xl text-[13px] font-bold hover:bg-gray-50 transition-colors shadow-sm">
-              <Bookmark className="w-4 h-4" />
-              Saved Plans
-            </button>
-          </div>
+        <DashboardSavedPlans />
+
+        <div className="pt-4">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Explorar planes de lectura</h2>
+          <p className="mt-1 text-sm font-medium text-gray-500">
+            Descubre itinerarios seleccionados para tu crecimiento espiritual.
+          </p>
         </div>
 
-        {/* Grid Area */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
-          
-          {plans.map((plan) => (
-            <div key={plan.id} className="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden flex flex-col hover:shadow-md transition-all group">
-              
-              {/* Image Banner */}
-              <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
-                <Image 
-                  src={plan.image} 
-                  alt={plan.title} 
-                  fill 
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+        {/* Cuadrícula de planes */}
+        <div className="grid grid-cols-1 gap-6 pt-2 md:grid-cols-2 lg:grid-cols-3">
+          {visiblePlans.map((plan, index) => (
+            <div
+              key={plan.id}
+              className="group flex flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-sm transition-all hover:shadow-md"
+            >
+              <div className="relative h-48 w-full overflow-hidden bg-gray-100">
+                <Image
+                  src={plan.imageUrl}
+                  alt={plan.titleKey}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute top-4 right-4 z-10">
-                  <span className="bg-white/95 text-gray-800 text-[10px] font-black tracking-widest shadow-sm uppercase px-3 py-1.5 rounded-md">
-                    {plan.days}
+                <div className="absolute right-4 top-4 z-10">
+                  <span className="rounded-md bg-white/95 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-gray-800 shadow-sm">
+                    {daysLabel(plan.slug)}
                   </span>
                 </div>
               </div>
-              
-              {/* Content Box */}
-              <div className="p-6 md:p-7 flex flex-col flex-1">
-                <div className="flex items-center gap-2 mb-3 mt-1">
-                  <div className={`w-2 h-2 rounded-full ${plan.color}`}></div>
-                  <span className="text-[9px] font-black text-gray-500 tracking-widest uppercase">{plan.category}</span>
+
+              <div className="flex flex-1 flex-col p-6 md:p-7">
+                <div className="mb-3 mt-1 flex items-center gap-2">
+                  <div className={`h-2 w-2 rounded-full ${ACCENT_COLORS[index % ACCENT_COLORS.length]}`} />
+                  <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">
+                    {CATEGORY_LABELS[index % CATEGORY_LABELS.length]}
+                  </span>
                 </div>
-                
-                <h3 className="font-bold text-gray-900 text-xl mb-3 tracking-tight">{plan.title}</h3>
-                <p className="text-[13px] text-gray-500 font-medium leading-relaxed mb-8 flex-1">
-                  {plan.description}
+
+                <h3 className="mb-3 text-xl font-bold tracking-tight text-gray-900">{plan.titleKey}</h3>
+                <p className="mb-8 flex-1 text-[13px] font-medium leading-relaxed text-gray-500 line-clamp-4">
+                  {plan.descriptionKey}
                 </p>
-                
-                <button className="w-full bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold py-3.5 rounded-xl transition-colors text-[13px]">
-                  Comenzar Plan
-                </button>
+
+                <Link
+                  href={`/planes/${plan.slug}`}
+                  className="w-full rounded-xl bg-blue-50 py-3.5 text-center text-[13px] font-bold text-blue-600 transition-colors hover:bg-blue-100"
+                >
+                  Comenzar plan
+                </Link>
               </div>
             </div>
           ))}
+        </div>
 
-          {/* Add Custom Plan Card */}
-          <div className="rounded-[24px] border-2 border-dashed border-gray-200 bg-gray-50/50 flex flex-col items-center justify-center min-h-[400px] p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors group">
-            <div className="w-14 h-14 bg-blue-100/50 text-blue-600 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-blue-100 transition-all">
-              <Plus className="w-6 h-6" />
-            </div>
-            <h3 className="font-bold text-gray-900 text-base mb-2">Create Custom Plan</h3>
-            <p className="text-[11px] font-medium text-gray-500 max-w-[180px] leading-relaxed mx-auto">
-              Tailor your own reading sequence for any book of the Bible.
+        {/* Cargar más */}
+        <div className="flex flex-col items-center justify-center gap-4 border-t border-gray-100 pt-10">
+          <p className="text-center text-[11px] font-medium text-gray-400">
+            Mostrando {showing} de {total} planes
+          </p>
+          {hasMore ? (
+            <button
+              type="button"
+              onClick={loadMore}
+              className="w-full max-w-xl rounded-xl border border-gray-200 bg-white px-8 py-3.5 text-[13px] font-bold text-gray-800 shadow-sm transition-colors hover:bg-gray-50"
+            >
+              Cargar más planes
+            </button>
+          ) : total > 0 ? (
+            <p className="text-center text-[12px] font-medium text-gray-400">
+              No hay más planes que mostrar.
             </p>
-          </div>
-
+          ) : null}
         </div>
-
-        {/* Load More Button & Footer Info */}
-        <div className="pt-10 flex flex-col items-center justify-center gap-4 border-t border-gray-100">
-          <p className="text-[11px] font-medium text-gray-400">Showing 5 of 124 curated plans</p>
-          <button className="bg-white border border-gray-200 text-gray-700 font-bold py-3.5 px-8 rounded-xl shadow-sm hover:bg-gray-50 transition-colors text-[13px]">
-            Load More Plans
-          </button>
-        </div>
-
       </div>
-
-      {/* Floating Action Button */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <button className="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all flex items-center justify-center">
-          <Plus className="w-6 h-6" />
-        </button>
-      </div>
-
     </div>
   );
 }

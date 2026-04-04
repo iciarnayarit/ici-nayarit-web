@@ -37,7 +37,7 @@ export default function DownloadApp() {
               Consíguelo en Google Play
             </Button>
           </div>
-          <p className="text-sm text-white/60 italic mt-2">Próximamente...</p>
+          <p className="text-xl md:text-2xl text-white/60 italic mt-3">Próximamente...</p>
         </div>
       </div>
     </section>

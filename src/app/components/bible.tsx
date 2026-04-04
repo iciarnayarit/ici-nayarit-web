@@ -14,7 +14,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { toPng } from 'html-to-image';
 import { useEffect, useState, useRef, useCallback } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { takePendingReturnAfterVerseSave, SAVED_VERSES_CHANGED_EVENT } from '@/lib/saved-verses';
+import { useAuth, useClerk } from '@clerk/nextjs';
+import { ensureClerkSignedIn, ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
 
 const books = [
     "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué",
@@ -213,6 +216,9 @@ const chaptersPerBook: { [key: string]: number } = {
 interface SavedVerse {
     text: string;
     reference: string;
+    source?: 'biblia' | 'plan';
+    planSlug?: string;
+    planTitle?: string;
 }
 
 interface CustomNote {
@@ -463,7 +469,15 @@ export default function Bible() {
     const [isToolbarOpen, setIsToolbarOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { toast } = useToast();
+    const { isLoaded: authLoaded, isSignedIn } = useAuth();
+    const { redirectToSignIn } = useClerk();
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const returnAfterSavePathRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        returnAfterSavePathRef.current = takePendingReturnAfterVerseSave();
+    }, []);
 
     // Navigate to a specific book/chapter/verse from URL params (e.g. from global search)
     useEffect(() => {
@@ -767,6 +781,10 @@ export default function Bible() {
             return;
         }
 
+        if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
+            return;
+        }
+
         if (editingNoteId) {
             const updatedNotes = notes.map(n => n.id === editingNoteId ? {
                 ...n,
@@ -841,31 +859,84 @@ export default function Bible() {
         return 'Hace un momento';
     };
 
-    const handleSaveVerse = (verseText: string, verseNumber: number) => {
-        const reference = `${selectedBook} ${selectedChapter}:${verseNumber}`;
-        const newVerse = { text: verseText, reference };
+    /** Alterna marcador (guardado) para los versículos seleccionados; si venías del dashboard, vuelve tras añadir al menos uno. */
+    const handleBookmarkSelectedVerses = () => {
+        if (selectedVerses.length === 0) return;
+        let anyAdd = false;
+        for (const v of selectedVerses) {
+            const reference = `${selectedBook} ${selectedChapter}:${v}`;
+            if (!savedVerses.some(sv => sv.reference === reference)) {
+                anyAdd = true;
+                break;
+            }
+        }
+        if (anyAdd && !ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
+            return;
+        }
+        const next = [...savedVerses];
+        let addedCount = 0;
+        let removedCount = 0;
+        for (const v of selectedVerses) {
+            const verseText = verses[v - 1];
+            if (verseText == null) continue;
+            const reference = `${selectedBook} ${selectedChapter}:${v}`;
+            const idx = next.findIndex(sv => sv.reference === reference);
+            if (idx >= 0) {
+                next.splice(idx, 1);
+                removedCount++;
+            } else {
+                next.push({ text: verseText, reference, source: 'biblia' });
+                addedCount++;
+            }
+        }
+        setSavedVerses(next);
+        try {
+            localStorage.setItem('savedVerses', JSON.stringify(next));
+        } catch {
+            /* ignore */
+        }
+        window.dispatchEvent(new Event(SAVED_VERSES_CHANGED_EVENT));
 
-        let updatedSavedVerses;
-        if (savedVerses.some(v => v.reference === reference)) {
-            updatedSavedVerses = savedVerses.filter(v => v.reference !== reference);
+        if (addedCount > 0 && removedCount === 0) {
             toast({
-                title: "Versículo Eliminado",
-                description: "Has eliminado el versículo de tus guardados.",
+                title: addedCount > 1 ? `${addedCount} versículos guardados` : 'Versículo guardado',
+                description:
+                    addedCount > 1 ? 'Se añadieron a tus guardados.' : 'Se añadió a tus guardados.',
             });
-        } else {
-            updatedSavedVerses = [...savedVerses, newVerse];
+        } else if (removedCount > 0 && addedCount === 0) {
             toast({
-                title: "Versículo Guardado",
-                description: `Has guardado ${reference}.`,
+                title: 'Versículo eliminado',
+                description:
+                    removedCount > 1
+                        ? 'Se quitaron de tus guardados.'
+                        : 'Has quitado el versículo de tus guardados.',
+            });
+        } else if (addedCount > 0 || removedCount > 0) {
+            toast({
+                title: 'Guardados actualizados',
+                description: 'Tus marcadores se actualizaron.',
             });
         }
 
-        setSavedVerses(updatedSavedVerses);
-        localStorage.setItem('savedVerses', JSON.stringify(updatedSavedVerses));
+        const returnPath = returnAfterSavePathRef.current;
+        if (addedCount > 0 && returnPath) {
+            returnAfterSavePathRef.current = null;
+            router.push(returnPath);
+        }
     };
 
     const handleSaveChapter = () => {
         const already = savedChapters.some(c => c.book === selectedBook && c.chapter === selectedChapter);
+        if (
+            !ensureClerkSignedInForFavoriteAdd(
+                authLoaded,
+                isSignedIn === true,
+                redirectToSignIn,
+                already
+            )
+        ) {
+            return;
+        }
         let updated;
         if (already) {
             updated = savedChapters.filter(c => !(c.book === selectedBook && c.chapter === selectedChapter));
@@ -1223,7 +1294,7 @@ export default function Bible() {
                                                                     <button
                                                                         onClick={(e) => {
                                                                             e.stopPropagation();
-                                                                            selectedVerses.forEach(v => handleSaveVerse(verses[v - 1], v));
+                                                                            handleBookmarkSelectedVerses();
                                                                         }}
                                                                         className="p-2 hover:bg-white/10 rounded-md transition-colors"
                                                                     >
