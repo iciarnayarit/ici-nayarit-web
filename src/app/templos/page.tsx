@@ -1,5 +1,6 @@
+import dynamic from "next/dynamic";
 
-import { TempleList } from "@/app/components/TempleList";
+const TempleList = dynamic(() => import("@/app/components/TempleList"));
 
 export default function TemplosPage() {
 

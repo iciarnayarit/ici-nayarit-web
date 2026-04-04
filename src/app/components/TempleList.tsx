@@ -37,7 +37,7 @@ const municipalities = Object.keys(grouped).sort((a, b) => {
     return a.localeCompare(b);
 });
 
-export const TempleList = () => {
+export default function TempleList() {
     const [selectedTemple, setSelectedTemple] = useState(templeLocations[0]);
     const [savedTemples, setSavedTemples] = useState<string[]>([]);
     const [expandedMunicipalities, setExpandedMunicipalities] = useState<string[]>([]);
@@ -316,4 +316,4 @@ export const TempleList = () => {
             </div>
         </div>
     );
-};
+}
