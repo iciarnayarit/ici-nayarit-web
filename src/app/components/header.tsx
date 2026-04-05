@@ -12,7 +12,7 @@ import {
 } from '@/app/components/ui/dropdown-menu';
 import { Button } from '@/app/components/ui/button';
 import { Show, UserButton, SignOutButton, SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
-import { CHURCH_ADMIN_MEMBERS_PORTAL_URL, emailsIncludeChurchAdmin } from '@/lib/church-admin';
+import { CHURCH_ADMIN_MEMBERS_PORTAL_URL, userEmailMatchesChurchHeaderNav } from '@/lib/church-admin';
 import GlobalSearch from '@/app/components/global-search';
 
 const mainLinks = [
@@ -60,12 +60,7 @@ const NavLink = ({
   );
 };
 
-type HeaderProps = {
-  /** Valor de EMAIL_ADMIN desde el servidor (solo para comparar en cliente). */
-  churchAdminEmail?: string;
-};
-
-const Header = ({ churchAdminEmail = '' }: HeaderProps) => {
+const Header = () => {
   const [isOpen, setIsOpen]             = useState(false);
   const [nosotrosOpen, setNosotrosOpen] = useState(false);
   const [bibliaOpen, setBibliaOpen]     = useState(false);
@@ -73,10 +68,8 @@ const Header = ({ churchAdminEmail = '' }: HeaderProps) => {
   const [mounted, setMounted]           = useState(false);
   const currentPath = usePathname();
   const { user, isLoaded: userLoaded } = useUser();
-  const showChurchNav =
-    userLoaded &&
-    !!user &&
-    emailsIncludeChurchAdmin(user.emailAddresses, churchAdminEmail);
+  const showIglesiaNav =
+    userLoaded && !!user && userEmailMatchesChurchHeaderNav(user.emailAddresses);
 
   const nosotrosActive = nosotrosLinks.some(l => l.href === currentPath);
   const bibliaActive   = bibliaLinks.some(l => l.href === currentPath);
@@ -191,7 +184,7 @@ const Header = ({ churchAdminEmail = '' }: HeaderProps) => {
             {mounted && (
               <Show when="signed-in">
                 <>
-                  {showChurchNav && (
+                  {showIglesiaNav && (
                     <a
                       href={CHURCH_ADMIN_MEMBERS_PORTAL_URL}
                       className="text-sm font-semibold text-gray-600 transition-colors hover:text-black"
@@ -317,7 +310,7 @@ const Header = ({ churchAdminEmail = '' }: HeaderProps) => {
             {mounted && (
               <Show when="signed-in">
                 <>
-                  {showChurchNav && (
+                  {showIglesiaNav && (
                     <a
                       href={CHURCH_ADMIN_MEMBERS_PORTAL_URL}
                       className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"

@@ -70,7 +70,7 @@ export default async function RootLayout({ children }: Props) {
         </head>
         <body className="font-body antialiased" suppressHydrationWarning>
           <AudioProvider>
-            <Header churchAdminEmail={process.env.EMAIL_ADMIN ?? ''} />
+            <Header />
             {children}
             <Toaster />
             <SpeedInsights />

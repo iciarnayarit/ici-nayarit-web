@@ -21,3 +21,16 @@ export function emailsIncludeChurchAdmin(
   if (!admin) return false;
   return userEmails.some((e) => normalizeEmailForCompare(e.emailAddress) === admin);
 }
+
+/**
+ * Correo permitido para ver el enlace «Iglesia» en la cabecera (solo sesión iniciada + esta dirección).
+ */
+export const CHURCH_HEADER_NAV_EMAIL = 'jggjosue@gmail.com';
+
+export function userEmailMatchesChurchHeaderNav(
+  userEmails: { emailAddress: string }[] | undefined,
+): boolean {
+  if (!userEmails?.length) return false;
+  const allowed = normalizeEmailForCompare(CHURCH_HEADER_NAV_EMAIL);
+  return userEmails.some(e => normalizeEmailForCompare(e.emailAddress) === allowed);
+}
