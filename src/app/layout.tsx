@@ -54,7 +54,11 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: Props) {
   return (
-    <ClerkProvider localization={esES}>
+    <ClerkProvider
+      localization={esES}
+      signInForceRedirectUrl="/dashboard/miembros"
+      signUpForceRedirectUrl="/dashboard/miembros"
+    >
       <html lang="es" className="scroll-smooth" suppressHydrationWarning>
         <head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
