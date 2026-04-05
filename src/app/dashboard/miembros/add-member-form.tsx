@@ -55,7 +55,11 @@ type MemberFromApi = {
 };
 
 function SectionHeading({ children }: { children: ReactNode }) {
-  return <CardTitle className="text-lg font-bold tracking-tight text-gray-900">{children}</CardTitle>;
+  return (
+    <CardTitle className="text-base font-bold leading-snug tracking-tight text-gray-900 sm:text-lg">
+      {children}
+    </CardTitle>
+  );
 }
 
 function FieldError({ id, message }: { id?: string; message?: string }) {
@@ -325,12 +329,12 @@ export default function AddMemberForm() {
   const saveButtonLabel = isSubmitting ? 'Guardando…' : showSavedOnButton ? 'guardado' : 'Guardar';
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8" noValidate>
       {formBanner && (
         <div
           role="status"
           className={cn(
-            'flex items-start gap-3 rounded-xl border px-4 py-3 text-sm font-medium',
+            'flex items-start gap-2 rounded-xl border px-3 py-2.5 text-xs font-medium sm:gap-3 sm:px-4 sm:py-3 sm:text-sm',
             formBanner.type === 'success'
               ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
               : 'border-red-200 bg-red-50 text-red-800'
@@ -341,7 +345,7 @@ export default function AddMemberForm() {
             type="button"
             onClick={() => setFormBanner(null)}
             className={cn(
-              'shrink-0 rounded-lg p-1.5 -m-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+              'shrink-0 flex h-11 w-11 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 sm:h-9 sm:w-9',
               formBanner.type === 'success'
                 ? 'text-emerald-800 hover:bg-emerald-100/90 focus-visible:ring-emerald-500'
                 : 'text-red-800 hover:bg-red-100/90 focus-visible:ring-red-500'
@@ -353,22 +357,24 @@ export default function AddMemberForm() {
         </div>
       )}
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight font-display">Actualiza tu Información</h1>
-          <p className="mt-1.5 text-sm font-medium text-gray-500 max-w-2xl">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0 pr-0 sm:pr-4">
+          <h1 className="text-2xl font-bold leading-tight tracking-tight text-gray-900 font-display sm:text-3xl">
+            Actualiza tu Información
+          </h1>
+          <p className="mt-1.5 text-xs font-medium text-gray-500 max-w-2xl sm:text-sm">
             Ingrese los detalles a continuación.
             {memberHydrating ? (
-              <span className="block mt-1 text-gray-400">Cargando datos guardados en la base de datos…</span>
+              <span className="mt-1 block text-gray-400">Cargando datos guardados en la base de datos…</span>
             ) : null}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
           <Button
             type="submit"
             variant="outline"
             className={cn(
-              'rounded-xl font-semibold shadow-sm transition-colors min-w-[8.5rem]',
+              'h-12 w-full rounded-xl px-5 font-semibold shadow-sm transition-colors sm:h-11 sm:w-auto sm:min-w-[8.5rem]',
               isSubmitting &&
                 'border-neutral-600 bg-neutral-600 text-white hover:bg-neutral-600 hover:text-white',
               !isSubmitting &&
@@ -385,13 +391,13 @@ export default function AddMemberForm() {
         </div>
       </div>
 
-      <Card className="border border-gray-200/80 shadow-sm rounded-2xl overflow-hidden">
-        <CardHeader className="space-y-1 pb-4">
+      <Card className="overflow-hidden rounded-xl border border-gray-200/80 shadow-sm sm:rounded-2xl">
+        <CardHeader className="space-y-1 p-4 pb-3 sm:p-6 sm:pb-4">
           <SectionHeading>Información personal</SectionHeading>
           <CardDescription>Detalles básicos para el registro.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-5 pt-0">
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <CardContent className="space-y-4 p-4 pt-0 sm:space-y-5 sm:p-6 sm:pt-0">
+          <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="member-first-name">Nombre (obligatorio, prellenado desde tu sesión)</Label>
               <Input
@@ -403,7 +409,10 @@ export default function AddMemberForm() {
                   setFirstName(e.target.value);
                   setFieldErrors(prev => ({ ...prev, firstName: undefined }));
                 }}
-                className={cn('rounded-xl', fieldErrors.firstName && 'border-red-500 focus-visible:ring-red-500')}
+                className={cn(
+                  'h-12 rounded-xl sm:h-10',
+                  fieldErrors.firstName && 'border-red-500 focus-visible:ring-red-500'
+                )}
                 autoComplete="given-name"
                 aria-invalid={!!fieldErrors.firstName}
                 aria-describedby={fieldErrors.firstName ? 'err-member-first-name' : undefined}
@@ -421,7 +430,10 @@ export default function AddMemberForm() {
                   setLastName(e.target.value);
                   setFieldErrors(prev => ({ ...prev, lastName: undefined }));
                 }}
-                className={cn('rounded-xl', fieldErrors.lastName && 'border-red-500 focus-visible:ring-red-500')}
+                className={cn(
+                  'h-12 rounded-xl sm:h-10',
+                  fieldErrors.lastName && 'border-red-500 focus-visible:ring-red-500'
+                )}
                 autoComplete="family-name"
                 aria-invalid={!!fieldErrors.lastName}
                 aria-describedby={fieldErrors.lastName ? 'err-member-last-name' : undefined}
@@ -438,7 +450,7 @@ export default function AddMemberForm() {
                 disabled
                 readOnly
                 className={cn(
-                  'rounded-xl cursor-not-allowed bg-gray-50 text-gray-800',
+                  'h-12 cursor-not-allowed rounded-xl bg-gray-50 text-gray-800 sm:h-10',
                   fieldErrors.email && 'border-red-500'
                 )}
                 autoComplete="email"
@@ -459,7 +471,10 @@ export default function AddMemberForm() {
                   setPhone(e.target.value);
                   setFieldErrors(prev => ({ ...prev, phone: undefined }));
                 }}
-                className={cn('rounded-xl', fieldErrors.phone && 'border-red-500 focus-visible:ring-red-500')}
+                className={cn(
+                  'h-12 rounded-xl sm:h-10',
+                  fieldErrors.phone && 'border-red-500 focus-visible:ring-red-500'
+                )}
                 autoComplete="tel"
                 aria-invalid={!!fieldErrors.phone}
                 aria-describedby={fieldErrors.phone ? 'err-member-phone' : undefined}
@@ -477,7 +492,10 @@ export default function AddMemberForm() {
                   setAddress(e.target.value);
                   setFieldErrors(prev => ({ ...prev, address: undefined }));
                 }}
-                className={cn('rounded-xl', fieldErrors.address && 'border-red-500 focus-visible:ring-red-500')}
+                className={cn(
+                  'h-12 rounded-xl sm:h-10',
+                  fieldErrors.address && 'border-red-500 focus-visible:ring-red-500'
+                )}
                 autoComplete="street-address"
                 aria-invalid={!!fieldErrors.address}
                 aria-describedby={fieldErrors.address ? 'err-member-address' : undefined}
@@ -495,7 +513,10 @@ export default function AddMemberForm() {
                   setBirthDate(e.target.value);
                   setFieldErrors(prev => ({ ...prev, birthDate: undefined }));
                 }}
-                className={cn('rounded-xl', fieldErrors.birthDate && 'border-red-500 focus-visible:ring-red-500')}
+                className={cn(
+                  'h-12 rounded-xl sm:h-10',
+                  fieldErrors.birthDate && 'border-red-500 focus-visible:ring-red-500'
+                )}
                 aria-invalid={!!fieldErrors.birthDate}
                 aria-describedby={fieldErrors.birthDate ? 'err-member-birth' : undefined}
               />
@@ -511,22 +532,21 @@ export default function AddMemberForm() {
                   setShowSavedOnButton(false);
                   setBaptismDate(e.target.value);
                 }}
-                className="rounded-xl"
+                className="h-12 rounded-xl sm:h-10"
               />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <Card className="border border-gray-200/80 shadow-sm rounded-2xl overflow-hidden">
-        <CardHeader className="space-y-1 pb-4">
+      <Card className="overflow-hidden rounded-xl border border-gray-200/80 shadow-sm sm:rounded-2xl">
+        <CardHeader className="space-y-1 p-4 pb-3 sm:p-6 sm:pb-4">
           <SectionHeading>Cargo</SectionHeading>
           <CardDescription>
             Indique si el miembro es Pastor o Congregante, con ello podrá listarse en el directorio de personal.
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-0 space-y-2">
-          <Label htmlFor="member-role">Cargo o rol (obligatorio)</Label>
+        <CardContent className="space-y-2 p-4 pt-0 sm:p-6 sm:pt-0">
           <Select
             value={staffRole}
             onValueChange={v => {
@@ -537,13 +557,16 @@ export default function AddMemberForm() {
           >
             <SelectTrigger
               id="member-role"
-              className={cn('w-full rounded-xl h-11', fieldErrors.staffRole && 'border-red-500 focus:ring-red-500')}
+              className={cn(
+                'h-12 w-full rounded-xl text-base sm:h-11 sm:text-sm',
+                fieldErrors.staffRole && 'border-red-500 focus:ring-red-500'
+              )}
               aria-invalid={!!fieldErrors.staffRole}
               aria-describedby={fieldErrors.staffRole ? 'err-member-role' : undefined}
             >
               <SelectValue placeholder="Seleccionar" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[min(70vh,24rem)]">
               {MEMBER_STAFF_ROLE_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
@@ -555,18 +578,17 @@ export default function AddMemberForm() {
         </CardContent>
       </Card>
 
-      <Card className="border border-gray-200/80 shadow-sm rounded-2xl overflow-hidden">
-        <CardHeader className="space-y-1 pb-4">
+      <Card className="overflow-hidden rounded-xl border border-gray-200/80 shadow-sm sm:rounded-2xl">
+        <CardHeader className="space-y-1 p-4 pb-3 sm:p-6 sm:pb-4">
           <SectionHeading>Grupos y ministerios (obligatorio)</SectionHeading>
           <CardDescription>
             Elija al menos un ministerio. Puede marcar varios según corresponda.
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-0 space-y-3">
-          <Label>Asignar a ministerios (obligatorio)</Label>
+        <CardContent className="space-y-3 p-4 pt-0 sm:p-6 sm:pt-0">
           <div
             className={cn(
-              'max-h-52 overflow-y-auto rounded-xl border bg-white p-3 space-y-3 [scrollbar-width:thin]',
+              'max-h-[min(50vh,13rem)] touch-pan-y space-y-2 overflow-y-auto overscroll-y-contain rounded-xl border bg-white p-3 [scrollbar-width:thin] sm:max-h-52 sm:space-y-3',
               fieldErrors.ministries ? 'border-red-500 ring-1 ring-red-500/30' : 'border-gray-200'
             )}
             aria-invalid={!!fieldErrors.ministries}
@@ -575,12 +597,12 @@ export default function AddMemberForm() {
             {MEMBER_MINISTRY_OPTIONS.map(label => (
               <label
                 key={label}
-                className="flex items-start gap-3 cursor-pointer text-sm font-medium text-gray-700 hover:text-gray-900"
+                className="flex cursor-pointer items-start gap-3 rounded-lg py-2 pl-1 pr-2 text-sm font-medium text-gray-700 active:bg-gray-50 sm:py-1.5"
               >
                 <Checkbox
                   checked={!!ministries[label]}
                   onCheckedChange={c => toggleMinistry(label, c === true)}
-                  className="mt-0.5"
+                  className="mt-0.5 size-5 sm:size-4"
                 />
                 <span className="leading-snug">{formatMinistryLabelForDisplay(label)}</span>
               </label>
@@ -591,19 +613,17 @@ export default function AddMemberForm() {
         </CardContent>
       </Card>
 
-      <Card className="border border-gray-200/80 shadow-sm rounded-2xl overflow-hidden">
-        <CardHeader className="space-y-1 pb-4">
-          <SectionHeading>Templos (obligatorio)</SectionHeading>
+      <Card className="overflow-hidden rounded-xl border border-gray-200/80 shadow-sm sm:rounded-2xl">
+        <CardHeader className="space-y-1 p-4 pb-3 sm:p-6 sm:pb-4">
+          <SectionHeading>Templo</SectionHeading>
           <CardDescription>
-            Ubicaciones registradas en la base de datos. Debe elegir al menos un templo; puede marcar todos los
-            que correspondan.
+            Debe elegir al menos un templo; puede marcar todos los que correspondan.
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-0 space-y-3">
-          <Label>Asignar a templos (obligatorio, varias opciones)</Label>
+        <CardContent className="space-y-3 p-4 pt-0 sm:p-6 sm:pt-0">
           <div
             className={cn(
-              'max-h-60 overflow-y-auto rounded-xl border bg-white p-3 space-y-4 [scrollbar-width:thin]',
+              'max-h-[min(55vh,16rem)] touch-pan-y space-y-3 overflow-y-auto overscroll-y-contain rounded-xl border bg-white p-3 [scrollbar-width:thin] sm:max-h-60 sm:space-y-4',
               fieldErrors.temples ? 'border-red-500 ring-1 ring-red-500/30' : 'border-gray-200'
             )}
             aria-invalid={!!fieldErrors.temples}
@@ -612,12 +632,12 @@ export default function AddMemberForm() {
             {sortedTemples.map(t => (
               <label
                 key={t.nameKey}
-                className="flex items-start gap-3 cursor-pointer"
+                className="flex cursor-pointer items-start gap-3 rounded-lg py-2 pl-1 pr-2 active:bg-gray-50 sm:py-1.5"
               >
                 <Checkbox
                   checked={!!templeKeys[t.nameKey]}
                   onCheckedChange={c => toggleTemple(t.nameKey, c === true)}
-                  className="mt-1"
+                  className="mt-1 size-5 sm:size-4"
                 />
                 <span className="min-w-0">
                   <span className="block text-sm font-semibold text-gray-900">{t.nameKey}</span>
@@ -633,27 +653,6 @@ export default function AddMemberForm() {
           <p className="text-xs text-gray-500">Mínimo uno obligatorio; las casillas permiten elegir varios templos.</p>
         </CardContent>
       </Card>
-
-      <div className="flex flex-wrap justify-end gap-2 pb-4 lg:hidden">
-        <Button
-          type="submit"
-          variant="outline"
-          className={cn(
-            'rounded-xl font-semibold transition-colors min-w-[8.5rem]',
-            isSubmitting &&
-              'border-neutral-600 bg-neutral-600 text-white hover:bg-neutral-600 hover:text-white',
-            !isSubmitting &&
-              showSavedOnButton &&
-              'border-amber-500/60 bg-amber-50 text-amber-700 hover:bg-amber-50 hover:text-amber-700',
-            !isSubmitting &&
-              !showSavedOnButton &&
-              '!border-black !bg-black !text-white hover:!bg-neutral-900 hover:!text-white'
-          )}
-          disabled={isSubmitting}
-        >
-          {saveButtonLabel}
-        </Button>
-      </div>
     </form>
   );
 }
