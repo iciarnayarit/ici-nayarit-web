@@ -11,7 +11,8 @@ import {
   DropdownMenuTrigger,
 } from '@/app/components/ui/dropdown-menu';
 import { Button } from '@/app/components/ui/button';
-import { Show, UserButton, SignOutButton, SignInButton, SignUpButton } from '@clerk/nextjs';
+import { Show, UserButton, SignOutButton, SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
+import { CHURCH_ADMIN_MEMBERS_PORTAL_URL, emailsIncludeChurchAdmin } from '@/lib/church-admin';
 import GlobalSearch from '@/app/components/global-search';
 
 const mainLinks = [
@@ -37,8 +38,21 @@ const historiaLinks = [
   { href: '/historia/regiones', label: 'Regiones',  desc: 'Presencia en 3 continentes',        icon: '🌎' },
 ];
 
-const NavLink = ({ href, label, currentPath }: { href: string; label: string; currentPath: string }) => {
-  const isActive = href === currentPath;
+const NavLink = ({
+  href,
+  label,
+  currentPath,
+  matchChildRoutes,
+}: {
+  href: string;
+  label: string;
+  currentPath: string;
+  /** Si true, activo también en rutas bajo `href/` (p. ej. subrutas de perfil). */
+  matchChildRoutes?: boolean;
+}) => {
+  const isActive = matchChildRoutes
+    ? currentPath === href || currentPath.startsWith(`${href}/`)
+    : href === currentPath;
   return (
     <Link href={href} className={`text-sm font-semibold transition-colors ${isActive ? 'text-[#B88A44]' : 'text-gray-600 hover:text-black'}`}>
       {label}
@@ -46,13 +60,23 @@ const NavLink = ({ href, label, currentPath }: { href: string; label: string; cu
   );
 };
 
-const Header = () => {
+type HeaderProps = {
+  /** Valor de EMAIL_ADMIN desde el servidor (solo para comparar en cliente). */
+  churchAdminEmail?: string;
+};
+
+const Header = ({ churchAdminEmail = '' }: HeaderProps) => {
   const [isOpen, setIsOpen]             = useState(false);
   const [nosotrosOpen, setNosotrosOpen] = useState(false);
   const [bibliaOpen, setBibliaOpen]     = useState(false);
   const [historiaOpen, setHistoriaOpen] = useState(false);
   const [mounted, setMounted]           = useState(false);
   const currentPath = usePathname();
+  const { user, isLoaded: userLoaded } = useUser();
+  const showChurchNav =
+    userLoaded &&
+    !!user &&
+    emailsIncludeChurchAdmin(user.emailAddresses, churchAdminEmail);
 
   const nosotrosActive = nosotrosLinks.some(l => l.href === currentPath);
   const bibliaActive   = bibliaLinks.some(l => l.href === currentPath);
@@ -166,7 +190,19 @@ const Header = () => {
 
             {mounted && (
               <Show when="signed-in">
-                <NavLink href="/dashboard" label="Dashboard" currentPath={currentPath} />
+                <>
+                  {showChurchNav && (
+                    <a
+                      href={CHURCH_ADMIN_MEMBERS_PORTAL_URL}
+                      className="text-sm font-semibold text-gray-600 transition-colors hover:text-black"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Iglesia
+                    </a>
+                  )}
+                  <NavLink href="/dashboard" label="Dashboard" currentPath={currentPath} matchChildRoutes />
+                </>
               </Show>
             )}
 
@@ -280,9 +316,24 @@ const Header = () => {
 
             {mounted && (
               <Show when="signed-in">
-                <Link href="/dashboard" className={`block px-3 py-2 rounded-md text-base font-medium ${'/dashboard' === currentPath ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-700 hover:text-black hover:bg-gray-50'}`}>
-                  Dashboard
-                </Link>
+                <>
+                  {showChurchNav && (
+                    <a
+                      href={CHURCH_ADMIN_MEMBERS_PORTAL_URL}
+                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Iglesia
+                    </a>
+                  )}
+                  <Link
+                    href="/perfil"
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${currentPath === '/perfil' || currentPath.startsWith('/perfil/') ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-700 hover:text-black hover:bg-gray-50'}`}
+                  >
+                    Perfil
+                  </Link>
+                </>
               </Show>
             )}
 

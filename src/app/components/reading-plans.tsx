@@ -147,7 +147,7 @@ export default function ReadingPlans() {
             Crece en tu fe con planes que se ajustan a tu vida.
           </p>
           <div className="mt-8">
-            <Link href="/planes/guardados">
+            <Link href="/dashboard/planes">
               <Button className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-100 font-bold py-3 px-8 rounded-full transition-colors focus:outline-none text-sm">Planes Guardados</Button>
             </Link>
           </div>

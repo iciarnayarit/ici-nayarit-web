@@ -14,10 +14,13 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
-import Link from 'next/link';
 import { handleReadPassage, PassageVerse } from '@/lib/bible-data';
 import { useAuth, useClerk } from '@clerk/nextjs';
-import { ensureClerkSignedIn, ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
+import {
+    ensureClerkSignedIn,
+    ensureClerkSignedInForFavoriteAdd,
+    goToDashboardBibliaSavedVerses,
+} from '@/lib/require-clerk-sign-in';
 import { ReadingDay } from '@/lib/reading-plan-data';
 
 interface SavedVerse {
@@ -136,11 +139,13 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         localStorage.setItem(`completedDays_${planSlug}`, JSON.stringify(updated));
     };
 
-    const handleHighlightSubmit = (reference: string, color: string) => {
+    const handleHighlightSubmit = (reference: string, color: string): boolean => {
+        if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) return false;
         const newHighlights = { ...highlightedVerses, [reference]: color };
         setHighlightedVerses(newHighlights);
         localStorage.setItem('highlightedVerses', JSON.stringify(newHighlights));
         setSelectedHighlightColor(color);
+        return true;
     };
 
     const handleFormat = (command: string, value: string = '') => {
@@ -555,7 +560,12 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                                 blue: 'bg-[#EEF4FF] text-[#3B82F6]',
                                                 pink: 'bg-[#FDF2F8] text-[#EC4899]',
                                                 purple: 'bg-[#F5F3FF] text-[#8B5CF6]',
-                                                orange: 'bg-[#FFF7ED] text-[#F97316]'
+                                                orange: 'bg-[#FFF7ED] text-[#F97316]',
+                                                red: 'bg-[#FEE2E2] text-[#DC2626]',
+                                                cyan: 'bg-[#ECFEFF] text-[#0891B2]',
+                                                teal: 'bg-[#CCFBF1] text-[#0D9488]',
+                                                indigo: 'bg-[#EEF2FF] text-[#4F46E5]',
+                                                slate: 'bg-[#F1F5F9] text-[#475569]',
                                             };
 
                                             const activeHlStyles = activeColorId ? hlColors[activeColorId] : '';
@@ -564,51 +574,62 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                                 : `${themeStyles.buttonHover} py-1.5 cursor-pointer`;
 
                                             return (
-                                                <div key={index} className={`relative rounded-xl transition-all duration-200 ${containerClasses}`}>
+                                                <div key={index} className={`relative rounded-xl transition-all duration-200 ${isSelected ? 'z-40' : ''} ${containerClasses}`}>
                                                     {isSelected && (
-                                                        <div className="absolute -top-[52px] left-1/4 -translate-x-1/2 bg-[#1F2937] shadow-xl rounded-[10px] flex items-center px-1.5 py-1 z-30 transition-all font-sans">
-                                                            <div className="absolute -bottom-[5px] left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-[#1F2937] rotate-45 rounded-sm"></div>
-                                                            <div className="flex items-center space-x-0.5 relative z-40">
-                                                                {showColorPicker && (
-                                                                    <div className="absolute -top-[52px] left-0 bg-white border border-gray-100 shadow-xl rounded-full px-2.5 py-2 flex gap-2.5 animate-in fade-in zoom-in duration-200 origin-bottom-left">
-                                                                        {[
-                                                                            { id: 'yellow', color: 'bg-[#FCEBA2]' },
-                                                                            { id: 'green', color: 'bg-[#BBF7D0]' },
-                                                                            { id: 'blue', color: 'bg-[#BFDBFE]' },
-                                                                            { id: 'pink', color: 'bg-[#FBCFE8]' },
-                                                                            { id: 'purple', color: 'bg-[#E9D5FF]' },
-                                                                            { id: 'orange', color: 'bg-[#FED7AA]' }
-                                                                        ].map((c) => (
-                                                                            <button
-                                                                                key={c.id}
-                                                                                onClick={(e) => {
-                                                                                    e.stopPropagation();
-                                                                                    handleHighlightSubmit(reference, c.id);
-                                                                                    setShowColorPicker(false);
-                                                                                    toast({ title: 'Resaltado guardado' });
-                                                                                }}
-                                                                                className={`w-6 h-6 rounded-full transition-transform hover:scale-110 ${c.color} ${selectedHighlightColor === c.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
-                                                                            />
-                                                                        ))}
-                                                                    </div>
-                                                                )}
-
-                                                                <button onClick={(e) => { e.stopPropagation(); setShowColorPicker(!showColorPicker); }} className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded-md text-white text-[11px] font-semibold tracking-wide transition-colors">
-                                                                    <span className="text-white text-[9px] -mt-0.5">▲</span> Subrayar
-                                                                </button>
-                                                                <button onClick={(e) => { e.stopPropagation(); setIsNoteOpen(true); }} className="flex items-center gap-2 px-3 py-2 hover:bg-white/10 rounded-md text-white text-[11px] font-semibold tracking-wide transition-colors">
-                                                                    <StickyNote className="h-3.5 w-3.5" /> Notas
-                                                                </button>
-                                                                <button onClick={(e) => { e.stopPropagation(); handleSaveVerse(v); }} className="p-2 hover:bg-white/10 rounded-md transition-colors">
-                                                                    {savedVerses.some(sv => sv.reference === reference) ? <Bookmark className="h-3.5 w-3.5 fill-white text-white" /> : <Bookmark className="h-3.5 w-3.5 text-gray-300" />}
-                                                                </button>
-                                                                <div className="w-px h-5 bg-white/10 mx-1"></div>
-                                                                <button onClick={async (e) => { e.stopPropagation(); await navigator.clipboard.writeText(`"${v.text}" (${reference})`); toast({ title: "Copiado" }); }} className="p-2 hover:bg-white/10 rounded-md text-gray-300 hover:text-white transition-colors">
-                                                                    <Copy className="h-4 w-4" />
-                                                                </button>
-                                                                <button onClick={(e) => { e.stopPropagation(); handleShareVerse(v); }} className="p-2 hover:bg-white/10 rounded-md text-gray-300 hover:text-white transition-colors">
-                                                                    <Share2 className="h-4 w-4" />
-                                                                </button>
+                                                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-50 flex flex-col items-center gap-2 w-max max-w-[calc(100vw-2rem)] pointer-events-auto">
+                                                            {showColorPicker && (
+                                                                <div className="shrink-0 bg-white border border-gray-100 shadow-xl rounded-2xl px-2.5 py-2 flex flex-wrap justify-center gap-2 max-w-[min(100vw-2rem,420px)] animate-in fade-in zoom-in duration-200">
+                                                                    {[
+                                                                        { id: 'yellow', color: 'bg-[#FCEBA2]' },
+                                                                        { id: 'green', color: 'bg-[#BBF7D0]' },
+                                                                        { id: 'blue', color: 'bg-[#BFDBFE]' },
+                                                                        { id: 'pink', color: 'bg-[#FBCFE8]' },
+                                                                        { id: 'purple', color: 'bg-[#E9D5FF]' },
+                                                                        { id: 'orange', color: 'bg-[#FED7AA]' },
+                                                                        { id: 'red', color: 'bg-[#FECACA]' },
+                                                                        { id: 'cyan', color: 'bg-[#A5F3FC]' },
+                                                                        { id: 'teal', color: 'bg-[#99F6E4]' },
+                                                                        { id: 'indigo', color: 'bg-[#C7D2FE]' },
+                                                                        { id: 'slate', color: 'bg-[#CBD5E1]' },
+                                                                    ].map((c) => (
+                                                                        <button
+                                                                            key={c.id}
+                                                                            type="button"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                if (!handleHighlightSubmit(reference, c.id)) return;
+                                                                                setShowColorPicker(false);
+                                                                                toast({ title: 'Resaltado guardado' });
+                                                                            }}
+                                                                            className={`w-6 h-6 rounded-full transition-transform hover:scale-110 ${c.color} ${selectedHighlightColor === c.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
+                                                                        />
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                            <div className="relative bg-[#1F2937] shadow-xl rounded-[10px] min-w-0 max-w-[calc(100vw-2rem)]">
+                                                                <div className="absolute -bottom-[5px] left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-[#1F2937] rotate-45 rounded-sm pointer-events-none z-0" aria-hidden />
+                                                                <div className="flex items-center space-x-0.5 relative z-40 px-1.5 py-1 overflow-x-auto">
+                                                                    <button type="button" onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        if (!showColorPicker && !ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) return;
+                                                                        setShowColorPicker(!showColorPicker);
+                                                                    }} className={`flex shrink-0 items-center gap-2 px-3 py-2 hover:bg-white/10 rounded-md text-white text-[11px] font-semibold tracking-wide transition-colors ${showColorPicker ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-[#1F2937]' : ''}`}>
+                                                                        <span className="text-white text-[9px] -mt-0.5" aria-hidden>▲</span> Subrayar
+                                                                    </button>
+                                                                    <button type="button" onClick={(e) => { e.stopPropagation(); setIsNoteOpen(true); }} className="flex shrink-0 items-center gap-2 px-3 py-2 hover:bg-white/10 rounded-md text-white text-[11px] font-semibold tracking-wide transition-colors">
+                                                                        <StickyNote className="h-3.5 w-3.5" /> Notas
+                                                                    </button>
+                                                                    <button type="button" onClick={(e) => { e.stopPropagation(); handleSaveVerse(v); }} className="p-2 hover:bg-white/10 rounded-md transition-colors shrink-0">
+                                                                        {savedVerses.some(sv => sv.reference === reference) ? <Bookmark className="h-3.5 w-3.5 fill-white text-white" /> : <Bookmark className="h-3.5 w-3.5 text-gray-300" />}
+                                                                    </button>
+                                                                    <div className="w-px h-5 bg-white/10 mx-1 shrink-0" />
+                                                                    <button type="button" onClick={async (e) => { e.stopPropagation(); await navigator.clipboard.writeText(`"${v.text}" (${reference})`); toast({ title: "Copiado" }); }} className="p-2 hover:bg-white/10 rounded-md text-gray-300 hover:text-white transition-colors shrink-0">
+                                                                        <Copy className="h-4 w-4" />
+                                                                    </button>
+                                                                    <button type="button" onClick={(e) => { e.stopPropagation(); handleShareVerse(v); }} className="p-2 hover:bg-white/10 rounded-md text-gray-300 hover:text-white transition-colors shrink-0">
+                                                                        <Share2 className="h-4 w-4" />
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
@@ -1067,9 +1088,21 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                     <Button onClick={() => router.back()} variant="ghost">
                         <ArrowLeft className="mr-2 h-4 w-4" /> Regresar
                     </Button>
-                    <Link href="/biblia/guardados">
-                        <Button variant="outline" className="rounded-full">Versículos Guardados</Button>
-                    </Link>
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="rounded-full"
+                        onClick={() =>
+                            goToDashboardBibliaSavedVerses(
+                                authLoaded,
+                                isSignedIn === true,
+                                redirectToSignIn,
+                                (href) => router.push(href),
+                            )
+                        }
+                    >
+                        Versículos Guardados
+                    </Button>
                 </div>
 
                 <div className="text-center mb-12">

@@ -1,6 +1,31 @@
 type RedirectToSignInFn = (opts?: {
   signInFallbackRedirectUrl?: string | null;
+  redirectUrl?: string | null;
 }) => Promise<unknown>;
+
+/** Destino tras iniciar sesión para “Versículos guardados” en el dashboard. */
+export const DASHBOARD_BIBLIA_SAVED_VERSES_PATH = '/dashboard/biblia';
+
+/**
+ * Navega a la Biblia del dashboard (versículos guardados).
+ * Sin sesión: abre el flujo de Clerk y, al terminar, redirige a esa ruta.
+ */
+export function goToDashboardBibliaSavedVerses(
+  isLoaded: boolean,
+  isSignedIn: boolean,
+  redirectToSignIn: RedirectToSignInFn,
+  navigate: (href: string) => void,
+): void {
+  if (!isLoaded) return;
+  if (isSignedIn) {
+    navigate(DASHBOARD_BIBLIA_SAVED_VERSES_PATH);
+    return;
+  }
+  void redirectToSignIn({
+    redirectUrl: DASHBOARD_BIBLIA_SAVED_VERSES_PATH,
+    signInFallbackRedirectUrl: DASHBOARD_BIBLIA_SAVED_VERSES_PATH,
+  });
+}
 
 /**
  * Devuelve true solo si Clerk terminó de cargar y hay sesión.

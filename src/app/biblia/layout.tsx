@@ -48,7 +48,7 @@ type Props = {
 export default function BibliaLayout({children}: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <main className="flex-1">{children}</main>
+      <main className="flex min-h-0 flex-1 flex-col">{children}</main>
       <Footer />
     </div>
   );

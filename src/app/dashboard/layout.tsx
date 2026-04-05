@@ -3,12 +3,13 @@
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, Megaphone, FileText, Building2, Menu, X, Compass } from 'lucide-react';
+import { BookOpen, Megaphone, FileText, Building2, Menu, X, Compass, Image as ImageIcon } from 'lucide-react';
 import { Show, SignInButton } from '@clerk/nextjs';
 import Footer from '@/app/components/footer';
 
 const sidebarLinks = [
   { name: 'Biblia', href: '/dashboard/biblia', icon: BookOpen },
+  { name: 'Imágenes', href: '/dashboard/imagenes', icon: ImageIcon },
   { name: 'Planes', href: '/dashboard/planes', icon: Compass },
   { name: 'Avisos', href: '/dashboard/avisos', icon: Megaphone },
   { name: 'Recursos', href: '/dashboard/recursos', icon: FileText },
