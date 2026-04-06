@@ -3,29 +3,10 @@
 import { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  BookOpen,
-  Megaphone,
-  FileText,
-  Building2,
-  Menu,
-  X,
-  Compass,
-  Image as ImageIcon,
-  UserPlus,
-} from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Show, SignInButton } from '@clerk/nextjs';
 import Footer from '@/app/components/footer';
-
-const sidebarLinks = [
-  { name: 'Personal', href: '/dashboard/miembros', icon: UserPlus },
-  { name: 'Biblia', href: '/dashboard/biblia', icon: BookOpen },
-  { name: 'Imágenes', href: '/dashboard/imagenes', icon: ImageIcon },
-  { name: 'Planes', href: '/dashboard/planes', icon: Compass },
-  { name: 'Avisos', href: '/dashboard/avisos', icon: Megaphone },
-  { name: 'Recursos', href: '/dashboard/recursos', icon: FileText },
-  { name: 'Templos', href: '/dashboard/templos', icon: Building2 },
-];
+import { DASHBOARD_NAV_ITEMS } from '@/lib/dashboard-nav';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -70,7 +51,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       <div className="flex flex-col lg:flex-row bg-[#F4F7F6] min-h-[calc(100vh-80px)] text-gray-900 font-sans relative">
         
         {/* Mobile Header Bar */}
-        <div className="lg:hidden bg-white border-b border-gray-200 px-5 py-3.5 flex items-center justify-between sticky top-[64px] sm:top-[80px] z-30 shadow-sm w-full">
+        <div className="lg:hidden bg-white border-b border-gray-200 px-5 py-3.5 flex items-center justify-between sticky top-16 sm:top-20 z-40 shadow-sm w-full">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-[#B88A44] rounded-lg flex items-center justify-center shadow-sm">
               <span className="text-white font-bold text-sm">A</span>
@@ -88,15 +69,16 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
         {/* Backdrop overlay for mobile strictly */}
         {isSidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
+          <div
+            className="fixed inset-0 z-[90] bg-black/50 backdrop-blur-sm lg:hidden"
             onClick={() => setIsSidebarOpen(false)}
+            aria-hidden
           />
         )}
 
         {/* Sidebar */}
         <aside
-          className={`fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col justify-between overflow-y-auto border-r border-gray-200 bg-white shadow-2xl transition-[transform,width] duration-300 ease-in-out lg:border-[#B88A44]/20 lg:bg-[#B88A44]/5 lg:shadow-none ${isDesktopSidebarCollapsed ? 'lg:w-20' : 'lg:w-[280px]'} lg:static lg:translate-x-0 lg:sticky lg:top-20 lg:h-[calc(100vh-80px)] ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
+          className={`fixed inset-y-0 left-0 z-[100] flex w-[min(100vw-3rem,280px)] flex-col justify-between overflow-y-auto border-r border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl transition-[transform,width] duration-300 ease-in-out lg:z-auto lg:max-w-none lg:border-[#B88A44]/20 lg:bg-[#B88A44]/5 lg:pb-0 lg:shadow-none ${isDesktopSidebarCollapsed ? 'lg:w-20' : 'lg:w-[280px]'} lg:static lg:translate-x-0 lg:sticky lg:top-20 lg:h-[calc(100vh-80px)] ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0`}
         >
           <div>
             {/* Mobile: cabecera del drawer */}
@@ -133,7 +115,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </div>
 
             <nav className={`space-y-1.5 px-5 pt-4 lg:pt-6 ${isDesktopSidebarCollapsed ? 'lg:px-2 lg:pt-4' : ''}`}>
-              {sidebarLinks.map((link) => {
+              {DASHBOARD_NAV_ITEMS.map((link) => {
                 const isActive = pathname.startsWith(link.href);
                 const Icon = link.icon;
                 return (
@@ -141,7 +123,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     key={link.name}
                     href={link.href}
                     title={isDesktopSidebarCollapsed ? link.name : undefined}
-                    className={`flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold transition-all ${
+                    className={`flex min-h-11 items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all lg:min-h-0 lg:py-3.5 ${
                       isDesktopSidebarCollapsed ? 'lg:justify-center lg:px-2' : ''
                     } ${
                       isActive ? 'bg-[#B88A44]/10 text-[#B88A44] shadow-sm' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'

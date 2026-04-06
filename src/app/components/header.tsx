@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, User, LogIn, UserPlus, ChevronDown } from 'lucide-react';
+import { Menu, X, User, LogIn, UserPlus, ChevronDown, LayoutDashboard } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
 import { Button } from '@/app/components/ui/button';
 import { Show, UserButton, SignOutButton, SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
 import { CHURCH_ADMIN_MEMBERS_PORTAL_URL, userEmailMatchesChurchHeaderNav } from '@/lib/church-admin';
+import { DASHBOARD_NAV_ITEMS, isDashboardPath } from '@/lib/dashboard-nav';
 import GlobalSearch from '@/app/components/global-search';
 
 const mainLinks = [
@@ -65,6 +66,7 @@ const Header = () => {
   const [nosotrosOpen, setNosotrosOpen] = useState(false);
   const [bibliaOpen, setBibliaOpen]     = useState(false);
   const [historiaOpen, setHistoriaOpen] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
   const [mounted, setMounted]           = useState(false);
   const currentPath = usePathname();
   const { user, isLoaded: userLoaded } = useUser();
@@ -74,11 +76,18 @@ const Header = () => {
   const nosotrosActive = nosotrosLinks.some(l => l.href === currentPath);
   const bibliaActive   = bibliaLinks.some(l => l.href === currentPath);
   const historiaActive = historiaLinks.some(l => l.href === currentPath);
+  const dashboardActive = isDashboardPath(currentPath);
 
   useEffect(() => { setMounted(true); }, []);
 
   // Close mobile menu on route change
-  useEffect(() => { setIsOpen(false); setNosotrosOpen(false); setBibliaOpen(false); setHistoriaOpen(false); }, [currentPath]);
+  useEffect(() => {
+    setIsOpen(false);
+    setNosotrosOpen(false);
+    setBibliaOpen(false);
+    setHistoriaOpen(false);
+    setDashboardOpen(false);
+  }, [currentPath]);
 
   return (
     <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200/50">
@@ -252,6 +261,50 @@ const Header = () => {
                 {link.label}
               </Link>
             ))}
+
+            {mounted && (
+              <Show when="signed-in">
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setDashboardOpen(p => !p)}
+                    className={`flex w-full items-center justify-between px-3 py-2.5 rounded-md text-base font-medium transition-colors min-h-11 ${dashboardActive ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-700 hover:text-black hover:bg-gray-50'}`}
+                    aria-expanded={dashboardOpen}
+                  >
+                    <span className="flex items-center gap-2">
+                      <LayoutDashboard className="h-5 w-5 shrink-0 opacity-80" aria-hidden />
+                      Dashboard
+                    </span>
+                    <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 ${dashboardOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  {dashboardOpen && (
+                    <div className="ml-3 space-y-0.5 border-l-2 border-[#B88A44]/25 pl-3">
+                      <Link
+                        href="/dashboard"
+                        className={`flex min-h-11 items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${currentPath === '/dashboard' ? 'bg-amber-50 text-[#B88A44]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                      >
+                        <LayoutDashboard className="h-4 w-4 shrink-0" aria-hidden />
+                        Inicio del panel
+                      </Link>
+                      {DASHBOARD_NAV_ITEMS.map(item => {
+                        const Icon = item.icon;
+                        const active = currentPath === item.href || currentPath.startsWith(`${item.href}/`);
+                        return (
+                          <Link
+                            key={item.href}
+                            href={item.href}
+                            className={`flex min-h-11 items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${active ? 'bg-amber-50 text-[#B88A44]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
+                          >
+                            <Icon className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
+                            {item.name}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              </Show>
+            )}
 
             {/* Biblia collapsible */}
             <button
