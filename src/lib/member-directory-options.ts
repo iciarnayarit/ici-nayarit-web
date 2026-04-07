@@ -49,12 +49,18 @@ export const MEMBER_MINISTRY_OPTIONS: string[] = [
   'HOMBRES',
 ];
 
-export type MemberStaffRole = 'sin_especificar' | 'pastor' | 'congregante' | 'lider' | 'staff_administrativo';
+export type MemberStaffRole =
+  | 'sin_especificar'
+  | 'nuevo'
+  | 'pastor'
+  | 'congregante'
+  | 'presidente'
+  | 'directiva';
 
 export const MEMBER_STAFF_ROLE_OPTIONS: { value: MemberStaffRole; label: string }[] = [
   { value: 'sin_especificar', label: 'Sin especificar' },
-  { value: 'pastor', label: 'Pastor' },
+  { value: 'nuevo', label: 'Pastor' },
   { value: 'congregante', label: 'Congregante' },
-  { value: 'lider', label: 'Presidente ó Directiva' },
-  { value: 'staff_administrativo', label: 'Staff administrativo' },
+  { value: 'presidente', label: 'Presidente' },
+  { value: 'directiva', label: 'Directiva' },
 ];

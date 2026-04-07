@@ -28,6 +28,12 @@ function listToCheckRecord(keys: string[]): Record<string, boolean> {
 }
 
 function parseStaffRoleValue(v: string | undefined): MemberStaffRole {
+  if (v === 'pastor') {
+    return 'nuevo';
+  }
+  if (v === 'lider') {
+    return 'presidente';
+  }
   if (v && MEMBER_STAFF_ROLE_OPTIONS.some(o => o.value === v)) {
     return v as MemberStaffRole;
   }
@@ -315,6 +321,7 @@ export default function AddMemberForm() {
       if (data.member) {
         applyMemberFromApi(data.member);
       }
+      window.dispatchEvent(new Event('member-profile-saved'));
       setFormBanner({
         type: 'success',
         text: data.updated
@@ -368,26 +375,6 @@ export default function AddMemberForm() {
               <span className="mt-1 block text-gray-400">Cargando datos guardados en la base de datos…</span>
             ) : null}
           </p>
-        </div>
-        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-          <Button
-            type="submit"
-            variant="outline"
-            className={cn(
-              'h-12 w-full rounded-xl px-5 font-semibold shadow-sm transition-colors sm:h-11 sm:w-auto sm:min-w-[8.5rem]',
-              isSubmitting &&
-                'border-neutral-600 bg-neutral-600 text-white hover:bg-neutral-600 hover:text-white',
-              !isSubmitting &&
-                showSavedOnButton &&
-                'border-amber-500/60 bg-amber-50 text-amber-700 hover:bg-amber-50 hover:text-amber-700',
-              !isSubmitting &&
-                !showSavedOnButton &&
-                '!border-black !bg-black !text-white hover:!bg-neutral-900 hover:!text-white'
-            )}
-            disabled={isSubmitting}
-          >
-            {saveButtonLabel}
-          </Button>
         </div>
       </div>
 
@@ -653,6 +640,27 @@ export default function AddMemberForm() {
           <p className="text-xs text-gray-500">Mínimo uno obligatorio; las casillas permiten elegir varios templos.</p>
         </CardContent>
       </Card>
+
+      <div className="flex w-full justify-end">
+        <Button
+          type="submit"
+          variant="outline"
+          className={cn(
+            'h-12 w-full rounded-xl px-5 font-semibold shadow-sm transition-colors sm:h-11 sm:w-auto sm:min-w-[8.5rem]',
+            isSubmitting &&
+              'border-neutral-600 bg-neutral-600 text-white hover:bg-neutral-600 hover:text-white',
+            !isSubmitting &&
+              showSavedOnButton &&
+              'border-amber-500/60 bg-amber-50 text-amber-700 hover:bg-amber-50 hover:text-amber-700',
+            !isSubmitting &&
+              !showSavedOnButton &&
+              '!border-black !bg-black !text-white hover:!bg-neutral-900 hover:!text-white'
+          )}
+          disabled={isSubmitting}
+        >
+          {saveButtonLabel}
+        </Button>
+      </div>
     </form>
   );
 }

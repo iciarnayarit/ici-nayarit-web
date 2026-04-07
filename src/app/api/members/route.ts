@@ -7,10 +7,11 @@ import type { MemberStaffRole } from '@/lib/member-directory-options';
 
 const staffRoleValues: [MemberStaffRole, ...MemberStaffRole[]] = [
   'sin_especificar',
+  'nuevo',
   'pastor',
   'congregante',
-  'lider',
-  'staff_administrativo',
+  'presidente',
+  'directiva',
 ];
 
 const createMemberSchema = z.object({
@@ -69,8 +70,17 @@ function templeIdsFromDoc(doc: MemberDoc): string[] {
 }
 
 function serializeMemberDoc(doc: MemberDoc) {
-  const staffRole = staffRoleValues.includes(doc.staffRole as MemberStaffRole)
-    ? (doc.staffRole as MemberStaffRole)
+  const rawStaffRole = doc.staffRole;
+  const normalizedRole =
+    rawStaffRole === 'pastor'
+      ? 'nuevo'
+      : rawStaffRole === 'lider'
+        ? 'presidente'
+        : rawStaffRole === 'staff_administrativo'
+          ? 'sin_especificar'
+          : rawStaffRole;
+  const staffRole = staffRoleValues.includes(normalizedRole as MemberStaffRole)
+    ? (normalizedRole as MemberStaffRole)
     : ('sin_especificar' as const);
 
   const groups = groupsFromDoc(doc);
@@ -204,6 +214,7 @@ export async function POST(req: Request) {
      * Documento completo enviado desde el formulario de miembros.
      * El correo en BD siempre es el de Clerk (`emailNorm`); el cuerpo del POST no puede sustituirlo.
      */
+    const normalizedStaffRole = data.staffRole === 'pastor' ? 'nuevo' : data.staffRole;
     const payload = {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -211,7 +222,7 @@ export async function POST(req: Request) {
       phone: data.phone,
       address: data.address,
       birthDate: data.birthDate,
-      staffRole: data.staffRole,
+      staffRole: normalizedStaffRole,
       groups: data.groups,
       templeIds: data.templeIds,
       updatedAt: now,

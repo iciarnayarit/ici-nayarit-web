@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, User, LogIn, UserPlus, ChevronDown, LayoutDashboard } from 'lucide-react';
+import { User, LogIn, UserPlus, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +12,7 @@ import {
 } from '@/app/components/ui/dropdown-menu';
 import { Button } from '@/app/components/ui/button';
 import { Show, UserButton, SignOutButton, SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
-import { CHURCH_ADMIN_MEMBERS_PORTAL_URL, userEmailMatchesChurchHeaderNav } from '@/lib/church-admin';
+import { CHURCH_ADMIN_MEMBERS_PORTAL_URL } from '@/lib/church-admin';
 import { DASHBOARD_NAV_ITEMS, isDashboardPath } from '@/lib/dashboard-nav';
 import GlobalSearch from '@/app/components/global-search';
 
@@ -62,16 +62,10 @@ const NavLink = ({
 };
 
 const Header = () => {
-  const [isOpen, setIsOpen]             = useState(false);
-  const [nosotrosOpen, setNosotrosOpen] = useState(false);
-  const [bibliaOpen, setBibliaOpen]     = useState(false);
-  const [historiaOpen, setHistoriaOpen] = useState(false);
-  const [dashboardOpen, setDashboardOpen] = useState(false);
   const [mounted, setMounted]           = useState(false);
+  const [hasSavedMemberInfo, setHasSavedMemberInfo] = useState(false);
   const currentPath = usePathname();
-  const { user, isLoaded: userLoaded } = useUser();
-  const showIglesiaNav =
-    userLoaded && !!user && userEmailMatchesChurchHeaderNav(user.emailAddresses);
+  const { isSignedIn, isLoaded } = useUser();
 
   const nosotrosActive = nosotrosLinks.some(l => l.href === currentPath);
   const bibliaActive   = bibliaLinks.some(l => l.href === currentPath);
@@ -80,14 +74,33 @@ const Header = () => {
 
   useEffect(() => { setMounted(true); }, []);
 
-  // Close mobile menu on route change
+  const refreshChurchMenuAccess = useCallback(async () => {
+    if (!isLoaded || !isSignedIn) {
+      setHasSavedMemberInfo(false);
+      return;
+    }
+    try {
+      const res = await fetch('/api/members', { cache: 'no-store' });
+      const data = (await res.json().catch(() => ({}))) as { member?: { id?: string } | null };
+      setHasSavedMemberInfo(!!(res.ok && data.member?.id));
+    } catch {
+      setHasSavedMemberInfo(false);
+    }
+  }, [isLoaded, isSignedIn]);
+
   useEffect(() => {
-    setIsOpen(false);
-    setNosotrosOpen(false);
-    setBibliaOpen(false);
-    setHistoriaOpen(false);
-    setDashboardOpen(false);
-  }, [currentPath]);
+    void refreshChurchMenuAccess();
+  }, [refreshChurchMenuAccess, currentPath]);
+
+  useEffect(() => {
+    const onMemberSaved = () => {
+      void refreshChurchMenuAccess();
+    };
+    window.addEventListener('member-profile-saved', onMemberSaved);
+    return () => {
+      window.removeEventListener('member-profile-saved', onMemberSaved);
+    };
+  }, [refreshChurchMenuAccess]);
 
   return (
     <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200/50">
@@ -193,7 +206,7 @@ const Header = () => {
             {mounted && (
               <Show when="signed-in">
                 <>
-                  {showIglesiaNav && (
+                  {hasSavedMemberInfo && (
                     <a
                       href={CHURCH_ADMIN_MEMBERS_PORTAL_URL}
                       className="text-sm font-semibold text-gray-600 transition-colors hover:text-black"
@@ -203,7 +216,37 @@ const Header = () => {
                       Iglesia
                     </a>
                   )}
-                  <NavLink href="/dashboard" label="Dashboard" currentPath={currentPath} matchChildRoutes />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button
+                        className={`flex items-center gap-1 text-sm font-semibold transition-colors focus:outline-none ${
+                          dashboardActive ? 'text-gray-900' : 'text-gray-600 hover:text-black'
+                        }`}
+                      >
+                        Dashboard <ChevronDown className="w-3.5 h-3.5 mt-0.5" />
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-60 p-2 rounded-2xl shadow-xl border border-gray-100">
+                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-2 pb-2 pt-1">Panel</p>
+                      {DASHBOARD_NAV_ITEMS.map(item => {
+                        const Icon = item.icon;
+                        const active = currentPath === item.href || currentPath.startsWith(`${item.href}/`);
+                        return (
+                          <DropdownMenuItem key={item.href} asChild>
+                            <Link
+                              href={item.href}
+                              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
+                                active ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50 text-gray-700'
+                              }`}
+                            >
+                              <Icon className="h-4 w-4 shrink-0 opacity-90" />
+                              <span className="text-sm font-bold leading-tight">{item.name}</span>
+                            </Link>
+                          </DropdownMenuItem>
+                        );
+                      })}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </>
               </Show>
             )}
@@ -239,186 +282,12 @@ const Header = () => {
             )}
           </div>
 
-          {/* Mobile hamburger */}
+          {/* Mobile user button */}
           <div className="md:hidden flex items-center gap-2">
             {mounted && <Show when="signed-in"><UserButton /></Show>}
-            <button onClick={() => setIsOpen(p => !p)} className="p-2 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none">
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
           </div>
         </div>
       </nav>
-
-      {/* Mobile menu */}
-      {isOpen && (
-        <div className="md:hidden border-t border-gray-200/50">
-          <div className="px-4 pt-3 pb-2">
-            <GlobalSearch />
-          </div>
-          <div className="px-2 pt-1 pb-3 space-y-1 sm:px-3">
-            {mainLinks.map(link => (
-              <Link key={link.href} href={link.href} className={`block px-3 py-2 rounded-md text-base font-medium ${link.href === currentPath ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-700 hover:text-black hover:bg-gray-50'}`}>
-                {link.label}
-              </Link>
-            ))}
-
-            {mounted && (
-              <Show when="signed-in">
-                <>
-                  <button
-                    type="button"
-                    onClick={() => setDashboardOpen(p => !p)}
-                    className={`flex w-full items-center justify-between px-3 py-2.5 rounded-md text-base font-medium transition-colors min-h-11 ${dashboardActive ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-700 hover:text-black hover:bg-gray-50'}`}
-                    aria-expanded={dashboardOpen}
-                  >
-                    <span className="flex items-center gap-2">
-                      <LayoutDashboard className="h-5 w-5 shrink-0 opacity-80" aria-hidden />
-                      Dashboard
-                    </span>
-                    <ChevronDown className={`h-4 w-4 shrink-0 transition-transform duration-200 ${dashboardOpen ? 'rotate-180' : ''}`} />
-                  </button>
-                  {dashboardOpen && (
-                    <div className="ml-3 space-y-0.5 border-l-2 border-[#B88A44]/25 pl-3">
-                      <Link
-                        href="/dashboard"
-                        className={`flex min-h-11 items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${currentPath === '/dashboard' ? 'bg-amber-50 text-[#B88A44]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
-                      >
-                        <LayoutDashboard className="h-4 w-4 shrink-0" aria-hidden />
-                        Inicio del panel
-                      </Link>
-                      {DASHBOARD_NAV_ITEMS.map(item => {
-                        const Icon = item.icon;
-                        const active = currentPath === item.href || currentPath.startsWith(`${item.href}/`);
-                        return (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className={`flex min-h-11 items-center gap-2 rounded-md px-3 py-2 text-sm font-medium ${active ? 'bg-amber-50 text-[#B88A44]' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'}`}
-                          >
-                            <Icon className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-                            {item.name}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              </Show>
-            )}
-
-            {/* Biblia collapsible */}
-            <button
-              onClick={() => setBibliaOpen(p => !p)}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium transition-colors ${bibliaActive ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-700 hover:text-black hover:bg-gray-50'}`}
-            >
-              Biblia
-              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${bibliaOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {bibliaOpen && (
-              <div className="pl-3 space-y-1 border-l-2 border-gray-100 ml-3">
-                {bibliaLinks.map(link => (
-                  <Link key={link.href} href={link.href} className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${link.href === currentPath ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>
-                    <span>{link.icon}</span> {link.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            {/* Historia collapsible */}
-            <button
-              onClick={() => setHistoriaOpen(p => !p)}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium transition-colors ${historiaActive ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-700 hover:text-black hover:bg-gray-50'}`}
-            >
-              Historia
-              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${historiaOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {historiaOpen && (
-              <div className="pl-3 space-y-1 border-l-2 border-gray-100 ml-3">
-                {historiaLinks.map(link => (
-                  <Link key={link.href} href={link.href} className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${link.href === currentPath ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>
-                    <span>{link.icon}</span> {link.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            {/* Nosotros collapsible */}
-            <button
-              onClick={() => setNosotrosOpen(p => !p)}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-base font-medium transition-colors ${nosotrosActive ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-700 hover:text-black hover:bg-gray-50'}`}
-            >
-              Nosotros
-              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${nosotrosOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {nosotrosOpen && (
-              <div className="pl-3 space-y-1 border-l-2 border-gray-100 ml-3">
-                {nosotrosLinks.map(link => (
-                  <Link key={link.href} href={link.href} className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium ${link.href === currentPath ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-600 hover:text-black hover:bg-gray-50'}`}>
-                    <span>{link.icon}</span> {link.label}
-                  </Link>
-                ))}
-              </div>
-            )}
-
-            {mounted && (
-              <Show when="signed-in">
-                <>
-                  {showIglesiaNav && (
-                    <a
-                      href={CHURCH_ADMIN_MEMBERS_PORTAL_URL}
-                      className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Iglesia
-                    </a>
-                  )}
-                  <Link
-                    href="/perfil"
-                    className={`block px-3 py-2 rounded-md text-base font-medium ${currentPath === '/perfil' || currentPath.startsWith('/perfil/') ? 'text-[#B88A44] bg-yellow-50' : 'text-gray-700 hover:text-black hover:bg-gray-50'}`}
-                  >
-                    Perfil
-                  </Link>
-                </>
-              </Show>
-            )}
-
-            <div className="border-t border-gray-200 my-2" />
-
-            {mounted && (
-              <Show
-                when="signed-in"
-                fallback={
-                  <>
-                    <SignUpButton mode="modal">
-                      <button
-                        type="button"
-                        className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-left text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
-                      >
-                        <UserPlus className="h-4 w-4 shrink-0" /> Crear Cuenta
-                      </button>
-                    </SignUpButton>
-                    <SignInButton mode="modal">
-                      <button
-                        type="button"
-                        className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-left text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
-                      >
-                        <LogIn className="h-4 w-4 shrink-0" /> Iniciar Sesión
-                      </button>
-                    </SignInButton>
-                  </>
-                }
-              >
-                <SignOutButton>
-                  <span className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-black hover:bg-gray-50 cursor-pointer">
-                    Cerrar Sesión
-                  </span>
-                </SignOutButton>
-              </Show>
-            )}
-          </div>
-        </div>
-      )}
     </header>
   );
 };
