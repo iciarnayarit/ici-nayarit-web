@@ -4,6 +4,7 @@ import { Button } from '@/app/components/ui/button';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Progress } from '@/app/components/ui/progress';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { useToast } from '@/app/hooks/use-toast';
 import {
     Bookmark, CheckCircle2, Share2, ArrowLeft, Type,
@@ -14,7 +15,16 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
-import { handleReadPassage, PassageVerse } from '@/lib/bible-data';
+import { handleReadPassage, type BibleBookData, type PassageVerse } from '@/lib/bible-data';
+import {
+    DEFAULT_BIBLE_VERSION_ID,
+    DEFAULT_BIBLE_VERSION_LABEL,
+    READING_PLAN_VERSIONS,
+    READING_PLAN_VERSION_STORAGE_KEY,
+    isValidReadingPlanVersionId,
+    loadFullBibleLookup,
+    type VersionId,
+} from '@/lib/bible-versions';
 import { useAuth, useClerk } from '@clerk/nextjs';
 import {
     ensureClerkSignedIn,
@@ -166,6 +176,10 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [mounted, setMounted] = useState(false);
 
+    const [planVersionId, setPlanVersionId] = useState<VersionId>(DEFAULT_BIBLE_VERSION_ID);
+    const [planLookup, setPlanLookup] = useState<Record<string, BibleBookData> | null>(null);
+    const [planLookupLoading, setPlanLookupLoading] = useState(false);
+
     const router = useRouter();
     const { toast } = useToast();
     const { isLoaded: authLoaded, isSignedIn } = useAuth();
@@ -199,7 +213,33 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         if (savedLH) setLineHeight(savedLH as any);
         const savedTheme = localStorage.getItem('bibleTheme');
         if (savedTheme) setTheme(savedTheme as any);
+        const savedPlanVersion = localStorage.getItem(READING_PLAN_VERSION_STORAGE_KEY);
+        if (savedPlanVersion && isValidReadingPlanVersionId(savedPlanVersion)) {
+            setPlanVersionId(savedPlanVersion);
+        }
     }, [planSlug]);
+
+    useEffect(() => {
+        let cancelled = false;
+        setPlanLookupLoading(true);
+        loadFullBibleLookup(planVersionId)
+            .then((lookup) => {
+                if (!cancelled) {
+                    setPlanLookup(lookup);
+                    setPlanLookupLoading(false);
+                }
+            })
+            .catch((err) => {
+                console.error('No se pudo cargar la Biblia para el plan:', err);
+                if (!cancelled) {
+                    setPlanLookup(null);
+                    setPlanLookupLoading(false);
+                }
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [planVersionId]);
 
     const toggleDayCompletion = (day: number) => {
         const updated = completedDays.includes(day)
@@ -502,6 +542,9 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
     };
     const themeStyles = getThemeStyles();
 
+    const planVersionLabel =
+        READING_PLAN_VERSIONS.find((v) => v.id === planVersionId)?.label ?? DEFAULT_BIBLE_VERSION_LABEL;
+
     const getLineHeightClass = () => {
         switch (lineHeight) {
             case 'tight': return 'leading-[1.5]';
@@ -604,7 +647,8 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         const dayData = planData.find(d => d.day === selectedDay);
         if (!dayData) return null;
 
-        const verses = handleReadPassage(dayData.reading);
+        const verses =
+            planLookup && !planLookupLoading ? handleReadPassage(dayData.reading, planLookup) : [];
         const dayChapterItems = parseReadingChapters(dayData.reading);
         const completedChapterIds = new Set(getCompletedChapterIdsForDay(selectedDay));
         const dayCompletedCount = dayChapterItems.filter(item => completedChapterIds.has(item.id)).length;
@@ -622,7 +666,28 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                     <ArrowLeft className="mr-2 h-4 w-4" /> Volver al plan
                                 </Button>
 
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center justify-end gap-2">
+                                    <Select
+                                        value={planVersionId}
+                                        onValueChange={(v) => {
+                                            const id = v as VersionId;
+                                            setPlanVersionId(id);
+                                            localStorage.setItem(READING_PLAN_VERSION_STORAGE_KEY, id);
+                                        }}
+                                    >
+                                        <SelectTrigger
+                                            className={`h-10 w-[min(100%,220px)] rounded-xl border text-sm font-semibold ${theme === 'dark' ? 'border-gray-700 bg-[#151D2C] text-gray-200' : 'border-gray-200 bg-white text-gray-800'}`}
+                                        >
+                                            <SelectValue placeholder="Versión" />
+                                        </SelectTrigger>
+                                        <SelectContent className="max-h-[min(70vh,320px)]">
+                                            {READING_PLAN_VERSIONS.map((v) => (
+                                                <SelectItem key={v.id} value={v.id}>
+                                                    {v.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button variant="outline" size="icon" className={`rounded-xl ${themeStyles.buttonHover}`}>
@@ -712,6 +777,10 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                 <CardContent className="p-8">
                                     <div className={`space-y-4 text-left font-sans transition-all duration-500 ${themeStyles.text} ${getLineHeightClass()}`} style={{ fontSize: `${(fontSize / 100) * 16}px` }}>
                                         {verses.length > 0 ? verses.map((v, index) => {
+                                            const prev = index > 0 ? verses[index - 1] : null;
+                                            const showSectionTitle =
+                                                Boolean(v.sectionTitle?.trim()) &&
+                                                (!prev || prev.sectionTitle !== v.sectionTitle);
                                             const reference = `${v.book} ${v.chapter}:${v.verse}`;
                                             const isSelected = selectedVerse === v.verse;
                                             const isHighlighted = highlightedVerses[reference];
@@ -737,7 +806,12 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                                 : `${themeStyles.buttonHover} py-1.5 cursor-pointer`;
 
                                             return (
-                                                <div key={index} className={`relative rounded-xl transition-all duration-200 ${isSelected ? 'z-40' : ''} ${containerClasses}`}>
+                                                <div key={`${v.book}-${v.chapter}-${v.verse}-${index}`} className={`relative rounded-xl transition-all duration-200 ${isSelected ? 'z-40' : ''} ${containerClasses}`}>
+                                                    {showSectionTitle && (
+                                                        <p className={`text-sm font-bold tracking-wide mb-2 whitespace-pre-line leading-snug ${index === 0 ? 'mt-0' : 'mt-5'} ${themeStyles.subtitle}`}>
+                                                            {v.sectionTitle}
+                                                        </p>
+                                                    )}
                                                     {isSelected && (
                                                         <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-50 flex flex-col items-center gap-2 w-max max-w-[calc(100vw-2rem)] pointer-events-auto">
                                                             {showColorPicker && (
@@ -802,7 +876,11 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                                     </p>
                                                 </div>
                                             );
-                                        }) : <p className="text-center text-gray-500 italic py-8">Cargando pasaje...</p>}
+                                        }) : planLookupLoading || !planLookup ? (
+                                            <p className="text-center text-gray-500 italic py-8">Cargando pasaje...</p>
+                                        ) : (
+                                            <p className="text-center text-gray-500 italic py-8">No se encontró el texto para esta lectura.</p>
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -836,7 +914,9 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                                     <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-1 rounded-full uppercase truncate max-w-[120px]">
                                                         {dayData.reading} ({selectedVerse})
                                                     </span>
-                                                    <span className="text-[9px] text-gray-400 font-medium mt-1">RVR1960</span>
+                                                    <span className="text-[9px] text-gray-400 font-medium mt-1 truncate max-w-[140px] text-right">
+                                                        {planVersionLabel}
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div className="relative mb-6">
@@ -1277,10 +1357,33 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                     </p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl shadow-sm border mb-12">
-                    <div className="flex justify-between items-center mb-2">
+                <div className="bg-white p-6 rounded-2xl shadow-sm border mb-12 space-y-4">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <span className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Tu Progreso</span>
-                        <span className="text-sm font-bold text-[#B88A44]">{Math.round(progressPercentage)}%</span>
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 w-full sm:w-auto">
+                            <Select
+                                value={planVersionId}
+                                onValueChange={(v) => {
+                                    const id = v as VersionId;
+                                    setPlanVersionId(id);
+                                    localStorage.setItem(READING_PLAN_VERSION_STORAGE_KEY, id);
+                                }}
+                            >
+                                <SelectTrigger className="w-full sm:w-[260px] rounded-xl border-gray-200 text-sm font-semibold text-gray-800">
+                                    <SelectValue placeholder="Versión de la Biblia" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[min(70vh,320px)]">
+                                    {READING_PLAN_VERSIONS.map((v) => (
+                                        <SelectItem key={v.id} value={v.id}>
+                                            {v.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <span className="text-sm font-bold text-[#B88A44] text-center sm:text-right shrink-0">
+                                {Math.round(progressPercentage)}%
+                            </span>
+                        </div>
                     </div>
                     <Progress value={progressPercentage} className="h-3 bg-gray-100" />
                     <p className="text-xs text-gray-400 mt-2 text-center">{completedDays.length} de {planData.length} días completados</p>

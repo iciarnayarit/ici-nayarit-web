@@ -2,7 +2,7 @@
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { useToast } from '@/app/hooks/use-toast';
-import { bibleData, handleReadPassage } from '@/lib/bible-data';
+import { handleReadPassage } from '@/lib/bible-data';
 import { allPlanData, plans } from '@/lib/reading-plan-data';
 import { SAVED_PLANS_CHANGED_EVENT } from '@/lib/saved-reading-plans';
 import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
@@ -14,13 +14,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-
-interface PassageVerse {
-  book: string;
-  chapter: number;
-  verse: number;
-  text: string;
-}
 
 export default function ReadingPlans() {
   const { toast } = useToast();
@@ -122,7 +115,12 @@ export default function ReadingPlans() {
     if (planData) {
       const tableData = planData.map(day => {
         const verses = handleReadPassage(day.reading);
-        const verseText = verses.map(v => `${v.chapter}:${v.verse} ${v.text}`).join('\n');
+        const verseText = verses
+          .map((v) => {
+            const head = v.sectionTitle ? `${v.sectionTitle}\n` : '';
+            return `${head}${v.chapter}:${v.verse} ${v.text}`;
+          })
+          .join('\n');
         return [day.day, day.reading, verseText];
       });
 

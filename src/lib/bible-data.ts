@@ -1,91 +1,179 @@
-import c1 from '@/app/lib/bible_rvr/1-chronicles.json';
-import co1 from '@/app/lib/bible_rvr/1-corinthians.json';
-import jn1 from '@/app/lib/bible_rvr/1-john.json';
-import k1 from '@/app/lib/bible_rvr/1-kings.json';
-import pe1 from '@/app/lib/bible_rvr/1-peter.json';
-import sa1 from '@/app/lib/bible_rvr/1-samuel.json';
-import th1 from '@/app/lib/bible_rvr/1-thessalonians.json';
-import ti1 from '@/app/lib/bible_rvr/1-timothy.json';
-import c2 from '@/app/lib/bible_rvr/2-chronicles.json';
-import co2 from '@/app/lib/bible_rvr/2-corinthians.json';
-import jn2 from '@/app/lib/bible_rvr/2-john.json';
-import k2 from '@/app/lib/bible_rvr/2-kings.json';
-import pe2 from '@/app/lib/bible_rvr/2-peter.json';
-import sa2 from '@/app/lib/bible_rvr/2-samuel.json';
-import th2 from '@/app/lib/bible_rvr/2-thessalonians.json';
-import ti2 from '@/app/lib/bible_rvr/2-timothy.json';
-import jn3 from '@/app/lib/bible_rvr/3-john.json';
-import act from '@/app/lib/bible_rvr/act.json';
-import am from '@/app/lib/bible_rvr/am.json';
-import col from '@/app/lib/bible_rvr/colossians.json';
-import dn from '@/app/lib/bible_rvr/dn.json';
-import dt from '@/app/lib/bible_rvr/dt.json';
-import ec from '@/app/lib/bible_rvr/ec.json';
-import eph from '@/app/lib/bible_rvr/eph.json';
-import et from '@/app/lib/bible_rvr/et.json';
-import ex from '@/app/lib/bible_rvr/ex.json';
-import ez from '@/app/lib/bible_rvr/ez.json';
-import ezr from '@/app/lib/bible_rvr/ezr.json';
-import gl from '@/app/lib/bible_rvr/gl.json';
-import gn from '@/app/lib/bible_rvr/gn.json';
-import hb from '@/app/lib/bible_rvr/hb.json';
-import hg from '@/app/lib/bible_rvr/hg.json';
-import hk from '@/app/lib/bible_rvr/hk.json';
-import ho from '@/app/lib/bible_rvr/ho.json';
-import is from '@/app/lib/bible_rvr/is.json';
-import jd from '@/app/lib/bible_rvr/jd.json';
-import jl from '@/app/lib/bible_rvr/jl.json';
-import jm from '@/app/lib/bible_rvr/jm.json';
-import jn from '@/app/lib/bible_rvr/jn.json';
-import jo from '@/app/lib/bible_rvr/jo.json';
-import job from '@/app/lib/bible_rvr/job.json';
-import jr from '@/app/lib/bible_rvr/jr.json';
-import js from '@/app/lib/bible_rvr/js.json';
-import jud from '@/app/lib/bible_rvr/jud.json';
-import lk from '@/app/lib/bible_rvr/lk.json';
-import lm from '@/app/lib/bible_rvr/lm.json';
-import lv from '@/app/lib/bible_rvr/lv.json';
-import mi from '@/app/lib/bible_rvr/mi.json';
-import mk from '@/app/lib/bible_rvr/mk.json';
-import ml from '@/app/lib/bible_rvr/ml.json';
-import mt from '@/app/lib/bible_rvr/mt.json';
-import na from '@/app/lib/bible_rvr/na.json';
-import ne from '@/app/lib/bible_rvr/ne.json';
-import nm from '@/app/lib/bible_rvr/nm.json';
-import ob from '@/app/lib/bible_rvr/ob.json';
-import ph from '@/app/lib/bible_rvr/ph.json';
-import phm from '@/app/lib/bible_rvr/phm.json';
-import prv from '@/app/lib/bible_rvr/prv.json';
-import ps from '@/app/lib/bible_rvr/ps.json';
-import re from '@/app/lib/bible_rvr/re.json';
-import rm from '@/app/lib/bible_rvr/rm.json';
-import rt from '@/app/lib/bible_rvr/rt.json';
-import so from '@/app/lib/bible_rvr/so.json';
-import tt from '@/app/lib/bible_rvr/tt.json';
-import zc from '@/app/lib/bible_rvr/zc.json';
-import zp from '@/app/lib/bible_rvr/zp.json';
+import esRvr1960 from '@/app/lib/bible_rvr_1960/es_rvr_1960.json';
+
+type RvrItem = {
+    type: string;
+    verse_numbers?: number[];
+    lines?: string[];
+};
+
+function isSelahLabel(text: string): boolean {
+    return text.trim().toLowerCase() === 'selah';
+}
+
+type RvrChapter = {
+    is_chapter: boolean;
+    items: RvrItem[];
+};
+
+export type UbsBibleBook = {
+    name: string;
+    chapters: RvrChapter[];
+};
+
+/** Raíz JSON United Bible Societies (misma forma que `es_rvr_1960.json`). */
+export type UbsBibleRoot = { books: UbsBibleBook[] };
+
+export interface BibleBookData {
+    chapters: string[][];
+    /** Título de sección (p. ej. encabezado UBS) por versículo; mismo índice que `chapters[c][v]`. */
+    sectionTitlesByVerse: string[][];
+}
+
+function linesToText(lines: string[] | undefined): string {
+    return (lines ?? []).join(' ').trim();
+}
+
+/**
+ * Encabezados UBS: `section1` (p. ej. LIBRO I), `heading1` (título de sección/párrafo),
+ * `label` antes del primer versículo del bloque (p. ej. título largo de un salmo).
+ * Se omiten `label` que solo dicen «Selah» (marcador poético entre versículos).
+ */
+function parseCanonicalChapter(items: RvrItem[]): { verses: string[]; sectionTitles: string[] } {
+    let sec1 = '';
+    let h1 = '';
+    const pendingLabels: string[] = [];
+    /** Hay al menos un versículo desde el último section1/heading1 que reinició el bloque. */
+    let startedVersesInBlock = false;
+
+    const blockTitle = (): string => {
+        const parts = [sec1, h1, ...pendingLabels].map((s) => s.trim()).filter(Boolean);
+        return parts.join('\n\n');
+    };
+
+    const verseText = new Map<number, string>();
+    const verseSection = new Map<number, string>();
+
+    for (const item of items) {
+        if (item.type === 'section1' && item.lines?.length) {
+            sec1 = linesToText(item.lines);
+            h1 = '';
+            pendingLabels.length = 0;
+            startedVersesInBlock = false;
+            continue;
+        }
+        if (item.type === 'heading1' && item.lines?.length) {
+            h1 = linesToText(item.lines);
+            pendingLabels.length = 0;
+            startedVersesInBlock = false;
+            continue;
+        }
+        if (item.type === 'label' && item.lines?.length) {
+            const t = linesToText(item.lines);
+            if (isSelahLabel(t)) continue;
+            if (!startedVersesInBlock) pendingLabels.push(t);
+            continue;
+        }
+        if (item.type !== 'verse' || !item.verse_numbers?.length) continue;
+        const text = linesToText(item.lines);
+        const titleForVerses = blockTitle();
+        for (const vn of item.verse_numbers) {
+            const prev = verseText.get(vn) ?? '';
+            verseText.set(vn, prev ? `${prev} ${text}`.trim() : text);
+            if (!verseSection.has(vn)) verseSection.set(vn, titleForVerses);
+        }
+        startedVersesInBlock = true;
+    }
+
+    const nums = [...verseText.keys()].sort((a, b) => a - b);
+    if (nums.length === 0) return { verses: [], sectionTitles: [] };
+    const max = nums[nums.length - 1]!;
+    const verses: string[] = [];
+    const sectionTitles: string[] = [];
+    for (let v = 1; v <= max; v++) {
+        verses.push(verseText.get(v) ?? '');
+        sectionTitles.push(verseSection.get(v) ?? '');
+    }
+    return { verses, sectionTitles };
+}
+
+/** Solo claves `name.toLowerCase()` del JSON, sin alias UI. */
+export function buildBibleDataFromUbsRoot(root: UbsBibleRoot): Record<string, BibleBookData> {
+    const out: Record<string, BibleBookData> = {};
+    for (const book of root.books) {
+        const key = book.name.toLowerCase();
+        const chapters: string[][] = [];
+        const sectionTitlesByVerse: string[][] = [];
+        for (const ch of book.chapters) {
+            if (!ch.is_chapter) continue;
+            const { verses, sectionTitles } = parseCanonicalChapter(ch.items ?? []);
+            chapters.push(verses);
+            sectionTitles.push(sectionTitles);
+        }
+        out[key] = { chapters, sectionTitlesByVerse };
+    }
+    return out;
+}
+
+/** Claves que usan la UI y los planes frente a los nombres UBS (`S. Mateo`, `Cantares`, etc.). */
+export const SPANISH_UBS_BOOK_ALIASES: Record<string, string> = {
+    mateo: 's. mateo',
+    marcos: 's. marcos',
+    lucas: 's. lucas',
+    juan: 's. juan',
+    'cantar de los cantares': 'cantares',
+};
+
+/** Lookup listo para el lector: incluye alias españoles habituales. */
+export function buildSpanishUbsLookupFromRoot(root: UbsBibleRoot): Record<string, BibleBookData> {
+    const base = buildBibleDataFromUbsRoot(root);
+    const out: Record<string, BibleBookData> = { ...base };
+    for (const [alias, target] of Object.entries(SPANISH_UBS_BOOK_ALIASES)) {
+        const src = base[target];
+        if (src) out[alias] = src;
+    }
+    return out;
+}
+
+const bibleData = buildSpanishUbsLookupFromRoot(esRvr1960 as UbsBibleRoot);
+
+export { bibleData };
 
 export interface PassageVerse {
     book: string;
     chapter: number;
     verse: number;
     text: string;
+    /** Encabezado de sección inmediatamente anterior a este versículo en el texto fuente. */
+    sectionTitle?: string;
 }
 
-export const handleReadPassage = (reading: string): PassageVerse[] => {
+function versePayload(
+    bookKey: string,
+    chapter: number,
+    verse: number,
+    text: string,
+    book: BibleBookData
+): PassageVerse {
+    const st = book.sectionTitlesByVerse[chapter - 1]?.[verse - 1]?.trim();
+    return st ? { book: bookKey, chapter, verse, text, sectionTitle: st } : { book: bookKey, chapter, verse, text };
+}
+
+export const handleReadPassage = (
+    reading: string,
+    lookup: Record<string, BibleBookData> = bibleData
+): PassageVerse[] => {
     const allVerses: PassageVerse[] = [];
     let currentBookKey = '';
 
-    const references = reading.split(';').map(r => r.trim());
+    const references = reading.split(';').map((r) => r.trim());
 
     for (const ref of references) {
         let passage = ref;
-        // Handle books with numbers and accents (e.g., 1 Corintios, Éxodo)
         const bookMatch = ref.match(/^(\d?\s?[a-zA-ZáéíóúÁÉÍÓÚñÑ]+(?:\s[a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*)\s/);
 
-        if (bookMatch && bookMatch[1]) {
+        if (bookMatch?.[1]) {
             const bookName = bookMatch[1].trim().toLowerCase();
-            if (bibleData[bookName]) {
+            if (lookup[bookName]) {
                 currentBookKey = bookName;
                 passage = ref.substring(bookMatch[0].length).trim();
             }
@@ -93,81 +181,73 @@ export const handleReadPassage = (reading: string): PassageVerse[] => {
 
         if (!currentBookKey) continue;
 
-        const book = bibleData[currentBookKey];
-        const passageParts = passage.split(',').map(p => p.trim());
+        const book = lookup[currentBookKey]!;
+        const passageParts = passage.split(',').map((p) => p.trim());
 
         for (const part of passageParts) {
-            let match;
+            let match: RegExpMatchArray | null;
 
-            // Handle Chapter:StartVerse-EndVerse (e.g., 12:1-14)
             match = part.match(/^(\d+):(\d+)-(\d+)$/);
             if (match) {
-                const chapter = parseInt(match[1], 10);
-                const startVerse = parseInt(match[2], 10);
-                const endVerse = parseInt(match[3], 10);
+                const chapter = parseInt(match[1]!, 10);
+                const startVerse = parseInt(match[2]!, 10);
+                const endVerse = parseInt(match[3]!, 10);
                 const verses = book.chapters[chapter - 1] || [];
                 for (let i = startVerse; i <= endVerse; i++) {
-                    if (verses[i - 1]) {
-                        allVerses.push({ book: currentBookKey, chapter, verse: i, text: verses[i - 1] });
-                    }
+                    const t = verses[i - 1];
+                    if (t) allVerses.push(versePayload(currentBookKey, chapter, i, t, book));
                 }
                 continue;
             }
 
-            // Handle Chapter:Verse (e.g., 22:1)
             match = part.match(/^(\d+):(\d+)$/);
             if (match) {
-                const chapter = parseInt(match[1], 10);
-                const verse = parseInt(match[2], 10);
+                const chapter = parseInt(match[1]!, 10);
+                const verse = parseInt(match[2]!, 10);
                 const verses = book.chapters[chapter - 1] || [];
-                if (verses[verse - 1]) {
-                    allVerses.push({ book: currentBookKey, chapter, verse, text: verses[verse - 1] });
-                }
+                const t = verses[verse - 1];
+                if (t) allVerses.push(versePayload(currentBookKey, chapter, verse, t, book));
                 continue;
             }
 
-            // Handle Chapter-Chapter (e.g., 18-19) - Full chapters
             match = part.match(/^(\d+)-(\d+)$/);
             if (match) {
-                const startChapter = parseInt(match[1], 10);
-                const endChapter = parseInt(match[2], 10);
+                const startChapter = parseInt(match[1]!, 10);
+                const endChapter = parseInt(match[2]!, 10);
                 for (let c = startChapter; c <= endChapter; c++) {
                     const verses = book.chapters[c - 1] || [];
                     verses.forEach((text: string, i: number) => {
-                        allVerses.push({ book: currentBookKey, chapter: c, verse: i + 1, text });
+                        if (text) allVerses.push(versePayload(currentBookKey, c, i + 1, text, book));
                     });
                 }
                 continue;
             }
 
-            // Handle Chapter:Verse-Chapter:Verse (e.g., 18:1-19:42)
             match = part.match(/^(\d+):(\d+)-(\d+):(\d+)$/);
             if (match) {
-                const startChapter = parseInt(match[1], 10);
-                const startVerse = parseInt(match[2], 10);
-                const endChapter = parseInt(match[3], 10);
-                const endVerse = parseInt(match[4], 10);
+                const startChapter = parseInt(match[1]!, 10);
+                const startVerse = parseInt(match[2]!, 10);
+                const endChapter = parseInt(match[3]!, 10);
+                const endVerse = parseInt(match[4]!, 10);
 
                 for (let c = startChapter; c <= endChapter; c++) {
                     const verses = book.chapters[c - 1] || [];
                     const sV = c === startChapter ? startVerse : 1;
                     const eV = c === endChapter ? endVerse : verses.length;
                     for (let i = sV; i <= eV; i++) {
-                        if (verses[i - 1]) {
-                            allVerses.push({ book: currentBookKey, chapter: c, verse: i, text: verses[i - 1] });
-                        }
+                        const t = verses[i - 1];
+                        if (t) allVerses.push(versePayload(currentBookKey, c, i, t, book));
                     }
                 }
                 continue;
             }
 
-            // Handle Single Chapter (e.g., 12)
             match = part.match(/^(\d+)$/);
             if (match) {
-                const chapter = parseInt(match[1], 10);
+                const chapter = parseInt(match[1]!, 10);
                 const verses = book.chapters[chapter - 1] || [];
                 verses.forEach((text: string, i: number) => {
-                    allVerses.push({ book: currentBookKey, chapter, verse: i + 1, text });
+                    if (text) allVerses.push(versePayload(currentBookKey, chapter, i + 1, text, book));
                 });
             }
         }
@@ -175,22 +255,9 @@ export const handleReadPassage = (reading: string): PassageVerse[] => {
     return allVerses;
 };
 
-export const bibleData: { [key: string]: any } = {
-    'génesis': gn, 'éxodo': ex, 'levítico': lv, 'números': nm, 'deuteronomio': dt, 'josué': js, 'jueces': jud, 'rut': rt,
-    '1 samuel': sa1, '2 samuel': sa2, '1 reyes': k1, '2 reyes': k2, '1 crónicas': c1, '2 crónicas': c2, 'esdras': ezr,
-    'nehemías': ne, 'ester': et, 'job': job, 'salmos': ps, 'proverbios': prv, 'eclesiastés': ec, 'cantar de los cantares': so,
-    'isaías': is, 'jeremías': jr, 'lamentaciones': lm, 'ezequiel': ez, 'daniel': dn, 'oseas': ho, 'joel': jl,
-    'amós': am, 'abdías': ob, 'jonás': jn, 'miqueas': mi, 'nahúm': na, 'habacuc': hk, 'sofonías': zp, 'hageo': hg,
-    'zacarías': zc, 'malaquías': ml, 'mateo': mt, 'marcos': mk, 'lucas': lk, 'juan': jo, 'hechos': act, 'romanos': rm,
-    '1 corintios': co1, '2 corintios': co2, 'gálatas': gl, 'efesios': eph, 'filipenses': ph, 'colosenses': col,
-    '1 tesalonicenses': th1, '2 tesalonicenses': th2, '1 timoteo': ti1, '2 timoteo': ti2, 'tito': tt, 'filemón': phm,
-    'hebreos': hb, 'santiago': jm, '1 pedro': pe1, '2 pedro': pe2, '1 juan': jn1, '2 juan': jn2, '3 juan': jn3,
-    'judas': jd, 'apocalipsis': re,
-};
-
 export const bookOrder = [
     'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio', 'Josué', 'Jueces', 'Rut', '1 Samuel', '2 Samuel', '1 Reyes', '2 Reyes', '1 Crónicas', '2 Crónicas', 'Esdras', 'Nehemías', 'Ester', 'Job', 'Salmos', 'Proverbios', 'Eclesiastés', 'Cantares', 'Isaías', 'Jeremías', 'Lamentaciones', 'Ezequiel', 'Daniel', 'Oseas', 'Joel', 'Amós', 'Abdías', 'Jonás', 'Miqueas', 'Nahúm', 'Habacuc', 'Sofonías', 'Hageo', 'Zacarías', 'Malaquías',
-    'Mateo', 'Marcos', 'Lucas', 'Juan', 'Hechos', 'Romanos', '1 Corintios', '2 Corintios', 'Gálatas', 'Efesios', 'Filipenses', 'Colosenses', '1 Tesalonicenses', '2 Tesalonicenses', '1 Timoteo', '2 Timoteo', 'Tito', 'Filemón', 'Hebreos', 'Santiago', '1 Pedro', '2 Pedro', '1 Juan', '2 Juan', '3 Juan', 'Judas', 'Apocalipsis'
+    'Mateo', 'Marcos', 'Lucas', 'Juan', 'Hechos', 'Romanos', '1 Corintios', '2 Corintios', 'Gálatas', 'Efesios', 'Filipenses', 'Colosenses', '1 Tesalonicenses', '2 Tesalonicenses', '1 Timoteo', '2 Timoteo', 'Tito', 'Filemón', 'Hebreos', 'Santiago', '1 Pedro', '2 Pedro', '1 Juan', '2 Juan', '3 Juan', 'Judas', 'Apocalipsis',
 ];
 
 export const chaptersInBook = (bookName: string) => {

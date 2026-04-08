@@ -31,6 +31,13 @@ import {
 } from '@/lib/require-clerk-sign-in';
 import DailyVerse from '@/app/components/daily-verse';
 import ReadingPlans from '@/app/components/reading-plans';
+import {
+    VERSIONS,
+    type VersionId,
+    DEFAULT_BIBLE_VERSION_ID,
+    DEFAULT_BIBLE_VERSION_LABEL,
+    loadFullBibleLookup,
+} from '@/lib/bible-versions';
 
 const books = [
     "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué",
@@ -46,62 +53,6 @@ const books = [
     "Hebreos", "Santiago", "1 Pedro", "2 Pedro", "1 Juan", "2 Juan",
     "3 Juan", "Judas", "Apocalipsis"
 ];
-
-// ── Bible versions ────────────────────────────────────────────────────────────
-type VersionId =
-    | 'rvr' | 'rvg'
-    | 'kjv' | 'asv' | 'bbe'
-    | 'ar'  | 'de'  | 'el' | 'eo' | 'fi' | 'fi_pr'
-    | 'fr'  | 'ko'  | 'pt_aa' | 'pt_acf' | 'pt_nvi'
-    | 'ro'  | 'ru'  | 'vi' | 'zh_cuv' | 'zh_ncv'
-    | 'huichol';
-
-const VERSIONS: { id: VersionId; label: string; lang: string }[] = [
-    // Español
-    { id: 'rvr',    label: 'Reina-Valera 1960',          lang: 'ES' },
-    { id: 'rvg',    label: 'Reina-Valera Gómez',         lang: 'ES' },
-    // Inglés
-    { id: 'kjv',    label: 'King James Version',         lang: 'EN' },
-    { id: 'asv',    label: 'American Standard',          lang: 'EN' },
-    { id: 'bbe',    label: 'Bible Basic English',        lang: 'EN' },
-    // Otros idiomas
-    { id: 'ar',     label: 'Árabe (Smith & Van Dyke)',   lang: 'AR' },
-    { id: 'de',     label: 'Alemán (Schlachter)',        lang: 'DE' },
-    { id: 'el',     label: 'Griego (Textus Receptus)',   lang: 'EL' },
-    { id: 'eo',     label: 'Esperanto',                  lang: 'EO' },
-    { id: 'fi',     label: 'Finés (1776)',               lang: 'FI' },
-    { id: 'fi_pr',  label: 'Finés (PR)',                 lang: 'FI' },
-    { id: 'fr',     label: 'Francés (APEE)',             lang: 'FR' },
-    { id: 'ko',     label: 'Coreano (개역한글)',          lang: 'KO' },
-    { id: 'pt_aa',  label: 'Portugués (Almeida Atual.)', lang: 'PT' },
-    { id: 'pt_acf', label: 'Portugués (Almeida Fiel)',   lang: 'PT' },
-    { id: 'pt_nvi', label: 'Portugués (NVI)',            lang: 'PT' },
-    { id: 'ro',     label: 'Rumano (Cornilescu)',        lang: 'RO' },
-    { id: 'ru',     label: 'Ruso (Sinodal)',             lang: 'RU' },
-    { id: 'vi',     label: 'Vietnamita',                 lang: 'VI' },
-    { id: 'zh_cuv',   label: 'Chino (CUV)',               lang: 'ZH'  },
-    { id: 'zh_ncv',   label: 'Chino (NCV)',               lang: 'ZH'  },
-    { id: 'huichol',  label: 'Huichol (Wixárika)',        lang: 'HCH' },
-];
-
-/** 0-based canonical book index (same order used by all single-file Bibles). */
-const BOOK_INDEX: { [key: string]: number } = {
-    "Génesis":0,"Éxodo":1,"Levítico":2,"Números":3,"Deuteronomio":4,
-    "Josué":5,"Jueces":6,"Rut":7,"1 Samuel":8,"2 Samuel":9,
-    "1 Reyes":10,"2 Reyes":11,"1 Crónicas":12,"2 Crónicas":13,
-    "Esdras":14,"Nehemías":15,"Ester":16,"Job":17,"Salmos":18,
-    "Proverbios":19,"Eclesiastés":20,"Cantares":21,"Isaías":22,
-    "Jeremías":23,"Lamentaciones":24,"Ezequiel":25,"Daniel":26,
-    "Oseas":27,"Joel":28,"Amós":29,"Abdías":30,"Jonás":31,
-    "Miqueas":32,"Nahúm":33,"Habacuc":34,"Sofonías":35,"Hageo":36,
-    "Zacarías":37,"Malaquías":38,"Mateo":39,"Marcos":40,"Lucas":41,
-    "Juan":42,"Hechos":43,"Romanos":44,"1 Corintios":45,"2 Corintios":46,
-    "Gálatas":47,"Efesios":48,"Filipenses":49,"Colosenses":50,
-    "1 Tesalonicenses":51,"2 Tesalonicenses":52,"1 Timoteo":53,
-    "2 Timoteo":54,"Tito":55,"Filemón":56,"Hebreos":57,"Santiago":58,
-    "1 Pedro":59,"2 Pedro":60,"1 Juan":61,"2 Juan":62,"3 Juan":63,
-    "Judas":64,"Apocalipsis":65,
-};
 
 /** Maps Spanish book name → Huichol file abbreviation (only valid files). */
 const HUICHOL_BOOK_MAP: Record<string, string> = {
@@ -192,24 +143,6 @@ function parseHuicholChapter(raw: any, chapterIdx: number): string[] {
     }
     return [];
 }
-
-const bookFileMap: { [key: string]: string } = {
-    "Génesis": "gn", "Éxodo": "ex", "Levítico": "lv", "Números": "nm", "Deuteronomio": "dt",
-    "Josué": "js", "Jueces": "jud", "Rut": "rt", "1 Samuel": "1-samuel", "2 Samuel": "2-samuel",
-    "1 Reyes": "1-kings", "2 Reyes": "2-kings", "1 Crónicas": "1-chronicles", "2 Crónicas": "2-chronicles",
-    "Esdras": "ezr", "Nehemías": "ne", "Ester": "et", "Job": "job", "Salmos": "ps",
-    "Proverbios": "prv", "Eclesiastés": "ec", "Cantares": "so", "Isaías": "is",
-    "Jeremías": "jr", "Lamentaciones": "lm", "Ezequiel": "ez", "Daniel": "dn",
-    "Oseas": "ho", "Joel": "jl", "Amós": "am", "Abdías": "ob", "Jonás": "jn",
-    "Miqueas": "mi", "Nahúm": "na", "Habacuc": "hk", "Sofonías": "zp", "Hageo": "hg",
-    "Zacarías": "zc", "Malaquías": "ml", "Mateo": "mt", "Marcos": "mk", "Lucas": "lk",
-    "Juan": "jo", "Hechos": "act", "Romanos": "rm", "1 Corintios": "1-corinthians",
-    "2 Corintios": "2-corinthians", "Gálatas": "gl", "Efesios": "eph", "Filipenses": "ph",
-    "Colosenses": "colossians", "1 Tesalonicenses": "1-thessalonians", "2 Tesalonicenses": "2-thessalonians",
-    "1 Timoteo": "1-timothy", "2 Timoteo": "2-timothy", "Tito": "tt", "Filemón": "phm",
-    "Hebreos": "hb", "Santiago": "jm", "1 Pedro": "1-peter", "2 Pedro": "2-peter",
-    "1 Juan": "1-john", "2 Juan": "2-john", "3 Juan": "3-john", "Judas": "jd", "Apocalipsis": "re"
-};
 
 const chaptersPerBook: { [key: string]: number } = {
     "Génesis": 50, "Éxodo": 40, "Levítico": 27, "Números": 36, "Deuteronomio": 34, "Josué": 24,
@@ -543,10 +476,12 @@ function DraggableStudioFreeText({
 }
 
 export default function Bible() {
-    const [selectedVersion, setSelectedVersion] = useState<VersionId>('rvr');
+    const [selectedVersion, setSelectedVersion] = useState<VersionId>(DEFAULT_BIBLE_VERSION_ID);
     const [selectedBook, setSelectedBook] = useState('Génesis');
     const [selectedChapter, setSelectedChapter] = useState(1);
     const [verses, setVerses] = useState<string[]>([]);
+    /** Encabezados de sección por versículo (traducciones en formato UBS español). */
+    const [verseSectionTitles, setVerseSectionTitles] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
     const [highlightedVerses, setHighlightedVerses] = useState<Record<string, string>>({});
@@ -1260,7 +1195,7 @@ export default function Bible() {
         const vid = p.versionId as VersionId;
         setSelectedBook(p.book);
         setSelectedChapter(p.chapter);
-        setSelectedVersion(VERSIONS.some(v => v.id === vid) ? vid : 'rvr');
+        setSelectedVersion(VERSIONS.some(v => v.id === vid) ? vid : DEFAULT_BIBLE_VERSION_ID);
         setSelectedVerses([...p.verses].sort((a, b) => a - b));
         setPendingStudioDraftRecord(record);
         router.replace(path);
@@ -1346,60 +1281,36 @@ export default function Bible() {
         const fetchChapter = async () => {
             setIsLoading(true);
             try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                let raw: any;
-
-                if (selectedVersion === 'rvr') {
-                    const bookFileName = bookFileMap[selectedBook];
-                    if (!bookFileName) { setVerses([]); return; }
-                    raw = await import(`@/app/lib/bible_rvr/${bookFileName}.json`);
-                    setVerses((raw.default ?? raw).chapters?.[selectedChapter - 1] ?? []);
-                    return;
-                }
-
                 if (selectedVersion === 'huichol') {
                     const fileAbbr = HUICHOL_BOOK_MAP[selectedBook];
                     const loader = fileAbbr ? HUICHOL_LOADERS[fileAbbr] : null;
-                    if (!loader) { setVerses([]); return; }
-                    raw = await loader();
+                    if (!loader) {
+                        setVerses([]);
+                        setVerseSectionTitles([]);
+                        return;
+                    }
+                    const raw = await loader();
                     setVerses(parseHuicholChapter(raw, selectedChapter - 1));
+                    setVerseSectionTitles([]);
                     return;
                 }
 
-                // Single-file Bibles — load once, index by canonical book order
-                const idx = BOOK_INDEX[selectedBook] ?? 0;
-
-                const versionFileMap: Record<string, () => Promise<unknown>> = {
-                    rvg:    () => import(`@/app/lib/bible_es_rvg/es-rvg.json`),
-                    kjv:    () => import(`@/app/lib/bible_kjv/en_kjv.json`),
-                    asv:    () => import(`@/app/lib/bible_eng_asv/eng_asv.json`),
-                    bbe:    () => import(`@/app/lib/bible_bbe/en_bbe.json`),
-                    ar:     () => import(`@/app/lib/bible_ar_svd/ar_svd.json`),
-                    de:     () => import(`@/app/lib/bible_de_schlachter/de_schlachter.json`),
-                    el:     () => import(`@/app/lib/bible_el_greek/el_greek.json`),
-                    eo:     () => import(`@/app/lib/bible_eo_esperanto/eo_esperanto.json`),
-                    fi:     () => import(`@/app/lib/bible_fi_finnish/fi_finnish.json`),
-                    fi_pr:  () => import(`@/app/lib/bible_fi_pr/fi_pr.json`),
-                    fr:     () => import(`@/app/lib/bible_fr_apee/fr_apee.json`),
-                    ko:     () => import(`@/app/lib/bible_ko_ko/ko_ko.json`),
-                    pt_aa:  () => import(`@/app/lib/bible_pt_aa/pt_aa.json`),
-                    pt_acf: () => import(`@/app/lib/bible_pt_acf/pt_acf.json`),
-                    pt_nvi: () => import(`@/app/lib/bible_pt_nvi/pt_nvi.json`),
-                    ro:     () => import(`@/app/lib/bible_ro_cornilescu/ro_cornilescu.json`),
-                    ru:     () => import(`@/app/lib/bible_ru_synodal/ru_synodal.json`),
-                    vi:     () => import(`@/app/lib/bible_vi_vietnamese/vi_vietnamese.json`),
-                    zh_cuv: () => import(`@/app/lib/bible_zh_cuv/zh_cuv.json`),
-                    zh_ncv: () => import(`@/app/lib/bible_zh_ncv/zh_ncv.json`),
-                };
-                const loader = versionFileMap[selectedVersion];
-                if (!loader) { setVerses([]); return; }
-                raw = await loader();
-
-                const arr = raw.default ?? raw;
-                setVerses(arr[idx]?.chapters?.[selectedChapter - 1] ?? []);
+                const lookup = await loadFullBibleLookup(selectedVersion);
+                const book = lookup[selectedBook.toLowerCase()];
+                if (!book) {
+                    setVerses([]);
+                    setVerseSectionTitles([]);
+                    return;
+                }
+                const v = book.chapters[selectedChapter - 1] ?? [];
+                const st = book.sectionTitlesByVerse[selectedChapter - 1] ?? [];
+                const pad = v.map((_, i) => st[i] ?? '');
+                setVerses(v);
+                setVerseSectionTitles(pad);
             } catch (error) {
                 console.error("Failed to load chapter:", error);
                 setVerses([]);
+                setVerseSectionTitles([]);
             } finally {
                 setIsLoading(false);
             }
@@ -1949,7 +1860,9 @@ export default function Bible() {
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 <Select value={selectedVersion} onValueChange={v => { setSelectedVersion(v as VersionId); setSelectedVerses([]); }}>
                                     <SelectTrigger className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-[#B88A44] hover:text-white font-bold py-3 px-4 rounded-full transition-colors focus:outline-none text-sm min-h-[44px]">
-                                        <SelectValue />
+                                        <SelectValue placeholder={DEFAULT_BIBLE_VERSION_LABEL}>
+                                            {VERSIONS.find(v => v.id === selectedVersion)?.label ?? DEFAULT_BIBLE_VERSION_LABEL}
+                                        </SelectValue>
                                     </SelectTrigger>
                                     <SelectContent>
                                         {VERSIONS.map(v => (
@@ -2031,7 +1944,7 @@ export default function Bible() {
                                         <div>
                                             <h2 className={`text-3xl md:text-[34px] font-bold font-sans tracking-tight mb-2 ${themeStyles.title}`}>{selectedBook} {selectedChapter}</h2>
                                             <p className={`text-xs md:text-[13px] font-bold flex items-center gap-2 ${themeStyles.subtitle}`}>
-                                                {VERSIONS.find(v => v.id === selectedVersion)?.label ?? 'Reina-Valera 1960'}
+                                                {VERSIONS.find(v => v.id === selectedVersion)?.label ?? DEFAULT_BIBLE_VERSION_LABEL}
                                                 {(() => {
                                                     const lang = VERSIONS.find(v => v.id === selectedVersion)?.lang ?? 'ES';
                                                     const cls = lang === 'ES' ? 'bg-amber-100 text-amber-700' :
@@ -2130,6 +2043,10 @@ export default function Bible() {
                                             <p>Cargando...</p>
                                         ) : verses.length > 0 ? (
                                             verses.map((verse, index) => {
+                                                const sec = verseSectionTitles[index]?.trim() ?? '';
+                                                const prevSec =
+                                                    index > 0 ? (verseSectionTitles[index - 1]?.trim() ?? '') : '';
+                                                const showSectionTitle = Boolean(sec) && sec !== prevSec;
                                                 const reference = `${selectedBook} ${selectedChapter}:${index + 1}`;
                                                 const isSelected = selectedVerses.includes(index + 1);
                                                 const isLastSelected = selectedVerses.length > 0 && selectedVerses[selectedVerses.length - 1] === index + 1;
@@ -2157,6 +2074,11 @@ export default function Bible() {
 
                                                 return (
                                                     <div key={index} id={`verse-${index + 1}`} data-verse={index + 1} className={`relative rounded-xl transition-all duration-200 ${isLastSelected ? 'z-40' : ''} ${containerClasses}`}>
+                                                        {showSectionTitle && (
+                                                            <p className={`text-sm font-bold tracking-wide mb-2 whitespace-pre-line leading-snug ${index === 0 ? 'mt-0' : 'mt-5'} ${themeStyles.subtitle}`}>
+                                                                {sec}
+                                                            </p>
+                                                        )}
                                                         {/* Toolbar: encima del versículo; colores fuera del contenedor con scroll para que no se recorten */}
                                                         {isLastSelected && (
                                                             <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-50 flex flex-col items-center gap-2 w-max max-w-[calc(100vw-2rem)] pointer-events-auto">

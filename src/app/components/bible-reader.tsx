@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { Highlighter, Share, Copy, BookOpen, X, Book } from 'lucide-react';
+import { bibleData } from '@/lib/bible-data';
 
 const highlightColors = ['#FDD835', '#9CCC65', '#29B6F6', '#FFAB91', '#F48FB1'];
 
@@ -17,9 +18,13 @@ export default function BibleReader() {
     const textRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        fetch('/lib/bible_rvr/mt.json')
-            .then(response => response.json())
-            .then(data => setBibleData(data));
+        const book = bibleData.mateo;
+        if (!book) return;
+        setBibleData({
+            abbrev: 'Mt',
+            name: 'Mateo',
+            chapters: book.chapters,
+        });
     }, []);
 
     const handleVerseClick = (verse: string, chapter: number, verseIndex: number) => {
