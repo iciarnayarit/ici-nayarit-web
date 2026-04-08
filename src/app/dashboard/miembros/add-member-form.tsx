@@ -28,11 +28,11 @@ function listToCheckRecord(keys: string[]): Record<string, boolean> {
 }
 
 function parseStaffRoleValue(v: string | undefined): MemberStaffRole {
-  if (v === 'pastor') {
-    return 'nuevo';
+  if (v === 'nuevo') {
+    return 'Pastor';
   }
   if (v === 'lider') {
-    return 'presidente';
+    return 'Presidente';
   }
   if (v && MEMBER_STAFF_ROLE_OPTIONS.some(o => o.value === v)) {
     return v as MemberStaffRole;

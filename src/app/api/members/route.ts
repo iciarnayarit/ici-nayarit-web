@@ -7,12 +7,48 @@ import type { MemberStaffRole } from '@/lib/member-directory-options';
 
 const staffRoleValues: [MemberStaffRole, ...MemberStaffRole[]] = [
   'sin_especificar',
-  'nuevo',
-  'pastor',
-  'congregante',
-  'presidente',
-  'directiva',
+  'Nuevo',
+  'Pastor',
+  'Congregante',
+  'Presidente',
+  'Directiva',
 ];
+
+const normalizedStaffRoleValues: [MemberStaffRole, ...MemberStaffRole[]] = [
+  'sin_especificar',
+  'Pastor',
+  'Congregante',
+  'Presidente',
+  'Directiva',
+  'Nuevo',
+];
+
+function normalizeIncomingStaffRole(value: unknown): MemberStaffRole {
+  const raw = typeof value === 'string' ? value.trim().toLowerCase() : '';
+  if (!raw) return 'sin_especificar';
+  if (raw === 'lider') return 'Presidente';
+  if (raw === 'staff_administrativo') return 'sin_especificar';
+  if (raw === 'nuevo') return 'Pastor';
+  if (raw === 'pastor') return 'Pastor';
+  if (raw === 'congregante') return 'Congregante';
+  if (raw === 'presidente') return 'Presidente';
+  if (raw === 'directiva') return 'Directiva';
+  if (normalizedStaffRoleValues.includes(raw as MemberStaffRole)) {
+    return raw as MemberStaffRole;
+  }
+  return 'sin_especificar';
+}
+
+function formatStaffRoleForStorage(value: MemberStaffRole): string {
+  if (value === 'sin_especificar') {
+    return value;
+  }
+  const [firstWord = '', ...rest] = value.split('_');
+  const firstWordCapitalized = firstWord
+    ? firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase()
+    : value;
+  return [firstWordCapitalized, ...rest].join('_');
+}
 
 const createMemberSchema = z.object({
   firstName: z.string().trim().min(1).max(120),
@@ -23,7 +59,10 @@ const createMemberSchema = z.object({
   address: z.string().trim().min(1).max(600),
   birthDate: z.string().trim().min(1).max(32),
   baptismDate: z.string().trim().max(32).optional().default(''),
-  staffRole: z.enum(staffRoleValues),
+  staffRole: z
+    .unknown()
+    .transform(normalizeIncomingStaffRole)
+    .pipe(z.enum(normalizedStaffRoleValues)),
   /** Grupos / ministerios marcados en el formulario → campo `groups` en MongoDB. */
   groups: z.array(z.string()).min(1, { message: 'Selecciona al menos un ministerio.' }),
   /** Identificadores de templo (`nameKey` en `temples-data`) → campo `templeIds` en MongoDB. */
@@ -70,18 +109,7 @@ function templeIdsFromDoc(doc: MemberDoc): string[] {
 }
 
 function serializeMemberDoc(doc: MemberDoc) {
-  const rawStaffRole = doc.staffRole;
-  const normalizedRole =
-    rawStaffRole === 'pastor'
-      ? 'nuevo'
-      : rawStaffRole === 'lider'
-        ? 'presidente'
-        : rawStaffRole === 'staff_administrativo'
-          ? 'sin_especificar'
-          : rawStaffRole;
-  const staffRole = staffRoleValues.includes(normalizedRole as MemberStaffRole)
-    ? (normalizedRole as MemberStaffRole)
-    : ('sin_especificar' as const);
+  const staffRole = normalizeIncomingStaffRole(doc.staffRole);
 
   const groups = groupsFromDoc(doc);
   const templeIds = templeIdsFromDoc(doc);
@@ -179,8 +207,12 @@ export async function POST(req: Request) {
 
     const parsed = createMemberSchema.safeParse(json);
     if (!parsed.success) {
+      const firstIssue = parsed.error.issues[0];
       return NextResponse.json(
-        { error: 'Datos inválidos', details: parsed.error.flatten() },
+        {
+          error: firstIssue?.message ? `Datos inválidos: ${firstIssue.message}` : 'Datos inválidos',
+          details: parsed.error.flatten(),
+        },
         { status: 400 }
       );
     }
@@ -214,7 +246,6 @@ export async function POST(req: Request) {
      * Documento completo enviado desde el formulario de miembros.
      * El correo en BD siempre es el de Clerk (`emailNorm`); el cuerpo del POST no puede sustituirlo.
      */
-    const normalizedStaffRole = data.staffRole === 'pastor' ? 'nuevo' : data.staffRole;
     const payload = {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -222,7 +253,7 @@ export async function POST(req: Request) {
       phone: data.phone,
       address: data.address,
       birthDate: data.birthDate,
-      staffRole: normalizedStaffRole,
+      staffRole: formatStaffRoleForStorage(data.staffRole),
       groups: data.groups,
       templeIds: data.templeIds,
       updatedAt: now,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { User, LogIn, UserPlus, ChevronDown, Menu, X, LayoutDashboard } from 'lucide-react';
@@ -11,8 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/app/components/ui/dropdown-menu';
 import { Button } from '@/app/components/ui/button';
-import { Show, UserButton, SignOutButton, SignInButton, SignUpButton, useUser } from '@clerk/nextjs';
-import { CHURCH_ADMIN_MEMBERS_PORTAL_URL } from '@/lib/church-admin';
+import { Show, UserButton, SignOutButton, SignInButton, SignUpButton } from '@clerk/nextjs';
 import { DASHBOARD_NAV_ITEMS, isDashboardPath } from '@/lib/dashboard-nav';
 import GlobalSearch from '@/app/components/global-search';
 
@@ -63,12 +62,9 @@ const NavLink = ({
 
 const Header = () => {
   const [mounted, setMounted]           = useState(false);
-  const [hasSavedMemberInfo, setHasSavedMemberInfo] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [mobileDashboardOpen, setMobileDashboardOpen] = useState(false);
   const [mobileSectionOpen, setMobileSectionOpen] = useState<'biblia' | 'historia' | 'nosotros' | 'dashboard' | null>(null);
   const currentPath = usePathname();
-  const { isSignedIn, isLoaded } = useUser();
 
   const nosotrosActive = nosotrosLinks.some(l => l.href === currentPath);
   const bibliaActive   = bibliaLinks.some(l => l.href === currentPath);
@@ -79,43 +75,13 @@ const Header = () => {
 
   useEffect(() => {
     setIsOpen(false);
-    setMobileDashboardOpen(false);
     setMobileSectionOpen(null);
   }, [currentPath]);
 
   const closeMobileMenu = () => {
     setIsOpen(false);
-    setMobileDashboardOpen(false);
     setMobileSectionOpen(null);
   };
-
-  const refreshChurchMenuAccess = useCallback(async () => {
-    if (!isLoaded || !isSignedIn) {
-      setHasSavedMemberInfo(false);
-      return;
-    }
-    try {
-      const res = await fetch('/api/members', { cache: 'no-store' });
-      const data = (await res.json().catch(() => ({}))) as { member?: { id?: string } | null };
-      setHasSavedMemberInfo(!!(res.ok && data.member?.id));
-    } catch {
-      setHasSavedMemberInfo(false);
-    }
-  }, [isLoaded, isSignedIn]);
-
-  useEffect(() => {
-    void refreshChurchMenuAccess();
-  }, [refreshChurchMenuAccess, currentPath]);
-
-  useEffect(() => {
-    const onMemberSaved = () => {
-      void refreshChurchMenuAccess();
-    };
-    window.addEventListener('member-profile-saved', onMemberSaved);
-    return () => {
-      window.removeEventListener('member-profile-saved', onMemberSaved);
-    };
-  }, [refreshChurchMenuAccess]);
 
   return (
     <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200/50">
@@ -221,16 +187,6 @@ const Header = () => {
             {mounted && (
               <Show when="signed-in">
                 <>
-                  {hasSavedMemberInfo && (
-                    <a
-                      href={CHURCH_ADMIN_MEMBERS_PORTAL_URL}
-                      className="text-sm font-semibold text-gray-600 transition-colors hover:text-black"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Iglesia
-                    </a>
-                  )}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
@@ -397,17 +353,6 @@ const Header = () => {
               >
                 Nosotros <ChevronDown className={`h-4 w-4 transition-transform ${mobileSectionOpen === 'nosotros' ? 'rotate-180' : ''}`} />
               </button>
-              {hasSavedMemberInfo ? (
-                <a
-                  href={CHURCH_ADMIN_MEMBERS_PORTAL_URL}
-                  onClick={closeMobileMenu}
-                  className="block rounded-md px-3 py-2 text-base font-semibold text-gray-700 hover:bg-gray-50"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Iglesia
-                </a>
-              ) : null}
               <button
                 type="button"
                 onClick={() => setMobileSectionOpen(v => (v === 'dashboard' ? null : 'dashboard'))}
