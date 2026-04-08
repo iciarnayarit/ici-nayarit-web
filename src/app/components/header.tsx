@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, LogIn, UserPlus, ChevronDown } from 'lucide-react';
+import { User, LogIn, UserPlus, ChevronDown, Menu, X, LayoutDashboard } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,6 +64,9 @@ const NavLink = ({
 const Header = () => {
   const [mounted, setMounted]           = useState(false);
   const [hasSavedMemberInfo, setHasSavedMemberInfo] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [mobileDashboardOpen, setMobileDashboardOpen] = useState(false);
+  const [mobileSectionOpen, setMobileSectionOpen] = useState<'biblia' | 'historia' | 'nosotros' | 'dashboard' | null>(null);
   const currentPath = usePathname();
   const { isSignedIn, isLoaded } = useUser();
 
@@ -73,6 +76,18 @@ const Header = () => {
   const dashboardActive = isDashboardPath(currentPath);
 
   useEffect(() => { setMounted(true); }, []);
+
+  useEffect(() => {
+    setIsOpen(false);
+    setMobileDashboardOpen(false);
+    setMobileSectionOpen(null);
+  }, [currentPath]);
+
+  const closeMobileMenu = () => {
+    setIsOpen(false);
+    setMobileDashboardOpen(false);
+    setMobileSectionOpen(null);
+  };
 
   const refreshChurchMenuAccess = useCallback(async () => {
     if (!isLoaded || !isSignedIn) {
@@ -285,9 +300,175 @@ const Header = () => {
           {/* Mobile user button */}
           <div className="md:hidden flex items-center gap-2">
             {mounted && <Show when="signed-in"><UserButton /></Show>}
+            <button
+              type="button"
+              onClick={() => setIsOpen(v => !v)}
+              className="p-2 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none"
+              aria-label="Abrir menú móvil"
+              aria-expanded={isOpen}
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
         </div>
       </nav>
+
+      {isOpen && (
+        <div className="md:hidden border-t border-gray-200/50">
+          <div className="px-3 pb-3 pt-2">
+            <div className="space-y-1 pb-2">
+              <Link
+                href="/"
+                onClick={closeMobileMenu}
+                className={`block rounded-md px-3 py-2 text-base font-semibold ${currentPath === '/' ? 'text-[#B88A44]' : 'text-gray-700 hover:bg-gray-50'}`}
+              >
+                Inicio
+              </Link>
+              {mobileSectionOpen === 'biblia' && (
+                <div className="max-h-[min(60vh,26rem)] overflow-y-auto rounded-3xl border border-gray-200 bg-white p-4 shadow-lg">
+                  {bibliaLinks.map(link => (
+                    <Link key={link.href} href={link.href} onClick={closeMobileMenu} className="flex items-center gap-3 rounded-xl px-3 py-3 text-lg font-semibold text-gray-700">
+                      <span>{link.icon}</span>
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {mobileSectionOpen === 'historia' && (
+                <div className="max-h-[min(60vh,26rem)] overflow-y-auto rounded-3xl border border-gray-200 bg-white p-4 shadow-lg">
+                  {historiaLinks.map(link => (
+                    <Link key={link.href} href={link.href} onClick={closeMobileMenu} className="flex items-center gap-3 rounded-xl px-3 py-3 text-lg font-semibold text-gray-700">
+                      <span>{link.icon}</span>
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {mobileSectionOpen === 'nosotros' && (
+                <div className="max-h-[min(60vh,26rem)] overflow-y-auto rounded-3xl border border-gray-200 bg-white p-4 shadow-lg">
+                  {nosotrosLinks.map(link => (
+                    <Link key={link.href} href={link.href} onClick={closeMobileMenu} className="flex items-center gap-3 rounded-xl px-3 py-3 text-lg font-semibold text-gray-700">
+                      <span>{link.icon}</span>
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+              {mobileSectionOpen === 'dashboard' && (
+                <div className="max-h-[min(60vh,26rem)] overflow-y-auto rounded-3xl border border-gray-200 bg-white p-4 shadow-lg">
+                  <p className="px-3 pb-2 text-xs font-black uppercase tracking-widest text-gray-400">Panel</p>
+                  {DASHBOARD_NAV_ITEMS.map(item => {
+                    const Icon = item.icon;
+                    const active = currentPath === item.href || currentPath.startsWith(`${item.href}/`);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={closeMobileMenu}
+                        className={`flex items-center gap-3 rounded-xl px-3 py-3 text-lg font-semibold ${
+                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                        }`}
+                      >
+                        <Icon className="h-6 w-6 shrink-0 opacity-90" />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => setMobileSectionOpen(v => (v === 'biblia' ? null : 'biblia'))}
+                className="flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Biblia <ChevronDown className={`h-4 w-4 transition-transform ${mobileSectionOpen === 'biblia' ? 'rotate-180' : ''}`} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileSectionOpen(v => (v === 'historia' ? null : 'historia'))}
+                className="flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Historia <ChevronDown className={`h-4 w-4 transition-transform ${mobileSectionOpen === 'historia' ? 'rotate-180' : ''}`} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileSectionOpen(v => (v === 'nosotros' ? null : 'nosotros'))}
+                className="flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Nosotros <ChevronDown className={`h-4 w-4 transition-transform ${mobileSectionOpen === 'nosotros' ? 'rotate-180' : ''}`} />
+              </button>
+              {hasSavedMemberInfo ? (
+                <a
+                  href={CHURCH_ADMIN_MEMBERS_PORTAL_URL}
+                  onClick={closeMobileMenu}
+                  className="block rounded-md px-3 py-2 text-base font-semibold text-gray-700 hover:bg-gray-50"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Iglesia
+                </a>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setMobileSectionOpen(v => (v === 'dashboard' ? null : 'dashboard'))}
+                className="flex w-full items-center justify-between rounded-md px-3 py-2 text-base font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Dashboard <ChevronDown className={`h-4 w-4 transition-transform ${mobileSectionOpen === 'dashboard' ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+
+            {mounted && (
+              <div className="mt-2 border-t border-gray-200 pt-2">
+                <Show when="signed-in">
+                  <>
+                    <Link
+                      href="/perfil"
+                      onClick={closeMobileMenu}
+                      className={`block rounded-md px-3 py-2 text-base font-medium ${
+                        currentPath === '/perfil' || currentPath.startsWith('/perfil/')
+                          ? 'bg-gray-100 text-gray-900'
+                          : 'text-gray-700 hover:bg-gray-50 hover:text-black'
+                      }`}
+                    >
+                      Perfil
+                    </Link>
+                    <SignOutButton>
+                      <span
+                        onClick={closeMobileMenu}
+                        className="block cursor-pointer rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
+                      >
+                        Cerrar Sesión
+                      </span>
+                    </SignOutButton>
+                  </>
+                </Show>
+                <Show when="signed-out">
+                  <>
+                    <SignUpButton mode="modal">
+                      <button
+                        type="button"
+                        onClick={closeMobileMenu}
+                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
+                      >
+                        <UserPlus className="h-4 w-4 shrink-0" /> Crear Cuenta
+                      </button>
+                    </SignUpButton>
+                    <SignInButton mode="modal">
+                      <button
+                        type="button"
+                        onClick={closeMobileMenu}
+                        className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-black"
+                      >
+                        <LogIn className="h-4 w-4 shrink-0" /> Iniciar Sesión
+                      </button>
+                    </SignInButton>
+                  </>
+                </Show>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 };
