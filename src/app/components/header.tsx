@@ -201,18 +201,30 @@ const Header = () => {
                       <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest px-2 pb-2 pt-1">Panel</p>
                       {DASHBOARD_NAV_ITEMS.map(item => {
                         const Icon = item.icon;
-                        const active = currentPath === item.href || currentPath.startsWith(`${item.href}/`);
+                        const active = !item.external && (currentPath === item.href || currentPath.startsWith(`${item.href}/`));
                         return (
                           <DropdownMenuItem key={item.href} asChild>
-                            <Link
-                              href={item.href}
-                              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
-                                active ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50 text-gray-700'
-                              }`}
-                            >
-                              <Icon className="h-4 w-4 shrink-0 opacity-90" />
-                              <span className="text-sm font-bold leading-tight">{item.name}</span>
-                            </Link>
+                            {item.external ? (
+                              <a
+                                href={item.href}
+                                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-gray-700 transition-colors hover:bg-gray-50"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                <Icon className="h-4 w-4 shrink-0 opacity-90" />
+                                <span className="text-sm font-bold leading-tight">{item.name}</span>
+                              </a>
+                            ) : (
+                              <Link
+                                href={item.href}
+                                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors ${
+                                  active ? 'bg-gray-100 text-gray-900' : 'hover:bg-gray-50 text-gray-700'
+                                }`}
+                              >
+                                <Icon className="h-4 w-4 shrink-0 opacity-90" />
+                                <span className="text-sm font-bold leading-tight">{item.name}</span>
+                              </Link>
+                            )}
                           </DropdownMenuItem>
                         );
                       })}
@@ -315,19 +327,33 @@ const Header = () => {
                   <p className="px-3 pb-2 text-xs font-black uppercase tracking-widest text-gray-400">Panel</p>
                   {DASHBOARD_NAV_ITEMS.map(item => {
                     const Icon = item.icon;
-                    const active = currentPath === item.href || currentPath.startsWith(`${item.href}/`);
+                  const active = !item.external && (currentPath === item.href || currentPath.startsWith(`${item.href}/`));
                     return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={closeMobileMenu}
-                        className={`flex items-center gap-3 rounded-xl px-3 py-3 text-lg font-semibold ${
-                          active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                        }`}
-                      >
-                        <Icon className="h-6 w-6 shrink-0 opacity-90" />
-                        {item.name}
-                      </Link>
+                      item.external ? (
+                        <a
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeMobileMenu}
+                          className="flex items-center gap-3 rounded-xl px-3 py-3 text-lg font-semibold text-gray-700"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Icon className="h-6 w-6 shrink-0 opacity-90" />
+                          {item.name}
+                        </a>
+                      ) : (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={closeMobileMenu}
+                          className={`flex items-center gap-3 rounded-xl px-3 py-3 text-lg font-semibold ${
+                            active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                          }`}
+                        >
+                          <Icon className="h-6 w-6 shrink-0 opacity-90" />
+                          {item.name}
+                        </Link>
+                      )
                     );
                   })}
                 </div>

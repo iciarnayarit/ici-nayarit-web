@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import {
   BookOpen,
   Building2,
+  Church,
   Compass,
   FileText,
   Image as ImageIcon,
@@ -13,6 +14,7 @@ export type DashboardNavItem = {
   name: string;
   href: string;
   icon: LucideIcon;
+  external?: boolean;
 };
 
 /** Enlaces del panel (sidebar del dashboard y menú móvil del sitio). */
@@ -24,6 +26,7 @@ export const DASHBOARD_NAV_ITEMS: DashboardNavItem[] = [
   { name: 'Avisos', href: '/dashboard/avisos', icon: Megaphone },
   { name: 'Recursos', href: '/dashboard/recursos', icon: FileText },
   { name: 'Templos', href: '/dashboard/templos', icon: Building2 },
+  { name: 'Iglesia', href: 'https://churches.iciarnayarit.com/', icon: Church, external: true },
 ];
 
 export function isDashboardPath(pathname: string) {
