@@ -25,22 +25,7 @@ export type VersionId =
     | 'kjv'
     | 'asv'
     | 'bbe'
-    | 'ar'
-    | 'de'
     | 'el'
-    | 'eo'
-    | 'fi'
-    | 'fi_pr'
-    | 'fr'
-    | 'ko'
-    | 'pt_aa'
-    | 'pt_acf'
-    | 'pt_nvi'
-    | 'ro'
-    | 'ru'
-    | 'vi'
-    | 'zh_cuv'
-    | 'zh_ncv'
     | 'huichol';
 
 export const DEFAULT_BIBLE_VERSION_ID: VersionId = 'rvr';
@@ -62,22 +47,7 @@ export const VERSIONS: { id: VersionId; label: string; lang: string }[] = [
     { id: 'kjv', label: 'King James Version', lang: 'EN' },
     { id: 'asv', label: 'American Standard', lang: 'EN' },
     { id: 'bbe', label: 'Bible Basic English', lang: 'EN' },
-    { id: 'ar', label: 'Árabe (Smith & Van Dyke)', lang: 'AR' },
-    { id: 'de', label: 'Alemán (Schlachter)', lang: 'DE' },
     { id: 'el', label: 'Griego (Textus Receptus)', lang: 'EL' },
-    { id: 'eo', label: 'Esperanto', lang: 'EO' },
-    { id: 'fi', label: 'Finés (1776)', lang: 'FI' },
-    { id: 'fi_pr', label: 'Finés (PR)', lang: 'FI' },
-    { id: 'fr', label: 'Francés (APEE)', lang: 'FR' },
-    { id: 'ko', label: 'Coreano (개역한글)', lang: 'KO' },
-    { id: 'pt_aa', label: 'Portugués (Almeida Atual.)', lang: 'PT' },
-    { id: 'pt_acf', label: 'Portugués (Almeida Fiel)', lang: 'PT' },
-    { id: 'pt_nvi', label: 'Portugués (NVI)', lang: 'PT' },
-    { id: 'ro', label: 'Rumano (Cornilescu)', lang: 'RO' },
-    { id: 'ru', label: 'Ruso (Sinodal)', lang: 'RU' },
-    { id: 'vi', label: 'Vietnamita', lang: 'VI' },
-    { id: 'zh_cuv', label: 'Chino (CUV)', lang: 'ZH' },
-    { id: 'zh_ncv', label: 'Chino (NCV)', lang: 'ZH' },
     { id: 'huichol', label: 'Huichol (Wixárika)', lang: 'HCH' },
 ];
 
@@ -161,22 +131,7 @@ const SINGLE_FILE_LOADERS: Partial<Record<VersionId, () => Promise<unknown>>> = 
     kjv: () => import('@/app/lib/bible_kjv/en_kjv.json'),
     asv: () => import('@/app/lib/bible_eng_asv/eng_asv.json'),
     bbe: () => import('@/app/lib/bible_bbe/en_bbe.json'),
-    ar: () => import('@/app/lib/bible_ar_svd/ar_svd.json'),
-    de: () => import('@/app/lib/bible_de_schlachter/de_schlachter.json'),
     el: () => import('@/app/lib/bible_el_greek/el_greek.json'),
-    eo: () => import('@/app/lib/bible_eo_esperanto/eo_esperanto.json'),
-    fi: () => import('@/app/lib/bible_fi_finnish/fi_finnish.json'),
-    fi_pr: () => import('@/app/lib/bible_fi_pr/fi_pr.json'),
-    fr: () => import('@/app/lib/bible_fr_apee/fr_apee.json'),
-    ko: () => import('@/app/lib/bible_ko_ko/ko_ko.json'),
-    pt_aa: () => import('@/app/lib/bible_pt_aa/pt_aa.json'),
-    pt_acf: () => import('@/app/lib/bible_pt_acf/pt_acf.json'),
-    pt_nvi: () => import('@/app/lib/bible_pt_nvi/pt_nvi.json'),
-    ro: () => import('@/app/lib/bible_ro_cornilescu/ro_cornilescu.json'),
-    ru: () => import('@/app/lib/bible_ru_synodal/ru_synodal.json'),
-    vi: () => import('@/app/lib/bible_vi_vietnamese/vi_vietnamese.json'),
-    zh_cuv: () => import('@/app/lib/bible_zh_cuv/zh_cuv.json'),
-    zh_ncv: () => import('@/app/lib/bible_zh_ncv/zh_ncv.json'),
 };
 
 const fullLookupCache = new Map<VersionId, Record<string, BibleBookData>>();
