@@ -122,6 +122,17 @@ function parseReadingChapters(reading: string): DayChapterItem[] {
     return items;
 }
 
+function formatBookName(book: string): string {
+    return book
+        .split(' ')
+        .filter(Boolean)
+        .map((token) => {
+            if (/^\d+$/.test(token)) return token;
+            return token.charAt(0).toUpperCase() + token.slice(1).toLowerCase();
+        })
+        .join(' ');
+}
+
 export default function ReadingPlanLayout({ planData, planSlug, title, description }: ReadingPlanLayoutProps) {
     const [completedDays, setCompletedDays] = useState<number[]>([]);
     const [completedChaptersByDay, setCompletedChaptersByDay] = useState<Record<number, string[]>>({});
@@ -650,6 +661,9 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         const verses =
             planLookup && !planLookupLoading ? handleReadPassage(dayData.reading, planLookup) : [];
         const dayChapterItems = parseReadingChapters(dayData.reading);
+        const chapterLabelByKey = new Map(
+            dayChapterItems.map((item) => [`${item.book.toLowerCase()}-${item.chapter}`, item.label.toUpperCase()])
+        );
         const completedChapterIds = new Set(getCompletedChapterIdsForDay(selectedDay));
         const dayCompletedCount = dayChapterItems.filter(item => completedChapterIds.has(item.id)).length;
         const dayPercent = dayChapterItems.length > 0 ? Math.round((dayCompletedCount / dayChapterItems.length) * 100) : 0;
@@ -781,6 +795,12 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                             const showSectionTitle =
                                                 Boolean(v.sectionTitle?.trim()) &&
                                                 (!prev || prev.sectionTitle !== v.sectionTitle);
+                                            const chapterKey = `${v.book.toLowerCase()}-${v.chapter}`;
+                                            const showPassageTitle =
+                                                !prev || prev.book !== v.book || prev.chapter !== v.chapter;
+                                            const passageTitle =
+                                                chapterLabelByKey.get(chapterKey) ??
+                                                `${formatBookName(v.book)} ${v.chapter}`.toUpperCase();
                                             const reference = `${v.book} ${v.chapter}:${v.verse}`;
                                             const isSelected = selectedVerse === v.verse;
                                             const isHighlighted = highlightedVerses[reference];
@@ -807,8 +827,13 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
 
                                             return (
                                                 <div key={`${v.book}-${v.chapter}-${v.verse}-${index}`} className={`relative rounded-xl transition-all duration-200 ${isSelected ? 'z-40' : ''} ${containerClasses}`}>
+                                                    {showPassageTitle && (
+                                                        <p className={`text-center text-xs font-extrabold tracking-[0.18em] uppercase mb-3 ${index === 0 ? 'mt-0' : 'mt-7'} ${themeStyles.subtitle}`}>
+                                                            {passageTitle}
+                                                        </p>
+                                                    )}
                                                     {showSectionTitle && (
-                                                        <p className={`text-sm font-bold tracking-wide mb-2 whitespace-pre-line leading-snug ${index === 0 ? 'mt-0' : 'mt-5'} ${themeStyles.subtitle}`}>
+                                                        <p className={`text-sm font-bold tracking-wide mb-2 whitespace-pre-line leading-snug ${showPassageTitle ? 'mt-0' : index === 0 ? 'mt-0' : 'mt-5'} ${themeStyles.subtitle}`}>
                                                             {v.sectionTitle}
                                                         </p>
                                                     )}
