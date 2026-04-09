@@ -9,14 +9,6 @@ const nextConfig: NextConfig = {
     },
     middlewareClientMaxBodySize: 50 * 1024 * 1024,
   },
-  serverActions: {
-    bodySizeLimit: '50mb',
-  },
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb',
-    },
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
