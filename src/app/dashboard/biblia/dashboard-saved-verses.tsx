@@ -131,7 +131,7 @@ export default function DashboardSavedVerses() {
   return (
     <div className="mb-14">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-1.5 font-display tracking-tight">
+        <h1 className="mb-1.5 font-display text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
           Versículos Guardados
         </h1>
         <p className="text-sm font-medium text-gray-500">
@@ -147,7 +147,7 @@ export default function DashboardSavedVerses() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Buscar en mis versículos..."
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+            className="min-h-[44px] w-full touch-manipulation rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm font-medium shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           />
         </div>
 
@@ -235,7 +235,7 @@ export default function DashboardSavedVerses() {
           return (
             <div
               key={`${v.reference}-${v.text.slice(0, 24)}`}
-              className="bg-white rounded-[24px] p-7 shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow"
+              className="flex flex-col rounded-[20px] border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:rounded-[24px] sm:p-7"
             >
               <div className="flex justify-between items-start mb-4 gap-2">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
@@ -274,13 +274,16 @@ export default function DashboardSavedVerses() {
                   {fromPlan ? 'Plan' : 'Biblia'}
                 </span>
                 {fromPlan && v.planTitle && (
-                  <span className="text-[10px] font-semibold text-gray-500 truncate max-w-[180px]" title={v.planTitle}>
+                  <span
+                    className="max-w-full truncate text-[10px] font-semibold text-gray-500 sm:max-w-[180px]"
+                    title={v.planTitle}
+                  >
                     {v.planTitle}
                   </span>
                 )}
               </div>
 
-              <p className="text-[15px] text-gray-700 font-medium italic leading-relaxed mb-6 flex-1">
+              <p className="mb-6 flex-1 break-words text-[15px] font-medium italic leading-relaxed text-gray-700">
                 &ldquo;{v.text}&rdquo;
               </p>
 

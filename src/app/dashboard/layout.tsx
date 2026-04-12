@@ -51,8 +51,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Sidebar */}
 
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0">
-          <main className="flex-1 w-full mx-auto">
+        <div className="flex min-w-0 flex-1 flex-col overflow-x-hidden">
+          <main className="mx-auto min-w-0 flex-1 w-full pb-[env(safe-area-inset-bottom)]">
             {children}
           </main>
           <Footer />

@@ -10,6 +10,8 @@ export interface StoredPersonalReflection {
   title?: string;
   verseReference: string | null;
   savedAt: string;
+  /** Etiquetas opcionales (p. ej. desde el panel Notas). */
+  tags?: string[];
 }
 
 export function loadPersonalReflectionsFromStorage(): StoredPersonalReflection[] {
@@ -19,18 +21,26 @@ export function loadPersonalReflectionsFromStorage(): StoredPersonalReflection[]
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (r): r is StoredPersonalReflection =>
-        r != null &&
-        typeof r === 'object' &&
-        typeof (r as StoredPersonalReflection).id === 'string' &&
-        typeof (r as StoredPersonalReflection).body === 'string' &&
-        typeof (r as StoredPersonalReflection).savedAt === 'string' &&
-        ((r as StoredPersonalReflection).verseReference === null ||
-          typeof (r as StoredPersonalReflection).verseReference === 'string') &&
-        ((r as StoredPersonalReflection).title === undefined ||
-          typeof (r as StoredPersonalReflection).title === 'string')
-    );
+    return parsed.filter((r): r is StoredPersonalReflection => {
+      if (
+        r == null ||
+        typeof r !== 'object' ||
+        typeof (r as StoredPersonalReflection).id !== 'string' ||
+        typeof (r as StoredPersonalReflection).body !== 'string' ||
+        typeof (r as StoredPersonalReflection).savedAt !== 'string'
+      ) {
+        return false;
+      }
+      const rec = r as StoredPersonalReflection;
+      if (!(rec.verseReference === null || typeof rec.verseReference === 'string')) return false;
+      if (!(rec.title === undefined || typeof rec.title === 'string')) return false;
+      if (rec.tags !== undefined) {
+        if (!Array.isArray(rec.tags) || !rec.tags.every((t): t is string => typeof t === 'string')) {
+          return false;
+        }
+      }
+      return true;
+    });
   } catch {
     return [];
   }

@@ -2,6 +2,7 @@
 
 import { Share2, Copy } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
 import DashboardSavedVerses from '@/app/dashboard/biblia/dashboard-saved-verses';
 import DailyVerseHero from '@/app/dashboard/biblia/daily-verse-hero';
 import DashboardSavedPersonalReflections from '@/app/dashboard/biblia/dashboard-saved-personal-reflections';
@@ -113,20 +114,24 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="bg-[#F4F7F6] min-h-screen pb-12">
+    <div className="min-h-screen bg-[#F4F7F6] pb-12">
 
-      <div className="mx-auto max-w-7xl space-y-6 p-6 md:p-8 md:px-10" lang="es">
-        
+      <div
+        className="mx-auto max-w-7xl space-y-5 px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-4 sm:space-y-6 sm:px-6 sm:pt-6 md:p-8 md:px-10"
+        lang="es"
+      >
+        <DashboardBibliaReadingToolbar />
+
         <DashboardSavedVerses />
 
         <DailyVerseHero onActiveVerseChange={setActiveHeroVerse} />
 
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-center bg-white px-4 py-3 rounded-2xl shadow-sm border border-gray-100">
+        <div className="flex flex-col items-stretch gap-3 rounded-2xl border border-gray-100 bg-white px-4 py-3 shadow-sm sm:flex-row sm:flex-wrap sm:items-center">
           <button
             type="button"
             disabled={!activeHeroVerse}
             onClick={() => void handleShareVerse()}
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none text-white px-6 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors flex-1 sm:flex-none"
+            className="flex min-h-[44px] flex-1 touch-manipulation items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:pointer-events-none disabled:opacity-50 sm:flex-none"
           >
             <Share2 className="w-4 h-4" /> Compartir
           </button>
@@ -134,7 +139,7 @@ export default function DashboardPage() {
             type="button"
             disabled={!activeHeroVerse}
             onClick={() => void handleCopyVerse()}
-            className="bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 disabled:opacity-50 disabled:pointer-events-none px-6 py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-colors flex-1 sm:flex-none"
+            className="flex min-h-[44px] flex-1 touch-manipulation items-center justify-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-6 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-50 sm:flex-none"
           >
             <Copy className="w-4 h-4" /> Copiar
           </button>

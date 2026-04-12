@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Image as ImageIcon, Plus, Search, Trash2 } from 'lucide-react';
+import { Image as ImageIcon, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   STUDIO_PUBLICATION_DRAFTS_CHANGED_EVENT,
@@ -34,9 +34,13 @@ function formatSavedAt(iso: string): string {
   }
 }
 
-export default function DashboardImageDrafts() {
+type DashboardImageDraftsProps = {
+  /** Texto de búsqueda (controlado desde la barra de herramientas en `/dashboard/imagenes`). */
+  searchQuery: string;
+};
+
+export default function DashboardImageDrafts({ searchQuery }: DashboardImageDraftsProps) {
   const [drafts, setDrafts] = useState<StudioPublicationDraftRecord[]>([]);
-  const [search, setSearch] = useState('');
   const [deleteTarget, setDeleteTarget] = useState<StudioPublicationDraftRecord | null>(null);
   const { toast } = useToast();
 
@@ -62,14 +66,14 @@ export default function DashboardImageDrafts() {
   }, [refresh]);
 
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = searchQuery.trim().toLowerCase();
     if (!q) return drafts;
     return drafts.filter(
       d =>
         d.referenceLabel.toLowerCase().includes(q) ||
         (d.versePreview ?? '').toLowerCase().includes(q)
     );
-  }, [drafts, search]);
+  }, [drafts, searchQuery]);
 
   const handleRemove = (id: string) => {
     removeStudioPublicationDraft(id);
@@ -87,31 +91,16 @@ export default function DashboardImageDrafts() {
   return (
     <div className="mb-14">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-1.5 font-display tracking-tight">
-          Imágenes
-        </h1>
+        <h1 className="mb-1.5 font-display text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">Imágenes</h1>
         <p className="text-sm font-medium text-gray-500">
           Borradores del editor de publicación guardados en este navegador
         </p>
       </div>
 
-      <div className="flex flex-col gap-4 mb-8">
-        <div className="relative flex-1 md:max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input
-            type="search"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar por referencia o texto…"
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Link
           href="/biblia"
-          className="rounded-[24px] border-2 border-dashed border-gray-200 bg-gray-50/50 flex flex-col items-center justify-center min-h-[220px] p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors group"
+          className="group flex min-h-[200px] cursor-pointer flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-gray-200 bg-gray-50/50 p-6 text-center transition-colors hover:bg-gray-50 sm:min-h-[220px] sm:rounded-[24px] sm:p-8"
         >
           <div className="text-gray-400 mb-4 group-hover:scale-110 transition-transform">
             <Plus className="w-5 h-5" />
@@ -125,7 +114,7 @@ export default function DashboardImageDrafts() {
         {filtered.map(d => (
           <div
             key={d.id}
-            className="bg-white rounded-[24px] p-7 shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow"
+            className="flex flex-col rounded-[20px] border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:rounded-[24px] sm:p-7"
           >
             <div className="flex justify-between items-start mb-4 gap-2">
               <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center shrink-0">

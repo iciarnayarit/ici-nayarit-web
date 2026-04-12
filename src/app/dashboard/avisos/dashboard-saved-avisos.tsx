@@ -84,7 +84,7 @@ export default function DashboardSavedAvisos() {
   };
 
   return (
-    <div className="px-6 md:px-10 max-w-7xl mx-auto mt-6">
+    <div className="mx-auto mt-4 max-w-7xl px-4 sm:mt-6 sm:px-6 md:px-10">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
           <div className="relative w-full sm:max-w-xs sm:flex-1 md:max-w-sm md:flex-none">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden />
@@ -102,7 +102,7 @@ export default function DashboardSavedAvisos() {
             onClick={() => setShowFilters(s => !s)}
             aria-expanded={showFilters}
             aria-label={showFilters ? 'Ocultar filtros por categoría' : 'Mostrar filtros por categoría'}
-            className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold shadow-sm transition-colors ${
+            className={`flex min-h-[44px] touch-manipulation items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold shadow-sm transition-colors ${
               showFilters ? 'border-blue-200 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
@@ -196,7 +196,7 @@ export default function DashboardSavedAvisos() {
 
           <Link
             href="/avisos"
-            className="flex min-h-[400px] flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-blue-200 bg-blue-50/30 p-8 text-center transition-colors hover:bg-blue-50/50"
+            className="flex min-h-[240px] flex-col items-center justify-center rounded-[20px] border-2 border-dashed border-blue-200 bg-blue-50/30 p-6 text-center transition-colors hover:bg-blue-50/50 sm:min-h-[320px] sm:p-8 md:min-h-[400px]"
           >
             <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-blue-500 text-white shadow-md transition-transform group-hover:scale-110">
               <Plus className="h-6 w-6" />

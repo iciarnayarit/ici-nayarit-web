@@ -270,7 +270,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
 
   return (
     <div
-      className="flex flex-col rounded-3xl border border-gray-100 bg-[#FAFAFA] p-5 shadow-sm sm:p-6 md:p-8"
+      className="flex flex-col rounded-2xl border border-gray-100 bg-[#FAFAFA] p-4 shadow-sm sm:rounded-3xl sm:p-6 md:p-8"
       onMouseDown={e => {
         const t = e.target as HTMLElement;
         if (t.closest('[data-reflection-toolbar]')) e.preventDefault();
@@ -316,7 +316,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
             value={reflectionTitle}
             onChange={e => setReflectionTitle(e.target.value)}
             placeholder="Ej: El poder de la palabra creadora…"
-            className="w-full border-0 border-b-2 border-gray-200 bg-transparent pb-3 text-2xl font-bold text-gray-900 placeholder:text-gray-200 transition-colors focus:border-blue-500 focus:outline-none focus:ring-0"
+            className="w-full border-0 border-b-2 border-gray-200 bg-transparent pb-3 text-xl font-bold text-gray-900 placeholder:text-gray-200 transition-colors focus:border-blue-500 focus:outline-none focus:ring-0 sm:text-2xl"
             autoComplete="off"
           />
         </div>
@@ -324,12 +324,12 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
         <div className="flex flex-col gap-4">
           <div
             data-reflection-toolbar
-            className="flex flex-wrap items-center gap-2 rounded-2xl border border-gray-100 bg-white px-4 py-2.5 shadow-sm sm:gap-3 sm:px-5 sm:py-3"
+            className="-mx-px flex max-w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-2xl border border-gray-100 bg-white px-3 py-2 shadow-sm [-ms-overflow-style:none] [scrollbar-width:none] sm:flex-wrap sm:gap-2 sm:overflow-x-visible sm:px-5 sm:py-3 md:gap-3 [&::-webkit-scrollbar]:hidden"
           >
             <button
               type="button"
               title="Negrita"
-              className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              className="shrink-0 touch-manipulation rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:p-1.5"
               onMouseDown={e => e.preventDefault()}
               onClick={() => handleFormat('bold')}
             >
@@ -338,7 +338,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
             <button
               type="button"
               title="Cursiva"
-              className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              className="shrink-0 touch-manipulation rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:p-1.5"
               onMouseDown={e => e.preventDefault()}
               onClick={() => handleFormat('italic')}
             >
@@ -347,7 +347,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
             <button
               type="button"
               title="Lista"
-              className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              className="shrink-0 touch-manipulation rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:p-1.5"
               onMouseDown={e => e.preventDefault()}
               onClick={() => handleFormat('insertUnorderedList')}
             >
@@ -356,7 +356,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
             <button
               type="button"
               title="Cita"
-              className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              className="shrink-0 touch-manipulation rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:p-1.5"
               onMouseDown={e => e.preventDefault()}
               onClick={() => handleFormat('formatBlock', 'blockquote')}
             >
@@ -377,7 +377,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
                 <button
                   type="button"
                   title="Enlace"
-                  className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+                  className="shrink-0 touch-manipulation rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:p-1.5"
                   onMouseDown={e => {
                     e.preventDefault();
                     saveCurrentSelection();
@@ -386,16 +386,19 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
                   <LinkIcon className="h-4 w-4" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-80 rounded-xl border-gray-100 p-4 shadow-xl" sideOffset={12}>
+              <PopoverContent
+                className="w-[min(20rem,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] rounded-xl border-gray-100 p-4 shadow-xl"
+                sideOffset={12}
+              >
                 <div className="flex flex-col gap-3">
                   <label className="text-[11px] font-bold uppercase tracking-wider text-gray-500">Añadir enlace</label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2 sm:flex-row">
                     <input
                       type="url"
                       value={linkInput}
                       onChange={e => setLinkInput(e.target.value)}
                       placeholder="https://..."
-                      className="flex-1 rounded-lg border border-gray-200 px-3 py-1.5 text-sm focus:border-blue-500 focus:outline-none"
+                      className="min-h-[40px] min-w-0 flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
                       onKeyDown={e => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
@@ -407,7 +410,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
                     <button
                       type="button"
                       onClick={confirmLink}
-                      className="rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-bold text-white transition-colors hover:bg-blue-700"
+                      className="min-h-[40px] shrink-0 touch-manipulation rounded-lg bg-blue-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-blue-700 sm:py-1.5"
                     >
                       Insertar
                     </button>
@@ -425,7 +428,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
             <button
               type="button"
               title="Imagen"
-              className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              className="shrink-0 touch-manipulation rounded-lg p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:p-1.5"
               onMouseDown={e => {
                 e.preventDefault();
                 saveCurrentSelection();
@@ -434,15 +437,15 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
             >
               <ImageIcon className="h-4 w-4" />
             </button>
-            <div className="ml-auto flex items-center gap-1.5 text-gray-400">
+            <div className="ml-auto flex shrink-0 items-center gap-1.5 pl-1 text-gray-400">
               <Clock className="h-3 w-3 shrink-0" aria-hidden />
-              <span className="text-[10px] font-medium tabular-nums sm:text-[11px]">
+              <span className="max-w-[5.5rem] truncate text-[10px] font-medium tabular-nums sm:max-w-none sm:text-[11px]">
                 {mounted ? clockLabel : ''}
               </span>
             </div>
           </div>
 
-          <div className="relative rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <div className="relative rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:p-6">
             {isEditorEmpty(reflectionBodyHtml) && (
               <p className="pointer-events-none absolute left-6 top-6 z-0 select-none text-base font-medium text-gray-300">
                 Escribe lo que Dios puso en tu corazón…
@@ -456,7 +459,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
               suppressContentEditableWarning
               onInput={syncHtmlFromEditor}
               onBlur={syncHtmlFromEditor}
-              className="reflection-wysiwyg relative z-[1] min-h-[12rem] w-full bg-transparent text-base font-medium leading-relaxed text-gray-700 outline-none"
+              className="reflection-wysiwyg relative z-[1] min-h-[10rem] w-full overflow-x-hidden bg-transparent text-base font-medium leading-relaxed text-gray-700 outline-none sm:min-h-[12rem]"
               lang="es"
               aria-label="Cuerpo de la reflexión"
             />

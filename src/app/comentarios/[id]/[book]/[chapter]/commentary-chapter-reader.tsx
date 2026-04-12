@@ -1,0 +1,552 @@
+'use client';
+
+import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
+import { BookA, BookOpen, Check, ChevronRight, Columns, FileText, Image as ImageIcon, Languages, Loader2, Pencil, Printer, Share2 } from 'lucide-react';
+import { Button } from '@/app/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/app/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
+import { useToast } from '@/app/hooks/use-toast';
+import { commentaryAuthorShortName, isNewTestamentBookId } from '@/lib/helloao-commentaries';
+import { cn } from '@/app/lib/utils';
+import { useAuth, useClerk } from '@clerk/nextjs';
+import { ensureClerkSignedIn } from '@/lib/require-clerk-sign-in';
+
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV'];
+
+export type CommentaryChapterReaderProps = {
+  commentaryId: string;
+  bookUsfm: string;
+  chapterNumber: number;
+  commentaryName: string;
+  bookDisplayName: string;
+  bookIntroductionTeaser: string;
+  chapterIntroductionTeaser: string | null;
+  scriptureVerses: string[];
+  bibliaBookQueryName: string;
+  commentaryBlocks: { verseNumber: number; text: string }[];
+  prevHref: string | null;
+  nextHref: string | null;
+  currentVersionId: string;
+  bibleVersions: { id: string; label: string }[];
+};
+
+function blockHeading(text: string, blockIndex: number, verseNumber: number): string {
+  const roman = ROMAN[blockIndex] ?? String(blockIndex + 1);
+  const first = text.split('\n').map(l => l.trim()).find(Boolean) ?? '';
+  const short = first.length > 100 ? `${first.slice(0, 97)}…` : first;
+  return `${roman}. ${short || `Comentario sobre el versículo ${verseNumber}`}`;
+}
+
+export default function CommentaryChapterReader({
+  commentaryId,
+  bookUsfm,
+  chapterNumber,
+  commentaryName,
+  bookDisplayName,
+  bookIntroductionTeaser,
+  chapterIntroductionTeaser,
+  scriptureVerses,
+  bibliaBookQueryName,
+  commentaryBlocks,
+  prevHref,
+  nextHref,
+  currentVersionId,
+  bibleVersions,
+}: CommentaryChapterReaderProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { toast } = useToast();
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
+  const { redirectToSignIn } = useClerk();
+  const [commentaryLang, setCommentaryLang] = useState<'en' | 'es' | 'pt'>('en');
+  const [translations, setTranslations] = useState<string[] | null>(null);
+  const [pageTranslations, setPageTranslations] = useState<{
+    bookDisplayName: string;
+    commentaryName: string;
+    bookIntroductionTeaser: string;
+    chapterIntroductionTeaser: string | null;
+  } | null>(null);
+  const [translating, setTranslating] = useState(false);
+
+  const textsKey = useMemo(() => commentaryBlocks.map(b => b.text).join('\u0001'), [commentaryBlocks]);
+
+  useEffect(() => {
+    if (commentaryLang === 'en') {
+      setTranslations(null);
+      setPageTranslations(null);
+      setTranslating(false);
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      setTranslating(true);
+      try {
+        const segmentsToTranslate = [
+          bookDisplayName,
+          commentaryName,
+          bookIntroductionTeaser,
+          chapterIntroductionTeaser || '',
+          ...commentaryBlocks.map(b => b.text),
+        ];
+
+        const res = await fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            segments: segmentsToTranslate,
+            source: 'en',
+            target: commentaryLang,
+          }),
+        });
+        const data = (await res.json()) as { translations?: string[]; error?: string };
+        if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+        if (!Array.isArray(data.translations) || data.translations.length !== segmentsToTranslate.length) {
+          throw new Error('Respuesta incompleta del servicio de traducción.');
+        }
+        if (!cancelled) {
+          const [tBook, tCom, tBkIntro, tChapIntro, ...tBlocks] = data.translations;
+          setPageTranslations({
+            bookDisplayName: tBook,
+            commentaryName: tCom,
+            bookIntroductionTeaser: tBkIntro,
+            chapterIntroductionTeaser: chapterIntroductionTeaser ? tChapIntro : null,
+          });
+          setTranslations(tBlocks);
+        }
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : 'Intenta de nuevo más tarde.';
+        toast({
+          title: 'No se pudo traducir la página',
+          description: msg,
+          variant: 'destructive',
+        });
+        if (!cancelled) {
+          setTranslations(null);
+          setPageTranslations(null);
+          setCommentaryLang('en');
+        }
+      } finally {
+        if (!cancelled) setTranslating(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    commentaryLang,
+    textsKey,
+    toast,
+    bookDisplayName,
+    commentaryName,
+    bookIntroductionTeaser,
+    chapterIntroductionTeaser,
+  ]);
+
+  const displayBookName = pageTranslations?.bookDisplayName ?? bookDisplayName;
+  const displayCommentaryName = pageTranslations?.commentaryName ?? commentaryName;
+  const displayBookIntro = pageTranslations?.bookIntroductionTeaser ?? bookIntroductionTeaser;
+  const displayChapIntro = pageTranslations?.chapterIntroductionTeaser ?? chapterIntroductionTeaser;
+
+  const testamentLabel = isNewTestamentBookId(bookUsfm) ? 'Nuevo Testamento' : 'Antiguo Testamento';
+  const testamentCrumb = isNewTestamentBookId(bookUsfm) ? 'NUEVO TESTAMENTO' : 'ANTIGUO TESTAMENTO';
+  const bookCrumb = displayBookName.toUpperCase();
+  const subtitle = displayChapIntro?.trim() || displayBookIntro?.trim() || '';
+  const author = commentaryAuthorShortName(displayCommentaryName);
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleShare = async () => {
+    const url = typeof window !== 'undefined' ? window.location.href : '';
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${displayBookName} ${chapterNumber} — ${author}`,
+          text: `Comentario: ${displayCommentaryName}`,
+          url,
+        });
+      } else if (url) {
+        await navigator.clipboard.writeText(url);
+      }
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const handleVersionChange = (newVersionId: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('version', newVersionId);
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f5f6f8] pb-24 print:bg-white">
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+        <nav className="mb-4 flex flex-wrap items-center gap-1 text-[10px] font-black uppercase tracking-[0.2em] text-blue-600 print:text-gray-600">
+          <Link href="/comentarios" className="hover:text-blue-800">
+            Comentarios
+          </Link>
+          <ChevronRight className="h-3 w-3 text-blue-400" aria-hidden />
+          <Link href={`/comentarios/${commentaryId}`} className="hover:text-blue-800">
+            {author}
+          </Link>
+          <ChevronRight className="h-3 w-3 text-blue-400" aria-hidden />
+          <span className="text-gray-500">{testamentCrumb}</span>
+          <ChevronRight className="h-3 w-3 text-blue-400" aria-hidden />
+          <span className="max-w-[12rem] truncate text-gray-700">{bookCrumb}</span>
+        </nav>
+
+        <header className="mb-4 border-b border-gray-200 pb-4 print:border-gray-300">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-wider text-gray-500">{testamentLabel}</p>
+            <h1 className="mt-1 font-display text-2xl font-bold text-gray-900 sm:text-3xl">
+              {displayBookName} — Capítulo {chapterNumber}
+            </h1>
+            {subtitle ? (
+              <div className="mt-4 rounded-xl border border-gray-100 bg-white p-4 shadow-sm">
+                <p className="text-[15px] italic leading-relaxed text-gray-600">
+                  {subtitle}
+                </p>
+              </div>
+            ) : null}
+          </div>
+        </header>
+
+        <TooltipProvider>
+          <div className="mb-6 flex justify-center print:hidden">
+            <div className="flex flex-wrap items-center justify-center gap-1.5 rounded-2xl border border-gray-200 bg-white p-1.5 shadow-sm">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={`/dashboard/biblia?book=${bibliaBookQueryName}&chapter=${chapterNumber}&version=${currentVersionId}`}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                    onClick={e => {
+                      if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
+                    <BookOpen className="h-[18px] w-[18px]" />
+                    <span className="sr-only">Biblia</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Biblia</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={`/comparador?book=${bibliaBookQueryName}&chapter=${chapterNumber}`}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                    onClick={e => {
+                      if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
+                    <Columns className="h-[18px] w-[18px]" />
+                    <span className="sr-only">Comparador</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Comparador</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/dashboard/notas"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                    onClick={e => {
+                      if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
+                    <FileText className="h-[18px] w-[18px]" />
+                    <span className="sr-only">Notas</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Notas</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/dashboard/imagenes"
+                    className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                    onClick={e => {
+                      if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
+                        e.preventDefault();
+                      }
+                    }}
+                  >
+                    <ImageIcon className="h-[18px] w-[18px]" />
+                    <span className="sr-only">Imágenes</span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Imágenes</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <div className="h-5 w-px bg-gray-200" aria-hidden />
+
+              <DropdownMenu>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                      >
+                        <BookA className="h-[18px] w-[18px]" />
+                        <span className="sr-only">Versiones de la Biblia</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Versiones de la Biblia</p>
+                  </TooltipContent>
+                </Tooltip>
+                <DropdownMenuContent align="center" className="max-h-[60vh] w-64 overflow-y-auto rounded-xl">
+                  {bibleVersions.map(v => (
+                    <DropdownMenuItem
+                      key={v.id}
+                      onClick={() => handleVersionChange(v.id)}
+                      className="cursor-pointer"
+                    >
+                      {v.label}
+                      {v.id === currentVersionId && <Check className="ml-auto h-4 w-4" />}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <div className="h-5 w-px bg-gray-200" aria-hidden />
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                    onClick={() => void handlePrint()}
+                  >
+                    <Printer className="h-[18px] w-[18px]" />
+                    <span className="sr-only">Imprimir</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Imprimir</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                    onClick={() => void handleShare()}
+                  >
+                    <Share2 className="h-[18px] w-[18px]" />
+                    <span className="sr-only">Compartir</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Compartir</p>
+                </TooltipContent>
+              </Tooltip>
+
+              <div className="h-5 w-px bg-gray-200" aria-hidden />
+
+              <div className="flex shrink-0 items-center gap-1">
+                <DropdownMenu>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          disabled={translating}
+                          className="h-9 w-9 rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                        >
+                          {translating ? (
+                            <Loader2 className="h-[18px] w-[18px] animate-spin" />
+                          ) : (
+                            <Languages className="h-[18px] w-[18px]" />
+                          )}
+                          <span className="sr-only">Idioma de la página</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Traducir</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <DropdownMenuContent align="end" className="w-40 rounded-xl">
+                    <DropdownMenuItem onClick={() => setCommentaryLang('en')} className="cursor-pointer">
+                      Original (inglés)
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCommentaryLang('es')} className="cursor-pointer">
+                      Español
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setCommentaryLang('pt')} className="cursor-pointer">
+                      Português
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {!translating && commentaryLang !== 'en' ? (
+                  <span className="pl-1 pr-2 text-[10px] font-bold uppercase tracking-wider text-emerald-600">
+                    Traducido
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </TooltipProvider>
+
+        <div className="grid gap-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:grid-cols-2 print:shadow-none">
+          {/* Texto bíblico (RVR desde datos locales) */}
+          <section className="border-b border-gray-200 lg:border-b-0 lg:border-r print:border-gray-200">
+            <div className="border-b border-gray-100 bg-gray-50/80 px-4 py-3 print:bg-white">
+              <h2 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-500">
+                <BookOpen className="h-4 w-4 text-[#B88A44]" />
+                Texto — {bibleVersions.find(v => v.id === currentVersionId)?.label ?? 'Reina-Valera 1960'}
+              </h2>
+            </div>
+            <div className="max-h-[min(78vh,52rem)] space-y-4 overflow-y-auto px-4 py-5 sm:px-6 print:max-h-none">
+              {scriptureVerses.length === 0 ? (
+                <p className="text-sm text-gray-500">
+                  No hay texto bíblico enlazado para este código de libro ({bookUsfm}) en la versión local.
+                </p>
+              ) : (
+                scriptureVerses.map((text, i) => {
+                  const vn = i + 1;
+                  const t = (text ?? '').trim();
+                  if (!t) return null;
+                  return (
+                    <p key={vn} className="text-[15px] leading-relaxed text-gray-900">
+                      <span className="mr-2 align-top text-sm font-bold text-[#B88A44]">{vn}</span>
+                      <span>{t}</span>
+                    </p>
+                  );
+                })
+              )}
+            </div>
+          </section>
+
+          {/* Comentario HelloAO */}
+          <section>
+            <div className="border-b border-gray-100 bg-gray-50/80 px-4 py-3 print:bg-white">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-xs font-black uppercase tracking-widest text-gray-600">
+                    {displayCommentaryName.toUpperCase()}
+                  </h2>
+                </div>
+              </div>
+            </div>
+            <div className="max-h-[min(78vh,52rem)] space-y-8 overflow-y-auto px-4 py-6 sm:px-6 print:max-h-none">
+              {commentaryBlocks.map((block, idx) => {
+                const bodyText =
+                  commentaryLang !== 'en' && translations?.[idx] != null ? translations[idx]! : block.text;
+                return (
+                  <article key={`${block.verseNumber}-${idx}`} className="border-b border-gray-100 pb-8 last:border-0">
+                    <div className="flex gap-4">
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#B88A44] text-xs font-black text-white"
+                        aria-hidden
+                      >
+                        {ROMAN[idx] ?? idx + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-[#B88A44]">
+                          Versículo {block.verseNumber}
+                        </p>
+                        <h3 className="mt-1 font-display text-lg font-bold text-gray-900">
+                          {blockHeading(bodyText, idx, block.verseNumber)}
+                        </h3>
+                        <div
+                          className={cn(
+                            'mt-4 whitespace-pre-wrap text-sm leading-relaxed text-gray-800',
+                            '[&_strong]:font-semibold'
+                          )}
+                        >
+                          {bodyText}
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+
+        <div className="mt-8 flex justify-center pb-8 print:hidden">
+          <div className="flex items-center rounded-full bg-[#0F172A] px-6 py-2.5 shadow-xl ring-1 ring-white/10">
+            {prevHref ? (
+              <Link href={prevHref} className="text-sm font-semibold text-slate-300 transition-colors hover:text-white">
+                Anterior
+              </Link>
+            ) : (
+              <span className="text-sm font-semibold text-slate-600">Anterior</span>
+            )}
+
+            <div className="mx-6 flex items-center gap-3">
+              <div className="flex h-7 min-w-[2rem] items-center justify-center rounded-md bg-[#B88A44] px-2 text-xs font-bold text-white shadow-sm">
+                {String(chapterNumber).padStart(2, '0')}
+              </div>
+              {nextHref && (
+                <>
+                  <div className="flex h-[2px] w-16 items-center overflow-hidden rounded-full">
+                    <div className="h-full w-1/2 bg-[#B88A44]"></div>
+                    <div className="h-full w-1/2 bg-slate-700"></div>
+                  </div>
+                  <span className="text-sm font-bold text-[#B88A44]">
+                    {String(chapterNumber + 1).padStart(2, '0')}
+                  </span>
+                </>
+              )}
+            </div>
+
+            {nextHref ? (
+              <Link href={nextHref} className="text-sm font-semibold text-[#B88A44] transition-colors hover:text-[#d3a55b]">
+                Siguiente
+              </Link>
+            ) : (
+              <span className="text-sm font-semibold text-slate-600">Siguiente</span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <Link
+        href={`/biblia?book=${encodeURIComponent(bibliaBookQueryName)}&chapter=${chapterNumber}`}
+        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#B88A44] text-white shadow-lg shadow-[#B88A44]/40 transition-transform hover:scale-105 hover:bg-[#a17638] print:hidden"
+        aria-label="Editar o anotar en la Biblia"
+      >
+        <Pencil className="h-6 w-6" />
+      </Link>
+    </div>
+  );
+}

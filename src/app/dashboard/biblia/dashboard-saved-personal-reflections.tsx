@@ -99,7 +99,7 @@ export default function DashboardSavedPersonalReflections() {
   }, [refresh]);
 
   return (
-    <div className="rounded-3xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
+    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 md:p-8">
       <style>{`
         .reflection-saved-html ul { list-style-type: disc; padding-left: 1.25rem; margin: 0.35rem 0; }
         .reflection-saved-html ol { list-style-type: decimal; padding-left: 1.25rem; margin: 0.35rem 0; }
@@ -116,8 +116,7 @@ export default function DashboardSavedPersonalReflections() {
 
       {items.length === 0 ? (
         <p className="text-sm text-gray-400">
-          Aún no hay reflexiones guardadas. Escribe una reflexión con título y contenido, luego pulsa{' '}
-          <span className="font-semibold text-gray-600">Guardar y nueva reflexión</span>.
+          Aún no hay reflexiones guardadas. Escribe título y contenido, luego usa el botón de guardar en el panel de Biblia o en Notas.
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
@@ -136,6 +135,16 @@ export default function DashboardSavedPersonalReflections() {
                       {r.verseReference}
                     </span>
                   ) : null}
+                  {r.tags?.length
+                    ? r.tags.map((tag, ti) => (
+                        <span
+                          key={`${r.id}-tag-${ti}`}
+                          className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-[10px] font-semibold text-gray-600"
+                        >
+                          {tag}
+                        </span>
+                      ))
+                    : null}
                 </div>
                 {whenLabel ? <p className="mt-1 text-[11px] text-gray-400">{whenLabel}</p> : null}
                 <p className="mt-2 text-xs leading-relaxed text-gray-500">{bodyPlainPreview(r.body)}</p>

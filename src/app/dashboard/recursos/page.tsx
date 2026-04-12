@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
 import { FileText, Music, Play, Download, Plus } from 'lucide-react';
 import { resourceItems, slugify } from '@/app/lib/resources-data';
 import {
@@ -93,18 +94,21 @@ export default function RecursosGuardadosPage() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#F4F7F6] pb-12">
-      <div className="mx-auto max-w-7xl px-6 pt-8 md:px-10">
+    <div className="relative min-h-screen w-full bg-[#F4F7F6] pb-[max(3rem,env(safe-area-inset-bottom))]">
+      <div className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8 md:px-10">
+        <DashboardBibliaReadingToolbar />
         <div className="mb-8">
           <nav className="mb-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
             <span className="font-medium text-gray-400">PORTAL</span>
             <span className="text-gray-300">/</span>
             <span className="text-blue-600">RECURSOS</span>
           </nav>
-          <h1 className="mb-6 font-display text-2xl font-bold text-gray-900 md:text-4xl">Recursos guardados</h1>
+          <h1 className="mb-4 font-display text-xl font-bold text-gray-900 sm:mb-6 sm:text-2xl md:text-4xl">
+            Recursos guardados
+          </h1>
 
           <div
-            className="flex flex-wrap items-center gap-3"
+            className="-mx-1 flex max-w-full flex-nowrap items-center gap-2 overflow-x-auto px-1 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:flex-wrap sm:overflow-x-visible [&::-webkit-scrollbar]:hidden"
             role="tablist"
             aria-label="Filtrar por tipo de recurso"
           >
@@ -117,7 +121,7 @@ export default function RecursosGuardadosPage() {
                   role="tab"
                   aria-selected={activo}
                   onClick={() => setFiltro(id)}
-                  className={`rounded-full px-5 py-2 text-xs font-semibold shadow-sm transition-colors ${
+                  className={`shrink-0 touch-manipulation rounded-full px-4 py-2 text-xs font-semibold shadow-sm transition-colors sm:px-5 ${
                     activo
                       ? 'bg-blue-600 text-white'
                       : 'border border-gray-200 bg-white text-gray-500 hover:text-gray-900'
@@ -182,8 +186,8 @@ export default function RecursosGuardadosPage() {
                   <p className="text-xs font-medium tracking-wide text-gray-400">{subtituloTarjeta(recurso)}</p>
                 </div>
 
-                <div className="mt-auto flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="mt-auto flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                     <Link
                       href={`/recursos/${slugify(recurso.title)}`}
                       className="text-xs font-bold text-blue-600 transition-colors hover:text-blue-800"
@@ -205,8 +209,8 @@ export default function RecursosGuardadosPage() {
                     rel="noopener noreferrer"
                     className={
                       tv === 'audio'
-                        ? 'flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 text-white shadow-md transition-all hover:scale-105 hover:bg-blue-700'
-                        : 'flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900'
+                        ? 'ml-auto flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center self-end rounded-full bg-blue-600 text-white shadow-md transition-all hover:scale-105 hover:bg-blue-700 sm:ml-0 sm:h-10 sm:w-10 sm:self-auto'
+                        : 'ml-auto flex h-11 w-11 shrink-0 touch-manipulation items-center justify-center self-end rounded-full border border-gray-200 bg-gray-50 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 sm:ml-0 sm:h-10 sm:w-10 sm:self-auto'
                     }
                     aria-label={recurso.actionLabel}
                   >

@@ -21,6 +21,8 @@ const mainLinks = [
 
 const bibliaLinks = [
   { href: '/biblia',  label: 'Biblia',  desc: 'Lee la Palabra de Dios',      icon: '📖' },
+  { href: '/comparador', label: 'Comparador', desc: 'Compara de forma paralela', icon: '⚖️' },
+  { href: '/comentarios', label: 'Comentarios', desc: 'Catálogo de comentarios bíblicos', icon: '💬' },
   { href: '/planes',  label: 'Planes',  desc: 'Planes de lectura bíblica',   icon: '📅' },
 ];
 
@@ -67,7 +69,10 @@ const Header = () => {
   const currentPath = usePathname();
 
   const nosotrosActive = nosotrosLinks.some(l => l.href === currentPath);
-  const bibliaActive   = bibliaLinks.some(l => l.href === currentPath);
+  const bibliaActive =
+    bibliaLinks.some(l => l.href === currentPath) ||
+    currentPath.startsWith('/biblia') ||
+    currentPath.startsWith('/comentarios');
   const historiaActive = historiaLinks.some(l => l.href === currentPath);
   const dashboardActive = isDashboardPath(currentPath);
 
@@ -295,7 +300,14 @@ const Header = () => {
               {mobileSectionOpen === 'biblia' && (
                 <div className="max-h-[min(60vh,26rem)] overflow-y-auto rounded-3xl border border-gray-200 bg-white p-4 shadow-lg">
                   {bibliaLinks.map(link => (
-                    <Link key={link.href} href={link.href} onClick={closeMobileMenu} className="flex items-center gap-3 rounded-xl px-3 py-3 text-lg font-semibold text-gray-700">
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={closeMobileMenu}
+                      className={`flex items-center gap-3 rounded-xl px-3 py-3 text-lg font-semibold ${
+                        link.href === currentPath ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                      }`}
+                    >
                       <span>{link.icon}</span>
                       {link.label}
                     </Link>

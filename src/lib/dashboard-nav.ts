@@ -1,14 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import {
-  BookOpen,
-  Building2,
-  Church,
-  Compass,
-  FileText,
-  Image as ImageIcon,
-  Megaphone,
-  UserPlus,
-} from 'lucide-react';
+import { BookOpen, Church, UserPlus } from 'lucide-react';
 
 export type DashboardNavItem = {
   name: string;
@@ -21,11 +12,6 @@ export type DashboardNavItem = {
 export const DASHBOARD_NAV_ITEMS: DashboardNavItem[] = [
   { name: 'Personal', href: '/dashboard/miembros', icon: UserPlus },
   { name: 'Biblia', href: '/dashboard/biblia', icon: BookOpen },
-  { name: 'Imágenes', href: '/dashboard/imagenes', icon: ImageIcon },
-  { name: 'Planes', href: '/dashboard/planes', icon: Compass },
-  { name: 'Avisos', href: '/dashboard/avisos', icon: Megaphone },
-  { name: 'Recursos', href: '/dashboard/recursos', icon: FileText },
-  { name: 'Templos', href: '/dashboard/templos', icon: Building2 },
   { name: 'Iglesia', href: 'https://churches.iciarnayarit.com/', icon: Church, external: true },
 ];
 

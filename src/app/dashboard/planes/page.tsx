@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
+import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
 import DashboardSavedPlans from '@/app/dashboard/planes/dashboard-saved-plans';
 import { allPlanData, plans } from '@/lib/reading-plan-data';
 
@@ -56,9 +57,10 @@ export default function PlanesPage() {
 
   return (
     <div className="relative min-h-screen w-full bg-[#F8F9FA] pb-20 font-sans">
-      <div className="mx-auto max-w-7xl space-y-10 p-6 md:p-10">
+      <div className="mx-auto max-w-7xl space-y-8 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-5 sm:space-y-10 sm:p-6 md:p-10">
+        <DashboardBibliaReadingToolbar />
         {/* Banner destacado */}
-        <div className="relative flex h-[380px] w-full items-center overflow-hidden rounded-3xl shadow-md">
+        <div className="relative flex min-h-[260px] w-full items-center overflow-hidden rounded-2xl shadow-md sm:min-h-[320px] sm:rounded-3xl md:h-[380px] md:min-h-0">
           <Image
             src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b"
             alt="Paisaje montañoso"
@@ -67,20 +69,20 @@ export default function PlanesPage() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 via-gray-900/60 to-transparent" />
 
-          <div className="relative z-10 max-w-2xl p-8 md:p-14">
-            <span className="mb-6 inline-block rounded-full border border-blue-500/30 bg-blue-600/20 px-3.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-blue-300">
+          <div className="relative z-10 max-w-2xl p-5 py-10 sm:p-8 md:p-14">
+            <span className="mb-4 inline-block rounded-full border border-blue-500/30 bg-blue-600/20 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-blue-300 sm:mb-6 sm:px-3.5 sm:py-1.5 sm:text-[10px]">
               Plan destacado del día
             </span>
-            <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl">
+            <h1 className="mb-3 text-2xl font-bold leading-tight tracking-tight text-white sm:mb-4 sm:text-4xl md:text-5xl">
               Creciendo en Sabiduría
             </h1>
-            <p className="mb-10 max-w-md text-sm font-medium leading-relaxed text-gray-300 md:text-base">
+            <p className="mb-8 max-w-md text-xs font-medium leading-relaxed text-gray-300 sm:mb-10 sm:text-sm md:text-base">
               Un viaje de 21 días a través de los Proverbios para encontrar claridad en un mundo complejo.
             </p>
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-stretch gap-3 sm:items-center sm:gap-4">
               <Link
                 href={`/planes/${FEATURED_PROVERBS_PLAN_SLUG}`}
-                className="rounded-xl bg-blue-600 px-8 py-3.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-500"
+                className="inline-flex w-full min-h-[44px] items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-blue-500 sm:w-auto sm:px-8 sm:py-3.5"
               >
                 Comenzar plan
               </Link>
@@ -90,8 +92,8 @@ export default function PlanesPage() {
 
         <DashboardSavedPlans />
 
-        <div className="pt-4">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Explorar planes de lectura</h2>
+        <div className="pt-2 sm:pt-4">
+          <h2 className="text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">Explorar planes de lectura</h2>
           <p className="mt-1 text-sm font-medium text-gray-500">
             Descubre itinerarios seleccionados para tu crecimiento espiritual.
           </p>
@@ -151,7 +153,7 @@ export default function PlanesPage() {
             <button
               type="button"
               onClick={loadMore}
-              className="w-full max-w-xl rounded-xl border border-gray-200 bg-white px-8 py-3.5 text-[13px] font-bold text-gray-800 shadow-sm transition-colors hover:bg-gray-50"
+              className="min-h-[48px] w-full max-w-xl touch-manipulation rounded-xl border border-gray-200 bg-white px-8 py-3.5 text-[13px] font-bold text-gray-800 shadow-sm transition-colors hover:bg-gray-50"
             >
               Cargar más planes
             </button>

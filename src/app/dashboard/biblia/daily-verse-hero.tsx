@@ -54,7 +54,7 @@ export default function DailyVerseHero({ onActiveVerseChange }: DailyVerseHeroPr
   const goNext = useCallback(() => api?.scrollNext(), [api]);
 
   return (
-    <div className="relative w-full min-h-[280px] md:min-h-[320px] rounded-3xl overflow-hidden shadow-sm">
+    <div className="relative w-full min-h-[240px] overflow-hidden rounded-2xl shadow-sm sm:min-h-[280px] sm:rounded-3xl md:min-h-[320px]">
       <Image
         src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b"
         alt="Paisaje de montañas"
@@ -64,7 +64,7 @@ export default function DailyVerseHero({ onActiveVerseChange }: DailyVerseHeroPr
         priority
       />
       <div className="absolute inset-0 bg-black/45 flex flex-col justify-center">
-        <div className="relative px-4 sm:px-8 md:px-12 py-8 md:py-12">
+        <div className="relative px-3 py-6 sm:px-8 sm:py-8 md:px-12 md:py-12">
           <p className="text-[10px] md:text-xs font-bold text-white/80 uppercase tracking-[0.2em] mb-3 text-center">
             Versículo del día
           </p>
@@ -90,10 +90,10 @@ export default function DailyVerseHero({ onActiveVerseChange }: DailyVerseHeroPr
                       aria-roledescription="diapositiva"
                     >
                       <div
-                        className="w-full max-w-full overflow-hidden flex flex-col items-center text-center px-11 sm:px-12 md:px-14"
+                        className="flex w-full max-w-full flex-col items-center overflow-hidden px-4 text-center sm:px-11 md:px-14"
                         aria-hidden={i !== active}
                       >
-                        <h2 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-tight max-w-3xl font-display mx-auto">
+                        <h2 className="mx-auto max-w-3xl font-display text-xl font-bold leading-snug text-white sm:text-2xl sm:leading-tight md:text-4xl lg:text-5xl">
                           &ldquo;{verse.text}&rdquo;
                         </h2>
                         <div className="flex items-center justify-center gap-3 mt-6 flex-wrap">

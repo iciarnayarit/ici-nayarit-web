@@ -208,23 +208,31 @@ export default function RecursosPage() {
             </div>
           )}
 
+          {/*
+            CTA de suscripción al final de /recursos (tarjeta centrada con sombra).
+            Objetivo: captar correos de quien no encontró lo que buscaba y quiere avisos
+            cuando se publiquen manuales, sermones o herramientas nuevas.
+            Layout: en móvil el botón va debajo del campo; en sm+ quedan en fila (flex-row).
+            Pendiente: enlazar el formulario a tu servicio de lista (API route, acción de servidor, etc.);
+            hoy no hay onSubmit ni validación de envío.
+          */}
           <section className="bg-white rounded-2xl shadow-lg p-8 md:p-12 mt-16 text-center">
             <h2 className="text-3xl font-bold text-gray-800 mb-3 font-display">¿No encuentras lo que buscas?</h2>
             <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                Suscríbete para recibir notificaciones cuando subamos nuevos manuales, sermones o herramientas.
+              Suscríbete para recibir notificaciones cuando subamos nuevos manuales, sermones o herramientas.
             </p>
             <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                <div className="relative flex-grow">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input 
-                        type="email" 
-                        placeholder="tu@email.com"
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B88A44] focus:outline-none" 
-                    />
-                </div>
-                <button type="submit" className="bg-[#1A2530] hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                    Suscribirme
-                </button>
+              <div className="relative flex-grow">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="email"
+                  placeholder="tu@email.com"
+                  className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#B88A44] focus:outline-none"
+                />
+              </div>
+              <button type="submit" className="bg-[#1A2530] hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                Suscribirme
+              </button>
             </form>
           </section>
 
