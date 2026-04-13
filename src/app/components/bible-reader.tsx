@@ -1,7 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { Highlighter, Share, Copy, BookOpen, X, Book } from 'lucide-react';
-import { bibleData } from '@/lib/bible-data';
+import { getRvrBibleLookupBrowser } from '@/lib/bible-rvr-browser';
 
 const highlightColors = ['#FDD835', '#9CCC65', '#29B6F6', '#FFAB91', '#F48FB1'];
 
@@ -14,17 +14,24 @@ interface BibleData {
 export default function BibleReader() {
     const [selection, setSelection] = useState<{ verse: string; chapter: number; verseIndex: number } | null>(null);
     const [showToolbar, setShowToolbar] = useState(false);
-    const [bibleData, setBibleData] = useState<BibleData | null>(null);
+    const [readerBook, setReaderBook] = useState<BibleData | null>(null);
     const textRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const book = bibleData.mateo;
-        if (!book) return;
-        setBibleData({
-            abbrev: 'Mt',
-            name: 'Mateo',
-            chapters: book.chapters,
+        let cancelled = false;
+        getRvrBibleLookupBrowser().then((lookup) => {
+            if (cancelled) return;
+            const book = lookup.mateo;
+            if (!book) return;
+            setReaderBook({
+                abbrev: 'Mt',
+                name: 'Mateo',
+                chapters: book.chapters,
+            });
         });
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     const handleVerseClick = (verse: string, chapter: number, verseIndex: number) => {
@@ -49,7 +56,7 @@ export default function BibleReader() {
         }
     };
 
-    if (!bibleData) {
+    if (!readerBook) {
         return <div className="flex justify-center items-center h-screen">Cargando...</div>;
     }
 
@@ -58,13 +65,13 @@ export default function BibleReader() {
     return (
         <div className="p-4 md:p-8 font-serif relative">
             <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold">{bibleData.name} {chapter + 1}</h2>
+                <h2 className="text-3xl font-bold">{readerBook.name} {chapter + 1}</h2>
                 <p className="text-sm text-gray-500">(Mr. 16.1-8; Lc. 24.1-12; Jn. 20.1-10)</p>
                 <h3 className="text-xl font-semibold mt-4 uppercase">La resurrección</h3>
             </div>
 
             <div ref={textRef} className="max-w-4xl mx-auto text-lg leading-loose text-justify">
-                {bibleData.chapters[chapter].map((verse, index) => (
+                {readerBook.chapters[chapter].map((verse, index) => (
                     <span
                         key={index}
                         id={`verse-${chapter + 1}-${index + 1}`}
@@ -86,7 +93,7 @@ export default function BibleReader() {
                             <X size={20} />
                         </button>
                     </div>
-                    <p className="text-lg font-bold mb-6">{bibleData.name} {selection.chapter}:{selection.verseIndex} RVR1960 &gt;</p>
+                    <p className="text-lg font-bold mb-6">{readerBook.name} {selection.chapter}:{selection.verseIndex} RVR1960 &gt;</p>
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">

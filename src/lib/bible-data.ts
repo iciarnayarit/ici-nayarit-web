@@ -1,5 +1,3 @@
-import esRvr1960 from '@/app/lib/bible_rvr_1960/es_rvr_1960.json';
-
 type RvrItem = {
     type: string;
     verse_numbers?: number[];
@@ -20,7 +18,7 @@ export type UbsBibleBook = {
     chapters: RvrChapter[];
 };
 
-/** Raíz JSON United Bible Societies (misma forma que `es_rvr_1960.json`). */
+/** Raíz JSON United Bible Societies (misma forma que `public/bible/es_rvr_1960.json`). */
 export type UbsBibleRoot = { books: UbsBibleBook[] };
 
 export interface BibleBookData {
@@ -134,10 +132,6 @@ export function buildSpanishUbsLookupFromRoot(root: UbsBibleRoot): Record<string
     return out;
 }
 
-const bibleData = buildSpanishUbsLookupFromRoot(esRvr1960 as UbsBibleRoot);
-
-export { bibleData };
-
 export interface PassageVerse {
     book: string;
     chapter: number;
@@ -160,7 +154,7 @@ function versePayload(
 
 export const handleReadPassage = (
     reading: string,
-    lookup: Record<string, BibleBookData> = bibleData
+    lookup: Record<string, BibleBookData>
 ): PassageVerse[] => {
     const allVerses: PassageVerse[] = [];
     let currentBookKey = '';
@@ -258,9 +252,17 @@ export const handleReadPassage = (
 export const bookOrder = [
     'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio', 'Josué', 'Jueces', 'Rut', '1 Samuel', '2 Samuel', '1 Reyes', '2 Reyes', '1 Crónicas', '2 Crónicas', 'Esdras', 'Nehemías', 'Ester', 'Job', 'Salmos', 'Proverbios', 'Eclesiastés', 'Cantares', 'Isaías', 'Jeremías', 'Lamentaciones', 'Ezequiel', 'Daniel', 'Oseas', 'Joel', 'Amós', 'Abdías', 'Jonás', 'Miqueas', 'Nahúm', 'Habacuc', 'Sofonías', 'Hageo', 'Zacarías', 'Malaquías',
     'Mateo', 'Marcos', 'Lucas', 'Juan', 'Hechos', 'Romanos', '1 Corintios', '2 Corintios', 'Gálatas', 'Efesios', 'Filipenses', 'Colosenses', '1 Tesalonicenses', '2 Tesalonicenses', '1 Timoteo', '2 Timoteo', 'Tito', 'Filemón', 'Hebreos', 'Santiago', '1 Pedro', '2 Pedro', '1 Juan', '2 Juan', '3 Juan', 'Judas', 'Apocalipsis',
+] as const;
+
+/** Capítulos por libro (RVR/UBS); evita cargar el JSON completo en tiempo de importación. */
+const CHAPTER_COUNTS_BY_BOOK_INDEX: readonly number[] = [
+    50, 40, 27, 36, 34, 24, 21, 4, 31, 24, 22, 25, 29, 36, 10, 13, 10, 42, 150, 31, 12, 8, 66, 52, 5, 48, 12, 14, 3, 9, 1, 4, 7, 3, 3, 3, 2, 14, 4,
+    28, 16, 24, 21, 28, 16, 16, 13, 6, 6, 4, 4, 5, 3, 6, 4, 3, 1, 13, 5, 5, 3, 5, 1, 1, 1, 22,
 ];
 
 export const chaptersInBook = (bookName: string) => {
     if (!bookName) return 0;
-    return bibleData[bookName.toLowerCase()]?.chapters?.length || 0;
+    const idx = bookOrder.findIndex((b) => b.toLowerCase() === bookName.trim().toLowerCase());
+    if (idx < 0) return 0;
+    return CHAPTER_COUNTS_BY_BOOK_INDEX[idx] ?? 0;
 };

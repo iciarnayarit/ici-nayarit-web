@@ -1,10 +1,10 @@
 import {
-    bibleData,
     bookOrder,
     buildSpanishUbsLookupFromRoot,
     type BibleBookData,
     type UbsBibleRoot,
 } from '@/lib/bible-data';
+import { loadPublicBibleJson } from '@/lib/load-public-bible-json';
 
 // ── Bible versions (misma lista que el lector principal) ─────────────────────
 
@@ -83,18 +83,19 @@ export function isUbsSpanishExtraVersion(id: VersionId): id is UbsSpanishExtraVe
 
 const ubsSpanishExtraLookupCache = new Map<UbsSpanishExtraVersionId, Record<string, BibleBookData>>();
 
-const UBS_SPANISH_EXTRA_LOADERS: Record<UbsSpanishExtraVersionId, () => Promise<unknown>> = {
-    dhh94i: () => import('@/app/lib/bible_dhh/bible_dhh_.json'),
-    dhhs94: () => import('@/app/lib/bible_dhhs_94/bible_dhhs.json'),
-    lbla: () => import('@/app/lib/bible_lbla/bible_lbla.json'),
-    nbla: () => import('@/app/lib/bible_nbla/bible_ nbla.json'),
-    ntv: () => import('@/app/lib/bible_ntv/bible_ntv.json'),
-    nvi_es: () => import('@/app/lib/bible_nvi_es/bible_nvi.json'),
-    nvi_castellano: () => import('@/app/lib/bible_nvi_castellano/bible_nvi_castellano.json'),
-    rva2015: () => import('@/app/lib/bible_ rva_2015/bible_rva_2015.json'),
-    rvc: () => import('@/app/lib/bible_ rvc/bible_rvc.json'),
-    tla: () => import('@/app/lib/bible_tla/bible_tla.json'),
-    tlai: () => import('@/app/lib/bible_ tlai/bible_tlai.json'),
+/** Rutas bajo `public/bible/` (sin `public/`). */
+const UBS_EXTRA_JSON_PATH: Record<UbsSpanishExtraVersionId, string> = {
+    dhh94i: 'versions/bible_dhh_.json',
+    dhhs94: 'versions/bible_dhhs.json',
+    lbla: 'versions/bible_lbla.json',
+    nbla: 'versions/bible_nbla.json',
+    ntv: 'versions/bible_ntv.json',
+    nvi_es: 'versions/bible_nvi_es.json',
+    nvi_castellano: 'versions/bible_nvi_castellano.json',
+    rva2015: 'versions/bible_rva_2015.json',
+    rvc: 'versions/bible_rvc.json',
+    tla: 'versions/bible_tla.json',
+    tlai: 'versions/bible_tlai.json',
 };
 
 export async function loadUbsSpanishExtraLookup(
@@ -102,7 +103,7 @@ export async function loadUbsSpanishExtraLookup(
 ): Promise<Record<string, BibleBookData>> {
     const cached = ubsSpanishExtraLookupCache.get(versionId);
     if (cached) return cached;
-    const mod = await UBS_SPANISH_EXTRA_LOADERS[versionId]();
+    const mod = await loadPublicBibleJson(UBS_EXTRA_JSON_PATH[versionId]);
     const root = (mod as { default?: UbsBibleRoot }).default ?? (mod as UbsBibleRoot);
     const lookup = buildSpanishUbsLookupFromRoot(root);
     ubsSpanishExtraLookupCache.set(versionId, lookup);
@@ -126,12 +127,12 @@ function singleFileArrayToSpanishLookup(
     return out;
 }
 
-const SINGLE_FILE_LOADERS: Partial<Record<VersionId, () => Promise<unknown>>> = {
-    rvg: () => import('@/app/lib/bible_es_rvg/es-rvg.json'),
-    kjv: () => import('@/app/lib/bible_kjv/en_kjv.json'),
-    asv: () => import('@/app/lib/bible_eng_asv/eng_asv.json'),
-    bbe: () => import('@/app/lib/bible_bbe/en_bbe.json'),
-    el: () => import('@/app/lib/bible_el_greek/el_greek.json'),
+const SINGLE_FILE_JSON_PATH: Partial<Record<VersionId, string>> = {
+    rvg: 'versions/es-rvg.json',
+    kjv: 'versions/en_kjv.json',
+    asv: 'versions/eng_asv.json',
+    bbe: 'versions/en_bbe.json',
+    el: 'versions/el_greek.json',
 };
 
 const fullLookupCache = new Map<VersionId, Record<string, BibleBookData>>();
@@ -147,17 +148,26 @@ export async function loadFullBibleLookup(versionId: VersionId): Promise<Record<
     let lookup: Record<string, BibleBookData>;
 
     if (versionId === 'rvr') {
-        lookup = bibleData;
+        lookup =
+            typeof window === 'undefined'
+                ? await (await import('@/lib/bible-rvr-node')).getRvrBibleLookupNode()
+                : await (await import('@/lib/bible-rvr-browser')).getRvrBibleLookupBrowser();
     } else if (versionId === 'huichol') {
-        lookup = bibleData;
+        lookup =
+            typeof window === 'undefined'
+                ? await (await import('@/lib/bible-rvr-node')).getRvrBibleLookupNode()
+                : await (await import('@/lib/bible-rvr-browser')).getRvrBibleLookupBrowser();
     } else if (isUbsSpanishExtraVersion(versionId)) {
         lookup = await loadUbsSpanishExtraLookup(versionId);
     } else {
-        const loader = SINGLE_FILE_LOADERS[versionId];
-        if (!loader) {
-            lookup = bibleData;
+        const jsonPath = SINGLE_FILE_JSON_PATH[versionId];
+        if (!jsonPath) {
+            lookup =
+                typeof window === 'undefined'
+                    ? await (await import('@/lib/bible-rvr-node')).getRvrBibleLookupNode()
+                    : await (await import('@/lib/bible-rvr-browser')).getRvrBibleLookupBrowser();
         } else {
-            const raw = await loader();
+            const raw = await loadPublicBibleJson(jsonPath);
             const arr = (raw as { default?: Array<{ chapters?: string[][] }> }).default ?? raw;
             lookup = singleFileArrayToSpanishLookup(Array.isArray(arr) ? arr : []);
         }

@@ -1,5 +1,5 @@
 /**
- * Clave de libro en `bibleData` / `loadFullBibleLookup` (nombre UBS en minúsculas, español).
+ * Clave de libro en el lookup RVR / `loadFullBibleLookup` (nombre UBS en minúsculas, español).
  * Debe coincidir con `es_rvr_1960.json` (p. ej. "s. mateo", "génesis").
  */
 const USFM_TO_SPANISH_KEY: Record<string, string> = {

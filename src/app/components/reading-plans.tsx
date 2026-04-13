@@ -3,6 +3,7 @@ import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { useToast } from '@/app/hooks/use-toast';
 import { handleReadPassage } from '@/lib/bible-data';
+import { getRvrBibleLookupBrowser } from '@/lib/bible-rvr-browser';
 import { allPlanData, plans } from '@/lib/reading-plan-data';
 import { SAVED_PLANS_CHANGED_EVENT } from '@/lib/saved-reading-plans';
 import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
@@ -105,7 +106,7 @@ export default function ReadingPlans() {
   };
 
 
-  const handleDownloadPlan = (plan: typeof plans[0]) => {
+  const handleDownloadPlan = async (plan: typeof plans[0]) => {
     const doc = new jsPDF();
     const planData = allPlanData[plan.slug];
 
@@ -113,8 +114,9 @@ export default function ReadingPlans() {
     doc.text(plan.descriptionKey, 10, 20);
 
     if (planData) {
+      const lookup = await getRvrBibleLookupBrowser();
       const tableData = planData.map(day => {
-        const verses = handleReadPassage(day.reading);
+        const verses = handleReadPassage(day.reading, lookup);
         const verseText = verses
           .map((v) => {
             const head = v.sectionTitle ? `${v.sectionTitle}\n` : '';

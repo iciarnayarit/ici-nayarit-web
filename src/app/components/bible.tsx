@@ -41,6 +41,7 @@ import {
     DEFAULT_BIBLE_VERSION_LABEL,
     loadFullBibleLookup,
 } from '@/lib/bible-versions';
+import { loadPublicBibleJson } from '@/lib/load-public-bible-json';
 
 const books = [
     "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué",
@@ -75,59 +76,17 @@ const HUICHOL_BOOK_MAP: Record<string, string> = {
     "Zacarías": "zec", "Sofonías": "zep",
 };
 
-/** Per-file dynamic loaders for the Huichol Bible. */
-const HUICHOL_LOADERS: Record<string, () => Promise<unknown>> = {
-    "1ch": () => import("@/app/lib/bible_huichol/1ch.json"),
-    "1co": () => import("@/app/lib/bible_huichol/1co.json"),
-    "1jn": () => import("@/app/lib/bible_huichol/1jn.json"),
-    "1ki": () => import("@/app/lib/bible_huichol/1ki.json"),
-    "1pe": () => import("@/app/lib/bible_huichol/1pe.json"),
-    "1sa": () => import("@/app/lib/bible_huichol/1sa.json"),
-    "1th": () => import("@/app/lib/bible_huichol/1th.json"),
-    "2ch": () => import("@/app/lib/bible_huichol/2ch.json"),
-    "2co": () => import("@/app/lib/bible_huichol/2co.json"),
-    "2jn": () => import("@/app/lib/bible_huichol/2jn.json"),
-    "2ki": () => import("@/app/lib/bible_huichol/2ki.json"),
-    "2pe": () => import("@/app/lib/bible_huichol/2pe.json"),
-    "2sa": () => import("@/app/lib/bible_huichol/2sa.json"),
-    "2th": () => import("@/app/lib/bible_huichol/2th.json"),
-    "2ti": () => import("@/app/lib/bible_huichol/2ti.json"),
-    "3jn": () => import("@/app/lib/bible_huichol/3jn.json"),
-    "amo": () => import("@/app/lib/bible_huichol/amo.json"),
-    "col": () => import("@/app/lib/bible_huichol/col.json"),
-    "dan": () => import("@/app/lib/bible_huichol/dan.json"),
-    "ecc": () => import("@/app/lib/bible_huichol/ecc.json"),
-    "eph": () => import("@/app/lib/bible_huichol/eph.json"),
-    "est": () => import("@/app/lib/bible_huichol/est.json"),
-    "ezr": () => import("@/app/lib/bible_huichol/ezr.json"),
-    "gal": () => import("@/app/lib/bible_huichol/gal.json"),
-    "hab": () => import("@/app/lib/bible_huichol/hab.json"),
-    "hag": () => import("@/app/lib/bible_huichol/hag.json"),
-    "heb": () => import("@/app/lib/bible_huichol/heb.json"),
-    "hos": () => import("@/app/lib/bible_huichol/hos.json"),
-    "isa": () => import("@/app/lib/bible_huichol/isa.json"),
-    "jas": () => import("@/app/lib/bible_huichol/jas.json"),
-    "jdg": () => import("@/app/lib/bible_huichol/jdg.json"),
-    "jer": () => import("@/app/lib/bible_huichol/jer.json"),
-    "jhn": () => import("@/app/lib/bible_huichol/jhn.json"),
-    "jol": () => import("@/app/lib/bible_huichol/jol.json"),
-    "jon": () => import("@/app/lib/bible_huichol/jon.json"),
-    "lam": () => import("@/app/lib/bible_huichol/lam.json"),
-    "lev": () => import("@/app/lib/bible_huichol/lev.json"),
-    "mal": () => import("@/app/lib/bible_huichol/mal.json"),
-    "mat": () => import("@/app/lib/bible_huichol/mat.json"),
-    "mic": () => import("@/app/lib/bible_huichol/mic.json"),
-    "oba": () => import("@/app/lib/bible_huichol/oba.json"),
-    "phm": () => import("@/app/lib/bible_huichol/phm.json"),
-    "php": () => import("@/app/lib/bible_huichol/php.json"),
-    "rev": () => import("@/app/lib/bible_huichol/rev.json"),
-    "rom": () => import("@/app/lib/bible_huichol/rom.json"),
-    "rut": () => import("@/app/lib/bible_huichol/rut.json"),
-    "sng": () => import("@/app/lib/bible_huichol/sng.json"),
-    "tit": () => import("@/app/lib/bible_huichol/tit.json"),
-    "zec": () => import("@/app/lib/bible_huichol/zec.json"),
-    "zep": () => import("@/app/lib/bible_huichol/zep.json"),
-};
+/** Abreviaturas con JSON en `public/bible/huichol/<abbr>.json` (mismo helper que otras traducciones). */
+const HUICHOL_ABBRS = [
+    '1ch', '1co', '1jn', '1ki', '1pe', '1sa', '1th', '2ch', '2co', '2jn', '2ki', '2pe', '2sa', '2th', '2ti', '3jn',
+    'amo', 'col', 'dan', 'ecc', 'eph', 'est', 'ezr', 'gal', 'hab', 'hag', 'heb', 'hos', 'isa', 'jas', 'jdg', 'jer',
+    'jhn', 'jol', 'jon', 'lam', 'lev', 'mal', 'mat', 'mic', 'oba', 'phm', 'php', 'rev', 'rom', 'rut', 'sng', 'tit',
+    'zec', 'zep',
+] as const;
+
+const HUICHOL_LOADERS: Record<string, () => Promise<unknown>> = Object.fromEntries(
+    HUICHOL_ABBRS.map((abbr) => [abbr, () => loadPublicBibleJson(`huichol/${abbr}.json`)])
+) as Record<string, () => Promise<unknown>>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function parseHuicholChapter(raw: any, chapterIdx: number): string[] {

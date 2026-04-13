@@ -1,4 +1,5 @@
 // @ts-nocheck
+import path from 'node:path';
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
@@ -59,6 +60,17 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      const stubDir = path.join(process.cwd(), 'src/lib');
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@/lib/bible-rvr-node': path.join(stubDir, 'bible-rvr-node.stub.ts'),
+        '@/lib/bible-public-json-node': path.join(stubDir, 'bible-public-json-node.stub.ts'),
+      };
+    }
+    return config;
   },
 };
 
