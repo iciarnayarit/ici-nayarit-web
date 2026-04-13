@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { MoreVertical, Plus, RefreshCw, Search, X, BookOpen, StickyNote, Image as ImageIcon, Bookmark } from 'lucide-react';
+import { Plus, RefreshCw, Search, X, BookOpen, StickyNote, Image as ImageIcon, Bookmark } from 'lucide-react';
 import { bookOrder, chaptersInBook, type BibleBookData } from '@/lib/bible-data';
 import {
   loadFullBibleLookup,
@@ -19,7 +19,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/app/components/ui/dropdown-menu';
 import { Switch } from '@/app/components/ui/switch';
@@ -274,12 +273,36 @@ export default function BibleVersionComparator() {
 
   const addableVersions = READING_PLAN_VERSIONS.filter(v => !selectedIds.includes(v.id));
 
+  const toggleSaveVerse = useCallback(
+    (reference: string, text: string) => {
+      if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) return;
+      if (text === '—') return;
+      const next = [...savedVerses];
+      const idx = next.findIndex(sv => sv.reference === reference);
+      if (idx >= 0) {
+        next.splice(idx, 1);
+        toast({ title: 'Versículo eliminado', description: 'Se quitó de tus guardados.' });
+      } else {
+        next.push({ text, reference, source: 'comparador' });
+        toast({ title: 'Versículo guardado', description: 'Se añadió a tus guardados.' });
+      }
+      setSavedVerses(next);
+      try {
+        localStorage.setItem('savedVerses', JSON.stringify(next));
+      } catch {
+        /* ignore */
+      }
+      window.dispatchEvent(new Event('SAVED_VERSES_CHANGED_EVENT'));
+    },
+    [authLoaded, isSignedIn, redirectToSignIn, savedVerses, toast]
+  );
+
   return (
     <div className="min-h-screen bg-[#F4F6F8] text-gray-900">
-      <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
-        <header className="mb-6 flex flex-col gap-4 border-b border-gray-200/80 pb-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <h1 className="font-display text-xl font-bold tracking-tight text-gray-900 sm:text-2xl">
+      <div className="mx-auto max-w-[1400px] px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
+        <header className="mb-4 flex flex-col gap-3 border-b border-gray-200/80 pb-4 sm:mb-6 sm:gap-4 sm:pb-5 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0 pr-2">
+            <h1 className="font-display text-lg font-bold tracking-tight text-gray-900 sm:text-xl md:text-2xl">
               Comparador de versiones
             </h1>
             <p className="mt-0.5 text-sm text-gray-500">
@@ -287,18 +310,18 @@ export default function BibleVersionComparator() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          <div className="flex flex-wrap items-center gap-2 md:justify-end">
             {selectedIds.map(id => (
               <span
                 key={id}
-                className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700"
+                className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1.5 text-xs font-bold text-blue-700 sm:px-3"
               >
                 {chipShortLabel(id)}
                 <button
                   type="button"
                   onClick={() => removeVersion(id)}
                   disabled={selectedIds.length <= 1}
-                  className="rounded-full p-0.5 text-blue-600 transition-colors hover:bg-blue-100 disabled:opacity-30"
+                  className="inline-flex h-7 w-7 min-h-[28px] min-w-[28px] items-center justify-center rounded-full text-blue-600 transition-colors hover:bg-blue-100 disabled:opacity-30 sm:h-6 sm:w-6"
                   aria-label={`Quitar ${chipShortLabel(id)}`}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -312,14 +335,14 @@ export default function BibleVersionComparator() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="h-8 rounded-full border-gray-200 bg-white text-xs font-semibold text-blue-700 shadow-sm"
+                  className="h-10 min-h-[44px] rounded-full border-gray-200 bg-white px-3 text-xs font-semibold text-blue-700 shadow-sm sm:h-8 sm:min-h-0"
                   disabled={addableVersions.length === 0}
                 >
-                  <Plus className="mr-1 h-3.5 w-3.5" />
+                  <Plus className="mr-1 h-4 w-4 sm:h-3.5 sm:w-3.5" />
                   Añadir versión
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="max-h-72 w-64 overflow-y-auto rounded-xl">
+              <DropdownMenuContent align="end" className="max-h-[min(70vh,24rem)] w-[min(100vw-2rem,16rem)] overflow-y-auto rounded-xl">
                 {addableVersions.map(v => (
                   <DropdownMenuItem key={v.id} className="cursor-pointer text-sm" onClick={() => addVersion(v.id)}>
                     {v.label}
@@ -327,44 +350,18 @@ export default function BibleVersionComparator() {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button type="button" variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-full text-gray-500">
-                  <MoreVertical className="h-5 w-5" />
-                  <span className="sr-only">Más opciones</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-xl">
-                <DropdownMenuItem asChild>
-                  <Link href={`/biblia?book=${encodeURIComponent(bookDisplayName)}&chapter=${chapter}`}>
-                    Abrir en lector web
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onClick={() => {
-                    setBookKey('romanos');
-                    setChapter(8);
-                  }}
-                >
-                  Romanos 8 (ejemplo)
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </header>
 
-        <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-2.5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 rounded-xl bg-gray-50 py-1 pl-3 pr-1 border border-gray-100">
-              <label htmlFor="comp-book" className="text-[10px] font-black uppercase tracking-wider text-[#B88A44]">
+        <div className="mb-4 grid grid-cols-1 gap-2.5 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:mb-6 lg:flex lg:flex-row lg:items-center lg:justify-between lg:gap-3 lg:p-2.5">
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-2">
+            <div className="flex min-h-[44px] items-center gap-1.5 rounded-xl border border-gray-100 bg-gray-50 py-1 pl-2.5 pr-1 sm:min-h-0 sm:pl-3">
+              <label htmlFor="comp-book" className="shrink-0 text-[10px] font-black uppercase tracking-wider text-[#B88A44]">
                 Libro
               </label>
               <select
                 id="comp-book"
-                className="h-8 cursor-pointer rounded-lg border-0 bg-transparent py-0 pl-1 pr-7 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#B88A44]/20"
+                className="h-10 min-h-0 flex-1 cursor-pointer rounded-lg border-0 bg-transparent py-0 pl-1 pr-6 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#B88A44]/20 sm:h-8"
                 value={bookKey}
                 onChange={e => {
                   const next = e.target.value;
@@ -380,13 +377,13 @@ export default function BibleVersionComparator() {
               </select>
             </div>
 
-            <div className="flex items-center gap-1.5 rounded-xl bg-gray-50 py-1 pl-3 pr-1 border border-gray-100">
-              <label htmlFor="comp-ch" className="text-[10px] font-black uppercase tracking-wider text-[#B88A44]">
+            <div className="flex min-h-[44px] items-center gap-1.5 rounded-xl border border-gray-100 bg-gray-50 py-1 pl-2.5 pr-1 sm:min-h-0 sm:pl-3">
+              <label htmlFor="comp-ch" className="shrink-0 text-[10px] font-black uppercase tracking-wider text-[#B88A44]">
                 Capítulo
               </label>
               <select
                 id="comp-ch"
-                className="h-8 cursor-pointer rounded-lg border-0 bg-transparent py-0 pl-1 pr-7 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#B88A44]/20"
+                className="h-10 min-h-0 flex-1 cursor-pointer rounded-lg border-0 bg-transparent py-0 pl-1 pr-6 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#B88A44]/20 sm:h-8"
                 value={chapter}
                 onChange={e => setChapter(parseInt(e.target.value, 10))}
               >
@@ -398,10 +395,10 @@ export default function BibleVersionComparator() {
               </select>
             </div>
 
-            <div className="flex items-center pl-1 sm:pl-2">
+            <div className="col-span-2 flex items-center justify-center gap-0.5 border-t border-gray-100 pt-2 sm:col-span-1 sm:border-0 sm:pt-0 sm:pl-2">
               <Link
                 href={`/dashboard/biblia?book=${encodeURIComponent(bookKey)}&chapter=${chapter}`}
-                className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44]"
+                className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
                 title="Biblia"
                 onClick={e => {
                   if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
@@ -409,11 +406,11 @@ export default function BibleVersionComparator() {
                   }
                 }}
               >
-                <BookOpen className="h-[18px] w-[18px]" />
+                <BookOpen className="h-5 w-5 sm:h-[18px] sm:w-[18px]" />
               </Link>
               <Link
                 href="/dashboard/notas"
-                className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44]"
+                className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
                 title="Notas"
                 onClick={e => {
                   if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
@@ -421,11 +418,11 @@ export default function BibleVersionComparator() {
                   }
                 }}
               >
-                <StickyNote className="h-[18px] w-[18px]" />
+                <StickyNote className="h-5 w-5 sm:h-[18px] sm:w-[18px]" />
               </Link>
               <Link
                 href="/dashboard/imagenes"
-                className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44]"
+                className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44] sm:h-9 sm:w-9 sm:min-h-0 sm:min-w-0"
                 title="Imágenes"
                 onClick={e => {
                   if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
@@ -433,18 +430,18 @@ export default function BibleVersionComparator() {
                   }
                 }}
               >
-                <ImageIcon className="h-[18px] w-[18px]" />
+                <ImageIcon className="h-5 w-5 sm:h-[18px] sm:w-[18px]" />
               </Link>
             </div>
           </div>
 
-          <div className="flex flex-1 items-center px-2 sm:px-6">
-            <div className="flex h-9 w-full items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1 transition-colors focus-within:border-[#B88A44] focus-within:ring-1 focus-within:ring-[#B88A44]">
-              <Search className="h-4 w-4 text-gray-400" />
+          <div className="flex min-w-0 flex-1 items-center lg:px-4">
+            <div className="flex h-11 w-full items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 transition-colors focus-within:border-[#B88A44] focus-within:ring-1 focus-within:ring-[#B88A44] sm:h-9 sm:px-4">
+              <Search className="h-4 w-4 shrink-0 text-gray-400" />
               <input
                 type="text"
-                placeholder="Buscar versículo, palabras..."
-                className="w-full bg-transparent text-sm text-gray-800 outline-none placeholder:text-gray-400"
+                placeholder="Buscar versículo, palabras…"
+                className="min-w-0 flex-1 bg-transparent text-base text-gray-800 outline-none placeholder:text-gray-400 sm:text-sm"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 onKeyDown={e => {
@@ -457,12 +454,17 @@ export default function BibleVersionComparator() {
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 rounded-xl bg-gray-50 px-3 py-2 border border-gray-100 sm:bg-transparent sm:border-0 sm:px-1 sm:py-0">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2 sm:justify-end lg:border-0 lg:bg-transparent lg:px-1 lg:py-0">
             <div className="flex items-center gap-1.5">
               <RefreshCw className="h-3.5 w-3.5 shrink-0 text-[#B88A44]" aria-hidden />
               <span className="text-[10px] font-black uppercase tracking-wider text-gray-600">Sincronizado</span>
             </div>
-            <Switch className="data-[state=checked]:bg-[#B88A44]" checked={syncScroll} onCheckedChange={setSyncScroll} aria-label="Sincronizar desplazamiento" />
+            <Switch
+              className="h-7 w-11 shrink-0 scale-110 data-[state=checked]:bg-[#B88A44] sm:scale-100"
+              checked={syncScroll}
+              onCheckedChange={setSyncScroll}
+              aria-label="Sincronizar desplazamiento"
+            />
           </div>
         </div>
 
@@ -473,101 +475,174 @@ export default function BibleVersionComparator() {
             <div className="p-8 text-center text-sm text-gray-500">No hay versículos para esta selección.</div>
           ) : (
             <>
-              <div className="flex border-b border-gray-200 bg-gray-100">
-                <div className="flex w-14 shrink-0 items-center justify-center border-r border-gray-200 px-1 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                  V.
-                </div>
-                {selectedIds.map(id => (
-                  <div
-                    key={`h-${id}`}
-                    className="flex min-w-0 flex-1 items-center border-l border-gray-200 px-3 py-3 text-[10px] font-bold uppercase leading-tight tracking-wider text-gray-500 sm:min-w-[11rem]"
-                    title={VERSIONS.find(v => v.id === id)?.label}
-                  >
-                    <span className="line-clamp-3">{columnHeaderLabel(id)}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex max-h-[min(70vh,36rem)]">
-                <div
-                  ref={numColRef}
-                  className="w-14 shrink-0 overflow-y-auto border-r border-gray-100 bg-gray-50/90 py-0"
-                  onScroll={e => syncFrom(e.currentTarget)}
-                >
-                  {matchingVerses.length === 0 ? (
-                    <div className="p-4 text-center text-xs text-gray-400">—</div>
-                  ) : (
-                    matchingVerses.map((vi) => (
-                      <div
-                        key={vi}
-                        className="flex min-h-[4.25rem] items-start justify-center border-b border-gray-100 px-1 py-3 text-sm font-bold text-blue-600 last:border-b-0"
-                      >
+              {/* Móvil y tablet: una tarjeta por versículo; texto a ancho completo */}
+              <div className="lg:hidden">
+                {matchingVerses.length === 0 ? (
+                  <div className="p-8 text-center text-sm text-gray-400">Sin coincidencias para esta búsqueda.</div>
+                ) : (
+                  <div className="divide-y divide-gray-100">
+                {matchingVerses.map(vi => (
+                  <article key={vi} className="px-3 py-4 sm:px-4">
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg bg-blue-50 text-base font-bold text-blue-600">
                         {vi + 1}
-                      </div>
-                    ))
-                  )}
-                </div>
-                {selectedIds.map((id, ci) => (
-                  <div
-                    key={id}
-                    ref={el => {
-                      colRefs.current[ci] = el;
-                    }}
-                    className="min-w-0 flex-1 overflow-y-auto border-l border-gray-100 bg-white py-0 sm:min-w-[11rem]"
-                    onScroll={e => syncFrom(e.currentTarget)}
-                  >
-                    {matchingVerses.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-gray-400">Sin coincidencias</div>
-                    ) : (
-                      matchingVerses.map(vi => {
+                      </span>
+                      <span className="truncate text-xs text-gray-400">
+                        {bookDisplayName} {chapter}
+                      </span>
+                    </div>
+                    <div className="space-y-3">
+                      {selectedIds.map(id => {
                         const raw = lookups[id]?.[bookKey]?.chapters[chapter - 1]?.[vi] ?? '';
                         const text = raw.trim() || '—';
                         const reference = `${bookDisplayName} ${chapter}:${vi + 1} (${chipShortLabel(id)})`;
                         const isSaved = savedVerses.some(sv => sv.reference === reference);
-                        
                         return (
                           <div
-                            key={vi}
+                            key={id}
+                            role={text === '—' ? undefined : 'button'}
+                            tabIndex={text === '—' ? undefined : 0}
                             className={cn(
-                              'group relative min-h-[4.25rem] cursor-pointer border-b border-gray-100 px-3 py-3 text-sm leading-relaxed text-gray-800 transition-colors last:border-b-0 hover:bg-amber-50/50',
+                              'relative rounded-xl border border-gray-100 bg-gray-50/70 p-3 transition-colors',
+                              text !== '—' && 'cursor-pointer active:bg-amber-50/60',
                               id === 'kjv' && 'italic',
-                              isSaved && 'bg-amber-50/30'
+                              isSaved && 'border-amber-200/80 bg-amber-50/40'
                             )}
-                            onClick={(e) => {
-                               if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) return;
-                               if (text === '—') return;
-                               const next = [...savedVerses];
-                               const idx = next.findIndex(sv => sv.reference === reference);
-                               if (idx >= 0) {
-                                 next.splice(idx, 1);
-                                 toast({ title: 'Versículo eliminado', description: 'Se quitó de tus guardados.' });
-                               } else {
-                                 next.push({ text, reference, source: 'comparador' });
-                                 toast({ title: 'Versículo guardado', description: 'Se añadió a tus guardados.' });
-                               }
-                               setSavedVerses(next);
-                               try { localStorage.setItem('savedVerses', JSON.stringify(next)); } catch {}
-                               window.dispatchEvent(new Event('SAVED_VERSES_CHANGED_EVENT'));
+                            onClick={() => text !== '—' && toggleSaveVerse(reference, text)}
+                            onKeyDown={e => {
+                              if (text === '—') return;
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                toggleSaveVerse(reference, text);
+                              }
                             }}
                           >
-                            <div className="pr-6">{text}</div>
-                            {text !== '—' && (
-                              <button
-                                type="button"
-                                aria-label={isSaved ? "Quitar de guardados" : "Guardar versículo"}
-                                className={cn(
-                                  "absolute right-3 top-4 opacity-0 transition-opacity group-hover:opacity-100",
-                                  isSaved && "opacity-100"
-                                )}
+                            <div className="mb-1.5 flex items-start justify-between gap-2">
+                              <span
+                                className="text-[10px] font-black uppercase tracking-wider text-[#B88A44]"
+                                title={VERSIONS.find(v => v.id === id)?.label}
                               >
-                                  <Bookmark className={cn("h-4 w-4", isSaved ? "fill-[#B88A44] text-[#B88A44]" : "text-gray-400 hover:text-[#B88A44]")} />
-                              </button>
-                            )}
+                                {chipShortLabel(id)}
+                              </span>
+                              {text !== '—' && (
+                                <button
+                                  type="button"
+                                  aria-label={isSaved ? 'Quitar de guardados' : 'Guardar versículo'}
+                                  className="-m-1.5 inline-flex shrink-0 rounded-md p-2 text-gray-400 hover:bg-white/80 hover:text-[#B88A44]"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    toggleSaveVerse(reference, text);
+                                  }}
+                                >
+                                  <Bookmark
+                                    className={cn('h-5 w-5', isSaved ? 'fill-[#B88A44] text-[#B88A44]' : '')}
+                                  />
+                                </button>
+                              )}
+                            </div>
+                            <p className="text-[1.05rem] leading-relaxed text-gray-800 sm:text-base">{text}</p>
                           </div>
                         );
-                      })
+                      })}
+                    </div>
+                  </article>
+                ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Escritorio: columnas sincronizadas */}
+              <div className="hidden lg:block">
+                <div className="flex border-b border-gray-200 bg-gray-100">
+                  <div className="flex w-14 shrink-0 items-center justify-center border-r border-gray-200 px-1 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-gray-500">
+                    V.
+                  </div>
+                  {selectedIds.map(id => (
+                    <div
+                      key={`h-${id}`}
+                      className="flex min-w-[12rem] flex-1 items-center border-l border-gray-200 px-3 py-3 text-[10px] font-bold uppercase leading-tight tracking-wider text-gray-500 xl:min-w-[14rem]"
+                      title={VERSIONS.find(v => v.id === id)?.label}
+                    >
+                      <span className="line-clamp-2 xl:line-clamp-3">{columnHeaderLabel(id)}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex max-h-[min(70vh,36rem)]">
+                  <div
+                    ref={numColRef}
+                    className="w-14 shrink-0 overflow-y-auto border-r border-gray-100 bg-gray-50/90 py-0"
+                    onScroll={e => syncFrom(e.currentTarget)}
+                  >
+                    {matchingVerses.length === 0 ? (
+                      <div className="p-4 text-center text-xs text-gray-400">—</div>
+                    ) : (
+                      matchingVerses.map(vi => (
+                        <div
+                          key={vi}
+                          className="flex min-h-[4.25rem] items-start justify-center border-b border-gray-100 px-1 py-3 text-sm font-bold text-blue-600 last:border-b-0"
+                        >
+                          {vi + 1}
+                        </div>
+                      ))
                     )}
                   </div>
-                ))}
+                  {selectedIds.map((id, ci) => (
+                    <div
+                      key={id}
+                      ref={el => {
+                        colRefs.current[ci] = el;
+                      }}
+                      className="min-w-[12rem] flex-1 overflow-y-auto border-l border-gray-100 bg-white py-0 xl:min-w-[14rem]"
+                      onScroll={e => syncFrom(e.currentTarget)}
+                    >
+                      {matchingVerses.length === 0 ? (
+                        <div className="p-4 text-center text-sm text-gray-400">Sin coincidencias</div>
+                      ) : (
+                        matchingVerses.map(vi => {
+                          const raw = lookups[id]?.[bookKey]?.chapters[chapter - 1]?.[vi] ?? '';
+                          const text = raw.trim() || '—';
+                          const reference = `${bookDisplayName} ${chapter}:${vi + 1} (${chipShortLabel(id)})`;
+                          const isSaved = savedVerses.some(sv => sv.reference === reference);
+
+                          return (
+                            <div
+                              key={vi}
+                              className={cn(
+                                'group relative min-h-[4.25rem] cursor-pointer border-b border-gray-100 px-3 py-3 text-sm leading-relaxed text-gray-800 transition-colors last:border-b-0 hover:bg-amber-50/50',
+                                id === 'kjv' && 'italic',
+                                isSaved && 'bg-amber-50/30'
+                              )}
+                              onClick={() => toggleSaveVerse(reference, text)}
+                            >
+                              <div className="pr-8">{text}</div>
+                              {text !== '—' && (
+                                <button
+                                  type="button"
+                                  aria-label={isSaved ? 'Quitar de guardados' : 'Guardar versículo'}
+                                  className={cn(
+                                    'absolute right-2 top-3 rounded-md p-1.5 opacity-0 transition-opacity hover:bg-white/80 group-hover:opacity-100',
+                                    isSaved && 'opacity-100'
+                                  )}
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    toggleSaveVerse(reference, text);
+                                  }}
+                                >
+                                  <Bookmark
+                                    className={cn(
+                                      'h-4 w-4',
+                                      isSaved ? 'fill-[#B88A44] text-[#B88A44]' : 'text-gray-400 hover:text-[#B88A44]'
+                                    )}
+                                  />
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </>
           )}

@@ -90,12 +90,12 @@ const Header = () => {
 
   return (
     <header className="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200/50">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 gap-4">
+      <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between min-h-[3.25rem] h-14 gap-2 sm:h-16 sm:gap-4 md:h-20">
 
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="font-display font-bold text-2xl text-gray-900 tracking-wide">
+          <div className="flex-shrink-0 min-w-0">
+            <Link href="/" className="font-display font-bold text-lg sm:text-xl md:text-2xl text-gray-900 tracking-wide truncate block max-w-[65vw] sm:max-w-none">
               ICIAR <span className="text-[#B88A44]">Nayarit</span>
             </Link>
           </div>
@@ -276,7 +276,7 @@ const Header = () => {
             <button
               type="button"
               onClick={() => setIsOpen(v => !v)}
-              className="p-2 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none"
+              className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-xl text-gray-700 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B88A44]/40"
               aria-label="Abrir menú móvil"
               aria-expanded={isOpen}
             >

@@ -7,7 +7,7 @@ import { Switch } from '@/app/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
 import { useToast } from '@/app/hooks/use-toast';
 import {
-    Bookmark, ChevronLeft, ChevronRight, Share2, Image as ImageIcon, Languages, Type,
+    Bookmark, ChevronLeft, ChevronRight, Share2, Image as ImageIcon, ImagePlus, Languages, Type,
     FileText, Copy, MessageSquare, StickyNote, Minus, Plus, BookOpen, Clock,
     Bold, Italic, List, Link as LinkIcon, Quote, Image as ImgIcon, X, Save,
     Eye, Instagram, Facebook, Palette, Download, Share2 as ShareIcon, GripVertical,
@@ -338,7 +338,23 @@ function DraggableImage({
     );
 }
 
-/** Texto libre del estudio: arrastre solo desde el asa; el contenido admite doble clic para editar en una sola línea. */
+/** Rejilla 2×3 de puntos (asa del estudio), misma apariencia en las cuatro esquinas. */
+function StudioGripSixDots({ className }: { className?: string }) {
+    return (
+        <span className={className} aria-hidden>
+            <span className="grid grid-cols-2 gap-px">
+                {Array.from({ length: 6 }, (_, i) => (
+                    <span
+                        key={i}
+                        className="h-[3px] w-[3px] rounded-full bg-current shadow-[0_0_0_1px_rgba(0,0,0,0.35)]"
+                    />
+                ))}
+            </span>
+        </span>
+    );
+}
+
+/** Texto libre del estudio: arrastre desde cualquier asa de esquina; el contenido admite doble clic para editar. */
 function DraggableStudioFreeText({
     children,
     position,
@@ -350,7 +366,6 @@ function DraggableStudioFreeText({
     onDragStart,
     onDragEnd,
     onSnapChange,
-    gripAlign = 'center',
     hideGrip = false,
 }: {
     children: React.ReactNode;
@@ -363,9 +378,7 @@ function DraggableStudioFreeText({
     onDragStart?: () => void;
     onDragEnd?: () => void;
     onSnapChange?: (snapX: boolean, snapY: boolean) => void;
-    /** Alinear asa con bloques multilínea (p. ej. versículo). */
-    gripAlign?: 'center' | 'start';
-    /** Ocultar asa al exportar imagen (evita los "6 puntos" en la descarga). */
+    /** Ocultar asas al exportar imagen (evita los puntos en la descarga). */
     hideGrip?: boolean;
 }) {
     const [dragging, setDragging] = useState(false);
@@ -406,10 +419,32 @@ function DraggableStudioFreeText({
         [position, onPositionChange, onSelect, onDragStart, onDragEnd, onSnapChange],
     );
 
-    const alignRow = gripAlign === 'start' ? 'items-start' : 'items-center';
+    const cornerGrips = [
+        {
+            key: 'tl',
+            pos: 'left-0 top-0 -translate-x-1/2 -translate-y-1/2',
+            label: 'Arrastrar (esquina superior izquierda)',
+        },
+        {
+            key: 'tr',
+            pos: 'right-0 top-0 translate-x-1/2 -translate-y-1/2',
+            label: 'Arrastrar (esquina superior derecha)',
+        },
+        {
+            key: 'bl',
+            pos: 'left-0 bottom-0 -translate-x-1/2 translate-y-1/2',
+            label: 'Arrastrar (esquina inferior izquierda)',
+        },
+        {
+            key: 'br',
+            pos: 'right-0 bottom-0 translate-x-1/2 translate-y-1/2',
+            label: 'Arrastrar (esquina inferior derecha)',
+        },
+    ] as const;
+
     return (
         <div
-            className={`relative z-30 flex max-w-[min(300px,94vw)] gap-0.5 touch-manipulation transition-[opacity,filter] duration-100 ${alignRow} ${dragging ? 'z-50 opacity-90 drop-shadow-2xl' : ''} ${className ?? ''}`}
+            className={`relative z-30 inline-block max-w-[min(300px,94vw)] touch-manipulation transition-[opacity,filter] duration-100 ${dragging ? 'z-50 opacity-90 drop-shadow-2xl' : ''} ${className ?? ''}`}
             style={{
                 transform: `translate(${position.x}px, ${position.y}px)`,
                 outline: isSelected ? '2px dashed rgba(255,255,255,0.85)' : 'none',
@@ -422,17 +457,23 @@ function DraggableStudioFreeText({
                     {label}
                 </span>
             )}
-            {!hideGrip && (
-                <button
-                    type="button"
-                    aria-label="Arrastrar elemento"
-                    onPointerDown={handleGripPointerDown}
-                    className={`shrink-0 cursor-grab rounded-md p-0.5 text-white/75 hover:bg-white/15 active:cursor-grabbing ${gripAlign === 'start' ? 'mt-1' : ''}`}
-                >
-                    <GripVertical className="h-4 w-4 sm:h-3.5 sm:w-3.5" aria-hidden />
-                </button>
-            )}
-            <div className={`min-w-0 flex-1 ${hideGrip ? 'w-full' : ''}`}>{children}</div>
+            <div className="relative min-w-0">
+                {isSelected && !hideGrip
+                    ? cornerGrips.map((c) => (
+                          <button
+                              key={c.key}
+                              type="button"
+                              aria-label={c.label}
+                              title="Arrastrar"
+                              onPointerDown={handleGripPointerDown}
+                              className={`absolute z-20 flex cursor-grab items-center justify-center rounded-md border border-white/40 bg-black/40 p-1 text-white/90 shadow-sm touch-none hover:bg-black/55 active:cursor-grabbing ${c.pos}`}
+                          >
+                              <StudioGripSixDots />
+                          </button>
+                      ))
+                    : null}
+                {children}
+            </div>
         </div>
     );
 }
@@ -539,7 +580,6 @@ export default function Bible() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const customColorRef = useRef<HTMLInputElement>(null);
     const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
-    const [socialFormat, setSocialFormat] = useState<'vertical' | 'horizontal'>('vertical');
 
     const [isStudioOpen, setIsStudioOpen] = useState(false);
     const [dragPos, setDragPos] = useState({ ref: { x: 0, y: 0 }, verse: { x: 0, y: 0 }, website: { x: 0, y: 0 } });
@@ -678,6 +718,19 @@ export default function Bible() {
     const [mounted, setMounted] = useState(false);
     const { toast } = useToast();
 
+    /** Abre el editor / vista previa para imagen de redes (mismo flujo que «Personalizar diseño» en notas). */
+    const openStudioForSocialImage = () => {
+        setShowColorPicker(false);
+        setIsPersonalizarOpen(false);
+        setIsNoteOpen(false);
+        setIsStudioOpen(true);
+        setGalleryVisibleCount(6);
+        setSwatchesExpanded(false);
+        resetDragPos();
+        setSelectedPlatform(null);
+        setStudioTab('formato');
+    };
+
     useEffect(() => {
         setStudioCanvasTextOverride((o) => ({ ...o, ref: null, verse: null }));
         setStudioVerseFrame({ w: 248, maxH: 300 });
@@ -727,6 +780,19 @@ export default function Bible() {
             setStudioFixedTextEditing(null);
         }
     }, [selectedElement, studioFixedTextEditing]);
+
+    /** Al elegir el versículo en el lienzo, anula el desplazamiento para centrarlo en la franja media. */
+    const prevStudioTextSelectionRef = useRef<ElementKey | null>(null);
+    useEffect(() => {
+        if (!isStudioOpen) {
+            prevStudioTextSelectionRef.current = null;
+            return;
+        }
+        if (selectedElement === 'verse' && prevStudioTextSelectionRef.current !== 'verse') {
+            setDragPos((p) => ({ ...p, verse: { x: 0, y: 0 } }));
+        }
+        prevStudioTextSelectionRef.current = selectedElement;
+    }, [isStudioOpen, selectedElement]);
 
     const updateStudioOverlay = useCallback((id: string, patch: Partial<StudioOverlay>) => {
         setStudioOverlays(prev => prev.map(o => (o.id === id ? { ...o, ...patch } : o)));
@@ -881,17 +947,18 @@ export default function Bible() {
     ) => {
         const editing = studioFixedTextEditing === el;
         const isVerseMultiline = el === 'verse' && options.multiline;
+        /** En el lienzo, el versículo va centrado con 32px de aire a los lados. */
+        const verseStudioPadX = 32;
         const textStyle: React.CSSProperties = {
             fontSize: `${elementStyles[el].fontSize}px`,
             fontWeight: elementStyles[el].fontWeight,
-            textAlign: elementStyles[el].textAlign as 'left' | 'center' | 'right',
+            textAlign: (isVerseMultiline ? 'center' : elementStyles[el].textAlign) as 'left' | 'center' | 'right',
             color: resolveColor(elementStyles[el].color),
         };
         return (
             <DraggableStudioFreeText
                 key={el}
-                className={isVerseMultiline ? `${options.rootClassName ?? ''} !max-w-none` : options.rootClassName}
-                gripAlign={isVerseMultiline ? 'start' : 'center'}
+                className={isVerseMultiline ? `${options.rootClassName ?? ''} mx-auto !max-w-none` : options.rootClassName}
                 hideGrip={studioExporting}
                 position={dragPos[el]}
                 onPositionChange={(pos) => setDragPos((p) => ({ ...p, [el]: pos }))}
@@ -924,13 +991,16 @@ export default function Bible() {
                                 onClick={(e) => e.stopPropagation()}
                                 onPointerDown={(e) => e.stopPropagation()}
                                 rows={5}
-                                className="box-border w-full resize-none rounded border border-dashed border-white/90 bg-black/25 px-2 py-1.5 font-serif outline-none ring-offset-0 focus:ring-2 focus:ring-white/70"
+                                className="box-border w-full resize-none rounded border border-dashed border-white/90 bg-black/25 py-1.5 font-serif outline-none ring-offset-0 focus:ring-2 focus:ring-white/70"
                                 style={{
                                     ...textStyle,
                                     height: studioVerseFrame.maxH,
                                     minHeight: 72,
                                     lineHeight: 1.45,
                                     boxSizing: 'border-box',
+                                    paddingLeft: verseStudioPadX,
+                                    paddingRight: verseStudioPadX,
+                                    textAlign: 'center',
                                 }}
                                 autoComplete="off"
                                 spellCheck
@@ -967,12 +1037,15 @@ export default function Bible() {
                     )
                 ) : isVerseMultiline ? (
                     <div className="relative box-border rounded-md" style={{ width: studioVerseFrame.w, maxHeight: studioVerseFrame.maxH }}>
-                        <div className="max-h-full overflow-y-auto overflow-x-hidden pr-0.5 [scrollbar-width:thin]">
+                        <div
+                            className="max-h-full overflow-y-auto overflow-x-hidden [scrollbar-width:thin]"
+                            style={{ paddingLeft: verseStudioPadX, paddingRight: verseStudioPadX }}
+                        >
                             <p
                                 role="textbox"
                                 tabIndex={0}
                                 title="Doble clic para editar en el lienzo"
-                                className={`cursor-text whitespace-pre-wrap break-words px-1 text-center outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${options.contentClassName}`}
+                                className={`cursor-text whitespace-pre-wrap break-words text-center outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${options.contentClassName}`}
                                 style={textStyle}
                                 onClick={(e) => {
                                     e.stopPropagation();
@@ -1887,16 +1960,15 @@ export default function Bible() {
 
                             {/* BIBLIA */}
                             <div className="w-full">
-                                <div className="mb-8 flex flex-col gap-0">
-                                    <div className="my-4 mx-auto flex w-full max-w-full flex-col gap-3 rounded-2xl border border-gray-200 bg-white py-2.5 pl-3 pr-0 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-                                        <div className="flex min-w-0 flex-1 flex-wrap items-center justify-center gap-2 sm:px-1">
-                                            <div className="flex items-center justify-end gap-3 rounded-xl bg-gray-50 px-3 py-2 border border-gray-100 sm:bg-transparent sm:border-0 sm:px-1 sm:py-0">
-                                                <div className="flex items-center gap-1.5 rounded-xl bg-gray-50 py-1 pl-3 pr-1 border border-gray-100">
-                                                    <label htmlFor="biblia-quick-version" className="shrink-0 text-[10px] font-black uppercase tracking-wider text-[#B88A44]">Versión</label>
+                                <div className="mb-6 sm:mb-8 flex flex-col gap-0">
+                                    <div className="my-3 sm:my-4 mx-auto flex w-full max-w-full flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm md:flex-row md:items-stretch md:justify-between md:py-2.5 md:pl-3 md:pr-2">
+                                        <div className="grid min-w-0 flex-1 grid-cols-1 gap-2.5 sm:gap-2 md:grid-cols-3 md:items-center md:px-1">
+                                            <div className="flex min-h-[52px] w-full min-w-0 flex-col gap-1 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 sm:flex-row sm:items-center sm:gap-2 md:border-0 md:bg-transparent md:px-2 md:py-1">
+                                                <label htmlFor="biblia-quick-version" className="shrink-0 text-[10px] font-black uppercase tracking-wider text-[#B88A44]">Versión</label>
                                                     <Select value={selectedVersion} onValueChange={v => { setSelectedVersion(v as VersionId); setSelectedVerses([]); }}>
                                                         <SelectTrigger
                                                             id="biblia-quick-version"
-                                                            className="h-8 min-h-8 w-auto min-w-0 max-w-[min(100vw-10rem,15rem)] shrink border-0 bg-transparent py-0 pl-1 pr-1 text-sm font-bold text-gray-700 shadow-none ring-offset-0 rounded-lg outline-none focus:ring-2 focus:ring-[#B88A44]/20 focus:ring-offset-0 data-[state=open]:ring-2 data-[state=open]:ring-[#B88A44]/20 [&>svg]:h-3.5 [&>svg]:w-3.5 [&>svg]:shrink-0 [&>svg]:opacity-60"
+                                                            className="h-10 min-h-10 w-full min-w-0 border-0 bg-white py-0 pl-2 pr-2 text-base font-bold text-gray-800 shadow-none ring-1 ring-gray-200/80 ring-offset-0 rounded-xl outline-none focus:ring-2 focus:ring-[#B88A44]/35 focus:ring-offset-0 data-[state=open]:ring-2 data-[state=open]:ring-[#B88A44]/30 md:h-9 md:min-h-9 md:max-w-[min(100%,14rem)] md:bg-transparent md:ring-0 md:text-sm [&>span]:line-clamp-2 [&>span]:text-left [&>svg]:h-4 [&>svg]:w-4 [&>svg]:shrink-0 [&>svg]:opacity-60"
                                                         >
                                                             <SelectValue placeholder={DEFAULT_BIBLE_VERSION_LABEL}>
                                                                 {VERSIONS.find(v => v.id === selectedVersion)?.label ?? DEFAULT_BIBLE_VERSION_LABEL}
@@ -1920,43 +1992,44 @@ export default function Bible() {
                                                             ))}
                                                         </SelectContent>
                                                     </Select>
-                                                </div>
+                                            </div>
 
-                                                <div className="flex items-center gap-1.5 rounded-xl bg-gray-50 py-1 pl-3 pr-1 border border-gray-100">
-                                                    <label htmlFor="biblia-quick-book" className="text-[10px] font-black uppercase tracking-wider text-[#B88A44]">Libro</label>
+                                            <div className="flex min-h-[52px] w-full min-w-0 flex-col gap-1 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 sm:flex-row sm:items-center sm:gap-2 md:border-0 md:bg-transparent md:px-2 md:py-1">
+                                                    <label htmlFor="biblia-quick-book" className="shrink-0 text-[10px] font-black uppercase tracking-wider text-[#B88A44]">Libro</label>
                                                     <select
                                                         id="biblia-quick-book"
-                                                        className="h-8 cursor-pointer rounded-lg border-0 bg-transparent py-0 pl-1 pr-7 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#B88A44]/20"
+                                                        className="h-10 min-h-10 w-full min-w-0 cursor-pointer appearance-none rounded-xl border-0 bg-white py-2 pl-3 pr-10 text-base font-bold text-gray-800 shadow-none ring-1 ring-gray-200/80 outline-none focus:ring-2 focus:ring-[#B88A44]/35 md:h-9 md:min-h-9 md:bg-transparent md:py-0 md:pr-8 md:text-sm md:ring-0"
+                                                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center' }}
                                                         value={selectedBook}
                                                         onChange={e => { handleBookChange(e.target.value); }}
                                                     >
                                                         {books.map(b => <option key={b} value={b}>{b}</option>)}
                                                     </select>
-                                                </div>
+                                            </div>
 
-                                                <div className="flex items-center gap-1.5 rounded-xl bg-gray-50 py-1 pl-3 pr-1 border border-gray-100">
-                                                    <label htmlFor="biblia-quick-ch" className="text-[10px] font-black uppercase tracking-wider text-[#B88A44]">Capítulo</label>
+                                            <div className="flex min-h-[52px] w-full min-w-0 flex-col gap-1 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 sm:flex-row sm:items-center sm:gap-2 md:border-0 md:bg-transparent md:px-2 md:py-1">
+                                                    <label htmlFor="biblia-quick-ch" className="shrink-0 text-[10px] font-black uppercase tracking-wider text-[#B88A44]">Capítulo</label>
                                                     <select
                                                         id="biblia-quick-ch"
-                                                        className="h-8 cursor-pointer rounded-lg border-0 bg-transparent py-0 pl-1 pr-7 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#B88A44]/20"
+                                                        className="h-10 min-h-10 w-full min-w-0 cursor-pointer appearance-none rounded-xl border-0 bg-white py-2 pl-3 pr-10 text-base font-bold text-gray-800 shadow-none ring-1 ring-gray-200/80 outline-none focus:ring-2 focus:ring-[#B88A44]/35 md:h-9 md:min-h-9 md:w-[5.5rem] md:flex-none md:bg-transparent md:py-0 md:pr-8 md:text-sm md:ring-0"
+                                                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.75rem center' }}
                                                         value={selectedChapter}
                                                         onChange={e => setSelectedChapter(parseInt(e.target.value, 10))}
                                                     >
                                                         {chapters.map(c => <option key={c} value={c}>{c}</option>)}
                                                     </select>
-                                                </div>
                                             </div>
                                         </div>
 
-                                        <div className="flex w-full shrink-0 items-center justify-end gap-0 border-t border-gray-100 pt-3 sm:w-auto sm:border-t-0 sm:border-l sm:border-gray-100 sm:pl-3 sm:pt-0">
+                                        <div className="flex w-full shrink-0 flex-wrap items-center justify-center gap-1 border-t border-gray-100 pt-3 sm:gap-2 md:w-auto md:flex-nowrap md:justify-end md:border-l md:border-t-0 md:border-gray-100 md:pl-3 md:pt-0">
                                                     <TooltipProvider>
                                                         <Tooltip>
                                                             <TooltipTrigger asChild>
                                                                 <Link
                                                                     href={`/comparador?book=${encodeURIComponent(selectedBook)}&chapter=${selectedChapter}`}
-                                                                    className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44]"
+                                                                    className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-[#B88A44] active:bg-gray-200"
                                                                 >
-                                                                    <BookOpen className="h-[18px] w-[18px]" />
+                                                                    <BookOpen className="h-5 w-5" />
                                                                 </Link>
                                                             </TooltipTrigger>
                                                             <TooltipContent>Comparador</TooltipContent>
@@ -1966,10 +2039,10 @@ export default function Bible() {
                                                             <TooltipTrigger asChild>
                                                                 <Link
                                                                     href="/dashboard/notas"
-                                                                    className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44]"
+                                                                    className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-[#B88A44] active:bg-gray-200"
                                                                     onClick={e => { if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) e.preventDefault(); }}
                                                                 >
-                                                                    <StickyNote className="h-[18px] w-[18px]" />
+                                                                    <StickyNote className="h-5 w-5" />
                                                                 </Link>
                                                             </TooltipTrigger>
                                                             <TooltipContent>Notas</TooltipContent>
@@ -1979,10 +2052,10 @@ export default function Bible() {
                                                             <TooltipTrigger asChild>
                                                                 <Link
                                                                     href="/dashboard/imagenes"
-                                                                    className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44]"
+                                                                    className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-[#B88A44] active:bg-gray-200"
                                                                     onClick={e => { if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) e.preventDefault(); }}
                                                                 >
-                                                                    <ImageIcon className="h-[18px] w-[18px]" />
+                                                                    <ImageIcon className="h-5 w-5" />
                                                                 </Link>
                                                             </TooltipTrigger>
                                                             <TooltipContent>Imágenes</TooltipContent>
@@ -1995,13 +2068,13 @@ export default function Bible() {
                                                                         <PopoverTrigger asChild>
                                                                             <button
                                                                                 type="button"
-                                                                                className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44]"
+                                                                                className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-[#B88A44] active:bg-gray-200"
                                                                                 aria-label="Tipografía y tema"
                                                                             >
-                                                                                <Type className="h-[18px] w-[18px]" />
+                                                                                <Type className="h-5 w-5" />
                                                                             </button>
                                                                         </PopoverTrigger>
-                                                                        <PopoverContent className="w-80 p-6 rounded-2xl shadow-2xl bg-white border border-gray-100 font-sans" align="end" sideOffset={8}>
+                                                                        <PopoverContent className="w-[min(100vw-1.5rem,20rem)] max-w-[calc(100vw-1.5rem)] p-4 sm:p-6 rounded-2xl shadow-2xl bg-white border border-gray-100 font-sans" align="end" sideOffset={8}>
                                                                             <BibleTypographyPanel
                                                                                 fontSize={fontSize}
                                                                                 setFontSize={setFontSize}
@@ -2021,14 +2094,14 @@ export default function Bible() {
                                                             <TooltipTrigger asChild>
                                                                 <Link
                                                                     href="/dashboard/biblia"
-                                                                    className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#B88A44]"
+                                                                    className="inline-flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-[#B88A44] active:bg-gray-200"
                                                                     onClick={e => {
                                                                         if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) {
                                                                             e.preventDefault();
                                                                         }
                                                                     }}
                                                                 >
-                                                                    <Bookmark className="h-[18px] w-[18px]" />
+                                                                    <Bookmark className="h-5 w-5" />
                                                                 </Link>
                                                             </TooltipTrigger>
                                                             <TooltipContent>Versículos guardados</TooltipContent>
@@ -2053,11 +2126,11 @@ export default function Bible() {
                                                 }
                                             }}
                                         >
-                                            <CardContent className="px-6 pt-12 pb-8 md:px-16 md:pt-[100px] md:pb-16 relative overflow-visible">
+                                            <CardContent className="px-4 pb-20 pt-8 sm:px-6 sm:pb-12 sm:pt-12 md:px-16 md:pb-16 md:pt-[100px] relative overflow-visible max-[380px]:px-3">
                                                 {/* Header Area */}
-                                                <div className="mb-12">
+                                                <div className="mb-8 sm:mb-12">
                                                     <div>
-                                                        <h2 className={`text-3xl md:text-[34px] font-bold font-sans tracking-tight mb-2 ${themeStyles.title}`}>{selectedBook} {selectedChapter}</h2>
+                                                        <h2 className={`text-[1.65rem] leading-tight sm:text-3xl md:text-[34px] font-bold font-sans tracking-tight mb-2 ${themeStyles.title}`}>{selectedBook} {selectedChapter}</h2>
                                                         <p className={`text-xs md:text-[13px] font-bold flex items-center gap-2 ${themeStyles.subtitle}`}>
                                                             {VERSIONS.find(v => v.id === selectedVersion)?.label ?? DEFAULT_BIBLE_VERSION_LABEL}
                                                             {(() => {
@@ -2078,7 +2151,7 @@ export default function Bible() {
                                                 {/* Verses Area */}
                                                 <div
                                                     className={`space-y-4 text-left font-sans transition-all duration-500 ${themeStyles.text} ${getLineHeightClass()}`}
-                                                    style={{ fontSize: `${(fontSize / 100) * 16}px` }}
+                                                    style={{ fontSize: `max(1rem, ${(fontSize / 100) * 16}px)` }}
                                                     onClick={(e) => {
                                                         // If the click target is the container itself (not a verse), clear selection
                                                         if (e.target === e.currentTarget) {
@@ -2192,6 +2265,19 @@ export default function Bible() {
                                                                                         type="button"
                                                                                         onClick={(e) => {
                                                                                             e.stopPropagation();
+                                                                                            openStudioForSocialImage();
+                                                                                        }}
+                                                                                        className="flex shrink-0 items-center gap-2 px-3 py-2 hover:bg-white/10 rounded-md text-white text-[11px] font-semibold tracking-wide transition-colors"
+                                                                                        title="Generar imagen para redes sociales"
+                                                                                        aria-label="Generar imagen para redes sociales"
+                                                                                    >
+                                                                                        <ImagePlus className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                                                                                        Imagen
+                                                                                    </button>
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation();
                                                                                             handleBookmarkSelectedVerses();
                                                                                         }}
                                                                                         className="p-2 hover:bg-white/10 rounded-md transition-colors shrink-0"
@@ -2292,7 +2378,7 @@ export default function Bible() {
                             <div key="note-view" className="animate-in fade-in slide-in-from-right-8 duration-300 flex min-h-0 w-[calc(100%+1.5rem)] max-w-none flex-1 flex-col -mx-3 max-sm:pb-1 sm:mx-0 sm:w-full md:-mx-0">
                                 <div className="flex max-h-[calc(100dvh-5.75rem)] min-h-0 w-full flex-1 flex-col overflow-hidden rounded-none border-y border-gray-200/80 bg-white shadow-lg shadow-gray-200/50 ring-0 sm:max-h-[calc(100svh-5.25rem)] sm:rounded-3xl sm:border sm:ring-1 sm:ring-black/[0.04] md:max-h-[calc(100dvh-4.75rem)]">
 
-                                    {/* Header — móvil: columna compacta; sm+: fila con acciones a la derecha */}
+                                    {/* Header — móvil: sin fila de acciones (van en barra inferior); sm+: Limpiar/Guardar aquí */}
                                     <div className="shrink-0 border-b border-gray-100 bg-gradient-to-r from-white via-white to-slate-50/40 px-3 py-2 sm:px-5 sm:py-3 md:px-6 lg:px-10 xl:px-12">
                                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                                             <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -2320,7 +2406,7 @@ export default function Bible() {
                                                     </h2>
                                                 </div>
                                             </div>
-                                            <div className="flex w-full sm:w-auto items-stretch gap-2 shrink-0">
+                                            <div className="hidden w-full items-stretch gap-2 shrink-0 sm:flex sm:w-auto">
                                                 <button type="button" onClick={handleClearNoteFields} className="flex-1 sm:flex-none justify-center min-h-11 px-3 sm:px-4 py-2.5 rounded-xl text-sm font-semibold text-rose-600 hover:text-rose-700 bg-white hover:bg-rose-50 border border-rose-200/70 hover:border-rose-200 transition-colors active:scale-[0.99]">
                                                     Limpiar
                                                 </button>
@@ -2333,11 +2419,11 @@ export default function Bible() {
                                         </div>
                                     </div>
 
-                                    {/* Body — móvil: versículo + redes primero (sin scroll para ver redes); md+: columnas clásicas */}
-                                    <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-y-contain bg-gradient-to-b from-slate-50/90 to-slate-100/50 md:flex-row md:overflow-hidden md:overflow-y-hidden">
+                                    {/* Body — móvil: editor primero (menos scroll para escribir); md+: barra lateral izquierda */}
+                                    <div className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto overscroll-y-contain bg-gradient-to-b from-slate-50/90 to-slate-100/50 pb-4 md:flex-row md:overflow-hidden md:overflow-y-hidden md:pb-0">
 
-                                        {/* Sidebar: una sola columna; en móvil va arriba (order-1) y sin scroll propio */}
-                                        <div className="order-1 flex w-full shrink-0 flex-col border-b border-gray-200/80 bg-white/80 pb-2 backdrop-blur-sm max-md:overflow-visible md:order-none md:min-h-0 md:w-64 md:max-w-[min(42%,20rem)] md:overflow-y-auto md:border-b-0 md:border-r md:pb-3 md:[scrollbar-width:thin] lg:max-w-none lg:w-72 xl:w-80 2xl:w-[22rem]">
+                                        {/* Sidebar: en escritorio a la izquierda; en móvil debajo del editor */}
+                                        <div className="order-2 flex w-full shrink-0 flex-col border-b border-gray-200/80 bg-white/80 pb-2 backdrop-blur-sm max-md:overflow-visible max-md:border-b-0 md:order-1 md:min-h-0 md:w-64 md:max-w-[min(42%,20rem)] md:overflow-y-auto md:border-b-0 md:border-r md:pb-3 md:[scrollbar-width:thin] lg:max-w-none lg:w-72 xl:w-80 2xl:w-[22rem]">
 
                                             {/* Verse context — más compacto en móvil */}
                                             <div className="border-b border-gray-100 p-2.5 sm:p-4 md:p-3 lg:p-5 xl:p-6">
@@ -2352,59 +2438,6 @@ export default function Bible() {
                                                     <span className="absolute bottom-0 right-1.5 text-3xl text-blue-200/90 font-serif leading-none select-none pointer-events-none sm:right-2 sm:text-4xl md:text-5xl" aria-hidden>"</span>
                                                     <p className="mt-2 text-right text-[9px] font-bold uppercase tracking-wider text-[#B88A44] sm:mt-4 sm:text-[10px] md:text-[11px]">{selectedVersesRef}</p>
                                                 </div>
-                                            </div>
-
-                                            {/* Redes sociales — bloque único */}
-                                            <div className="border-b border-gray-100 px-2.5 py-2 sm:p-4 md:border-b md:p-3 md:pb-2 lg:p-5 xl:p-6">
-                                                <div className="mb-1.5 flex items-center justify-between sm:mb-3 md:mb-2">
-                                                    <p className="flex min-w-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-600 sm:gap-2 sm:text-xs">
-                                                        <ShareIcon className="h-3.5 w-3.5 shrink-0 text-[#B88A44] sm:h-4 sm:w-4" aria-hidden /> Redes sociales
-                                                    </p>
-                                                </div>
-                                                <div className="mb-2 flex gap-0.5 rounded-lg bg-slate-100/90 p-0.5 sm:mb-3 sm:gap-1 sm:rounded-xl sm:p-1 md:mb-2">
-                                                    {(['vertical', 'horizontal'] as const).map(f => (
-                                                        <button key={f} type="button" onClick={() => setSocialFormat(f)}
-                                                            className={`flex-1 min-h-11 rounded-md px-1 py-1.5 text-[12px] font-bold leading-tight transition-all active:scale-[0.98] sm:rounded-lg sm:py-2 sm:text-xs md:min-h-10 md:py-2 ${socialFormat === f ? 'bg-white text-[#B88A44] shadow-sm ring-1 ring-[#B88A44]/25' : 'text-gray-500 active:bg-white/60'}`}>
-                                                            {f === 'vertical' ? 'Vertical' : 'Horizontal'}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                                <div className="mb-2 w-full rounded-lg bg-slate-100/40 ring-1 ring-gray-200/50 sm:mb-3 sm:rounded-xl md:mb-2">
-                                                    <div className="box-border flex w-full items-center justify-center px-1.5 pb-2.5 pt-1 sm:px-2.5 sm:pb-5 sm:pt-2.5 md:pb-3 md:pt-1.5">
-                                                        <div
-                                                            className={`relative flex min-w-0 flex-col items-center justify-center overflow-hidden rounded-xl text-center shadow-md ring-1 ring-gray-200/60 transition-all duration-300 sm:rounded-2xl ${socialFormat === 'vertical'
-                                                                ? 'aspect-[9/16] w-auto max-h-[min(26dvh,200px)] max-w-[min(100%,88vw)] sm:max-h-[min(42dvh,360px)] sm:max-w-full md:max-h-[min(22dvh,168px)] lg:max-h-[min(26dvh,200px)] xl:max-h-[min(30dvh,240px)] 2xl:max-h-[min(34dvh,280px)]'
-                                                                : 'aspect-video w-full max-h-[min(18dvh,120px)] max-w-full sm:max-h-[min(26dvh,200px)] md:max-h-[min(14dvh,120px)] lg:max-h-[min(16dvh,140px)] xl:max-h-[min(20dvh,168px)]'
-                                                                }`}
-                                                            style={{
-                                                                backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor,
-                                                                backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none',
-                                                                backgroundSize: 'cover',
-                                                                backgroundPosition: 'center',
-                                                            }}
-                                                        >
-                                                            {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
-                                                            <div className="relative z-10 flex h-full min-h-0 w-full flex-col items-center justify-center gap-0.5 px-2 py-2 sm:gap-1 sm:px-5 sm:py-7 md:gap-0">
-                                                                <p
-                                                                    className="line-clamp-4 font-serif text-[9px] italic leading-snug max-md:max-h-[48%] max-md:overflow-hidden sm:line-clamp-6 sm:text-sm md:line-clamp-none"
-                                                                    style={{ color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
-                                                                >
-                                                                    &ldquo;{selectedVersesText || verses[(activeVerse ?? 1) - 1]}&rdquo;
-                                                                </p>
-                                                                <p className="mt-1 shrink-0 text-[6px] font-black uppercase tracking-[0.2em] sm:mt-4 sm:text-[8px]" style={{ color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}>{selectedVersesRef}</p>
-                                                                <p className="mt-0.5 shrink-0 text-[5px] font-black tracking-widest sm:text-[7px]" style={{ color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}>www.iciarnayarit.com</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => { setIsPersonalizarOpen(false); setIsNoteOpen(false); setIsStudioOpen(true); setGalleryVisibleCount(6); setSwatchesExpanded(false); resetDragPos(); setSelectedPlatform(null); setStudioTab('formato'); }}
-                                                    className="inline-flex w-full min-h-10 items-center justify-center gap-1.5 rounded-lg border border-[#B88A44]/35 bg-white px-3 py-2 text-[13px] font-bold text-[#B88A44] shadow-sm transition-all hover:bg-[#FDF8EF] active:scale-[0.99] sm:min-h-11 sm:gap-2 sm:rounded-xl sm:py-2.5 sm:text-sm"
-                                                >
-                                                    <Palette className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
-                                                    Personalizar diseño
-                                                </button>
                                             </div>
 
                                             {/* Notas recientes: ocultas en móvil para dejar espacio al editor sin scroll de página */}
@@ -2439,8 +2472,8 @@ export default function Bible() {
                                             </div>
                                         </div>
 
-                                        {/* Main Editor — móvil: debajo del contexto; scroll solo en el cuerpo del texto */}
-                                        <div className="order-2 flex w-full flex-none flex-col overflow-x-hidden md:order-none md:min-h-0 md:flex-[1_1_58%] md:flex-1 md:overflow-hidden">
+                                        {/* Main Editor — móvil: primero en la columna; scroll solo en el cuerpo del texto */}
+                                        <div className="order-1 flex w-full flex-none flex-col overflow-x-hidden md:order-2 md:min-h-0 md:flex-[1_1_58%] md:flex-1 md:overflow-hidden">
                                             <div className="mx-auto flex w-full max-w-3xl flex-none flex-col gap-2.5 overflow-x-hidden p-3 sm:gap-4 sm:p-4 md:h-full md:min-h-0 md:flex-1 md:gap-3 md:overflow-hidden md:p-5 lg:max-w-4xl lg:gap-5 lg:p-6 xl:max-w-5xl xl:p-8 2xl:max-w-[52rem]">
 
                                                 {/* Title — en móvil el cuerpo de la tarjeta hace scroll; la columna no usa flex-1 para no recortar el input */}
@@ -2467,10 +2500,10 @@ export default function Bible() {
                                         `}</style>
 
                                                 {/* Editor + barra de formato unificados */}
-                                                <div className="flex min-h-[13rem] flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white shadow-md shadow-gray-200/30 ring-1 ring-black/[0.03] md:min-h-0">
-                                                    <div className="flex shrink-0 flex-wrap items-center gap-1 border-b border-gray-100 bg-gradient-to-b from-slate-50/90 to-white px-2 py-1.5 sm:gap-0.5 sm:px-3 sm:py-2">
-                                                        <span className="w-full sm:w-auto text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 py-1 sm:mr-2 sm:border-r sm:border-gray-200 sm:pr-3">Formato</span>
-                                                        <div className="flex flex-wrap items-center gap-0.5 flex-1">
+                                                <div className="flex min-h-[12rem] flex-1 flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white shadow-md shadow-gray-200/30 ring-1 ring-black/[0.03] sm:min-h-[13rem] md:min-h-0">
+                                                    <div className="flex shrink-0 flex-nowrap items-center gap-0 overflow-x-auto overflow-y-hidden border-b border-gray-100 bg-gradient-to-b from-slate-50/90 to-white px-1.5 py-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:flex-wrap sm:gap-0.5 sm:overflow-visible sm:px-3 sm:py-2 [&::-webkit-scrollbar]:hidden">
+                                                        <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-gray-400 px-1.5 py-1 sm:mr-2 sm:border-r sm:border-gray-200 sm:pr-3">Formato</span>
+                                                        <div className="flex shrink-0 flex-nowrap items-center gap-0 pr-1 sm:flex-wrap sm:flex-1 sm:pr-0">
                                                             <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('bold'); }} className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center" title="Negrita"><Bold className="w-4 h-4" /></button>
                                                             <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('italic'); }} className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center" title="Cursiva"><Italic className="w-4 h-4" /></button>
                                                             <button type="button" onMouseDown={(e) => { e.preventDefault(); handleFormat('insertUnorderedList'); }} className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center" title="Lista"><List className="w-4 h-4" /></button>
@@ -2493,9 +2526,9 @@ export default function Bible() {
                                                             <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleImageUpload} />
                                                             <button type="button" onMouseDown={(e) => { e.preventDefault(); saveCurrentSelection(); }} onClick={() => fileInputRef.current?.click()} className="p-2 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors min-w-[44px] min-h-[44px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center" title="Imagen"><ImgIcon className="w-4 h-4" /></button>
                                                         </div>
-                                                        <div className="flex items-center gap-1.5 text-gray-400 px-2 py-1 ml-auto text-xs font-medium tabular-nums border-t border-gray-100 w-full sm:w-auto sm:border-t-0 sm:border-l sm:border-gray-200 sm:pl-3 mt-1 sm:mt-0 justify-end sm:justify-start">
-                                                            <Clock className="w-3.5 h-3.5 shrink-0" aria-hidden />
-                                                            <span className="hidden sm:inline text-gray-500">Ahora</span>
+                                                        <div className="ml-auto flex shrink-0 items-center gap-1 border-l border-gray-200/80 pl-2 text-[11px] font-medium tabular-nums text-gray-400 sm:gap-1.5 sm:px-2 sm:py-1 sm:text-xs">
+                                                            <Clock className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" aria-hidden />
+                                                            <span className="hidden text-gray-500 sm:inline">Ahora</span>
                                                             <time dateTime={mounted ? new Date().toISOString() : undefined}>
                                                                 {mounted ? new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '—'}
                                                             </time>
@@ -2510,7 +2543,7 @@ export default function Bible() {
                                                             ref={contentEditableRef}
                                                             contentEditable
                                                             onInput={(e) => setNoteContent(e.currentTarget.innerHTML)}
-                                                            className="note-modal-editor min-h-[6rem] w-full bg-transparent text-[15px] leading-relaxed text-gray-800 focus:outline-none max-md:min-h-[5rem] sm:min-h-[10rem] sm:text-base md:min-h-[12rem]"
+                                                            className="note-modal-editor min-h-[6.5rem] w-full bg-transparent text-[15px] leading-relaxed text-gray-800 focus:outline-none max-md:min-h-[6.5rem] sm:min-h-[10rem] sm:text-base md:min-h-[12rem]"
                                                         />
                                                     </div>
                                                 </div>
@@ -2528,9 +2561,28 @@ export default function Bible() {
                                                         {isAddingTag ? (
                                                             <input type="text" autoFocus value={tagInput} onChange={e => setTagInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddTag(); } else if (e.key === 'Escape') { setIsAddingTag(false); } }} onBlur={handleAddTag} className="border border-[#B88A44]/50 text-[#6b5428] outline-none text-xs font-bold px-3 py-1.5 rounded-full w-[110px] bg-[#FDF8EF] transition-colors" placeholder="etiqueta…" />
                                                         ) : (
-                                                            <button type="button" onClick={() => setIsAddingTag(true)} className="border border-dashed border-gray-300 text-gray-500 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:border-[#B88A44]/40 hover:text-[#B88A44] transition-colors">+ Añadir</button>
+                                                            <button type="button" onClick={() => setIsAddingTag(true)} className="flex min-h-10 items-center gap-1.5 rounded-full border border-dashed border-gray-300 px-3 py-2 text-xs font-bold text-gray-500 transition-colors hover:border-[#B88A44]/40 hover:text-[#B88A44] sm:min-h-0 sm:py-1.5">+ Añadir</button>
                                                         )}
                                                     </div>
+                                                </div>
+
+                                                {/* Móvil: acciones bajo etiquetas (la cabecera los muestra desde sm) */}
+                                                <div className="mt-1 flex w-full shrink-0 items-stretch gap-2 sm:hidden">
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleClearNoteFields}
+                                                        className="flex min-h-12 min-w-0 flex-1 items-center justify-center rounded-xl border border-rose-200/80 bg-white px-3 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-50 active:scale-[0.99]"
+                                                    >
+                                                        Limpiar
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleSaveCustomNote}
+                                                        className="flex min-h-12 min-w-0 flex-[1.15] items-center justify-center gap-2 rounded-xl bg-[#B88A44] px-4 text-sm font-bold text-white shadow-md shadow-[#B88A44]/25 transition-colors hover:bg-[#a67b3d] active:scale-[0.99]"
+                                                    >
+                                                        <Save className="h-4 w-4 shrink-0" />
+                                                        Guardar
+                                                    </button>
                                                 </div>
 
                                             </div>
@@ -2546,35 +2598,34 @@ export default function Bible() {
                                     <div className="flex max-h-[calc(100dvh-5.75rem)] min-h-0 w-full flex-1 flex-col overflow-hidden rounded-none border-y border-gray-100 bg-white shadow-xl sm:max-h-[calc(100svh-5.25rem)] sm:rounded-2xl sm:border sm:shadow-2xl md:max-h-[calc(100dvh-4.75rem)]">
                                         <input ref={studioOverlayImageRef} type="file" accept="image/*" className="sr-only" aria-hidden onChange={handleStudioOverlayImagePick} />
 
-                                        {/* ── Header ── */}
-                                        <div className="flex flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between px-3 py-2 sm:px-5 sm:py-3 border-b border-gray-100 bg-white shrink-0">
-                                            <div className="flex items-center gap-2 sm:items-start sm:gap-3 min-w-0">
-                                                <button type="button" onClick={() => setIsStudioOpen(false)} className="flex items-center gap-1.5 text-gray-500 hover:text-gray-900 transition-colors group shrink-0 min-h-10 min-w-10 sm:min-w-0 sm:min-h-0 justify-center sm:justify-start -ml-1 rounded-lg sm:rounded-none active:bg-gray-100 sm:active:bg-transparent">
-                                                    <ChevronLeft className="w-5 h-5 sm:w-4 sm:h-4 group-hover:-translate-x-0.5 transition-transform" />
-                                                    <span className="text-sm font-semibold hidden sm:inline">Volver</span>
+                                        {/* ── Header: móvil solo título; desde lg fila con acciones ── */}
+                                        <div className="flex flex-col gap-1.5 border-b border-gray-100 bg-white px-3 py-2 shrink-0 sm:gap-3 sm:px-5 sm:py-3 lg:flex-row lg:items-center lg:justify-between">
+                                            <div className="flex min-w-0 items-center gap-2 sm:items-start sm:gap-3">
+                                                <button type="button" onClick={() => setIsStudioOpen(false)} className="group flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-gray-500 transition-colors hover:text-gray-900 active:bg-gray-100 sm:min-h-0 sm:min-w-0 sm:justify-start sm:rounded-none sm:active:bg-transparent -ml-0.5 sm:-ml-1">
+                                                    <ChevronLeft className="h-5 w-5 transition-transform group-hover:-translate-x-0.5 sm:h-4 sm:w-4" />
+                                                    <span className="hidden text-sm font-semibold sm:inline">Volver</span>
                                                 </button>
-                                                <div className="hidden sm:block w-px h-8 bg-gray-200 shrink-0" aria-hidden />
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="text-[9px] sm:text-[9px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 truncate max-sm:hidden sm:flex">
-                                                        <ImageIcon className="w-3.5 h-3.5 sm:w-3 sm:h-3 shrink-0" /> Editor · <span className="truncate">{selectedVersesRef}</span>
+                                                <div className="hidden h-8 w-px shrink-0 bg-gray-200 sm:block" aria-hidden />
+                                                <div className="min-w-0 flex-1 pr-1">
+                                                    <p className="hidden items-center gap-1.5 truncate text-[9px] font-bold uppercase tracking-wider text-gray-500 sm:flex">
+                                                        <ImageIcon className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" /> Editor · <span className="truncate">{selectedVersesRef}</span>
                                                     </p>
-                                                    <h2 className="text-sm sm:text-sm font-bold text-gray-900 leading-tight sm:leading-snug mt-0 sm:mt-0.5">Vista previa de publicación</h2>
+                                                    <p className="mb-0.5 truncate text-[10px] font-semibold text-[#B88A44] sm:hidden">{selectedVersesRef}</p>
+                                                    <h2 className="text-[0.95rem] font-bold leading-tight text-gray-900 sm:text-sm sm:leading-snug">Vista previa de publicación</h2>
                                                 </div>
                                             </div>
-                                            <div className="flex items-stretch sm:items-center gap-2 w-full sm:w-auto">
-                                                <button type="button" onClick={resetDragPos} className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-xs font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200 sm:border-0 transition-colors min-h-10 sm:min-h-[36px]">
-                                                    <X className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" />
-                                                    <span>Restablecer</span>
+                                            <div className="hidden items-stretch gap-2 lg:flex lg:w-auto lg:shrink-0">
+                                                <button type="button" onClick={resetDragPos} className="flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900">
+                                                    <X className="h-3.5 w-3.5" />
+                                                    Restablecer
                                                 </button>
-                                                <button type="button" onClick={saveStudioPublicationDraft} className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-xs font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-100 border border-gray-200 sm:border-0 transition-colors min-h-10 sm:min-h-[36px]">
-                                                    <Save className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5 shrink-0" />
-                                                    <span className="hidden sm:inline">Guardar borrador</span>
-                                                    <span className="sm:hidden">Guardar</span>
+                                                <button type="button" onClick={saveStudioPublicationDraft} className="flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-gray-200 px-4 py-2 text-xs font-bold text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900">
+                                                    <Save className="h-3.5 w-3.5 shrink-0" />
+                                                    Guardar borrador
                                                 </button>
-                                                <button type="button" onClick={handleDownloadPreview} className="flex flex-[1.15] sm:flex-none items-center justify-center gap-1.5 px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg sm:rounded-xl text-xs sm:text-xs font-bold shadow-md shadow-blue-900/30 sm:shadow-lg sm:shadow-blue-900/40 transition-colors min-h-10 sm:min-h-0">
-                                                    <Download className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5 shrink-0" />
-                                                    <span className="hidden sm:inline">Descargar imagen</span>
-                                                    <span className="sm:hidden">Descargar</span>
+                                                <button type="button" onClick={handleDownloadPreview} className="flex min-h-10 items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-900/30 transition-colors hover:bg-blue-500">
+                                                    <Download className="h-3.5 w-3.5 shrink-0" />
+                                                    Descargar imagen
                                                 </button>
                                             </div>
                                         </div>
@@ -2582,20 +2633,26 @@ export default function Bible() {
                                         {/* ── Body: lienzo primero en móvil para ver el documento sin scroll excesivo ── */}
                                         <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
 
-                                            {/* Canvas Area */}
-                                            <div className="custom-scrollbar flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto overflow-x-hidden bg-gray-50 p-2 sm:p-4 lg:items-start lg:justify-center lg:p-10 max-lg:min-h-[min(42dvh,320px)] lg:min-h-0">
-                                                <div className="flex w-full max-w-full flex-col items-center gap-2 sm:gap-4">
-                                                    <p className="max-w-md px-2 text-center text-[10px] leading-snug tracking-wide text-gray-500 select-none sm:text-[10px] max-sm:line-clamp-2">
-                                                        ✦ Arrastra textos en el lienzo para moverlos; desde la pestaña Texto puedes soltar <strong className="text-gray-600">Texto libre</strong> o <strong className="text-gray-600">Imagen</strong> sobre la vista previa
-                                                    </p>
-
+                                            {/* Canvas: en móvil + vertical 9:16 mantiene tope de alto y ahora permite scroll interno del lienzo. */}
+                                            <div
+                                                className={`flex min-h-0 flex-col items-center justify-start overflow-x-hidden bg-gray-50 p-2 sm:p-4 max-lg:custom-scrollbar max-lg:overflow-y-auto max-lg:justify-start lg:min-h-0 lg:flex-1 lg:custom-scrollbar lg:items-start lg:justify-center lg:overflow-y-auto lg:p-10 ${
+                                                    studioTheme.orientation === 'vertical'
+                                                        ? 'max-lg:max-h-[min(40svh,44dvh)] max-lg:shrink-0 max-lg:flex-none max-lg:p-1.5'
+                                                        : 'max-lg:min-h-0 max-lg:flex-1'
+                                                }`}
+                                            >
+                                                <div className="flex min-h-0 w-full max-w-full flex-1 flex-col items-center gap-1 sm:gap-4 max-lg:min-h-0">
                                                     {/* Vertical */}
-                                                    <div className={`flex-col items-center gap-3 w-full ${studioTheme.orientation !== 'vertical' ? 'hidden' : 'flex'}`}>
-                                                        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center px-1">
-                                                            <div className="h-px w-6 sm:w-8 bg-gray-200 shrink-0 max-sm:hidden" />
-                                                            <span>Vertical 9:16 · TikTok / Historia</span>
-                                                            <div className="h-px w-6 sm:w-8 bg-gray-200 shrink-0 max-sm:hidden" />
+                                                    <div className={`flex min-h-0 w-full flex-1 flex-col items-center gap-1 sm:gap-3 max-lg:min-h-0 ${studioTheme.orientation !== 'vertical' ? 'hidden' : 'flex'}`}>
+                                                        <div className="flex shrink-0 flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 px-1 text-center text-[8px] font-black tracking-wider text-gray-400 uppercase sm:gap-x-2 sm:gap-y-1 sm:text-[9px] sm:tracking-widest">
+                                                            <div className="h-px w-4 bg-gray-200 shrink-0 max-sm:hidden sm:w-8" />
+                                                            <span>
+                                                                <span className="max-lg:inline lg:hidden">9:16 · Historia</span>
+                                                                <span className="hidden lg:inline">Vertical 9:16 · TikTok / Historia</span>
+                                                            </span>
+                                                            <div className="h-px w-4 bg-gray-200 shrink-0 max-sm:hidden sm:w-8" />
                                                         </div>
+                                                        <div className="flex min-h-0 w-full flex-1 items-center justify-center py-0.5 max-lg:min-h-0">
                                                         <div
                                                             id="preview-vertical"
                                                             onPointerDown={() => { setSelectedElement(null); setSelectedOverlayId(null); setStudioOverlayTextEditingId(null); setStudioFixedTextEditing(null); }}
@@ -2607,50 +2664,60 @@ export default function Bible() {
                                                             }}
                                                             onDragOver={handlePreviewDragOver}
                                                             onDrop={handlePreviewDrop}
-                                                            className={`relative mx-auto flex aspect-[9/16] w-full max-w-[min(280px,calc(100vw-2.5rem))] flex-col items-center justify-center overflow-hidden rounded-2xl p-4 text-center shadow-2xl ring-1 ring-white/10 transition-all duration-300 max-lg:max-h-[44dvh] max-lg:w-[min(calc(100vw-1.25rem),calc(44dvh*9/16))] max-lg:max-w-none sm:p-6 ${studioDropHighlight ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent' : ''}`}
+                                                            className={`relative mx-auto flex min-h-0 w-full max-w-[min(280px,calc(100vw-2.5rem))] flex-col items-stretch overflow-hidden rounded-xl p-2 text-center shadow-2xl ring-1 ring-white/10 transition-all duration-300 aspect-[9/16] max-lg:h-full max-lg:max-h-full max-lg:w-auto max-lg:max-w-[min(calc(100vw-1rem),100%)] max-lg:min-h-0 sm:rounded-2xl sm:p-5 lg:h-auto lg:max-h-none lg:w-full ${studioDropHighlight ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent' : ''}`}
                                                             style={{ backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor, backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
                                                         >
                                                             {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
                                                             <GridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
-                                                            {renderStudioFixedText('ref', {
-                                                                label: 'Referencia',
-                                                                displayValue: studioRefDisplay,
-                                                                viewContent: studioRefDisplay || '\u00a0',
-                                                                contentClassName: 'uppercase tracking-[0.2em] z-20 mb-8 select-none',
-                                                                attachInputRef: studioTheme.orientation === 'vertical',
-                                                            })}
-                                                            {renderStudioFixedText('verse', {
-                                                                label: 'Versículo',
-                                                                displayValue: studioVerseDisplay,
-                                                                multiline: true,
-                                                                viewContent: (
-                                                                    <>
-                                                                        {'"'}
-                                                                        {studioVerseDisplay}
-                                                                        {'"'}
-                                                                    </>
-                                                                ),
-                                                                contentClassName: 'font-serif z-20 w-full leading-tight select-none',
-                                                                attachInputRef: studioTheme.orientation === 'vertical',
-                                                            })}
-                                                            {renderStudioFixedText('website', {
-                                                                label: 'Sitio web',
-                                                                displayValue: studioWebsiteDisplay,
-                                                                viewContent: studioWebsiteDisplay || '\u00a0',
-                                                                contentClassName: 'tracking-widest z-20 mt-6 select-none',
-                                                                attachInputRef: studioTheme.orientation === 'vertical',
-                                                            })}
+                                                            <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+                                                                <div className="flex shrink-0 justify-center px-1 pt-1">
+                                                                    {renderStudioFixedText('ref', {
+                                                                        label: 'Referencia',
+                                                                        displayValue: studioRefDisplay,
+                                                                        viewContent: studioRefDisplay || '\u00a0',
+                                                                        contentClassName: 'uppercase tracking-[0.2em] z-20 select-none',
+                                                                        attachInputRef: studioTheme.orientation === 'vertical',
+                                                                    })}
+                                                                </div>
+                                                                <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-1">
+                                                                    {renderStudioFixedText('verse', {
+                                                                        label: 'Versículo',
+                                                                        displayValue: studioVerseDisplay,
+                                                                        multiline: true,
+                                                                        viewContent: (
+                                                                            <>
+                                                                                {'"'}
+                                                                                {studioVerseDisplay}
+                                                                                {'"'}
+                                                                            </>
+                                                                        ),
+                                                                        contentClassName: 'font-serif z-20 w-full leading-tight select-none',
+                                                                        attachInputRef: studioTheme.orientation === 'vertical',
+                                                                    })}
+                                                                </div>
+                                                                <div className="flex shrink-0 justify-center px-1 pb-1">
+                                                                    {renderStudioFixedText('website', {
+                                                                        label: 'Sitio web',
+                                                                        displayValue: studioWebsiteDisplay,
+                                                                        viewContent: studioWebsiteDisplay || '\u00a0',
+                                                                        contentClassName: 'tracking-widest z-20 select-none',
+                                                                        attachInputRef: studioTheme.orientation === 'vertical',
+                                                                    })}
+                                                                </div>
+                                                            </div>
                                                             {renderStudioOverlayLayer(280)}
+                                                        </div>
                                                         </div>
                                                     </div>
 
                                                     {/* Horizontal */}
-                                                    <div className={`flex-col items-center gap-3 w-full ${studioTheme.orientation !== 'horizontal' ? 'hidden' : 'flex'}`}>
-                                                        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center px-1">
-                                                            <div className="h-px w-6 sm:w-8 bg-gray-200 shrink-0 max-sm:hidden" />
+                                                    <div className={`flex min-h-0 w-full flex-1 flex-col items-center gap-1.5 sm:gap-3 ${studioTheme.orientation !== 'horizontal' ? 'hidden' : 'flex'}`}>
+                                                        <div className="flex shrink-0 flex-wrap items-center justify-center gap-x-2 gap-y-1 px-1 text-center text-[9px] font-black tracking-widest text-gray-400 uppercase">
+                                                            <div className="h-px w-6 bg-gray-200 shrink-0 max-sm:hidden sm:w-8" />
                                                             <span>Horizontal 16:9 · Facebook / YouTube</span>
-                                                            <div className="h-px w-6 sm:w-8 bg-gray-200 shrink-0 max-sm:hidden" />
+                                                            <div className="h-px w-6 bg-gray-200 shrink-0 max-sm:hidden sm:w-8" />
                                                         </div>
+                                                        <div className="flex min-h-0 w-full flex-1 items-center justify-center">
                                                         <div
                                                             id="preview-horizontal"
                                                             onPointerDown={() => { setSelectedElement(null); setSelectedOverlayId(null); setStudioOverlayTextEditingId(null); setStudioFixedTextEditing(null); }}
@@ -2662,54 +2729,62 @@ export default function Bible() {
                                                             }}
                                                             onDragOver={handlePreviewDragOver}
                                                             onDrop={handlePreviewDrop}
-                                                            className={`relative mx-auto flex aspect-video w-full max-w-[min(560px,calc(100vw-2.5rem))] flex-col items-center justify-center overflow-hidden rounded-2xl p-4 text-center shadow-2xl ring-1 ring-white/10 transition-all duration-300 max-lg:max-h-[min(30dvh,52vw)] max-lg:max-w-[min(calc(100vw-1.25rem),92vw)] sm:p-6 ${studioDropHighlight ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent' : ''}`}
+                                                            className={`relative mx-auto flex min-h-0 w-full max-w-[min(560px,calc(100vw-2.5rem))] flex-col items-stretch overflow-hidden rounded-2xl p-3 text-center shadow-2xl ring-1 ring-white/10 transition-all duration-300 aspect-video max-lg:h-full max-lg:max-h-full max-lg:max-w-[min(calc(100vw-1.5rem),100%)] max-lg:min-h-0 sm:p-5 lg:h-auto lg:max-h-none ${studioDropHighlight ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent' : ''}`}
                                                             style={{ backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor, backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
                                                         >
                                                             {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
                                                             <GridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
-                                                            {renderStudioFixedText('verse', {
-                                                                label: 'Versículo',
-                                                                displayValue: studioVerseDisplay,
-                                                                multiline: true,
-                                                                viewContent: (
-                                                                    <>
-                                                                        {'"'}
-                                                                        {studioVerseDisplay}
-                                                                        {'"'}
-                                                                    </>
-                                                                ),
-                                                                contentClassName: 'font-serif z-20 w-full leading-tight select-none',
-                                                                attachInputRef: studioTheme.orientation === 'horizontal',
-                                                            })}
-                                                            {renderStudioFixedText('ref', {
-                                                                label: 'Referencia',
-                                                                displayValue: studioRefDisplay,
-                                                                viewContent: (
-                                                                    <>
-                                                                        — {studioRefDisplay || '\u00a0'}
-                                                                    </>
-                                                                ),
-                                                                contentClassName: 'uppercase tracking-[0.2em] z-20 mt-6 select-none',
-                                                                attachInputRef: studioTheme.orientation === 'horizontal',
-                                                            })}
-                                                            {renderStudioFixedText('website', {
-                                                                label: 'Sitio web',
-                                                                displayValue: studioWebsiteDisplay,
-                                                                viewContent: studioWebsiteDisplay || '\u00a0',
-                                                                contentClassName: 'tracking-widest z-20 mt-3 select-none',
-                                                                attachInputRef: studioTheme.orientation === 'horizontal',
-                                                            })}
+                                                            <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+                                                                <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-1">
+                                                                    {renderStudioFixedText('verse', {
+                                                                        label: 'Versículo',
+                                                                        displayValue: studioVerseDisplay,
+                                                                        multiline: true,
+                                                                        viewContent: (
+                                                                            <>
+                                                                                {'"'}
+                                                                                {studioVerseDisplay}
+                                                                                {'"'}
+                                                                            </>
+                                                                        ),
+                                                                        contentClassName: 'font-serif z-20 w-full leading-tight select-none',
+                                                                        attachInputRef: studioTheme.orientation === 'horizontal',
+                                                                    })}
+                                                                </div>
+                                                                <div className="flex shrink-0 flex-col items-center gap-1 px-1 pb-2">
+                                                                    {renderStudioFixedText('ref', {
+                                                                        label: 'Referencia',
+                                                                        displayValue: studioRefDisplay,
+                                                                        viewContent: (
+                                                                            <>
+                                                                                — {studioRefDisplay || '\u00a0'}
+                                                                            </>
+                                                                        ),
+                                                                        contentClassName: 'uppercase tracking-[0.2em] z-20 select-none',
+                                                                        attachInputRef: studioTheme.orientation === 'horizontal',
+                                                                    })}
+                                                                    {renderStudioFixedText('website', {
+                                                                        label: 'Sitio web',
+                                                                        displayValue: studioWebsiteDisplay,
+                                                                        viewContent: studioWebsiteDisplay || '\u00a0',
+                                                                        contentClassName: 'tracking-widest z-20 select-none',
+                                                                        attachInputRef: studioTheme.orientation === 'horizontal',
+                                                                    })}
+                                                                </div>
+                                                            </div>
                                                             {renderStudioOverlayLayer(520)}
+                                                        </div>
                                                         </div>
                                                     </div>
 
                                                     {/* Square */}
-                                                    <div className={`flex-col items-center gap-3 w-full ${studioTheme.orientation !== 'square' ? 'hidden' : 'flex'}`}>
-                                                        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[9px] font-black text-gray-400 uppercase tracking-widest text-center px-1">
-                                                            <div className="h-px w-6 sm:w-8 bg-gray-200 shrink-0 max-sm:hidden" />
+                                                    <div className={`flex min-h-0 w-full flex-1 flex-col items-center gap-1.5 sm:gap-3 ${studioTheme.orientation !== 'square' ? 'hidden' : 'flex'}`}>
+                                                        <div className="flex shrink-0 flex-wrap items-center justify-center gap-x-2 gap-y-1 px-1 text-center text-[9px] font-black tracking-widest text-gray-400 uppercase">
+                                                            <div className="h-px w-6 bg-gray-200 shrink-0 max-sm:hidden sm:w-8" />
                                                             <span>Cuadrado 1:1 · Feed</span>
-                                                            <div className="h-px w-6 sm:w-8 bg-gray-200 shrink-0 max-sm:hidden" />
+                                                            <div className="h-px w-6 bg-gray-200 shrink-0 max-sm:hidden sm:w-8" />
                                                         </div>
+                                                        <div className="flex min-h-0 w-full flex-1 items-center justify-center">
                                                         <div
                                                             id="preview-square"
                                                             onPointerDown={() => { setSelectedElement(null); setSelectedOverlayId(null); setStudioOverlayTextEditingId(null); setStudioFixedTextEditing(null); }}
@@ -2721,49 +2796,62 @@ export default function Bible() {
                                                             }}
                                                             onDragOver={handlePreviewDragOver}
                                                             onDrop={handlePreviewDrop}
-                                                            className={`relative mx-auto flex aspect-square w-full max-w-[min(380px,calc(100vw-2.5rem))] flex-col items-center justify-center overflow-hidden rounded-2xl p-4 text-center shadow-2xl ring-1 ring-white/10 transition-all duration-300 max-lg:max-h-[min(38dvh,78vw)] max-lg:max-w-[min(calc(100vw-1.25rem),78vw)] sm:p-6 ${studioDropHighlight ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent' : ''}`}
+                                                            className={`relative mx-auto flex min-h-0 w-full max-w-[min(380px,calc(100vw-2.5rem))] flex-col items-stretch overflow-hidden rounded-2xl p-3 text-center shadow-2xl ring-1 ring-white/10 transition-all duration-300 aspect-square max-lg:h-full max-lg:max-h-full max-lg:w-auto max-lg:max-w-[min(calc(100vw-1.5rem),100%)] max-lg:min-h-0 sm:p-5 lg:h-auto lg:max-h-none ${studioDropHighlight ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-transparent' : ''}`}
                                                             style={{ backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor, backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
                                                         >
                                                             {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
                                                             <GridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
-                                                            {renderStudioFixedText('ref', {
-                                                                label: 'Referencia',
-                                                                displayValue: studioRefDisplay,
-                                                                viewContent: studioRefDisplay || '\u00a0',
-                                                                contentClassName: 'uppercase tracking-[0.2em] z-20 mb-8 select-none',
-                                                                attachInputRef: studioTheme.orientation === 'square',
-                                                            })}
-                                                            {renderStudioFixedText('verse', {
-                                                                label: 'Versículo',
-                                                                displayValue: studioVerseDisplay,
-                                                                multiline: true,
-                                                                viewContent: (
-                                                                    <>
-                                                                        {'"'}
-                                                                        {studioVerseDisplay}
-                                                                        {'"'}
-                                                                    </>
-                                                                ),
-                                                                contentClassName: 'font-serif z-20 w-full leading-tight select-none',
-                                                                attachInputRef: studioTheme.orientation === 'square',
-                                                            })}
-                                                            {renderStudioFixedText('website', {
-                                                                label: 'Sitio web',
-                                                                displayValue: studioWebsiteDisplay,
-                                                                viewContent: studioWebsiteDisplay || '\u00a0',
-                                                                contentClassName: 'tracking-widest z-20 mt-6 select-none',
-                                                                attachInputRef: studioTheme.orientation === 'square',
-                                                            })}
+                                                            <div className="relative z-10 flex min-h-0 flex-1 flex-col">
+                                                                <div className="flex shrink-0 justify-center px-1 pt-1">
+                                                                    {renderStudioFixedText('ref', {
+                                                                        label: 'Referencia',
+                                                                        displayValue: studioRefDisplay,
+                                                                        viewContent: studioRefDisplay || '\u00a0',
+                                                                        contentClassName: 'uppercase tracking-[0.2em] z-20 select-none',
+                                                                        attachInputRef: studioTheme.orientation === 'square',
+                                                                    })}
+                                                                </div>
+                                                                <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-1">
+                                                                    {renderStudioFixedText('verse', {
+                                                                        label: 'Versículo',
+                                                                        displayValue: studioVerseDisplay,
+                                                                        multiline: true,
+                                                                        viewContent: (
+                                                                            <>
+                                                                                {'"'}
+                                                                                {studioVerseDisplay}
+                                                                                {'"'}
+                                                                            </>
+                                                                        ),
+                                                                        contentClassName: 'font-serif z-20 w-full leading-tight select-none',
+                                                                        attachInputRef: studioTheme.orientation === 'square',
+                                                                    })}
+                                                                </div>
+                                                                <div className="flex shrink-0 justify-center px-1 pb-1">
+                                                                    {renderStudioFixedText('website', {
+                                                                        label: 'Sitio web',
+                                                                        displayValue: studioWebsiteDisplay,
+                                                                        viewContent: studioWebsiteDisplay || '\u00a0',
+                                                                        contentClassName: 'tracking-widest z-20 select-none',
+                                                                        attachInputRef: studioTheme.orientation === 'square',
+                                                                    })}
+                                                                </div>
+                                                            </div>
                                                             {renderStudioOverlayLayer(360)}
+                                                        </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             {/* ── Sidebar ── */}
-                                            <div className="flex min-h-0 w-full shrink-0 flex-col overflow-hidden border-t border-gray-100 bg-white max-lg:max-h-[min(46dvh,22rem)] lg:max-h-none lg:w-[300px] lg:border-l lg:border-t-0 xl:w-[320px]">
+                                            <div
+                                                className={`flex min-h-0 w-full shrink-0 flex-col overflow-hidden border-t border-gray-100 bg-white max-lg:min-h-0 max-lg:flex-1 lg:max-h-none lg:w-[300px] lg:border-l lg:border-t-0 xl:w-[320px] ${
+                                                    studioTheme.orientation === 'vertical' ? 'max-lg:max-h-none' : 'max-lg:max-h-[min(46dvh,26rem)]'
+                                                }`}
+                                            >
 
-                                                {/* Tab Bar */}
+                                                {/* Tab Bar — altura táctil en móvil */}
                                                 <div className="flex shrink-0 border-b border-gray-100 bg-gray-50/50">
                                                     {([
                                                         { id: 'formato', label: 'Formato' },
@@ -2774,30 +2862,31 @@ export default function Bible() {
                                                             type="button"
                                                             key={tab.id}
                                                             onClick={() => setStudioTab(tab.id)}
-                                                            className={`flex-1 min-h-10 px-1 py-2 text-[11px] font-black tracking-wide transition-all border-b-2 sm:min-h-[48px] sm:py-3 sm:text-xs lg:text-[11px] ${studioTab === tab.id ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-400 hover:text-gray-700 active:bg-gray-100'}`}
+                                                            className={`flex-1 min-h-12 px-2 py-2.5 text-[11px] font-black tracking-wide transition-all border-b-2 sm:min-h-[48px] sm:px-1 sm:py-3 sm:text-xs lg:text-[11px] ${studioTab === tab.id ? 'border-blue-500 text-blue-600 bg-white' : 'border-transparent text-gray-400 hover:text-gray-700 active:bg-gray-100'}`}
                                                         >
                                                             {tab.label}
                                                         </button>
                                                     ))}
                                                 </div>
 
-                                                {/* Tab Content */}
-                                                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar">
+                                                {/* Tab Content + barra de acciones móvil al pie (< lg) */}
+                                                <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                                                    <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
 
                                                     {/* ── Tab: Formato ── */}
                                                     {studioTab === 'formato' && (
                                                         <div className="flex flex-col gap-4 p-3 sm:gap-7 sm:p-5">
-                                                            {/* Orientation */}
+                                                            {/* Orientation — objetivos táctiles ≥44px en móvil */}
                                                             <div>
                                                                 <label className="mb-2 block text-[9px] font-black uppercase tracking-widest text-gray-400 sm:mb-3">Orientación</label>
-                                                                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                                                                <div className="grid grid-cols-3 gap-2 sm:gap-2">
                                                                     {([
-                                                                        { val: 'vertical', lbl: 'Vertical', hint: '9:16', icon: <div className="mx-auto mb-0.5 h-4 w-2.5 rounded-[2px] bg-current sm:mb-1 sm:h-5 sm:w-3 sm:rounded-[3px]" /> },
-                                                                        { val: 'horizontal', lbl: 'Horizontal', hint: '16:9', icon: <div className="mx-auto mb-0.5 h-2.5 w-4 rounded-[2px] bg-current sm:mb-1 sm:h-3 sm:w-5 sm:rounded-[3px]" /> },
-                                                                        { val: 'square', lbl: 'Cuadrado', hint: '1:1', icon: <div className="mx-auto mb-0.5 h-3.5 w-3.5 rounded-[2px] bg-current sm:mb-1 sm:h-4 sm:w-4 sm:rounded-[3px]" /> },
+                                                                        { val: 'vertical', lbl: 'Vertical', hint: '9:16', icon: <div className="mx-auto mb-1 h-5 w-3 rounded-[3px] bg-current sm:mb-1 sm:h-5 sm:w-3" /> },
+                                                                        { val: 'horizontal', lbl: 'Horizontal', hint: '16:9', icon: <div className="mx-auto mb-1 h-3 w-5 rounded-[3px] bg-current sm:mb-1 sm:h-3 sm:w-5" /> },
+                                                                        { val: 'square', lbl: 'Cuadrado', hint: '1:1', icon: <div className="mx-auto mb-1 h-4 w-4 rounded-[3px] bg-current sm:mb-1 sm:h-4 sm:w-4" /> },
                                                                     ] as const).map(({ val, lbl, hint, icon }) => (
                                                                         <button type="button" key={val} onClick={() => setStudioTheme({ ...studioTheme, orientation: val })}
-                                                                            className={`flex min-h-[3.25rem] flex-col items-center justify-center rounded-lg border-2 px-0.5 py-2 transition-all active:scale-[0.98] sm:min-h-0 sm:rounded-xl sm:py-4 sm:px-2 ${studioTheme.orientation === val ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-white'}`}
+                                                                            className={`flex min-h-[3.25rem] flex-col items-center justify-center rounded-xl border-2 px-1 py-2.5 transition-all active:scale-[0.98] max-lg:min-h-11 sm:min-h-0 sm:rounded-xl sm:py-4 sm:px-2 ${studioTheme.orientation === val ? 'border-blue-500 bg-blue-50 text-blue-600' : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-white'}`}
                                                                         >
                                                                             {icon}
                                                                             <span className="block text-[9px] font-black sm:text-[10px]">{lbl}</span>
@@ -2807,10 +2896,10 @@ export default function Bible() {
                                                                 </div>
                                                             </div>
 
-                                                            {/* Platform: fila deslizable en móvil para no consumir tanta altura */}
+                                                            {/* Platform: carrusel táctil en móvil; rejilla en sm+ */}
                                                             <div>
                                                                 <label className="mb-2 block text-[9px] font-black uppercase tracking-widest text-gray-400 sm:mb-3">Plataforma</label>
-                                                                <div className="-mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:thin] sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-5">
+                                                                <div className="-mx-1 flex snap-x snap-mandatory gap-2.5 overflow-x-auto px-2 pb-2 pt-0.5 [scrollbar-width:thin] sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-2 sm:overflow-visible sm:px-0 sm:pb-0 sm:pt-0 lg:grid-cols-5">
                                                                     {([
                                                                         { id: 'instagram', label: 'Instagram', orientation: 'square' as const, hint: '1:1', activeText: 'text-[#E1306C]', activeBg: 'bg-[#E1306C]/10', activeBorder: 'border-[#E1306C]', icon: <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" strokeWidth="2" /><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" strokeWidth="2" /><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" /></svg> },
                                                                         { id: 'facebook', label: 'Facebook', orientation: 'horizontal' as const, hint: '16:9', activeText: 'text-[#1877F2]', activeBg: 'bg-[#1877F2]/10', activeBorder: 'border-[#1877F2]', icon: <svg viewBox="0 0 24 24" className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg> },
@@ -2823,7 +2912,7 @@ export default function Bible() {
                                                                             setSelectedPlatform(isActive ? null : id);
                                                                             if (!isActive) setStudioTheme(t => ({ ...t, orientation }));
                                                                         }}
-                                                                            className={`flex min-h-0 min-w-[5.25rem] shrink-0 snap-start flex-row items-center gap-2 rounded-lg border-2 px-2.5 py-2 transition-all active:scale-[0.98] sm:min-h-[4.25rem] sm:w-auto sm:min-w-0 sm:flex-col sm:gap-1 sm:rounded-xl sm:px-1 sm:py-3 ${selectedPlatform === id ? `${activeBg} ${activeBorder} ${activeText}` : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-white'}`}
+                                                                            className={`flex min-h-11 min-w-[6.25rem] shrink-0 snap-start flex-row items-center gap-2 rounded-xl border-2 px-3 py-2.5 transition-all active:scale-[0.98] sm:min-h-[4.25rem] sm:w-auto sm:min-w-0 sm:flex-col sm:gap-1 sm:rounded-xl sm:px-1 sm:py-3 ${selectedPlatform === id ? `${activeBg} ${activeBorder} ${activeText}` : 'border-gray-100 bg-gray-50 text-gray-400 hover:border-gray-200 hover:bg-white'}`}
                                                                         >
                                                                             {icon}
                                                                             <span className="flex min-w-0 flex-1 flex-col items-start text-left sm:items-center sm:text-center">
@@ -3248,6 +3337,38 @@ export default function Bible() {
                                                             })()}
                                                         </div>
                                                     )}
+                                                </div>
+
+                                                    <div
+                                                        className="lg:hidden shrink-0 space-y-2 border-t border-gray-200/90 bg-gradient-to-b from-gray-50/80 to-white px-3 pt-3 shadow-[0_-8px_24px_rgba(15,23,42,0.06)] pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]"
+                                                    >
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                type="button"
+                                                                onClick={resetDragPos}
+                                                                className="flex min-h-12 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-2 text-xs font-bold text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:scale-[0.99]"
+                                                            >
+                                                                <X className="h-4 w-4 shrink-0" />
+                                                                Restablecer
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={saveStudioPublicationDraft}
+                                                                className="flex min-h-12 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-white px-2 text-xs font-bold text-gray-700 shadow-sm transition-colors hover:bg-gray-50 active:scale-[0.99]"
+                                                            >
+                                                                <Save className="h-4 w-4 shrink-0" />
+                                                                Guardar
+                                                            </button>
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleDownloadPreview}
+                                                            className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-bold text-white shadow-md shadow-blue-900/25 transition-colors hover:bg-blue-500 active:scale-[0.99]"
+                                                        >
+                                                            <Download className="h-4 w-4 shrink-0" />
+                                                            Descargar imagen
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
