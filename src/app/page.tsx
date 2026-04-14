@@ -23,16 +23,14 @@ export default function Page() {
       <Suspense fallback={<div className="min-h-[200px]" />}>
         <Bible />
       </Suspense>
-      <PrayerGroupInvitation />
-      <ReadingPlans />
       <DownloadApp />
       <section className="w-full bg-white py-12 md:py-24 lg:py-32">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 sm:px-6">
           <p className="text-xs font-black text-gray-400 uppercase tracking-[0.3em]">Partners</p>
         <div className="grid w-full grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-8">
-          <a href="https://www.iciar.app" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.faithcomesbyhearing.com/" target="_blank" rel="noopener noreferrer">
             <NextImage
-              src="https://i.imgur.com/qdJZ8ei.png"
+              src="https://i.imgur.com/2zDkgqq.png"
               alt="Wycliffe"
               width={220}
               height={120}
@@ -82,6 +80,7 @@ export default function Page() {
         </div>
         </div>
       </section>
+      <PrayerGroupInvitation />
       <Footer />
     </main>
   );
