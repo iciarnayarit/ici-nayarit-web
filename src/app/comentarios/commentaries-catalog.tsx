@@ -195,9 +195,6 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
                 Combina el comentario de Matthew Henry con lecturas en NVI para un recorrido guiado por pasajes clave.
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-4">
-                <Button className="rounded-xl bg-slate-900 font-semibold text-white hover:bg-slate-800">
-                  Comenzar estudio
-                </Button>
                 <div className="flex -space-x-2">
                   {['bg-amber-200', 'bg-sky-200', 'bg-emerald-200'].map((bg, i) => (
                     <span
