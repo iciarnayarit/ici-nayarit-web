@@ -50,8 +50,21 @@ export default async function CommentaryChapterPage({ params, searchParams }: Pr
   const versionId: VersionId = isValidReadingPlanVersionId(versionParam) ? versionParam : 'rvr';
 
   const spanishKey = usfmToSpanishBibleDataKey(book);
-  const lookup = await loadFullBibleLookup(versionId);
-  const scriptureVerses = spanishKey ? (lookup[spanishKey]?.chapters[ch - 1] ?? []) : [];
+  let scriptureVerses: string[] = [];
+  if (spanishKey) {
+    try {
+      const lookup = await loadFullBibleLookup(versionId);
+      scriptureVerses = lookup[spanishKey]?.chapters[ch - 1] ?? [];
+    } catch (error) {
+      // En producción la lectura local de JSON puede fallar en runtime; no debe romper la vista del comentario.
+      console.error(
+        '[comentarios] No se pudo cargar texto bíblico local',
+        { commentaryId: id, book, chapter: ch, versionId },
+        error
+      );
+      scriptureVerses = [];
+    }
+  }
 
   const intro = (data.book.introduction ?? '').replace(/\s+/g, ' ').trim();
   const bookIntroductionTeaser = intro.length > 400 ? `${intro.slice(0, 397)}…` : intro || data.commentary.englishName;
