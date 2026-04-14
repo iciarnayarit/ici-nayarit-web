@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/app/components/ui/card';
 import { Progress } from '@/app/components/ui/progress';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
 import { useToast } from '@/app/hooks/use-toast';
 import {
     Bookmark, CheckCircle2, Share2, ArrowLeft, Type,
@@ -675,12 +676,16 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
 
                         {/* Main Passage Column */}
                         <div className={`transition-all duration-700 w-full ${isNoteOpen && selectedVerse ? 'xl:w-1/2' : 'max-w-4xl mx-auto'}`}>
-                            <div className="flex justify-between items-center mb-6">
-                                <Button onClick={() => { setSelectedDay(null); setSelectedVerse(null); setIsNoteOpen(false); }} variant="outline" className={`rounded-xl ${themeStyles.buttonHover}`}>
+                            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                <Button
+                                    onClick={() => { setSelectedDay(null); setSelectedVerse(null); setIsNoteOpen(false); }}
+                                    variant="outline"
+                                    className={`h-11 w-full justify-center rounded-xl text-sm sm:w-auto sm:justify-start ${themeStyles.buttonHover}`}
+                                >
                                     <ArrowLeft className="mr-2 h-4 w-4" /> Volver al plan
                                 </Button>
 
-                                <div className="flex flex-wrap items-center justify-end gap-2">
+                                <div className="grid w-full grid-cols-[1fr_auto] items-center gap-2 sm:flex sm:w-auto">
                                     <Select
                                         value={planVersionId}
                                         onValueChange={(v) => {
@@ -690,7 +695,7 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                         }}
                                     >
                                         <SelectTrigger
-                                            className={`h-10 w-[min(100%,220px)] rounded-xl border text-sm font-semibold ${theme === 'dark' ? 'border-gray-700 bg-[#151D2C] text-gray-200' : 'border-gray-200 bg-white text-gray-800'}`}
+                                            className={`h-11 w-full min-w-0 rounded-xl border px-3 text-sm font-semibold sm:w-[220px] ${theme === 'dark' ? 'border-gray-700 bg-[#151D2C] text-gray-200' : 'border-gray-200 bg-white text-gray-800'}`}
                                         >
                                             <SelectValue placeholder="Versión" />
                                         </SelectTrigger>
@@ -704,7 +709,13 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                     </Select>
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <Button variant="outline" size="icon" className={`rounded-xl ${themeStyles.buttonHover}`}>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                className={`h-11 w-11 rounded-xl ${themeStyles.buttonHover}`}
+                                                aria-label="Opciones de lectura"
+                                                title="Opciones de lectura"
+                                            >
                                                 <Type className="h-4 w-4" />
                                             </Button>
                                         </PopoverTrigger>
@@ -1352,25 +1363,40 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
     return (
         <div className="container mx-auto px-4 py-12 md:px-6">
             <div className="max-w-4xl mx-auto">
-                <div className="flex justify-between items-center mb-8">
-                    <Button onClick={() => router.back()} variant="ghost">
+                <div className="mb-8 flex items-center justify-between gap-3">
+                    <Button
+                        onClick={() => router.back()}
+                        variant="ghost"
+                        className="h-10 rounded-full px-3 text-sm sm:px-4"
+                    >
                         <ArrowLeft className="mr-2 h-4 w-4" /> Regresar
                     </Button>
-                    <Button
-                        type="button"
-                        variant="outline"
-                        className="rounded-full"
-                        onClick={() =>
-                            goToDashboardBibliaSavedVerses(
-                                authLoaded,
-                                isSignedIn === true,
-                                redirectToSignIn,
-                                (href) => router.push(href),
-                            )
-                        }
-                    >
-                        Versículos Guardados
-                    </Button>
+                    <TooltipProvider delayDuration={150}>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-10 w-10 rounded-full"
+                                    aria-label="Versículos Guardados"
+                                    onClick={() =>
+                                        goToDashboardBibliaSavedVerses(
+                                            authLoaded,
+                                            isSignedIn === true,
+                                            redirectToSignIn,
+                                            (href) => router.push(href),
+                                        )
+                                    }
+                                >
+                                    <Bookmark className="h-4 w-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                Versículos Guardados
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
 
                 <div className="text-center mb-12">

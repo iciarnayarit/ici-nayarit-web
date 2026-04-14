@@ -26,21 +26,58 @@ export default function Page() {
       <PrayerGroupInvitation />
       <ReadingPlans />
       <DownloadApp />
-      <section className="w-full py-12 md:py-24 lg:py-32 flex justify-center items-center bg-white">
-        <div className="flex flex-col items-center gap-8">
+      <section className="w-full bg-white py-12 md:py-24 lg:py-32">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-4 sm:px-6">
           <p className="text-xs font-black text-gray-400 uppercase tracking-[0.3em]">Partners</p>
-        <div className="flex items-center justify-center gap-8">
+        <div className="grid w-full grid-cols-2 gap-5 sm:grid-cols-3 sm:gap-8">
           <a href="https://www.iciar.app" target="_blank" rel="noopener noreferrer">
-            <NextImage src="https://i.imgur.com/qdJZ8ei.png" alt="Wycliffe" width={100} height={100} className="h-24 w-auto object-contain hover:opacity-80 transition-opacity" />
+            <NextImage
+              src="https://i.imgur.com/qdJZ8ei.png"
+              alt="Wycliffe"
+              width={220}
+              height={120}
+              className="mx-auto h-14 w-auto object-contain opacity-95 transition-opacity hover:opacity-80 sm:h-16"
+            />
           </a>
           <a href="https://www.iciar.app" target="_blank" rel="noopener noreferrer">
-            <NextImage src="https://i.imgur.com/iVQq3Zg.jpeg" alt="ICIAR" width={100} height={100} className="h-24 w-auto object-contain hover:opacity-80 transition-opacity" />
+            <NextImage
+              src="https://i.imgur.com/iVQq3Zg.jpeg"
+              alt="ICIAR"
+              width={220}
+              height={120}
+              className="mx-auto h-14 w-auto object-contain opacity-95 transition-opacity hover:opacity-80 sm:h-16"
+            />
           </a>
           <a href="https://www.iciarpacifico.com/" target="_blank" rel="noopener noreferrer">
-            <NextImage src="https://i.imgur.com/rPl7VI5.png" alt="ICIAR Pacifico Norte" width={100} height={100} className="h-24 w-auto object-contain hover:opacity-80 transition-opacity" />
+            <NextImage
+              src="https://i.imgur.com/rPl7VI5.png"
+              alt="ICIAR Pacifico Norte"
+              width={220}
+              height={120}
+              className="mx-auto h-14 w-auto object-contain opacity-95 transition-opacity hover:opacity-80 sm:h-16"
+            />
           </a>
           <a href="https://icipdrgdl.com/" target="_blank" rel="noopener noreferrer">
-            <NextImage src="https://i.imgur.com/Q06gpuP.png" alt="PDR Radio" width={100} height={100} className="h-24 w-auto object-contain hover:opacity-80 transition-opacity" />
+            <NextImage
+              src="https://i.imgur.com/Q06gpuP.png"
+              alt="PDR Radio"
+              width={220}
+              height={120}
+              className="mx-auto h-14 w-auto object-contain opacity-95 transition-opacity hover:opacity-80 sm:h-16"
+            />
+          </a>
+          <a
+            href="https://www.scriptureearth.org/00spa.php?idx=60&language=Huichol&iso_code=hch"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <NextImage
+              src="https://i.imgur.com/1W1jQw3.png"
+              alt="Scripture Earth Huichol"
+              width={220}
+              height={120}
+              className="mx-auto h-14 w-auto object-contain opacity-95 transition-opacity hover:opacity-80 sm:h-16"
+            />
           </a>
         </div>
         </div>

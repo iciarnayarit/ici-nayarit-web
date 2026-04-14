@@ -126,14 +126,6 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
         <p className="relative mt-4 max-w-2xl text-sm leading-relaxed text-slate-200 sm:text-base">
           Estudios reformados, notas de estudio y comentarios históricos para profundizar en las Escrituras.
         </p>
-        <div className="relative mt-8">
-          <Button
-            asChild
-            className="rounded-xl bg-white px-6 font-semibold text-slate-900 shadow-md hover:bg-slate-100"
-          >
-            <a href="#coleccion">Explorar colección</a>
-          </Button>
-        </div>
       </section>
 
       {/* Tabs + filtros */}
