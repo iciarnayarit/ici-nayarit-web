@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BookOpen, Bookmark, Filter, Plus, Share2 } from 'lucide-react';
@@ -45,6 +44,15 @@ const SAMPLE_REFERENCES = [
   'Efesios 2:8',
   'Génesis 1:1',
 ];
+
+const PREFERRED_ORDER = [
+  'adam-clarke',
+  'jamieson-fausset-brown',
+  'john-gill',
+  'keil-delitzsch',
+  'matthew-henry',
+  'tyndale',
+] as const;
 
 function languageBadge(c: HelloAoCommentary): string {
   const map: Record<string, string> = {
@@ -94,7 +102,16 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
     };
   }, [refreshSavedIds]);
 
-  const filtered = useMemo(() => commentaries.filter(c => matchesTab(c, tab)), [commentaries, tab]);
+  const filtered = useMemo(() => {
+    const list = commentaries.filter(c => matchesTab(c, tab));
+    const rank = new Map<string, number>(PREFERRED_ORDER.map((id, i) => [id, i]));
+    return [...list].sort((a, b) => {
+      const ra = rank.has(a.id) ? rank.get(a.id)! : Number.MAX_SAFE_INTEGER;
+      const rb = rank.has(b.id) ? rank.get(b.id)! : Number.MAX_SAFE_INTEGER;
+      if (ra !== rb) return ra - rb;
+      return commentaryAuthorShortName(a.name).localeCompare(commentaryAuthorShortName(b.name), 'es');
+    });
+  }, [commentaries, tab]);
 
   return (
     <div className="min-h-screen bg-[#F0F2F6] pb-24">
@@ -107,31 +124,10 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
           .
         </div>
       ) : null}
-      {/* Hero */}
-      <section className="relative mx-4 mt-4 overflow-hidden rounded-3xl bg-gradient-to-br from-[#0f172a] via-[#1e3a5f] to-[#0c4a6e] px-6 py-12 text-white shadow-xl sm:mx-6 sm:px-10 lg:mx-auto lg:mt-6 lg:max-w-6xl">
-        <div
-          className="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full border border-white/10 bg-white/[0.04]"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute -bottom-20 left-1/3 h-96 w-96 rounded-full border border-sky-400/20"
-          aria-hidden
-        />
-        <span className="relative inline-flex rounded-full bg-sky-500/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-white">
-          Enfoque teológico
-        </span>
-        <h1 className="relative mt-4 max-w-3xl font-display text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
-          Comentarios Bíblicos
-        </h1>
-        <p className="relative mt-4 max-w-2xl text-sm leading-relaxed text-slate-200 sm:text-base">
-          Estudios reformados, notas de estudio y comentarios históricos para profundizar en las Escrituras.
-        </p>
-      </section>
-
       {/* Tabs + filtros */}
       <div
         id="coleccion"
-        className="sticky top-[4.5rem] z-30 mx-4 mt-6 flex flex-col gap-3 border-b border-gray-200/80 bg-[#F0F2F6]/95 pb-3 backdrop-blur-md sm:mx-6 sm:flex-row sm:items-center sm:justify-between lg:mx-auto lg:max-w-6xl"
+        className="sticky top-[4.5rem] z-30 mx-4 mt-4 flex flex-col gap-3 border-b border-gray-200/80 bg-[#F0F2F6]/95 pb-3 backdrop-blur-md sm:mx-6 sm:flex-row sm:items-center sm:justify-between lg:mx-auto lg:max-w-6xl"
       >
         <div className="flex flex-wrap gap-2">
           {TABS.map(t => (
@@ -162,46 +158,6 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
       </div>
 
       <div className="mx-4 space-y-8 py-8 sm:mx-6 lg:mx-auto lg:max-w-6xl">
-        {/* Fila destacada: estudio temático + solicitud */}
-        <div className="grid gap-4">
-          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm lg:flex">
-            <div className="relative h-48 shrink-0 bg-amber-100 lg:h-auto lg:w-2/5">
-              <Image
-                src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=600&q=80"
-                alt=""
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 40vw"
-              />
-            </div>
-            <div className="flex flex-1 flex-col justify-center p-6">
-              <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Estudio temático</span>
-              <div className="mt-2 flex items-center gap-2 text-gray-500">
-                <BookOpen className="h-4 w-4" />
-                <span className="text-xs font-semibold">Sugerido</span>
-              </div>
-              <h2 className="mt-2 font-display text-xl font-bold text-gray-900">
-                Los milagros de Jesús en los evangelios sinópticos
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                Combina el comentario de Matthew Henry con lecturas en NVI para un recorrido guiado por pasajes clave.
-              </p>
-              <div className="mt-5 flex flex-wrap items-center gap-4">
-                <div className="flex -space-x-2">
-                  {['bg-amber-200', 'bg-sky-200', 'bg-emerald-200'].map((bg, i) => (
-                    <span
-                      key={i}
-                      className={`inline-flex h-9 w-9 items-center justify-center rounded-full border-2 border-white text-[10px] font-bold text-gray-700 ${bg}`}
-                    >
-                      {String.fromCharCode(65 + i)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Grid de tarjetas */}
         {filtered.length === 0 ? (
           <p className="rounded-2xl border border-dashed border-gray-300 bg-white py-12 text-center text-sm text-gray-500">
@@ -297,14 +253,6 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
         )}
       </div>
 
-      {/* FAB */}
-      <Link
-        href="/recursos"
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-600/40 transition-transform hover:scale-105 hover:bg-blue-700"
-        aria-label="Más recursos de estudio"
-      >
-        <Plus className="h-7 w-7 stroke-[2.5]" />
-      </Link>
     </div>
   );
 }

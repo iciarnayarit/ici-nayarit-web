@@ -42,6 +42,42 @@ import {
     loadFullBibleLookup,
 } from '@/lib/bible-versions';
 import { loadPublicBibleJson } from '@/lib/load-public-bible-json';
+import { getHuicholJsonPathForSpanishBook } from '@/lib/bible-huichol-paths';
+import { huicholKaraokeFromProgress, tokenizeVerseWords } from '@/lib/huichol-audio-verse-sync';
+import { HuicholReaderInviteBanner } from '@/app/components/huichol-reader-invite-banner';
+import { HuicholStudioAudioBar } from '@/app/components/huichol-studio-audio-bar';
+import { HuicholWordPracticeDialog } from '@/app/components/huichol-word-practice-dialog';
+import { stripWordForSpeech } from '@/lib/huichol-word-speech';
+import { spanishBibleDataKeyToUsfm } from '@/lib/helloao-usfm-to-spanish-key';
+
+const INDIGENOUS_DBP_VERSION_TO_ISO = {
+    cora_el_nayar: 'crn',
+    cora_santa_teresa: 'cok',
+    tepehuan_durango: 'stp',
+} as const;
+
+const DISABLED_VERSION_IDS: ReadonlySet<VersionId> = new Set([
+    'cora_el_nayar',
+    'cora_santa_teresa',
+    'tepehuan_durango',
+]);
+
+type IndigenousDbpVersionId = keyof typeof INDIGENOUS_DBP_VERSION_TO_ISO;
+
+type IndigenousChapterApiResponse = {
+    data?: {
+        language: string;
+        iso: string;
+        filesetId: string;
+        bookId: string;
+        chapter: number;
+        verses: Array<{ verse: number; text: string }>;
+    };
+};
+
+function isIndigenousDbpVersionId(version: VersionId): version is IndigenousDbpVersionId {
+    return version in INDIGENOUS_DBP_VERSION_TO_ISO;
+}
 
 const books = [
     "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué",
@@ -58,52 +94,37 @@ const books = [
     "3 Juan", "Judas", "Apocalipsis"
 ];
 
-/** Maps Spanish book name → Huichol file abbreviation (only valid files). */
-const HUICHOL_BOOK_MAP: Record<string, string> = {
-    "1 Crónicas": "1ch", "1 Corintios": "1co", "1 Juan": "1jn", "1 Reyes": "1ki",
-    "1 Pedro": "1pe", "1 Samuel": "1sa", "1 Tesalonicenses": "1th",
-    "2 Crónicas": "2ch", "2 Corintios": "2co", "2 Juan": "2jn", "2 Reyes": "2ki",
-    "2 Pedro": "2pe", "2 Samuel": "2sa", "2 Tesalonicenses": "2th", "2 Timoteo": "2ti",
-    "3 Juan": "3jn",
-    "Amós": "amo", "Colosenses": "col", "Daniel": "dan", "Eclesiastés": "ecc",
-    "Efesios": "eph", "Ester": "est", "Esdras": "ezr", "Gálatas": "gal",
-    "Habacuc": "hab", "Hageo": "hag", "Hebreos": "heb", "Oseas": "hos",
-    "Isaías": "isa", "Santiago": "jas", "Jueces": "jdg", "Jeremías": "jer",
-    "Juan": "jhn", "Joel": "jol", "Jonás": "jon", "Lamentaciones": "lam",
-    "Levítico": "lev", "Malaquías": "mal", "Mateo": "mat", "Miqueas": "mic",
-    "Abdías": "oba", "Filemón": "phm", "Filipenses": "php", "Apocalipsis": "rev",
-    "Romanos": "rom", "Rut": "rut", "Cantares": "sng", "Tito": "tit",
-    "Zacarías": "zec", "Sofonías": "zep",
-};
-
-/** Abreviaturas con JSON en `public/bible/huichol/<abbr>.json` (mismo helper que otras traducciones). */
-const HUICHOL_ABBRS = [
-    '1ch', '1co', '1jn', '1ki', '1pe', '1sa', '1th', '2ch', '2co', '2jn', '2ki', '2pe', '2sa', '2th', '2ti', '3jn',
-    'amo', 'col', 'dan', 'ecc', 'eph', 'est', 'ezr', 'gal', 'hab', 'hag', 'heb', 'hos', 'isa', 'jas', 'jdg', 'jer',
-    'jhn', 'jol', 'jon', 'lam', 'lev', 'mal', 'mat', 'mic', 'oba', 'phm', 'php', 'rev', 'rom', 'rut', 'sng', 'tit',
-    'zec', 'zep',
-] as const;
-
-const HUICHOL_LOADERS: Record<string, () => Promise<unknown>> = Object.fromEntries(
-    HUICHOL_ABBRS.map((abbr) => [abbr, () => loadPublicBibleJson(`huichol/${abbr}.json`)])
-) as Record<string, () => Promise<unknown>>;
+type HuicholVerseRow = { verse_number?: number; text?: string };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function parseHuicholChapter(raw: any, chapterIdx: number): string[] {
+function parseHuicholChapter(raw: any, chapterNumber1Based: number): string[] {
     const d = raw.default ?? raw;
-    // Format A: { libro: [...], ... } where libro is an array
+    // Format A (legado): { libro: [...] }
     if (Array.isArray(d.libro)) {
-        const cap = d.libro[0]?.capitulo?.[chapterIdx];
+        const cap = d.libro[0]?.capitulo?.[chapterNumber1Based - 1];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (cap?.versiculos ?? []).map((v: any) => v.texto as string).filter(Boolean);
     }
-    // Format B: { book: { chapters: [{ verses: [...] }] } }
-    if (d.book?.chapters) {
-        const cap = d.book.chapters[chapterIdx];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return (cap?.verses ?? []).map((v: any) => v.text as string).filter(Boolean);
+    // Format B: { book: { chapters: [{ chapter_number, verses: [{ verse_number, text }] } } }
+    if (d.book?.chapters && Array.isArray(d.book.chapters)) {
+        const chapters = d.book.chapters as Array<{ chapter_number?: number; verses?: HuicholVerseRow[] }>;
+        const cap =
+            chapters.find((c) => c.chapter_number === chapterNumber1Based) ??
+            chapters[chapterNumber1Based - 1];
+        const rows = cap?.verses ?? [];
+        return [...rows]
+            .sort((a, b) => (a.verse_number ?? 0) - (b.verse_number ?? 0))
+            .map((v) => (v.text ?? '').trim())
+            .filter(Boolean);
     }
     return [];
+}
+
+/** Título del libro en JSON Huichol (`book.name`), p. ej. «Xuti» para Rut. */
+function readHuicholBookNativeName(raw: unknown): string | null {
+    const d = (raw as { default?: unknown }).default ?? raw;
+    const name = (d as { book?: { name?: unknown } })?.book?.name;
+    return typeof name === 'string' && name.trim() ? name.trim() : null;
 }
 
 const chaptersPerBook: { [key: string]: number } = {
@@ -554,13 +575,60 @@ export default function Bible() {
     const [verses, setVerses] = useState<string[]>([]);
     /** Encabezados de sección por versículo (traducciones en formato UBS español). */
     const [verseSectionTitles, setVerseSectionTitles] = useState<string[]>([]);
+    /** Nombre del libro en wixárika (desde JSON); solo con versión Huichol. */
+    const [huicholNativeBookName, setHuicholNativeBookName] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [savedVerses, setSavedVerses] = useState<SavedVerse[]>([]);
     const [highlightedVerses, setHighlightedVerses] = useState<Record<string, string>>({});
     const [selectedVerses, setSelectedVerses] = useState<number[]>([]);
+    /** Versículo resaltado según el progreso del audio Huichol (estimado por longitud de texto). */
+    const [huicholAudioPlaybackVerse, setHuicholAudioPlaybackVerse] = useState<number | null>(null);
+    /** Palabra activa (karaoke aproximado) dentro del versículo en reproducción Huichol. */
+    const [huicholKaraoke, setHuicholKaraoke] = useState<{ verseNumber: number; wordIndex: number } | null>(null);
+    const [huicholAudioIsPlaying, setHuicholAudioIsPlaying] = useState(false);
+    const lastScrolledHuicholAudioVerseRef = useRef<number | null>(null);
+    const skipNextVerseParagraphClickRef = useRef(false);
+    const huicholVerseParagraphClickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [huicholWordPractice, setHuicholWordPractice] = useState<{
+        displayWord: string;
+        speechText: string;
+        reference: string;
+    } | null>(null);
+    /** Invitación Huichol cerrada con la X; se restablece al cambiar de versión (p. ej. al volver a entrar en Huichol). */
+    const [huicholReaderInviteDismissed, setHuicholReaderInviteDismissed] = useState(false);
     const [savedChapters, setSavedChapters] = useState<{ book: string; chapter: number; verses: string[] }[]>([]);
     const [comparadorSyncScroll, setComparadorSyncScroll] = useState(true);
     const [comparadorSearchQuery, setComparadorSearchQuery] = useState('');
+
+    useEffect(() => {
+        if (!DISABLED_VERSION_IDS.has(selectedVersion)) return;
+        setSelectedVersion(DEFAULT_BIBLE_VERSION_ID);
+        setSelectedVerses([]);
+    }, [selectedVersion]);
+
+    useEffect(() => {
+        if (selectedVersion !== 'huichol') setHuicholNativeBookName(null);
+    }, [selectedVersion]);
+
+    useEffect(() => {
+        if (selectedVersion !== 'huichol') setHuicholReaderInviteDismissed(false);
+    }, [selectedVersion]);
+
+    useEffect(() => {
+        setHuicholAudioPlaybackVerse(null);
+        setHuicholKaraoke(null);
+        setHuicholAudioIsPlaying(false);
+        lastScrolledHuicholAudioVerseRef.current = null;
+        setHuicholWordPractice(null);
+        if (huicholVerseParagraphClickTimerRef.current) {
+            clearTimeout(huicholVerseParagraphClickTimerRef.current);
+            huicholVerseParagraphClickTimerRef.current = null;
+        }
+    }, [selectedBook, selectedChapter, selectedVersion]);
+
+    useEffect(() => {
+        setHuicholNativeBookName(null);
+    }, [selectedBook]);
 
     // Note State
     const [isNoteOpen, setIsNoteOpen] = useState(false);
@@ -693,13 +761,17 @@ export default function Bible() {
     // El versículo activo es el último que se seleccionó (para notas y studio)
     const activeVerse = selectedVerses.length > 0 ? selectedVerses[selectedVerses.length - 1] : null;
 
+    /** Título visible del libro (Huichol: `book.name` del JSON; resto: nombre en español de la UI). */
+    const readerBookTitle =
+        selectedVersion === 'huichol' && huicholNativeBookName ? huicholNativeBookName : selectedBook;
+
     // Texto combinado de todos los versículos seleccionados (ordenados)
     const selectedVersesText = [...selectedVerses].sort((a, b) => a - b).map(v => verses[v - 1]).join(' ');
     const selectedVersesRef = (() => {
         const s = [...selectedVerses].sort((a, b) => a - b);
-        if (s.length === 0) return `${selectedBook} ${selectedChapter}`;
-        if (s.length === 1) return `${selectedBook} ${selectedChapter}:${s[0]}`;
-        return `${selectedBook} ${selectedChapter}:${s[0]}-${s[s.length - 1]}`;
+        if (s.length === 0) return `${readerBookTitle} ${selectedChapter}`;
+        if (s.length === 1) return `${readerBookTitle} ${selectedChapter}:${s[0]}`;
+        return `${readerBookTitle} ${selectedChapter}:${s[0]}-${s[s.length - 1]}`;
     })();
 
     const STUDIO_WEBSITE_DEFAULT = 'www.iciarnayarit.com';
@@ -1252,11 +1324,15 @@ export default function Bible() {
         const book = searchParams.get('book');
         const chapter = searchParams.get('chapter');
         const verse = searchParams.get('verse');
+        const version = searchParams.get('version');
+        if (version && VERSIONS.some((v) => v.id === version) && !DISABLED_VERSION_IDS.has(version as VersionId)) {
+            setSelectedVersion(version as VersionId);
+        }
         if (book && books.includes(book)) {
             setSelectedBook(book);
-            setSelectedChapter(chapter ? parseInt(chapter) : 1);
+            setSelectedChapter(chapter ? parseInt(chapter, 10) : 1);
             if (verse) {
-                const verseNum = parseInt(verse);
+                const verseNum = parseInt(verse, 10);
                 // Highlight the verse after a short delay so the chapter loads first
                 setTimeout(() => {
                     setSelectedVerses([verseNum]);
@@ -1388,15 +1464,45 @@ export default function Bible() {
             setIsLoading(true);
             try {
                 if (selectedVersion === 'huichol') {
-                    const fileAbbr = HUICHOL_BOOK_MAP[selectedBook];
-                    const loader = fileAbbr ? HUICHOL_LOADERS[fileAbbr] : null;
-                    if (!loader) {
+                    const path = getHuicholJsonPathForSpanishBook(selectedBook);
+                    if (!path) {
+                        setHuicholNativeBookName(null);
                         setVerses([]);
                         setVerseSectionTitles([]);
                         return;
                     }
-                    const raw = await loader();
-                    setVerses(parseHuicholChapter(raw, selectedChapter - 1));
+                    const raw = await loadPublicBibleJson(path);
+                    setHuicholNativeBookName(readHuicholBookNativeName(raw));
+                    setVerses(parseHuicholChapter(raw, selectedChapter));
+                    setVerseSectionTitles([]);
+                    return;
+                }
+
+                if (isIndigenousDbpVersionId(selectedVersion)) {
+                    const spanishKey = selectedBook.toLowerCase();
+                    const usfm = spanishBibleDataKeyToUsfm(spanishKey);
+                    if (!usfm) {
+                        setVerses([]);
+                        setVerseSectionTitles([]);
+                        return;
+                    }
+
+                    const res = await fetch(
+                        `/api/dbp/bibles/indigenous-mx/chapter?iso=${INDIGENOUS_DBP_VERSION_TO_ISO[selectedVersion]}&book=${usfm}&chapter=${selectedChapter}`
+                    );
+                    const body = (await res.json()) as IndigenousChapterApiResponse & { error?: string };
+                    if (!res.ok) {
+                        throw new Error(body.error || `Error ${res.status}`);
+                    }
+
+                    const chapterVerses = Array.isArray(body?.data?.verses)
+                        ? body.data.verses
+                            .sort((a, b) => a.verse - b.verse)
+                            .map(v => (v.text || '').trim())
+                            .filter(Boolean)
+                        : [];
+
+                    setVerses(chapterVerses);
                     setVerseSectionTitles([]);
                     return;
                 }
@@ -1415,6 +1521,7 @@ export default function Bible() {
                 setVerseSectionTitles(pad);
             } catch (error) {
                 console.error("Failed to load chapter:", error);
+                if (selectedVersion === 'huichol') setHuicholNativeBookName(null);
                 setVerses([]);
                 setVerseSectionTitles([]);
             } finally {
@@ -1442,6 +1549,24 @@ export default function Bible() {
         } else {
             setIsNoteOpen(false);
         }
+    };
+
+    const handleVerseClickRef = useRef(handleVerseClick);
+    handleVerseClickRef.current = handleVerseClick;
+
+    const flushHuicholVerseParagraphClickTimer = () => {
+        if (huicholVerseParagraphClickTimerRef.current) {
+            clearTimeout(huicholVerseParagraphClickTimerRef.current);
+            huicholVerseParagraphClickTimerRef.current = null;
+        }
+    };
+
+    const queueHuicholVerseParagraphClick = (verseNumber: number) => {
+        flushHuicholVerseParagraphClickTimer();
+        huicholVerseParagraphClickTimerRef.current = setTimeout(() => {
+            huicholVerseParagraphClickTimerRef.current = null;
+            handleVerseClickRef.current(verseNumber);
+        }, 200);
     };
 
     const handleHighlightSubmit = (reference: string, color: string) => {
@@ -1920,6 +2045,45 @@ export default function Bible() {
         }
     };
 
+    const handleHuicholPlaybackProgress = useCallback(
+        (info: { currentTime: number; duration: number; playing: boolean }) => {
+            setHuicholAudioIsPlaying(info.playing);
+            if (!verses.length) {
+                setHuicholAudioPlaybackVerse(null);
+                setHuicholKaraoke(null);
+                return;
+            }
+            if (!Number.isFinite(info.duration) || info.duration <= 0) {
+                setHuicholAudioPlaybackVerse(info.playing ? 1 : null);
+                setHuicholKaraoke(info.playing ? { verseNumber: 1, wordIndex: 0 } : null);
+                return;
+            }
+            const karaoke = huicholKaraokeFromProgress(verses, info.currentTime, info.duration);
+            if (!karaoke) {
+                setHuicholAudioPlaybackVerse(null);
+                setHuicholKaraoke(null);
+                return;
+            }
+            const next = karaoke.verseNumber;
+            setHuicholAudioPlaybackVerse((prev) => (prev === next ? prev : next));
+            setHuicholKaraoke((prev) =>
+                prev?.verseNumber === karaoke.verseNumber && prev.wordIndex === karaoke.wordIndex ? prev : karaoke
+            );
+        },
+        [verses]
+    );
+
+    useEffect(() => {
+        if (selectedVersion !== 'huichol' || !huicholAudioIsPlaying) return;
+        if (huicholAudioPlaybackVerse == null) return;
+        if (lastScrolledHuicholAudioVerseRef.current === huicholAudioPlaybackVerse) return;
+        lastScrolledHuicholAudioVerseRef.current = huicholAudioPlaybackVerse;
+        const id = `verse-${huicholAudioPlaybackVerse}`;
+        queueMicrotask(() => {
+            document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    }, [huicholAudioPlaybackVerse, huicholAudioIsPlaying, selectedVersion]);
+
     const chapters = chaptersPerBook[selectedBook] ? Array.from({ length: chaptersPerBook[selectedBook] }, (_, i) => i + 1) : [];
 
     const getThemeStyles = () => {
@@ -1960,12 +2124,29 @@ export default function Bible() {
 
                             {/* BIBLIA */}
                             <div className="w-full">
-                                <div className="mb-6 sm:mb-8 flex flex-col gap-0">
-                                    <div className="my-3 sm:my-4 mx-auto flex w-full max-w-full flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm md:flex-row md:items-stretch md:justify-between md:py-2.5 md:pl-3 md:pr-2">
+                                <div className="mb-6 sm:mb-8 flex flex-col gap-3 sm:gap-4">
+                                    {selectedVersion === 'huichol' && !huicholReaderInviteDismissed && (
+                                        <div className="mx-auto mt-3 w-full max-w-full shrink-0 sm:mt-4">
+                                            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                                                <HuicholReaderInviteBanner
+                                                    onDismiss={() => setHuicholReaderInviteDismissed(true)}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                    <div
+                                        className={`mx-auto flex w-full max-w-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm md:py-2.5 md:pl-3 md:pr-2 ${selectedVersion !== 'huichol' || huicholReaderInviteDismissed ? 'mt-3 sm:mt-4' : ''}`}
+                                    >
+                                        <div className="flex flex-col gap-3 p-3 md:flex-row md:items-stretch md:justify-between md:gap-2 md:p-3 md:pr-2">
                                         <div className="grid min-w-0 flex-1 grid-cols-1 gap-2.5 sm:gap-2 md:grid-cols-3 md:items-center md:px-1">
                                             <div className="flex min-h-[52px] w-full min-w-0 flex-col gap-1 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 sm:flex-row sm:items-center sm:gap-2 md:border-0 md:bg-transparent md:px-2 md:py-1">
                                                 <label htmlFor="biblia-quick-version" className="shrink-0 text-[10px] font-black uppercase tracking-wider text-[#B88A44]">Versión</label>
-                                                    <Select value={selectedVersion} onValueChange={v => { setSelectedVersion(v as VersionId); setSelectedVerses([]); }}>
+                                                    <Select value={selectedVersion} onValueChange={v => {
+                                                        const nextVersion = v as VersionId;
+                                                        if (DISABLED_VERSION_IDS.has(nextVersion)) return;
+                                                        setSelectedVersion(nextVersion);
+                                                        setSelectedVerses([]);
+                                                    }}>
                                                         <SelectTrigger
                                                             id="biblia-quick-version"
                                                             className="h-10 min-h-10 w-full min-w-0 border-0 bg-white py-0 pl-2 pr-2 text-base font-bold text-gray-800 shadow-none ring-1 ring-gray-200/80 ring-offset-0 rounded-xl outline-none focus:ring-2 focus:ring-[#B88A44]/35 focus:ring-offset-0 data-[state=open]:ring-2 data-[state=open]:ring-[#B88A44]/30 md:h-9 md:min-h-9 md:max-w-[min(100%,14rem)] md:bg-transparent md:ring-0 md:text-sm [&>span]:line-clamp-2 [&>span]:text-left [&>svg]:h-4 [&>svg]:w-4 [&>svg]:shrink-0 [&>svg]:opacity-60"
@@ -1975,8 +2156,15 @@ export default function Bible() {
                                                             </SelectValue>
                                                         </SelectTrigger>
                                                         <SelectContent>
-                                                            {VERSIONS.map(v => (
-                                                                <SelectItem key={v.id} value={v.id}>
+                                                            {VERSIONS.map(v => {
+                                                                const isDisabled = DISABLED_VERSION_IDS.has(v.id);
+                                                                return (
+                                                                <SelectItem
+                                                                    key={v.id}
+                                                                    value={v.id}
+                                                                    disabled={isDisabled}
+                                                                    className={isDisabled ? 'cursor-not-allowed opacity-50' : ''}
+                                                                >
                                                                     <span className="flex items-center gap-2">
                                                                         <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${v.lang === 'ES' ? 'bg-amber-100 text-amber-700' :
                                                                             v.lang === 'EN' ? 'bg-blue-100 text-blue-700' :
@@ -1989,7 +2177,7 @@ export default function Bible() {
                                                                         {v.label}
                                                                     </span>
                                                                 </SelectItem>
-                                                            ))}
+                                                            )})}
                                                         </SelectContent>
                                                     </Select>
                                             </div>
@@ -2108,7 +2296,38 @@ export default function Bible() {
                                                         </Tooltip>
                                                     </TooltipProvider>
                                         </div>
+                                        </div>
                                     </div>
+
+                                    {selectedVersion === 'huichol' && (
+                                        <div className="my-3 sm:my-4">
+                                            <HuicholStudioAudioBar
+                                                layout="reader"
+                                                bookTitleDisplay={readerBookTitle}
+                                                bookNameEs={selectedBook}
+                                                chapter={selectedChapter}
+                                                totalChapters={chaptersPerBook[selectedBook] ?? 1}
+                                                canPrevChapter={selectedChapter > 1}
+                                                canNextChapter={
+                                                    selectedChapter < (chaptersPerBook[selectedBook] ?? 1)
+                                                }
+                                                onPlaybackProgress={handleHuicholPlaybackProgress}
+                                                onPrevChapter={() => {
+                                                    if (selectedChapter <= 1) return;
+                                                    setSelectedChapter(selectedChapter - 1);
+                                                    setSelectedVerses([1]);
+                                                    setIsNoteOpen(false);
+                                                }}
+                                                onNextChapter={() => {
+                                                    const max = chaptersPerBook[selectedBook] ?? 1;
+                                                    if (selectedChapter >= max) return;
+                                                    setSelectedChapter(selectedChapter + 1);
+                                                    setSelectedVerses([1]);
+                                                    setIsNoteOpen(false);
+                                                }}
+                                            />
+                                        </div>
+                                    )}
 
                                     <div className="relative">
                                         <Button onClick={goToPreviousChapter} disabled={selectedChapter === 1} className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(100%+8px)] bg-white border border-gray-300 font-bold p-3 rounded-full transition-colors focus:outline-none text-sm shadow-sm z-10 hidden md:block ${themeStyles.text}`}>
@@ -2130,7 +2349,7 @@ export default function Bible() {
                                                 {/* Header Area */}
                                                 <div className="mb-8 sm:mb-12">
                                                     <div>
-                                                        <h2 className={`text-[1.65rem] leading-tight sm:text-3xl md:text-[34px] font-bold font-sans tracking-tight mb-2 ${themeStyles.title}`}>{selectedBook} {selectedChapter}</h2>
+                                                        <h2 className={`text-[1.65rem] leading-tight sm:text-3xl md:text-[34px] font-bold font-sans tracking-tight mb-2 ${themeStyles.title}`}>{readerBookTitle} {selectedChapter}</h2>
                                                         <p className={`text-xs md:text-[13px] font-bold flex items-center gap-2 ${themeStyles.subtitle}`}>
                                                             {VERSIONS.find(v => v.id === selectedVersion)?.label ?? DEFAULT_BIBLE_VERSION_LABEL}
                                                             {(() => {
@@ -2173,7 +2392,16 @@ export default function Bible() {
                                                             const isSelected = selectedVerses.includes(index + 1);
                                                             const isLastSelected = selectedVerses.length > 0 && selectedVerses[selectedVerses.length - 1] === index + 1;
                                                             const isHighlighted = highlightedVerses[reference];
-                                                            const activeColorId = isSelected ? selectedHighlightColor : isHighlighted;
+                                                            const isAudioFollowing =
+                                                                selectedVersion === 'huichol' &&
+                                                                huicholAudioPlaybackVerse === index + 1;
+                                                            const activeColorId = isSelected
+                                                                ? selectedHighlightColor
+                                                                : isHighlighted
+                                                                  ? isHighlighted
+                                                                  : isAudioFollowing
+                                                                    ? 'cyan'
+                                                                    : undefined;
 
                                                             const hlColors: Record<string, string> = {
                                                                 yellow: 'bg-[#FFF9D6] text-[#B88A44]',
@@ -2190,19 +2418,29 @@ export default function Bible() {
                                                             };
 
                                                             const activeHlStyles = activeColorId ? hlColors[activeColorId] : '';
-                                                            const containerClasses = (isSelected || isHighlighted)
-                                                                ? `${activeHlStyles} px-4 py-3 -mx-4 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)]`
-                                                                : `${themeStyles.buttonHover} py-1.5 cursor-pointer`;
+                                                            const containerClasses =
+                                                                isSelected || isHighlighted || isAudioFollowing
+                                                                    ? `${activeHlStyles} px-4 py-3 -mx-4 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)]${
+                                                                          isAudioFollowing && !isSelected && !isHighlighted
+                                                                              ? ' ring-2 ring-[#B88A44]/45'
+                                                                              : ''
+                                                                      }`
+                                                                    : `${themeStyles.buttonHover} py-1.5 cursor-pointer`;
 
                                                             return (
-                                                                <div key={index} id={`verse-${index + 1}`} data-verse={index + 1} className={`relative rounded-xl transition-all duration-200 ${isLastSelected ? 'z-40' : ''} ${containerClasses}`}>
+                                                                <div
+                                                                    key={index}
+                                                                    id={`verse-${index + 1}`}
+                                                                    data-verse={index + 1}
+                                                                    className={`relative rounded-xl transition-all duration-200 ${isLastSelected ? 'z-40' : isAudioFollowing ? 'z-30' : ''} ${containerClasses}`}
+                                                                >
                                                                     {showSectionTitle && (
                                                                         <p className={`text-sm font-bold tracking-wide mb-2 whitespace-pre-line leading-snug ${index === 0 ? 'mt-0' : 'mt-5'} ${themeStyles.subtitle}`}>
                                                                             {sec}
                                                                         </p>
                                                                     )}
-                                                                    {/* Toolbar: encima del versículo; colores fuera del contenedor con scroll para que no se recorten */}
-                                                                    {isLastSelected && (
+                                                                    {/* Toolbar: encima del versículo; colores fuera del contenedor con scroll para que no se recorten. Con audio Huichol en reproducción se oculta para no parpadear al cambiar de versículo. */}
+                                                                    {isLastSelected && !(selectedVersion === 'huichol' && huicholAudioIsPlaying) && (
                                                                         <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-50 flex flex-col items-center gap-2 w-max max-w-[calc(100vw-2rem)] pointer-events-auto">
                                                                             {showColorPicker && (
                                                                                 <div className="shrink-0 bg-white border border-gray-100 shadow-xl rounded-2xl px-2.5 py-2 flex flex-wrap justify-center gap-2 max-w-[min(100vw-2rem,420px)] animate-in fade-in zoom-in duration-200">
@@ -2319,15 +2557,149 @@ export default function Bible() {
                                                                             </div>
                                                                         </div>
                                                                     )}
-                                                                    <p className={`flex-grow transition-colors duration-300 ${(isSelected || isHighlighted) ? 'font-medium' : ''}`} onClick={() => handleVerseClick(index + 1)}>
-                                                                        <sup className={`font-bold mr-2.5 text-[65%] ${(isSelected || isHighlighted) ? '' : themeStyles.subtitle}`}>{index + 1}</sup>
-                                                                        {verse}
+                                                                    <p
+                                                                        className={`flex-grow transition-colors duration-300 ${isSelected || isHighlighted || isAudioFollowing ? 'font-medium' : ''}`}
+                                                                        onClick={() => {
+                                                                            if (skipNextVerseParagraphClickRef.current) return;
+                                                                            if (selectedVersion === 'huichol') {
+                                                                                queueHuicholVerseParagraphClick(index + 1);
+                                                                            } else {
+                                                                                handleVerseClick(index + 1);
+                                                                            }
+                                                                        }}
+                                                                        onDoubleClick={() => {
+                                                                            if (selectedVersion !== 'huichol') return;
+                                                                            flushHuicholVerseParagraphClickTimer();
+                                                                            requestAnimationFrame(() => {
+                                                                                const sel = window.getSelection();
+                                                                                const raw = (sel?.toString() ?? '')
+                                                                                    .replace(/\u00a0/g, ' ')
+                                                                                    .trim();
+                                                                                if (!raw || /\s/.test(raw)) return;
+                                                                                const speech = stripWordForSpeech(raw);
+                                                                                if (!speech) return;
+                                                                                setHuicholWordPractice({
+                                                                                    displayWord: raw,
+                                                                                    speechText: speech,
+                                                                                    reference: `${readerBookTitle} ${selectedChapter}:${index + 1}`,
+                                                                                });
+                                                                                sel?.removeAllRanges();
+                                                                            });
+                                                                        }}
+                                                                        onMouseUp={(e) => {
+                                                                            if (selectedVersion !== 'huichol') return;
+                                                                            const sel = window.getSelection();
+                                                                            if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+                                                                            const range = sel.getRangeAt(0);
+                                                                            const root = range.commonAncestorContainer;
+                                                                            const el =
+                                                                                root.nodeType === Node.ELEMENT_NODE
+                                                                                    ? (root as Element)
+                                                                                    : root.parentElement;
+                                                                            if (!el || !e.currentTarget.contains(el)) return;
+                                                                            const raw = sel.toString().replace(/\u00a0/g, ' ').trim();
+                                                                            if (!raw || /\s/.test(raw)) return;
+                                                                            const speech = stripWordForSpeech(raw);
+                                                                            if (!speech) return;
+                                                                            skipNextVerseParagraphClickRef.current = true;
+                                                                            window.setTimeout(() => {
+                                                                                skipNextVerseParagraphClickRef.current = false;
+                                                                            }, 220);
+                                                                            setHuicholWordPractice({
+                                                                                displayWord: raw,
+                                                                                speechText: speech,
+                                                                                reference: `${readerBookTitle} ${selectedChapter}:${index + 1}`,
+                                                                            });
+                                                                            sel.removeAllRanges();
+                                                                        }}
+                                                                    >
+                                                                        <sup
+                                                                            className={`cursor-pointer font-bold mr-2.5 text-[65%] ${isSelected || isHighlighted || isAudioFollowing ? '' : themeStyles.subtitle}`}
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                flushHuicholVerseParagraphClickTimer();
+                                                                                handleVerseClick(index + 1);
+                                                                            }}
+                                                                        >
+                                                                            {index + 1}
+                                                                        </sup>
+                                                                        {(() => {
+                                                                            if (selectedVersion !== 'huichol') {
+                                                                                return verse;
+                                                                            }
+                                                                            const k = huicholKaraoke;
+                                                                            const showKaraokeWordSpans =
+                                                                                huicholAudioIsPlaying &&
+                                                                                k !== null &&
+                                                                                k.verseNumber === index + 1;
+                                                                            if (!showKaraokeWordSpans) {
+                                                                                return verse;
+                                                                            }
+                                                                            const words = tokenizeVerseWords(verse);
+                                                                            if (!words.length) return verse;
+                                                                            return (
+                                                                                <span className="inline leading-relaxed">
+                                                                                    {words.map((w, wi) => {
+                                                                                        const spoken =
+                                                                                            k != null && wi <= k.wordIndex;
+                                                                                        const current =
+                                                                                            k != null && wi === k.wordIndex;
+                                                                                        const play = huicholAudioIsPlaying;
+                                                                                        const underline =
+                                                                                            play && spoken
+                                                                                                ? current
+                                                                                                    ? 'underline decoration-[#B88A44] decoration-2 underline-offset-[4px]'
+                                                                                                    : 'underline decoration-gray-400/80 decoration-1 underline-offset-[3px]'
+                                                                                                : '';
+                                                                                        return (
+                                                                                            <span key={`${index}-hw-${wi}`} className="inline">
+                                                                                                <span
+                                                                                                    data-huichol-word
+                                                                                                    className={`cursor-pointer rounded-sm px-0.5 transition-[color,font-weight,text-decoration,background-color] duration-100 ${
+                                                                                                        spoken
+                                                                                                            ? 'font-bold text-gray-900'
+                                                                                                            : themeStyles.text
+                                                                                                    } ${underline} hover:bg-orange-50/80 active:bg-orange-100/90`}
+                                                                                                    onClick={(ev) => {
+                                                                                                        ev.stopPropagation();
+                                                                                                        flushHuicholVerseParagraphClickTimer();
+                                                                                                        const vNum = index + 1;
+                                                                                                        setSelectedVerses([vNum]);
+                                                                                                        setIsToolbarOpen(true);
+                                                                                                        setShowColorPicker(false);
+                                                                                                        const ref = `${selectedBook} ${selectedChapter}:${vNum}`;
+                                                                                                        setSelectedHighlightColor(
+                                                                                                            highlightedVerses[ref] || 'blue'
+                                                                                                        );
+                                                                                                    }}
+                                                                                                    onDoubleClick={(ev) => {
+                                                                                                        ev.stopPropagation();
+                                                                                                        ev.preventDefault();
+                                                                                                        flushHuicholVerseParagraphClickTimer();
+                                                                                                        const speech = stripWordForSpeech(w);
+                                                                                                        if (!speech) return;
+                                                                                                        setHuicholWordPractice({
+                                                                                                            displayWord: w.trim(),
+                                                                                                            speechText: speech,
+                                                                                                            reference: `${readerBookTitle} ${selectedChapter}:${index + 1}`,
+                                                                                                        });
+                                                                                                    }}
+                                                                                                >
+                                                                                                    {w}
+                                                                                                </span>
+                                                                                                {wi < words.length - 1 ? ' ' : ''}
+                                                                                            </span>
+                                                                                        );
+                                                                                    })}
+                                                                                </span>
+                                                                            );
+                                                                        })()}
                                                                     </p>
                                                                 </div>
                                                             );
                                                         })
                                                     ) : (
-                                                        selectedVersion === 'huichol' ? (
+                                                        (selectedVersion === 'huichol' || isIndigenousDbpVersionId(selectedVersion)) ? (
                                                             <div className="flex flex-col items-center text-center py-12 px-6 gap-5">
                                                                 <div className="w-16 h-16 rounded-full bg-orange-50 flex items-center justify-center text-3xl select-none">
                                                                     🌿
@@ -2337,7 +2709,7 @@ export default function Bible() {
                                                                         En proceso de traducción
                                                                     </p>
                                                                     <p className="text-sm text-gray-500 leading-relaxed">
-                                                                        Este libro aún se está traduciendo al idioma Wixárika (Huichol).
+                                                                        Este libro aún no tiene contenido disponible para esta versión indígena.
                                                                         Estamos trabajando para integrarlo lo más pronto posible.
                                                                     </p>
                                                                     <p className="text-xs text-orange-500 font-bold mt-4 tracking-wide uppercase">
@@ -2399,7 +2771,7 @@ export default function Bible() {
                                                             Notas
                                                         </span>
                                                         <span className="text-gray-300 shrink-0" aria-hidden>/</span>
-                                                        <span className="text-gray-600 truncate">{selectedBook} {selectedChapter}:{activeVerse}</span>
+                                                        <span className="text-gray-600 truncate">{readerBookTitle} {selectedChapter}:{activeVerse}</span>
                                                     </p>
                                                     <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 tracking-tight leading-tight mt-0.5 sm:mt-0 max-sm:truncate">
                                                         {editingNoteId ? 'Editar reflexión' : 'Nueva nota'}
@@ -2843,6 +3215,33 @@ export default function Bible() {
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            {selectedVersion === 'huichol' && (
+                                                <HuicholStudioAudioBar
+                                                    bookTitleDisplay={readerBookTitle}
+                                                    bookNameEs={selectedBook}
+                                                    chapter={selectedChapter}
+                                                    totalChapters={chaptersPerBook[selectedBook] ?? 1}
+                                                    canPrevChapter={selectedChapter > 1}
+                                                    canNextChapter={
+                                                        selectedChapter < (chaptersPerBook[selectedBook] ?? 1)
+                                                    }
+                                                    onPlaybackProgress={handleHuicholPlaybackProgress}
+                                                    onPrevChapter={() => {
+                                                        if (selectedChapter <= 1) return;
+                                                        setSelectedChapter(selectedChapter - 1);
+                                                        setSelectedVerses([1]);
+                                                        setIsNoteOpen(false);
+                                                    }}
+                                                    onNextChapter={() => {
+                                                        const max = chaptersPerBook[selectedBook] ?? 1;
+                                                        if (selectedChapter >= max) return;
+                                                        setSelectedChapter(selectedChapter + 1);
+                                                        setSelectedVerses([1]);
+                                                        setIsNoteOpen(false);
+                                                    }}
+                                                />
+                                            )}
 
                                             {/* ── Sidebar ── */}
                                             <div
@@ -3383,6 +3782,15 @@ export default function Bible() {
                     <ReadingPlans />
                 </>
             )}
+            <HuicholWordPracticeDialog
+                open={Boolean(huicholWordPractice)}
+                onOpenChange={(open) => {
+                    if (!open) setHuicholWordPractice(null);
+                }}
+                displayWord={huicholWordPractice?.displayWord ?? ''}
+                speechText={huicholWordPractice?.speechText ?? ''}
+                reference={huicholWordPractice?.reference ?? ''}
+            />
         </>
     );
 }

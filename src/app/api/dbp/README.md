@@ -32,7 +32,7 @@ Variables de entorno requeridas:
 - `/api/dbp/bibles/:id`
 - `/api/dbp/bibles/:id/book`
 - `/api/dbp/bibles/defaults/types`
-- `/api/dbp/bibles/:bible_id/copyright`
+- `/api/dbp/bibles/:id/copyright`
 - `/api/dbp/bibles/filesets/media/types`
 - `/api/dbp/bibles/filesets/:fileset_id/:book/:chapter`
 - `/api/dbp/timestamps`

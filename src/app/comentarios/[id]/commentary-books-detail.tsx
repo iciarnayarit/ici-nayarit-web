@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, ChevronRight, Filter, Languages, LayoutGrid, List, Loader2, Plus } from 'lucide-react';
+import { BookOpen, ChevronRight, Filter, Languages, LayoutGrid, List, Loader2 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/app/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
@@ -466,14 +466,6 @@ export default function CommentaryBooksDetail({ data }: { data: HelloAoBooksPayl
           </button>
         </div>
       </div>
-
-      <Link
-        href="/comentarios"
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#B88A44] text-white shadow-lg shadow-[#B88A44]/40 transition-transform hover:scale-105 hover:bg-[#a17638]"
-        aria-label="Volver al catálogo"
-      >
-        <Plus className="h-7 w-7 stroke-[2.5]" />
-      </Link>
     </div>
   );
 }

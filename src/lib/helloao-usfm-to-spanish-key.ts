@@ -75,3 +75,12 @@ export function usfmToSpanishBibleDataKey(usfm: string): string | null {
   const k = USFM_TO_SPANISH_KEY[usfm.toUpperCase()];
   return k ?? null;
 }
+
+const SPANISH_KEY_TO_USFM: Record<string, string> = Object.fromEntries(
+  Object.entries(USFM_TO_SPANISH_KEY).map(([usfm, key]) => [key, usfm])
+);
+
+export function spanishBibleDataKeyToUsfm(spanishKey: string): string | null {
+  const k = SPANISH_KEY_TO_USFM[spanishKey.toLowerCase().trim()];
+  return k ?? null;
+}

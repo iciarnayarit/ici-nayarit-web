@@ -8,20 +8,75 @@ function getDbpConfig() {
   return { apiKey, baseUrl };
 }
 
+function appendDbpQuery(
+  upstream: URL,
+  query: Record<string, string | number | boolean | undefined | null>,
+  apiKey: string
+) {
+  Object.entries(query).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+    upstream.searchParams.set(key, String(value));
+  });
+  if (!upstream.searchParams.has('v')) {
+    upstream.searchParams.set('v', '4');
+  }
+  upstream.searchParams.set('key', apiKey);
+}
+
 function buildUpstreamUrl(req: NextRequest, pathSegments: string[], baseUrl: string, apiKey: string): string {
   const safePath = pathSegments.map(seg => encodeURIComponent(seg)).join('/');
   const upstream = new URL(`${baseUrl}/${safePath}`);
 
+  const query: Record<string, string> = {};
   req.nextUrl.searchParams.forEach((value, key) => {
-    upstream.searchParams.append(key, value);
+    query[key] = value;
   });
+  appendDbpQuery(upstream, query, apiKey);
+  return upstream.toString();
+}
 
-  if (!upstream.searchParams.has('v')) {
-    upstream.searchParams.set('v', '4');
+export async function fetchDbpJson<T>(
+  pathSegments: string[],
+  query: Record<string, string | number | boolean | undefined | null> = {}
+): Promise<T> {
+  const { apiKey, baseUrl } = getDbpConfig();
+  if (!apiKey) {
+    throw new Error('Falta configurar DBP_API_KEY en el servidor.');
   }
 
-  upstream.searchParams.set('key', apiKey);
-  return upstream.toString();
+  const buildUrl = (base: string) => {
+    const safePath = pathSegments.map(seg => encodeURIComponent(seg)).join('/');
+    const upstream = new URL(`${base}/${safePath}`);
+    appendDbpQuery(upstream, query, apiKey);
+    return upstream.toString();
+  };
+
+  const primaryUrl = buildUrl(baseUrl);
+  const tryFetch = async (url: string) => {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'ICIAR-Nayarit-Web/1.0 (dbp-proxy)',
+      },
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      const raw = await res.text().catch(() => '');
+      throw new Error(`DBP ${res.status}: ${raw.slice(0, 200)}`);
+    }
+    return (await res.json()) as T;
+  };
+
+  try {
+    return await tryFetch(primaryUrl);
+  } catch (error) {
+    const dnsFailed = (error as { cause?: { code?: string } })?.cause?.code === 'ENOTFOUND';
+    if (dnsFailed && baseUrl !== DEFAULT_DBP_BASE_URL) {
+      return tryFetch(buildUrl(DEFAULT_DBP_BASE_URL));
+    }
+    throw error;
+  }
 }
 
 export async function proxyDbpGet(req: NextRequest, pathSegments: string[]) {

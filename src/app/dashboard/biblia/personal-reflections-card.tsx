@@ -78,7 +78,8 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
   const [savedSelection, setSavedSelection] = useState<Range | null>(null);
 
   const reflectionSaveSkipFirst = useRef(true);
-  const reflectionSavedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** `window.setTimeout` devuelve `number` en el navegador (no `NodeJS.Timeout`). */
+  const reflectionSavedTimer = useRef<number | null>(null);
   const contentEditableRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();

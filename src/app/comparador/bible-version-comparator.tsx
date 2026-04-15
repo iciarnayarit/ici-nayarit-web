@@ -50,6 +50,22 @@ function chipShortLabel(id: VersionId): string {
     bbe: 'BBE',
     el: 'TR',
     huichol: 'HCH',
+    es_rvr: 'RV-JSON',
+    pt_aa: 'AA',
+    pt_acf: 'ACF',
+    pt_nvi: 'NVI-PT',
+    fr_apee: 'FR',
+    de_schlachter: 'DE',
+    ar_svd: 'AR',
+    ru_synodal: 'RU',
+    zh_cuv: 'CUV',
+    zh_ncv: 'NCV',
+    ko_ko: 'KO',
+    vi_vietnamese: 'VI',
+    ro_cornilescu: 'RO',
+    fi_finnish: 'FI',
+    fi_pr: 'FI-PR',
+    eo_esperanto: 'EO',
   };
   return custom[id] ?? id.toUpperCase();
 }

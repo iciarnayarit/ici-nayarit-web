@@ -1,5 +1,5 @@
 /**
- * Carga JSON bajo `public/bible/<path>` (p. ej. `versions/...`, `huichol/mat.json`).
+ * Carga JSON bajo `public/bible/<path>` (p. ej. `versions/...`, `huichol/hch_GEN_capitulos_versiculos.json`).
  * Navegador: fetch; Node: lectura de disco. Misma convención que el resto de datos bíblicos en `public/bible/`.
  */
 export async function loadPublicBibleJson(pathUnderBible: string): Promise<unknown> {

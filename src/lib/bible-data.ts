@@ -105,7 +105,7 @@ export function buildBibleDataFromUbsRoot(root: UbsBibleRoot): Record<string, Bi
             if (!ch.is_chapter) continue;
             const { verses, sectionTitles } = parseCanonicalChapter(ch.items ?? []);
             chapters.push(verses);
-            sectionTitles.push(sectionTitles);
+            sectionTitlesByVerse.push(sectionTitles);
         }
         out[key] = { chapters, sectionTitlesByVerse };
     }

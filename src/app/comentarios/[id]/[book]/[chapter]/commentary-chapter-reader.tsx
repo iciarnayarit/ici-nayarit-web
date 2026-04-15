@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
-import { BookA, BookOpen, Check, ChevronRight, Columns, FileText, Image as ImageIcon, Languages, Loader2, Pencil, Printer, Share2 } from 'lucide-react';
+import { BookOpen, ChevronRight, Columns, FileText, Image as ImageIcon, Languages, Loader2, Printer, Share2 } from 'lucide-react';
 import { Button } from '@/app/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/app/components/ui/dropdown-menu';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
 import { useToast } from '@/app/hooks/use-toast';
 import { commentaryAuthorShortName, isNewTestamentBookId } from '@/lib/helloao-commentaries';
@@ -31,6 +32,52 @@ export type CommentaryChapterReaderProps = {
   currentVersionId: string;
   bibleVersions: { id: string; label: string }[];
 };
+
+type UbsVerseItem = {
+  type?: string;
+  verse_numbers?: number[];
+  lines?: string[];
+};
+
+type UbsChapter = {
+  is_chapter?: boolean;
+  items?: UbsVerseItem[];
+};
+
+type UbsBook = {
+  name?: string;
+  chapters?: UbsChapter[];
+};
+
+type UbsRoot = {
+  books?: UbsBook[];
+};
+
+function normalizeBookName(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/^s\.\s*/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function extractVersesFromUbsChapter(chapter: UbsChapter | undefined): string[] {
+  const items = Array.isArray(chapter?.items) ? chapter!.items : [];
+  const verseText = new Map<number, string>();
+  for (const item of items) {
+    if (item?.type !== 'verse' || !Array.isArray(item.verse_numbers) || item.verse_numbers.length === 0) continue;
+    const text = Array.isArray(item.lines) ? item.lines.join(' ').trim() : '';
+    if (!text) continue;
+    for (const vn of item.verse_numbers) {
+      const prev = verseText.get(vn) ?? '';
+      verseText.set(vn, prev ? `${prev} ${text}`.trim() : text);
+    }
+  }
+  const maxVerse = Math.max(0, ...verseText.keys());
+  return Array.from({ length: maxVerse }, (_, i) => verseText.get(i + 1) ?? '');
+}
 
 function blockHeading(text: string, blockIndex: number, verseNumber: number): string {
   const roman = ROMAN[blockIndex] ?? String(blockIndex + 1);
@@ -63,6 +110,7 @@ export default function CommentaryChapterReader({
   const { redirectToSignIn } = useClerk();
   const [commentaryLang, setCommentaryLang] = useState<'en' | 'es' | 'pt'>('en');
   const [translations, setTranslations] = useState<string[] | null>(null);
+  const [fallbackScriptureVerses, setFallbackScriptureVerses] = useState<string[]>([]);
   const [pageTranslations, setPageTranslations] = useState<{
     bookDisplayName: string;
     commentaryName: string;
@@ -185,6 +233,37 @@ export default function CommentaryChapterReader({
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
+  useEffect(() => {
+    let cancelled = false;
+    async function loadFallbackRvrChapter() {
+      if (scriptureVerses.length > 0 || currentVersionId !== 'rvr') {
+        setFallbackScriptureVerses([]);
+        return;
+      }
+      try {
+        const res = await fetch('/bible/es_rvr_1960.json', { cache: 'force-cache' });
+        if (!res.ok) return;
+        const root = (await res.json()) as UbsRoot;
+        const books = Array.isArray(root?.books) ? root.books : [];
+        const target = normalizeBookName(bibliaBookQueryName || bookDisplayName);
+        const book = books.find(b => normalizeBookName(b?.name ?? '') === target);
+        if (!book) return;
+        const chapters = (book.chapters ?? []).filter(ch => ch?.is_chapter !== false);
+        const chapter = chapters[chapterNumber - 1];
+        const verses = extractVersesFromUbsChapter(chapter).filter(Boolean);
+        if (!cancelled) setFallbackScriptureVerses(verses);
+      } catch {
+        if (!cancelled) setFallbackScriptureVerses([]);
+      }
+    }
+    void loadFallbackRvrChapter();
+    return () => {
+      cancelled = true;
+    };
+  }, [scriptureVerses, currentVersionId, bibliaBookQueryName, bookDisplayName, chapterNumber]);
+
+  const displayedScriptureVerses = scriptureVerses.length > 0 ? scriptureVerses : fallbackScriptureVerses;
+
   return (
     <div className="min-h-screen bg-[#f5f6f8] pb-24 print:bg-white">
       <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
@@ -303,38 +382,21 @@ export default function CommentaryChapterReader({
 
               <div className="h-5 w-px bg-gray-200" aria-hidden />
 
-              <DropdownMenu>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-9 w-9 rounded-xl text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-                      >
-                        <BookA className="h-[18px] w-[18px]" />
-                        <span className="sr-only">Versiones de la Biblia</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Versiones de la Biblia</p>
-                  </TooltipContent>
-                </Tooltip>
-                <DropdownMenuContent align="center" className="max-h-[60vh] w-64 overflow-y-auto rounded-xl">
-                  {bibleVersions.map(v => (
-                    <DropdownMenuItem
-                      key={v.id}
-                      onClick={() => handleVersionChange(v.id)}
-                      className="cursor-pointer"
-                    >
-                      {v.label}
-                      {v.id === currentVersionId && <Check className="ml-auto h-4 w-4" />}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <div className="flex items-center gap-2 rounded-xl border border-gray-200 px-2 py-1">
+                <span className="text-[10px] font-bold uppercase tracking-wide text-gray-500">Versión</span>
+                <Select value={currentVersionId} onValueChange={handleVersionChange}>
+                  <SelectTrigger className="h-8 min-w-[12rem] border-0 bg-transparent px-2 text-xs font-semibold text-gray-700 shadow-none focus:ring-0">
+                    <SelectValue placeholder="Selecciona versión" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[60vh] w-72">
+                    {bibleVersions.map(v => (
+                      <SelectItem key={v.id} value={v.id}>
+                        {v.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
               <div className="h-5 w-px bg-gray-200" aria-hidden />
 
@@ -434,12 +496,12 @@ export default function CommentaryChapterReader({
               </h2>
             </div>
             <div className="max-h-[min(78vh,52rem)] space-y-4 overflow-y-auto px-4 py-5 sm:px-6 print:max-h-none">
-              {scriptureVerses.length === 0 ? (
+              {displayedScriptureVerses.length === 0 ? (
                 <p className="text-sm text-gray-500">
                   No hay texto bíblico enlazado para este código de libro ({bookUsfm}) en la versión local.
                 </p>
               ) : (
-                scriptureVerses.map((text, i) => {
+                displayedScriptureVerses.map((text, i) => {
                   const vn = i + 1;
                   const t = (text ?? '').trim();
                   if (!t) return null;
@@ -540,13 +602,6 @@ export default function CommentaryChapterReader({
         </div>
       </div>
 
-      <Link
-        href={`/biblia?book=${encodeURIComponent(bibliaBookQueryName)}&chapter=${chapterNumber}`}
-        className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#B88A44] text-white shadow-lg shadow-[#B88A44]/40 transition-transform hover:scale-105 hover:bg-[#a17638] print:hidden"
-        aria-label="Editar o anotar en la Biblia"
-      >
-        <Pencil className="h-6 w-6" />
-      </Link>
     </div>
   );
 }

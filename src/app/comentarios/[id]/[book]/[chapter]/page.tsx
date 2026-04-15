@@ -10,6 +10,7 @@ import {
 } from '@/lib/helloao-commentaries';
 import { loadFullBibleLookup, isValidReadingPlanVersionId, VersionId, VERSIONS } from '@/lib/bible-versions';
 import { usfmToSpanishBibleDataKey } from '@/lib/helloao-usfm-to-spanish-key';
+import type { BibleBookData } from '@/lib/bible-data';
 
 type Props = {
   params: Promise<{ id: string; book: string; chapter: string }>;
@@ -20,6 +21,29 @@ function bibliaQueryBookName(spanishKey: string | null): string {
   if (!spanishKey) return '';
   const found = bookOrder.find(b => b.toLowerCase() === spanishKey);
   return found ?? spanishKey;
+}
+
+function normalizeBookKey(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/^s\.\s*/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function resolveBookFromLookup(
+  lookup: Record<string, BibleBookData>,
+  spanishKey: string | null
+): BibleBookData | null {
+  if (!spanishKey) return null;
+  const exact = lookup[spanishKey];
+  if (exact) return exact;
+
+  const target = normalizeBookKey(spanishKey);
+  const matchedKey = Object.keys(lookup).find(key => normalizeBookKey(key) === target);
+  return matchedKey ? lookup[matchedKey] ?? null : null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -49,12 +73,14 @@ export default async function CommentaryChapterPage({ params, searchParams }: Pr
   const versionParam = sParams.version || 'rvr';
   const versionId: VersionId = isValidReadingPlanVersionId(versionParam) ? versionParam : 'rvr';
 
-  const spanishKey = usfmToSpanishBibleDataKey(book);
+  const usfmBookId = data.book.id || book;
+  const spanishKey = usfmToSpanishBibleDataKey(usfmBookId);
   let scriptureVerses: string[] = [];
   if (spanishKey) {
     try {
       const lookup = await loadFullBibleLookup(versionId);
-      scriptureVerses = lookup[spanishKey]?.chapters[ch - 1] ?? [];
+      const bookData = resolveBookFromLookup(lookup, spanishKey);
+      scriptureVerses = bookData?.chapters[ch - 1] ?? [];
     } catch (error) {
       // En producción la lectura local de JSON puede fallar en runtime; no debe romper la vista del comentario.
       console.error(

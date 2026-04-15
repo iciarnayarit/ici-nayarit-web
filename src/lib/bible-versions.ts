@@ -26,12 +26,35 @@ export type VersionId =
     | 'asv'
     | 'bbe'
     | 'el'
-    | 'huichol';
+    | 'ar_svd'
+    | 'de_schlachter'
+    | 'eo_esperanto'
+    | 'es_rvr'
+    | 'fi_finnish'
+    | 'fi_pr'
+    | 'fr_apee'
+    | 'ko_ko'
+    | 'pt_aa'
+    | 'pt_acf'
+    | 'pt_nvi'
+    | 'ro_cornilescu'
+    | 'ru_synodal'
+    | 'vi_vietnamese'
+    | 'zh_cuv'
+    | 'zh_ncv'
+    | 'huichol'
+    | 'cora_el_nayar'
+    | 'cora_santa_teresa'
+    | 'tepehuan_durango';
 
 export const DEFAULT_BIBLE_VERSION_ID: VersionId = 'rvr';
 
 export const VERSIONS: { id: VersionId; label: string; lang: string }[] = [
     { id: 'rvr', label: 'Reina-Valera 1960', lang: 'ES' },
+    { id: 'huichol', label: 'Huichol (Wixárika)', lang: 'HCH' },
+    { id: 'cora_el_nayar', label: 'Cora, El Nayar', lang: 'CRN' },
+    { id: 'cora_santa_teresa', label: 'Cora, Santa Teresa', lang: 'COK' },
+    { id: 'tepehuan_durango', label: 'Tepehuan de Durango', lang: 'STP' },
     { id: 'rvg', label: 'Reina-Valera Gómez', lang: 'ES' },
     { id: 'dhh94i', label: 'Biblia Dios Habla Hoy', lang: 'ES' },
     { id: 'dhhs94', label: 'Dios habla Hoy Estándar', lang: 'ES' },
@@ -48,14 +71,31 @@ export const VERSIONS: { id: VersionId; label: string; lang: string }[] = [
     { id: 'asv', label: 'American Standard', lang: 'EN' },
     { id: 'bbe', label: 'Bible Basic English', lang: 'EN' },
     { id: 'el', label: 'Griego (Textus Receptus)', lang: 'EL' },
-    { id: 'huichol', label: 'Huichol (Wixárika)', lang: 'HCH' },
+    { id: 'es_rvr', label: 'Reina Valera (archivo JSON)', lang: 'ES' },
+    { id: 'pt_aa', label: 'Almeida Atualizada', lang: 'PT' },
+    { id: 'pt_acf', label: 'Almeida Corrigida Fiel', lang: 'PT' },
+    { id: 'pt_nvi', label: 'Nova Versão Internacional (PT)', lang: 'PT' },
+    { id: 'fr_apee', label: 'Bible Segond 21 / APEE', lang: 'FR' },
+    { id: 'de_schlachter', label: 'Schlachter (alemán)', lang: 'DE' },
+    { id: 'ar_svd', label: 'Smith & Van Dyke (árabe)', lang: 'AR' },
+    { id: 'ru_synodal', label: 'Sinodal (ruso)', lang: 'RU' },
+    { id: 'zh_cuv', label: 'Union Version (chino)', lang: 'ZH' },
+    { id: 'zh_ncv', label: 'New Chinese Version', lang: 'ZH' },
+    { id: 'ko_ko', label: 'Korean Bible', lang: 'KO' },
+    { id: 'vi_vietnamese', label: 'Vietnamese Bible', lang: 'VI' },
+    { id: 'ro_cornilescu', label: 'Cornilescu (rumano)', lang: 'RO' },
+    { id: 'fi_finnish', label: 'Finnish Bible', lang: 'FI' },
+    { id: 'fi_pr', label: 'Pyhä Raamattu (finés)', lang: 'FI' },
+    { id: 'eo_esperanto', label: 'Esperanto', lang: 'EO' },
 ];
 
 export const DEFAULT_BIBLE_VERSION_LABEL =
     VERSIONS.find((v) => v.id === DEFAULT_BIBLE_VERSION_ID)?.label ?? 'Reina-Valera 1960';
 
 /** Versiones disponibles en planes de lectura (Huichol usa otro formato de capítulos). */
-export const READING_PLAN_VERSIONS = VERSIONS.filter((v) => v.id !== 'huichol');
+export const READING_PLAN_VERSIONS = VERSIONS.filter(
+    (v) => !['huichol', 'cora_el_nayar', 'cora_santa_teresa', 'tepehuan_durango'].includes(v.id)
+);
 
 export const READING_PLAN_VERSION_STORAGE_KEY = 'iciar-reading-plan-bible-version';
 
@@ -133,6 +173,22 @@ const SINGLE_FILE_JSON_PATH: Partial<Record<VersionId, string>> = {
     asv: 'versions/eng_asv.json',
     bbe: 'versions/en_bbe.json',
     el: 'versions/el_greek.json',
+    ar_svd: 'versions/ar_svd.json',
+    de_schlachter: 'versions/de_schlachter.json',
+    eo_esperanto: 'versions/eo_esperanto.json',
+    es_rvr: 'versions/es_rvr.json',
+    fi_finnish: 'versions/fi_finnish.json',
+    fi_pr: 'versions/fi_pr.json',
+    fr_apee: 'versions/fr_apee.json',
+    ko_ko: 'versions/ko_ko.json',
+    pt_aa: 'versions/pt_aa.json',
+    pt_acf: 'versions/pt_acf.json',
+    pt_nvi: 'versions/pt_nvi.json',
+    ro_cornilescu: 'versions/ro_cornilescu.json',
+    ru_synodal: 'versions/ru_synodal.json',
+    vi_vietnamese: 'versions/vi_vietnamese.json',
+    zh_cuv: 'versions/zh_cuv.json',
+    zh_ncv: 'versions/zh_ncv.json',
 };
 
 const fullLookupCache = new Map<VersionId, Record<string, BibleBookData>>();

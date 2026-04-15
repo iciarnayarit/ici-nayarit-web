@@ -7,5 +7,6 @@ import nodePath from 'node:path';
 export async function loadPublicBibleJsonNode(pathUnderBible: string): Promise<unknown> {
     const rel = pathUnderBible.replace(/^\/+/, '');
     const filePath = nodePath.join(process.cwd(), 'public', 'bible', rel);
-    return JSON.parse(await readFile(filePath, 'utf-8'));
+    const text = await readFile(filePath, 'utf-8');
+    return JSON.parse(text.replace(/^\uFEFF/, ''));
 }
