@@ -23,6 +23,7 @@ const bibliaLinks = [
   { href: '/biblia',  label: 'Biblia',  desc: 'Lee la Palabra de Dios',      icon: '📖' },
   { href: '/comparador', label: 'Comparador', desc: 'Compara de forma paralela', icon: '⚖️' },
   { href: '/comentarios', label: 'Comentarios', desc: 'Catálogo de comentarios bíblicos', icon: '💬' },
+  { href: '/enciclopedia', label: 'Enciclopedia', desc: 'Lugares y temas bíblicos', icon: '💡' },
   { href: '/planes',  label: 'Planes',  desc: 'Planes de lectura bíblica',   icon: '📅' },
 ];
 
@@ -72,7 +73,8 @@ const Header = () => {
   const bibliaActive =
     bibliaLinks.some(l => l.href === currentPath) ||
     currentPath.startsWith('/biblia') ||
-    currentPath.startsWith('/comentarios');
+    currentPath.startsWith('/comentarios') ||
+    currentPath.startsWith('/enciclopedia');
   const historiaActive = historiaLinks.some(l => l.href === currentPath);
   const dashboardActive = isDashboardPath(currentPath);
 

@@ -23,6 +23,7 @@ import {
 } from '@/app/components/ui/dropdown-menu';
 import { Switch } from '@/app/components/ui/switch';
 import { cn } from '@/app/lib/utils';
+import { compareVerseWords } from '@/lib/bible-verse-word-diff';
 
 const SYNC_KEY = 'iciar-bible-comparator-sync-scroll';
 
@@ -74,6 +75,80 @@ function columnHeaderLabel(id: VersionId): string {
   const v = VERSIONS.find(x => x.id === id);
   if (!v) return id;
   return v.label.toUpperCase();
+}
+
+function VerseDiffBlock({
+  baselineText,
+  text,
+  isBaseline,
+  italic,
+}: {
+  baselineText: string;
+  text: string;
+  isBaseline: boolean;
+  italic?: boolean;
+}) {
+  const baseTrim = baselineText.trim();
+  const textTrim = text.trim();
+
+  if (isBaseline) {
+    return (
+      <div className={cn(italic && 'italic')}>
+        <p className="leading-relaxed">{textTrim || '—'}</p>
+        <p className="mt-2 text-[11px] leading-tight text-gray-400">0% de diferencia</p>
+      </div>
+    );
+  }
+
+  if (text === '—' || !textTrim || !baseTrim) {
+    return (
+      <div className={cn(italic && 'italic')}>
+        <p className="leading-relaxed">{textTrim || '—'}</p>
+        <p className="mt-2 text-[11px] leading-tight text-gray-400">
+          {!baseTrim || !textTrim ? '—' : '100% de diferencia'}
+        </p>
+      </div>
+    );
+  }
+
+  const diff = compareVerseWords(baseTrim, textTrim);
+  if (!diff) {
+    return (
+      <div className={cn(italic && 'italic')}>
+        <p className="leading-relaxed">{textTrim}</p>
+        <p className="mt-2 text-[11px] text-gray-400">0% de diferencia</p>
+      </div>
+    );
+  }
+
+  const { ops, percentDiff, baseWords, targetWords } = diff;
+  return (
+    <div className={cn(italic && 'italic')}>
+      <p className="leading-relaxed">
+        {ops.map((op, idx) => {
+          if (op.kind === 'equal') {
+            return <span key={idx}>{targetWords[op.targetIndex]} </span>;
+          }
+          if (op.kind === 'delete') {
+            return (
+              <span key={idx} className="text-gray-500 line-through decoration-gray-400">
+                {baseWords[op.baseIndex]}{' '}
+              </span>
+            );
+          }
+          return (
+            <span
+              key={idx}
+              className="font-medium text-[#B88A44] underline decoration-[#B88A44] decoration-2 underline-offset-[3px]"
+            >
+              {targetWords[op.targetIndex]}{' '}
+            </span>
+          );
+        })}
+      </p>
+      <p className="mt-2 text-[11px] leading-tight text-gray-400">{percentDiff}% de diferencia</p>
+    </div>
+  );
 }
 
 function normalizeBookParam(raw: string | null): string {
@@ -330,14 +405,14 @@ export default function BibleVersionComparator() {
             {selectedIds.map(id => (
               <span
                 key={id}
-                className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1.5 text-xs font-bold text-blue-700 sm:px-3"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#B88A44]/12 px-2.5 py-1.5 text-xs font-bold text-[#8a6a32] sm:px-3"
               >
                 {chipShortLabel(id)}
                 <button
                   type="button"
                   onClick={() => removeVersion(id)}
                   disabled={selectedIds.length <= 1}
-                  className="inline-flex h-7 w-7 min-h-[28px] min-w-[28px] items-center justify-center rounded-full text-blue-600 transition-colors hover:bg-blue-100 disabled:opacity-30 sm:h-6 sm:w-6"
+                  className="inline-flex h-7 w-7 min-h-[28px] min-w-[28px] items-center justify-center rounded-full text-[#B88A44] transition-colors hover:bg-[#B88A44]/15 disabled:opacity-30 sm:h-6 sm:w-6"
                   aria-label={`Quitar ${chipShortLabel(id)}`}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -351,7 +426,7 @@ export default function BibleVersionComparator() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="h-10 min-h-[44px] rounded-full border-gray-200 bg-white px-3 text-xs font-semibold text-blue-700 shadow-sm sm:h-8 sm:min-h-0"
+                  className="h-10 min-h-[44px] rounded-full border-gray-200 bg-white px-3 text-xs font-semibold text-[#8a6a32] shadow-sm sm:h-8 sm:min-h-0"
                   disabled={addableVersions.length === 0}
                 >
                   <Plus className="mr-1 h-4 w-4 sm:h-3.5 sm:w-3.5" />
@@ -497,10 +572,12 @@ export default function BibleVersionComparator() {
                   <div className="p-8 text-center text-sm text-gray-400">Sin coincidencias para esta búsqueda.</div>
                 ) : (
                   <div className="divide-y divide-gray-100">
-                {matchingVerses.map(vi => (
+                {matchingVerses.map(vi => {
+                  const baselineRaw = lookups[selectedIds[0]]?.[bookKey]?.chapters[chapter - 1]?.[vi] ?? '';
+                  return (
                   <article key={vi} className="px-3 py-4 sm:px-4">
                     <div className="mb-3 flex items-center gap-2">
-                      <span className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg bg-blue-50 text-base font-bold text-blue-600">
+                      <span className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg bg-[#B88A44]/12 text-base font-bold text-[#B88A44]">
                         {vi + 1}
                       </span>
                       <span className="truncate text-xs text-gray-400">
@@ -513,6 +590,7 @@ export default function BibleVersionComparator() {
                         const text = raw.trim() || '—';
                         const reference = `${bookDisplayName} ${chapter}:${vi + 1} (${chipShortLabel(id)})`;
                         const isSaved = savedVerses.some(sv => sv.reference === reference);
+                        const isBaseline = id === selectedIds[0];
                         return (
                           <div
                             key={id}
@@ -521,7 +599,6 @@ export default function BibleVersionComparator() {
                             className={cn(
                               'relative rounded-xl border border-gray-100 bg-gray-50/70 p-3 transition-colors',
                               text !== '—' && 'cursor-pointer active:bg-amber-50/60',
-                              id === 'kjv' && 'italic',
                               isSaved && 'border-amber-200/80 bg-amber-50/40'
                             )}
                             onClick={() => text !== '—' && toggleSaveVerse(reference, text)}
@@ -539,6 +616,9 @@ export default function BibleVersionComparator() {
                                 title={VERSIONS.find(v => v.id === id)?.label}
                               >
                                 {chipShortLabel(id)}
+                                {isBaseline && (
+                                  <span className="ml-1 font-normal normal-case text-gray-400">· ref.</span>
+                                )}
                               </span>
                               {text !== '—' && (
                                 <button
@@ -556,13 +636,21 @@ export default function BibleVersionComparator() {
                                 </button>
                               )}
                             </div>
-                            <p className="text-[1.05rem] leading-relaxed text-gray-800 sm:text-base">{text}</p>
+                            <div className="text-[1.05rem] text-gray-800 sm:text-base">
+                              <VerseDiffBlock
+                                baselineText={baselineRaw}
+                                text={text}
+                                isBaseline={isBaseline}
+                                italic={id === 'kjv'}
+                              />
+                            </div>
                           </div>
                         );
                       })}
                     </div>
                   </article>
-                ))}
+                  );
+                })}
                   </div>
                 )}
               </div>
@@ -573,13 +661,16 @@ export default function BibleVersionComparator() {
                   <div className="flex w-14 shrink-0 items-center justify-center border-r border-gray-200 px-1 py-3 text-center text-[10px] font-bold uppercase tracking-wider text-gray-500">
                     V.
                   </div>
-                  {selectedIds.map(id => (
+                  {selectedIds.map((id, hi) => (
                     <div
                       key={`h-${id}`}
                       className="flex min-w-[12rem] flex-1 items-center border-l border-gray-200 px-3 py-3 text-[10px] font-bold uppercase leading-tight tracking-wider text-gray-500 xl:min-w-[14rem]"
                       title={VERSIONS.find(v => v.id === id)?.label}
                     >
-                      <span className="line-clamp-2 xl:line-clamp-3">{columnHeaderLabel(id)}</span>
+                      <span className="line-clamp-2 xl:line-clamp-3">
+                        {columnHeaderLabel(id)}
+                        {hi === 0 && <span className="ml-1 font-normal normal-case text-gray-400">(ref.)</span>}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -595,7 +686,7 @@ export default function BibleVersionComparator() {
                       matchingVerses.map(vi => (
                         <div
                           key={vi}
-                          className="flex min-h-[4.25rem] items-start justify-center border-b border-gray-100 px-1 py-3 text-sm font-bold text-blue-600 last:border-b-0"
+                          className="flex min-h-[5.5rem] items-start justify-center border-b border-gray-100 px-1 py-3 text-sm font-bold text-[#B88A44] last:border-b-0"
                         >
                           {vi + 1}
                         </div>
@@ -615,22 +706,31 @@ export default function BibleVersionComparator() {
                         <div className="p-4 text-center text-sm text-gray-400">Sin coincidencias</div>
                       ) : (
                         matchingVerses.map(vi => {
+                          const baselineRaw =
+                            lookups[selectedIds[0]]?.[bookKey]?.chapters[chapter - 1]?.[vi] ?? '';
                           const raw = lookups[id]?.[bookKey]?.chapters[chapter - 1]?.[vi] ?? '';
                           const text = raw.trim() || '—';
                           const reference = `${bookDisplayName} ${chapter}:${vi + 1} (${chipShortLabel(id)})`;
                           const isSaved = savedVerses.some(sv => sv.reference === reference);
+                          const isBaseline = id === selectedIds[0];
 
                           return (
                             <div
                               key={vi}
                               className={cn(
-                                'group relative min-h-[4.25rem] cursor-pointer border-b border-gray-100 px-3 py-3 text-sm leading-relaxed text-gray-800 transition-colors last:border-b-0 hover:bg-amber-50/50',
-                                id === 'kjv' && 'italic',
+                                'group relative min-h-[5.5rem] cursor-pointer border-b border-gray-100 px-3 py-3 text-sm text-gray-800 transition-colors last:border-b-0 hover:bg-amber-50/50',
                                 isSaved && 'bg-amber-50/30'
                               )}
                               onClick={() => toggleSaveVerse(reference, text)}
                             >
-                              <div className="pr-8">{text}</div>
+                              <div className="pr-8">
+                                <VerseDiffBlock
+                                  baselineText={baselineRaw}
+                                  text={text}
+                                  isBaseline={isBaseline}
+                                  italic={id === 'kjv'}
+                                />
+                              </div>
                               {text !== '—' && (
                                 <button
                                   type="button"

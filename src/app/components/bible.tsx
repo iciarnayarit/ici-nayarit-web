@@ -51,6 +51,7 @@ import { HuicholStudioAudioBar } from '@/app/components/huichol-studio-audio-bar
 import { HuicholWordPracticeDialog } from '@/app/components/huichol-word-practice-dialog';
 import { stripWordForSpeech } from '@/lib/huichol-word-speech';
 import { spanishBibleDataKeyToUsfm } from '@/lib/helloao-usfm-to-spanish-key';
+import { canonicalizeBookName } from '@/lib/bible-reference-parser';
 
 const INDIGENOUS_DBP_VERSION_TO_ISO = {
     cora_el_nayar: 'crn',
@@ -591,6 +592,10 @@ export default function Bible() {
     const lastScrolledHuicholAudioVerseRef = useRef<number | null>(null);
     const skipNextVerseParagraphClickRef = useRef(false);
     const huicholVerseParagraphClickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    /** Primer versículo a mostrar tras abrir ?book=&chapter=&verse= (scroll tras cargar el capítulo). */
+    const pendingUrlVerseScrollRef = useRef<number | null>(null);
+    /** Evita que estado→URL pise la query antes de hidratar estado desde la URL actual. */
+    const didHydrateReadingStateFromUrlRef = useRef(false);
     const [huicholWordPractice, setHuicholWordPractice] = useState<{
         displayWord: string;
         speechText: string;
@@ -1338,8 +1343,11 @@ export default function Bible() {
         return null;
     }
 
-    function versionFromSearchParams(): VersionId | null {
-        return versionFromParams(new URLSearchParams(searchParams.toString()));
+    function readingQueryParams(): URLSearchParams {
+        if (typeof window !== 'undefined') {
+            return new URLSearchParams(window.location.search.slice(1));
+        }
+        return new URLSearchParams(searchParams.toString());
     }
 
     function versesListFromQuery(verse: string | null): number[] {
@@ -1361,7 +1369,9 @@ export default function Bible() {
         const versionOk = ver === DEFAULT_BIBLE_VERSION_ID ? urlV === null : urlV === ver;
         if (!versionOk) return false;
 
-        if (p.get('book') !== book) return false;
+        const urlBookRaw = p.get('book');
+        const urlBookCanon = urlBookRaw ? canonicalizeBookName(urlBookRaw) : null;
+        if (urlBookCanon !== book) return false;
 
         const chapterStr = p.get('chapter');
         const urlChapter = chapterStr ? parseInt(chapterStr, 10) : NaN;
@@ -1374,37 +1384,53 @@ export default function Bible() {
     }
 
     // URL → estado (useLayoutEffect para que el estado vaya antes del efecto que sincroniza de vuelta a la URL).
+    // En el cliente leemos window.location (misma fuente que el efecto estado→URL); useSearchParams() a veces va un render rezagado al navegar a /biblia?book=…
     useLayoutEffect(() => {
-        const book = searchParams.get('book');
-        const chapter = searchParams.get('chapter');
-        const verse = searchParams.get('verse');
-        const resolvedVersion = versionFromSearchParams();
-        if (resolvedVersion) {
-            setSelectedVersion(resolvedVersion);
-        }
-        if (book && books.includes(book)) {
-            setSelectedBook(book);
-            setSelectedChapter(chapter ? parseInt(chapter, 10) : 1);
-            const verseNums = versesListFromQuery(verse);
-            if (verseNums.length > 0) {
-                setSelectedVerses(verseNums);
-                setTimeout(() => {
-                    const first = Math.min(...verseNums);
-                    const el = document.getElementById(`verse-${first}`);
-                    el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 500);
-            } else {
-                setSelectedVerses([]);
+        didHydrateReadingStateFromUrlRef.current = false;
+        try {
+            const p = readingQueryParams();
+            if (p.get('studioDraft')) {
+                return;
             }
+            const bookRaw = p.get('book');
+            const resolvedBook = bookRaw ? canonicalizeBookName(bookRaw) : null;
+            const chapter = p.get('chapter');
+            const verse = p.get('verse');
+            const resolvedVersion = versionFromParams(p);
+            if (resolvedVersion) {
+                setSelectedVersion(resolvedVersion);
+            }
+            if (resolvedBook && books.includes(resolvedBook)) {
+                setSelectedBook(resolvedBook);
+                const ch = chapter ? parseInt(chapter, 10) : 1;
+                const maxCh = chaptersPerBook[resolvedBook] ?? 1;
+                setSelectedChapter(Number.isFinite(ch) ? Math.min(Math.max(1, ch), maxCh) : 1);
+                const verseNums = versesListFromQuery(verse);
+                if (verseNums.length > 0) {
+                    setSelectedVerses(verseNums);
+                    pendingUrlVerseScrollRef.current = Math.min(...verseNums);
+                } else {
+                    setSelectedVerses([]);
+                    pendingUrlVerseScrollRef.current = 1;
+                }
+            } else {
+                setSelectedBook('Génesis');
+                setSelectedChapter(1);
+                setSelectedVerses([1]);
+                pendingUrlVerseScrollRef.current = 1;
+            }
+        } finally {
+            didHydrateReadingStateFromUrlRef.current = true;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
 
-    // Estado → URL (usa location actual para no pisar la URL antes de que useLayoutEffect aplique libro/versículo).
+    // Estado → URL (misma lectura de query que useLayoutEffect para evitar replace con estado viejo).
     useEffect(() => {
-        const sp = new URLSearchParams(
-            typeof window !== 'undefined' ? window.location.search.slice(1) : searchParams.toString()
-        );
+        if (!didHydrateReadingStateFromUrlRef.current) {
+            return;
+        }
+        const sp = readingQueryParams();
         if (
             readingParamsMatchStateWithParams(
                 sp,
@@ -1432,7 +1458,6 @@ export default function Bible() {
         }
         const q = params.toString();
         router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
-        // searchParams omitido a propósito: la fuente de verdad al escribir es window.location + estado.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedVersion, selectedBook, selectedChapter, selectedVerses, pathname, router]);
 
@@ -1623,6 +1648,25 @@ export default function Bible() {
 
         fetchChapter();
     }, [selectedBook, selectedChapter, selectedVersion]);
+
+    useEffect(() => {
+        const target = pendingUrlVerseScrollRef.current;
+        if (target == null) return;
+        if (isLoading) return;
+        if (verses.length === 0) {
+            pendingUrlVerseScrollRef.current = null;
+            return;
+        }
+        if (target < 1 || target > verses.length) {
+            pendingUrlVerseScrollRef.current = null;
+            return;
+        }
+        pendingUrlVerseScrollRef.current = null;
+        const run = () => {
+            document.getElementById(`verse-${target}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+        requestAnimationFrame(() => requestAnimationFrame(run));
+    }, [isLoading, verses.length, selectedBook, selectedChapter]);
 
     const handleVerseClick = (verseNumber: number) => {
         const isAlreadySelected = selectedVerses.includes(verseNumber);
