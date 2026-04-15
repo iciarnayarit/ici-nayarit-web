@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { toPng } from 'html-to-image';
-import { useEffect, useState, useRef, useCallback, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useLayoutEffect, useState, useRef, useCallback, type Dispatch, type SetStateAction } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { takePendingReturnAfterVerseSave, SAVED_VERSES_CHANGED_EVENT } from '@/lib/saved-verses';
 import {
@@ -39,6 +39,8 @@ import {
     type VersionId,
     DEFAULT_BIBLE_VERSION_ID,
     DEFAULT_BIBLE_VERSION_LABEL,
+    bibleVersionSlugToId,
+    bibleVersionUrlSlug,
     loadFullBibleLookup,
 } from '@/lib/bible-versions';
 import { loadPublicBibleJson } from '@/lib/load-public-bible-json';
@@ -1319,30 +1321,120 @@ export default function Bible() {
         returnAfterSavePathRef.current = takePendingReturnAfterVerseSave();
     }, []);
 
-    // Navigate to a specific book/chapter/verse from URL params (e.g. from global search)
-    useEffect(() => {
+    function versionFromParams(p: URLSearchParams): VersionId | null {
+        const bibliaSlug = p.get('biblia');
+        const versionParam = p.get('version');
+        if (bibliaSlug) {
+            const id = bibleVersionSlugToId(bibliaSlug);
+            if (id && !DISABLED_VERSION_IDS.has(id)) return id;
+        }
+        if (
+            versionParam &&
+            VERSIONS.some((v) => v.id === versionParam) &&
+            !DISABLED_VERSION_IDS.has(versionParam as VersionId)
+        ) {
+            return versionParam as VersionId;
+        }
+        return null;
+    }
+
+    function versionFromSearchParams(): VersionId | null {
+        return versionFromParams(new URLSearchParams(searchParams.toString()));
+    }
+
+    function versesListFromQuery(verse: string | null): number[] {
+        if (!verse || !verse.trim()) return [];
+        return verse
+            .split(',')
+            .map((s) => parseInt(s.trim(), 10))
+            .filter((n) => !Number.isNaN(n));
+    }
+
+    function readingParamsMatchStateWithParams(
+        p: URLSearchParams,
+        ver: VersionId,
+        book: string,
+        chapter: number,
+        verses: number[]
+    ): boolean {
+        const urlV = versionFromParams(p);
+        const versionOk = ver === DEFAULT_BIBLE_VERSION_ID ? urlV === null : urlV === ver;
+        if (!versionOk) return false;
+
+        if (p.get('book') !== book) return false;
+
+        const chapterStr = p.get('chapter');
+        const urlChapter = chapterStr ? parseInt(chapterStr, 10) : NaN;
+        if (!Number.isFinite(urlChapter) || urlChapter !== chapter) return false;
+
+        const urlVerses = versesListFromQuery(p.get('verse')).sort((a, b) => a - b);
+        const stVerses = [...verses].sort((a, b) => a - b);
+        if (urlVerses.length !== stVerses.length) return false;
+        return urlVerses.every((n, i) => n === stVerses[i]);
+    }
+
+    // URL → estado (useLayoutEffect para que el estado vaya antes del efecto que sincroniza de vuelta a la URL).
+    useLayoutEffect(() => {
         const book = searchParams.get('book');
         const chapter = searchParams.get('chapter');
         const verse = searchParams.get('verse');
-        const version = searchParams.get('version');
-        if (version && VERSIONS.some((v) => v.id === version) && !DISABLED_VERSION_IDS.has(version as VersionId)) {
-            setSelectedVersion(version as VersionId);
+        const resolvedVersion = versionFromSearchParams();
+        if (resolvedVersion) {
+            setSelectedVersion(resolvedVersion);
         }
         if (book && books.includes(book)) {
             setSelectedBook(book);
             setSelectedChapter(chapter ? parseInt(chapter, 10) : 1);
-            if (verse) {
-                const verseNum = parseInt(verse, 10);
-                // Highlight the verse after a short delay so the chapter loads first
+            const verseNums = versesListFromQuery(verse);
+            if (verseNums.length > 0) {
+                setSelectedVerses(verseNums);
                 setTimeout(() => {
-                    setSelectedVerses([verseNum]);
-                    const el = document.getElementById(`verse-${verseNum}`);
+                    const first = Math.min(...verseNums);
+                    const el = document.getElementById(`verse-${first}`);
                     el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }, 500);
+            } else {
+                setSelectedVerses([]);
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
+
+    // Estado → URL (usa location actual para no pisar la URL antes de que useLayoutEffect aplique libro/versículo).
+    useEffect(() => {
+        const sp = new URLSearchParams(
+            typeof window !== 'undefined' ? window.location.search.slice(1) : searchParams.toString()
+        );
+        if (
+            readingParamsMatchStateWithParams(
+                sp,
+                selectedVersion,
+                selectedBook,
+                selectedChapter,
+                selectedVerses
+            )
+        ) {
+            return;
+        }
+
+        const params = new URLSearchParams(sp.toString());
+        params.delete('version');
+        params.delete('biblia');
+        if (selectedVersion !== DEFAULT_BIBLE_VERSION_ID) {
+            params.set('biblia', bibleVersionUrlSlug(selectedVersion));
+        }
+        params.set('book', selectedBook);
+        params.set('chapter', String(selectedChapter));
+        if (selectedVerses.length > 0) {
+            params.set('verse', [...selectedVerses].sort((a, b) => a - b).join(','));
+        } else {
+            params.delete('verse');
+        }
+        const q = params.toString();
+        router.replace(q ? `${pathname}?${q}` : pathname, { scroll: false });
+        // searchParams omitido a propósito: la fuente de verdad al escribir es window.location + estado.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedVersion, selectedBook, selectedChapter, selectedVerses, pathname, router]);
 
     // Permite volver a abrir el mismo borrador tras limpiar la URL
     useEffect(() => {

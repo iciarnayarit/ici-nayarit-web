@@ -92,6 +92,37 @@ export const VERSIONS: { id: VersionId; label: string; lang: string }[] = [
 export const DEFAULT_BIBLE_VERSION_LABEL =
     VERSIONS.find((v) => v.id === DEFAULT_BIBLE_VERSION_ID)?.label ?? 'Reina-Valera 1960';
 
+function slugifyBibleVersionLabel(label: string): string {
+    const slug = label
+        .normalize('NFD')
+        .replace(/\p{M}/gu, '')
+        .replace(/[^a-zA-Z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .toLowerCase();
+    return slug;
+}
+
+const BIBLE_VERSION_ID_TO_URL_SLUG: Map<VersionId, string> = new Map();
+const BIBLE_VERSION_SLUG_TO_ID: Map<string, VersionId> = new Map();
+
+for (const v of VERSIONS) {
+    let slug = slugifyBibleVersionLabel(v.label) || v.id;
+    if (BIBLE_VERSION_SLUG_TO_ID.has(slug)) {
+        slug = `${slug}-${v.id}`;
+    }
+    BIBLE_VERSION_ID_TO_URL_SLUG.set(v.id, slug);
+    BIBLE_VERSION_SLUG_TO_ID.set(slug, v.id);
+}
+
+/** Slug legible para `?biblia=` en la URL (nombre de la versión). */
+export function bibleVersionUrlSlug(id: VersionId): string {
+    return BIBLE_VERSION_ID_TO_URL_SLUG.get(id) ?? id;
+}
+
+export function bibleVersionSlugToId(slug: string): VersionId | null {
+    return BIBLE_VERSION_SLUG_TO_ID.get(slug.trim().toLowerCase()) ?? null;
+}
+
 /** Versiones disponibles en planes de lectura (Huichol usa otro formato de capítulos). */
 export const READING_PLAN_VERSIONS = VERSIONS.filter(
     (v) => !['huichol', 'cora_el_nayar', 'cora_santa_teresa', 'tepehuan_durango'].includes(v.id)
