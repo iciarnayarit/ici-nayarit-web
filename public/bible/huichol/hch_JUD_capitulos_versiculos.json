@@ -1,0 +1,145 @@
+{
+  "book": {
+    "name": "Kura",
+    "alternate_names": [
+      "Judas",
+      "Jude"
+    ],
+    "language": "Huichol (Wixarika)",
+    "source": {
+      "type": "pdf_extraction",
+      "file": "hch_JUD.pdf",
+      "extracted_utc": "2026-04-14T21:30:28.456525+00:00",
+      "notes": "Reconstruido desde encabezados y numeración del PDF; encabezados de página sin «cap:v» (p. ej. «Kura 1 i Kura 4») omitidos; incluye passage_titles detectados heurísticamente."
+    },
+    "chapters": [
+      {
+        "chapter_number": 1,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Ne Kura, Ketsutsi Kɨritsitu hetsiemieme nekatini'uximayatametɨni meta Kakuwu 'iwaya nekanihɨkɨtɨni. Nekanixewaɨritɨaka xeme xemɨnaki'eriwa Kakaɨyari mɨta'ukiyaritsie xetewiyatɨ, Ketsutsi Kɨritsitu mɨxe'ɨwiya xemuta'inierie xemɨtawikweitsitɨarienikɨ:"
+          },
+          {
+            "verse_number": 2,
+            "text": "Xekenenimayatsieka, xekepitɨarieka yu'iyaritsie xemɨka'uximatɨariekakɨ meta xekenaki'eriwani waɨkawa."
+          },
+          {
+            "verse_number": 3,
+            "text": "Nenaki'erima, kwini mieme nekaninemexɨitɨakaitɨni nemɨtixeti'utɨirienikɨ tanaitɨ 'axeikɨa ketemɨtetawikweitsitɨariexime hepaɨtsita, peru kaneuyeweka yanemɨtixeti'utɨirienikɨ hikɨ waɨriyarika nexepitɨatɨ xemɨyukwitɨwenikɨ tita yuri temɨte'erie hetsiemieme, tita Kakaɨyari teɨterimama xeimieme temɨteyetuiriyarie hetsiemieme."
+          },
+          {
+            "verse_number": 4,
+            "text": "Hipatɨ teɨteri tatsata mekanatahaxɨani 'awie, meripai mekaniukayatsariexɨani mɨpaɨ memɨtemari'itɨarienikɨ. Kakaɨyari mepɨka'ayexeiya, mekanipata tita Kakaɨyari mɨtiwamikwa 'aixɨa tiuka'iyaritɨ, para memɨyutatuanikɨ merukuyatɨwetɨ xeikɨa. Mekaniyuku'imawani mɨpaɨ me'utiyuatɨ kename meka'imate kemɨ'ane hɨkɨatɨ mɨtakutsiyari mɨtati'aitɨwame Ketsutsi Kɨritsitu."
+          },
+          {
+            "verse_number": 5,
+            "text": "Tsepanetɨ xeme mɨpaɨ xemɨtehetima naimekɨ, nekanixehaye'eritɨamɨkɨ kemɨtiuyɨ hepaɨtsita kepauka Ti'aitame mɨwarutawikweitsitɨa 'Ixaheritsixi teɨteriyari 'Ekipitu kwieyaritsie wareyewitɨka, warutawikweitsitɨaka 'arike kaniwaruka'una mɨkɨ yuri memɨkate'eriekai."
+          },
+          {
+            "verse_number": 6,
+            "text": "Niuki tuayamete memɨkayɨ'ɨwiyakai kememɨtehɨritɨariekai, matsi yukie memuku'eiri, mɨkɨ Kakaɨyari kaniwaranutaxɨrieni yuheyemekɨ yɨriyatsie memɨtaxanetsienikɨ tukari mɨmariwe 'aye'ayu."
+          },
+          {
+            "verse_number": 7,
+            "text": "Yaxeikɨata Tsuruma meta Kumuxa meta kiekarite 'auriena mamanetɨkatei, 'inɨari memakɨnekɨ memari'itɨarietɨwetɨ, mete'uka'eniexɨaka taipa yuheyemekɨ mɨtaiwetsie, 'amemu'uwakaikɨ mɨkɨ mewakumaɨwatɨ kemɨ'ane mɨkawa'ɨyatɨkai mɨkawakɨnatɨkai, me'ikumaɨwatɨ titakɨ memɨteyutsewiximakai."
+          },
+          {
+            "verse_number": 8,
+            "text": "Peru hikɨ miemeteta yaxeikɨa mekani'aneneni, kememɨteheinɨtsa mekanitsewiximaka yuwaiyari, mekanixani'erieka kemɨ'ane ti'aitame mɨhɨkɨ, mekaniwatsewiximaka mamariwawemete 'axame'utiyuatɨ wahepaɨtsita."
+          },
+          {
+            "verse_number": 9,
+            "text": "Mɨkɨ Miyeri niuki tuayamete tiwa'aitɨwame mɨhɨkɨ, kepauka Kauyumarie hamatɨa mɨkɨ niuki memɨxɨatɨakai Muitsexi kaxarieya hepaɨtsita, mɨkɨ pɨkayuwaɨriyakai 'axamɨtitahɨawekɨ Kauyumarie hetsie tiuhɨpatɨ, matsi mɨpaɨ kaniutayɨni: «Ti'aitame kematsi'utatieni»."
+          },
+          {
+            "verse_number": 10,
+            "text": "'Ikɨ pɨta matsi 'axamekaniutiyuaneni tita 'atsimemɨkatemate hepaɨtsita, kememɨtemate, yɨkɨmana xeikɨa mepɨtemate tatewama memɨka'u'iyari wahepaɨ, mɨpaɨ metemaitɨ 'ayumieme mekaniyuka'unani."
+          },
+          {
+            "verse_number": 11,
+            "text": "Xɨa'ui kemɨ'ane Kahini huyeta memeukayunixɨ hepaɨna meteyurietɨ. Tuminikɨ mekaniyutatuani memeuyexɨrienikɨ Warami hepaɨ mɨti'iwamɨkɨkai hepaɨ, mekaneuyeweni kepauka Kure Muitsexi maye'uniekaitsie."
+          },
+          {
+            "verse_number": 12,
+            "text": "'Ikɨ mekanitsewiximaka xe'ikwai kepauka xeyunaki'erietɨ xemɨtekwa'a, memɨkateheuyuyehɨwiriekɨ kepauka xehamatɨa memɨtekwa'a, muxatsi wahɨwemete mehayuyeitɨatɨ mepɨteyumikwa xeikɨa. Haiwitɨri mayewawaki hepaɨ mekani'aneneni 'ekakɨ meku'enetɨwetɨ, kɨyexi hepaɨ mekani'aneneni memɨka'utixuxuawere tukari maye'axetsie, hutakɨa mepukwi, mepɨwatihunarietɨka."
+          },
+          {
+            "verse_number": 13,
+            "text": "Mematsiɨkɨtɨ mepayuyeitɨwa kememɨteyurie meyutewiyatsitɨatɨ, yaxeikɨa hamewari mayu'eriya mɨkwaimuxa matsiɨkɨme kemɨrayuyeitɨwa haramaratsie. Xurawetsixi memeuyexɨrɨwe wahepaɨ mekani'aneneni, yɨriya kwi mɨyɨwi kaniu'ɨwiyarieni wahetsiemieme yuheyemekɨ."
+          },
+          {
+            "verse_number": 14,
+            "text": "Mɨya memɨ'anene meripai katiniwakuxaxatɨwakaitɨni 'Enuki 'Arani mɨxiɨyarieyatɨkai 'atahutarieka mieme, mɨpaɨ 'utaitɨ: «Ti'aitame nekaniuxeiya nuaximeme yuteɨterima warawitɨtɨ yumɨireme miriyari meyupaɨmeme,"
+          },
+          {
+            "verse_number": 15,
+            "text": "yunaime wataxanetake, yunaitɨ Kakaɨyari memɨka'ayexeiya wahetsie tiuhɨanike naime hepaɨtsita kememɨte'uyuri Kakaɨyari meka'ayexeiyatɨ watahɨaweke, naime niuki mɨhaxɨaya hepaɨtsita, kememɨte'iniukima Kakaɨyari 'axateyuruwamete Kakaɨyari memɨka'ayexeiya»."
+          },
+          {
+            "verse_number": 16,
+            "text": "Mɨkɨ mekanihɨkɨtɨni niuki xɨatɨakate niukixiwiwamete, kememɨte'ukahiwe'erie xeikɨa 'amekaniu'uwani, waɨkawa mepɨtekuxata meteyukatawe'erietɨ, niukikɨ me'utiniutɨ mekaniwatemawieritɨaka teɨteri memɨwara'iwanikɨ."
+          },
+          {
+            "verse_number": 17,
+            "text": "Xemetsɨ nenaki'erima, niuki xekena'eriwani meripaitɨ kememutiyua Tati'aitɨwame Ketsutsi Kɨritsitu nɨ'arimama yakatiyɨwekaku 'akuxi."
+          },
+          {
+            "verse_number": 18,
+            "text": "Mɨpaɨ mekatenixekɨhɨawekaitɨni: «Tukari taparirɨmekaku mekanitixuawerikuni teyunanaimawamete, 'amekaniu'uwakuni kememɨte'ukahiwe'erie xeikɨa Kakaɨyari meka'ayexeiyatɨ»."
+          },
+          {
+            "verse_number": 19,
+            "text": "Mɨkɨ mekanihɨkɨtɨni kemɨ'ane teɨteri yuhetsie memɨtewawiyatsitɨa, 'iyaritsie memɨtewiya meta 'iyaritsie memɨkatewiya, peru yuri 'Iyari memɨkahexeiya."
+          },
+          {
+            "verse_number": 20,
+            "text": "Peru xeme nenaki'erima, xekeneyutseiriyani yunaitɨ, yuri kexemɨte'erie tita mɨtipatsietsie, xekeneyunenewieka 'Iyari Mɨtiyupatatsie xetewiyatɨ."
+          },
+          {
+            "verse_number": 21,
+            "text": "Xekeneyɨ'ɨwiyani Kakaɨyari xenaki'eriekaku, xekeneuta'ikwewani maye'anikɨ Tati'aitɨwame Ketsutsi Kɨritsitu kepauka mɨxetinenimayata mɨxepitɨani tukari mɨkaxɨwe."
+          },
+          {
+            "verse_number": 22,
+            "text": "Xekeniwanenimayaka hipame memeu'erietɨwe,"
+          },
+          {
+            "verse_number": 23,
+            "text": "xekeniwawikweitsitɨaka mɨkɨ xewaranayehapanatɨ taipa. Hipame meta kexemɨtewanenimaya xekeneumamaka matsi, xekenexani'erieka 'atsita wa'ixuriki xɨka tsewiximarieka kememɨte'uyuri yuwaiyaritsie metewiyatɨ."
+          },
+          {
+            "verse_number": 24,
+            "text": "Kakaɨyari muyuxewi, tatsiwikweitsitɨwame, mɨyɨwe mɨxe'ɨwiyani xemɨka'atixɨrɨwenikɨ, meta mɨyɨwe mɨxe'aye'atɨanikɨ kemɨ'ane witsimɨ'ane hɨxie xehetsie katiuhɨiwakaku meta xeyutemamawiekaku,"
+          },
+          {
+            "verse_number": 25,
+            "text": "mɨkɨ witsiketixeiyarieka, kemariweni, ketɨrɨkaɨyeni meta keti'aitani, Ketsutsi hetsie tiwiyatɨ tati'aitɨwame, tukari katsutɨariewekaku, hikɨ tukari meta yuheyemekɨ mieme. Mɨpaɨ xeikɨa kani'aneni."
+          }
+        ],
+        "passage_titles": [
+          {
+            "verse_number": 1,
+            "title": "Meitanɨ'axɨa"
+          },
+          {
+            "verse_number": 1,
+            "title": "Waɨritsika"
+          },
+          {
+            "verse_number": 3,
+            "title": "Mete'itawatɨ kememɨte'ɨkitani"
+          },
+          {
+            "verse_number": 17,
+            "title": "Kemɨtiwa'imaiyakai kemɨtiwatuikakai"
+          },
+          {
+            "verse_number": 24,
+            "title": "'Aixɨa kemutayɨ Kakaɨyari hepaɨtsita"
+          }
+        ]
+      }
+    ]
+  }
+}

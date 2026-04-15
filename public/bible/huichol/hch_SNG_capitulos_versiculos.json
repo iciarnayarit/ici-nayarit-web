@@ -1,0 +1,677 @@
+{
+  "book": {
+    "name": "Kwikari",
+    "alternate_names": [
+      "Cantares",
+      "Song of Solomon"
+    ],
+    "language": "Huichol (Wixarika)",
+    "source": {
+      "type": "pdf_extraction",
+      "file": "hch_SNG.pdf",
+      "extracted_utc": "2026-04-14T21:58:37.541043+00:00",
+      "notes": "Reconstruido desde encabezados y numeración del PDF; capítulos 2–8 marcados por línea sola N; notas al pie omitidas; passage_titles detectados heurísticamente."
+    },
+    "chapters": [
+      {
+        "chapter_number": 1,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Tsarumuni kwikarieya xapayari."
+          },
+          {
+            "verse_number": 2,
+            "text": "Xɨka, penetsi'u'itsenike 'ateni kemɨtiyu'itsewekɨ, matsi 'aixɨa pɨ'ane 'anaki'eriya, keyuri winu."
+          },
+          {
+            "verse_number": 3,
+            "text": "Witsimu'ɨata pemɨ'akawiriwa, yemekɨ puwanake, 'ekɨtɨtɨ pekanihɨkɨtɨni waritsamu witsimu'ɨa. Kauka 'ayumieme 'ɨimarixi memenenaki'erie."
+          },
+          {
+            "verse_number": 4,
+            "text": "Kene'amexɨitɨaka, 'ahetsiemieme yemekɨ kenenayeitɨa. Kenenanuwitɨki pemuyehuputsie, ti'aitame. Wahamikuma Tepuyutemamawieka ta'iyarikɨ teyunaitɨ, tepiku'eriwani kepemɨti'amaɨwa keyuri winu. Titakɨ mɨmatinaki'erieka panayuhayewa."
+          },
+          {
+            "verse_number": 5,
+            "text": "'Uka mɨyɨwi nepɨhɨkɨ, peru witsinepɨti'iɨmari, 'ukari 'aku Kerutsaremetari, nekaniyɨwini Tseraxi teɨteriyari waxamaru hepaɨ, witsinekatini'ɨimarika Tsarumuni 'ixuriki kiiyarieya hepaɨ."
+          },
+          {
+            "verse_number": 6,
+            "text": "Newaiyaritsie xepɨkanetsixeiyani nemɨyɨwikɨ, tau nenawiyari mɨyakaniuyurieni. Ne'iwama 'ukitsi mekaneniuyeheka, kaxie haraweriyari 'ɨwiyariyarikɨ mekaneniuta'aitɨani waɨriyarika, meta nekaxie 'aixɨa nepɨkatiɨ'ɨwiyaxɨ."
+          },
+          {
+            "verse_number": 7,
+            "text": "Kenetineutaxatɨa, 'uki nemɨmatsinaki'erie, ¿hakewa 'amuxatsima pepɨwaretihɨwe? ¿hakewa tuka pepɨwareti'uxipitɨwa? ¿Ne titayari netikuyeika xeikɨa, 'ahamikuma wamuxatsima wahamatɨa?"
+          },
+          {
+            "verse_number": 8,
+            "text": "Xɨka 'atsipekatimaika, 'uka witsipemɨti'ɨimari 'ukari watsata pe'uyeikatɨ, muxatsi waketate kemɨreuyuyune kenanukuweiya meta 'atsipuri tɨɨrixi keniwahɨneni, muxatsi wahɨwemete wakii maku'utsie."
+          },
+          {
+            "verse_number": 9,
+            "text": "'Ekɨ meta kepemɨreuyukuniɨtɨa, 'uka nemɨmatsi naki'erie, Kawayutsixi nepɨwaraye'eriwa witsimemɨtehekɨniɨtɨarietɨka yumu'uyaritsie Parahuni kaxetaya memuhaxime."
+          },
+          {
+            "verse_number": 10,
+            "text": "Witsipɨtiyuxexeiya 'a'aurite meta kepemɨti'akutsa'a. 'Akɨipi witsipɨtiutimerɨka 'akukakɨ."
+          },
+          {
+            "verse_number": 11,
+            "text": "'Anakɨtsa tepɨtiwewieni hurukɨ meta pɨratakɨ."
+          },
+          {
+            "verse_number": 12,
+            "text": "Ti'aitame mexi mexatsie 'utika, witsimu'ɨa nemɨnetawiri kaniɨkɨ'ɨareni hetsiena."
+          },
+          {
+            "verse_number": 13,
+            "text": "'Uki neminaki'erie, mixaxi witsimu'ɨa purutsata mɨyeka hepaɨ kani'aneni, netawitsie kaneukukutsuni neheikukwekaku."
+          },
+          {
+            "verse_number": 14,
+            "text": "'Uki neminaki'erie, 'aukwe tuturiyari witsimu'ɨa hepaɨ kani'aneni 'Enikaritsie kaxie 'iteɨriyari hepaɨ."
+          },
+          {
+            "verse_number": 15,
+            "text": "Kwinimieme pepɨti'ɨimari, 'uka nemɨmatsinaki'erie. Witsipepɨ'ane. 'Ahɨxite, kukuruxi memɨyuhuta wahepaɨ pɨtiyuxexeiya."
+          },
+          {
+            "verse_number": 16,
+            "text": "Kwinimieme pepɨtitemaikɨ, 'uki nemɨmatsinaki'erie. Yemekɨ 'ekɨ pepɨnetsinake. 'Uki mɨnaki'eriwa 'Ɨxa mɨtsitsiɨrawi ta'itari kanayeimɨkɨ kepauka temɨyutiwitɨnitsie,"
+          },
+          {
+            "verse_number": 17,
+            "text": "takii pikaxiyari kariuxa kanihɨkɨtɨni Huku mɨxexeurawi xawarikɨ kananukakitsieka."
+          }
+        ],
+        "passage_titles": [
+          {
+            "verse_number": 1,
+            "title": "Kwikari witsimɨ'ane"
+          },
+          {
+            "verse_number": 2,
+            "title": "'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 5,
+            "title": "'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 8,
+            "title": "Wahamikuma"
+          },
+          {
+            "verse_number": 9,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 12,
+            "title": "'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 15,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 16,
+            "title": "'Uka mɨnaki'eriwa"
+          }
+        ]
+      },
+      {
+        "chapter_number": 2,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Ne tuutu Tsarunitsie mayeweri mɨxuawe nekanihɨkɨtɨni, xewitɨ tuturi texuxuri mayeweritsie mieme."
+          },
+          {
+            "verse_number": 2,
+            "text": "'Uka neminaki'erie, kepauka hipame 'ukarawetsixi watsata muyeika, tuturi texuxuri xuyatsata muwe hepaɨ katiniyuxexeiyani."
+          },
+          {
+            "verse_number": 3,
+            "text": "'Uki neminaki'erie kepauka hipame 'ukitsi watsata muyeika, xikɨti* 'ɨtsitsata mɨkawe hepaɨ katiniyuxexeiyani. Kaneninakeni hetɨana nemɨ'etɨpieka, witsikatinakakani takariyari."
+          },
+          {
+            "verse_number": 4,
+            "text": "Kanenewitɨni kiita 'ixɨarari muwatiwewiwatsie, muwa yunaki'eriya 'inɨariyari kaniwarepitɨani."
+          },
+          {
+            "verse_number": 5,
+            "text": "Kaxie takari patsaruyarikɨ keneneutatɨrɨkariya, manitsanakɨ keneneutahuxaitɨa, nekanimɨximeni naki'eriyakɨ."
+          },
+          {
+            "verse_number": 6,
+            "text": "Mamaya 'utatana miemetsie nemu'u mɨniuka'uxipitɨanike, meta yutserieta miemekɨ kwimɨneniukwenike."
+          },
+          {
+            "verse_number": 7,
+            "text": "Ne mɨpaɨ nepɨtixewawirie, 'ukarawetsixi Kerutsareme kiekatari, maxatsi 'ɨimarixi yeuta memu'uwakɨ, 'uka neminaki'erie xepɨkahehɨtɨaka xepɨkahei'uximatɨaka tsepa kepaukake yukɨmana manutanierixɨ. Hutariekamieme Kwikari 'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 8,
+            "text": "'Uki neminaki'erie hiwarieya. Neuxei, 'ena kanamieni, 'utsunarɨmetɨ hɨritetsie, 'anutitsukwakatɨ hɨri 'amɨnenetsie."
+          },
+          {
+            "verse_number": 9,
+            "text": "'Uki neminaki'erie maxa hepaɨ katiniyuxexeiyani, maxa temaikɨ hepaɨ kani'aneni. Paratsɨ xekeneuxeiya, takiiwarie warita kaniutiweni, 'awienierenetɨ maxawariyarietɨkata, yɨkɨ'ɨwiyatɨ mayexaxawata."
+          },
+          {
+            "verse_number": 10,
+            "text": "'Uki neminaki'erie mɨpaɨ kanetiniutahɨawe: «Kenanukukexi 'uka nemɨmatsinaki'erie, hikɨmɨ kenewaye'a, 'uka witsipemɨti'ɨimari."
+          },
+          {
+            "verse_number": 11,
+            "text": "Neuxei, kananuyeyaniri xexerixa, hamatɨanata kaniutanɨni wiyeri."
+          },
+          {
+            "verse_number": 12,
+            "text": "Yeuta 'ari tuturi kanitineikani, kwikari tukariyari kanaye'aniri. 'Ariri naitsarie kwiepa kani'eniɨriɨkɨni kukuruxi memeɨyɨyɨxawi wakwikari."
+          },
+          {
+            "verse_number": 13,
+            "text": "'Ariri piní matɨari mieme takariyari kanixuaweni, 'Ari kaxie xututɨ witsikaniukɨ'ɨareni. Kenanukukexi, 'uka nemɨmatsinaki'erie, nehetsɨa kenaye'a, 'uka witsipemɨti'ɨimari»."
+          },
+          {
+            "verse_number": 14,
+            "text": "Nekukuru pemeutuxa, 'ai mukatataritsie pemuyu'awieta, meta hɨri 'amɨtiumariwetsie paitɨ, kenanieri nepɨmatsixeiya, keneutaniu nepumatsi'enieni, 'aniuki 'aixɨa kanimayaka meta witsipekatini'axexeiyani."
+          },
+          {
+            "verse_number": 15,
+            "text": "Kauxaitsi xekeniwarutiwiya, mɨkɨ kauxaitsi tɨɨrixi takaxie memɨtsewixima, takaxie haraweriyari xuturiyari."
+          },
+          {
+            "verse_number": 16,
+            "text": "'Uki neminaki'erie nehetsiemieme kanihɨkɨtɨni, neta hetsiena mieme, mɨkɨ yumuxatsima kaniwarutihɨweni tuturi texuxuritsata."
+          },
+          {
+            "verse_number": 17,
+            "text": "Tau ka'akayuniwekaku 'akuxi meta 'etɨri ka'akumaweriwekaku 'akuxi, nehetsɨa kani'axeni, 'uki neminaki'erie. Maxa hepaɨ katiniunanautsani, maxa temaikɨ hepaɨ, hɨritsie paitɨ."
+          }
+        ],
+        "passage_titles": [
+          {
+            "verse_number": 1,
+            "title": "'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 2,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 3,
+            "title": "'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 7,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 14,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 15,
+            "title": "'Uki meta 'uka memuyunaki'erie"
+          },
+          {
+            "verse_number": 16,
+            "title": "'Uka mɨnaki'eriwa"
+          }
+        ]
+      },
+      {
+        "chapter_number": 3,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Tɨkarikɨ, ne'itaritsie ne'ukaitɨ 'uki neminaki'erie nekaniutiwauni, matsi nepɨka'itaxei."
+          },
+          {
+            "verse_number": 2,
+            "text": "Ne 'anukukeme nekaneyeikani kiekaritsie, huye mayehapanetsie meta waɨkawa mɨrewatuiyatsie, 'uki neminaki'erie nekuwaunetɨ. Ne'iwaunetɨ nepɨka'itaxeiyawe."
+          },
+          {
+            "verse_number": 3,
+            "text": "Mekaneniukaxexeyani kiekaritsie tehɨwemete. Mɨpaɨ netiwara'iwawiya: «¿'Uki neminaki'erie hawaikɨ xekatehexeiya?»"
+          },
+          {
+            "verse_number": 4,
+            "text": "Mɨya netiwaru'iwawiyakake nekanikaxeiya 'uki neminaki'erie. Nekanitapa, neka'itatuayatɨ, nemaama kie nekaneiwitɨkɨni, kiita paitɨ hakewa nemaama mɨnetsiwatiniwexɨtsie."
+          },
+          {
+            "verse_number": 5,
+            "text": "Ne mɨpaɨ nepɨtixewawirie, 'ukarawetsixi Kerutsareme kiekatari, maxatsi 'ɨimarixi yeuta memu'uwakɨ, 'uka neminaki'erie xepɨkahehɨtɨaka xepɨkahei'uximatɨaka tsepa kepaukake manutanierixɨ. Hairiekamieme Kwikari Yunaitɨ mɨkwikarɨwa"
+          },
+          {
+            "verse_number": 6,
+            "text": "¿Titatihɨkɨ makumawetsie mɨretineika kɨtsi 'amuweni hepaɨ tiyuxexeiyatɨ, mixaxi meta 'ɨkwa witsimu'ɨa tsata, meta waɨkawa witsimu'ɨatɨka nɨtɨ?"
+          },
+          {
+            "verse_number": 7,
+            "text": "Neuxei, Tsarumuni kaxetaya kaniyɨaneni. Haika tewiyari kuyaxi me'eweiyatɨ mana pamie, 'ixaheritsixi kuyaxiyaritsie memanayexeiyarie kwinimieme yeme memɨteheuyutakwiwawe."
+          },
+          {
+            "verse_number": 8,
+            "text": "Yunaitɨ 'ixipara mekanakawɨtɨatɨkani, meta mekateniuti'ɨkitɨarieni memeuyutakwiwawenikɨ, yunaitɨ yu'ixipara yuhɨiyametsie mekanikawɨtɨatɨkani tɨkarikɨ mɨkweriwa'anekɨ."
+          },
+          {
+            "verse_number": 9,
+            "text": "Tsarumuni yukaxeta kaniutawewieni kɨye 'aixɨa mɨ'anenekɨ Riwanu mieme."
+          },
+          {
+            "verse_number": 10,
+            "text": "Matiwetɨka Pɨratakɨ kaniutiwewieni, hurukɨta mitseiriyatɨka. 'Ɨpariyarita kaniutawipa taɨraɨyemekɨ, taɨtana mekaniwaku'utɨani me'inaki'erietɨ 'ukari Kerutsareme kiekatari."
+          },
+          {
+            "verse_number": 11,
+            "text": "Xekeniwayekɨni 'ukarawetsixi Tsiyunitari. Ti'aitame Tsarumuni xekenexeiyani. Yumu'utsie kanenamaka Kuruna maamaya menamaniri kepauka mutineɨkixɨtsie mieme kepauka 'iyarieya muyutemawiekai."
+          }
+        ],
+        "passage_titles": [
+          {
+            "verse_number": 5,
+            "title": "'Uki mɨnaki'eriwa"
+          }
+        ]
+      },
+      {
+        "chapter_number": 4,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Kwinie yemekɨ pepɨti'ɨimari 'uka nemɨmatsinaki'erie. Witsipepɨti'axexeiya. 'Ahuxite 'ixuriki pemeukuwera warita, kukuruxi memeutuxa mepɨhɨkɨ. 'Akɨpate tsipuri xeitewayari memeuyɨyɨwi wahepaɨ pɨtiyuxexeiya Karaha hɨriyaritsie memu'uwa."
+          },
+          {
+            "verse_number": 2,
+            "text": "'Atamete muxatsi hekwamekɨ memutixikieni hepaɨ pɨtiyuxexeiya, xike memanatikɨ me'uka'ɨyarieka. Yuxexuitɨ mɨkɨ yu'iwama mepuwarexeiya, xewitɨ pɨkayuxaɨta."
+          },
+          {
+            "verse_number": 3,
+            "text": "'Ateni hɨiyame mɨxeta hepaɨ pɨtiyuxexeiya, 'aniuki pɨnetsihehana. 'A'aurite'ixuriki pemeukuwera warita, xikɨti hixɨata mɨxitekieka hepaɨ pɨtiyuxexeiya."
+          },
+          {
+            "verse_number": 4,
+            "text": "'Akɨipi Rawiri tuxiyuya hepaɨ pɨtiyuxexeiya, tetexi mɨxitekietɨkakɨ mɨwewiya, hetsiena pukuwɨ xeimiriyari kɨmana memɨyukunarɨma, kuyaxi memɨyukunarɨma mɨkɨ naitɨ pɨhɨkɨ."
+          },
+          {
+            "verse_number": 5,
+            "text": "'Atsitsi yuhutatɨ maxatsi yeutari wahepaɨ mepɨteyuxexeiya, 'ɨimari niwemama yuhutame muwarayexei memɨtekwatɨwe tuturi texuxuritsata."
+          },
+          {
+            "verse_number": 6,
+            "text": "'Akuxi kakɨyɨriwekaku, 'akuxi 'etɨri katipariwekaku, nekananutiyeimɨkɨ mixaxi yemuriyaritsie, meta 'ɨkwa witsimu'ɨa hɨriyaritsie."
+          },
+          {
+            "verse_number": 7,
+            "text": "Naitɨ 'ekɨ witsipepɨ'ane, 'uka nemɨmatsinaki'erie, naitɨ 'aixɨa pepɨ'ane."
+          },
+          {
+            "verse_number": 8,
+            "text": "Hikɨmɨ tepanukakɨne Riwanu hɨriyaritsie, 'uka nemɨmatsihɨawene, Hikɨmɨ tepanukakɨne Riwanutsie. Kenanakaye'a 'Amaná hɨriyari 'amanutitewitsie, Tsenixi meta Heximuni yekɨrita. Kenanakaye'a hakewa mayetsi meme'uwatsie, mɨkɨ hɨritsie hakewa tɨwexi memayu'eririya wakietsie."
+          },
+          {
+            "verse_number": 9,
+            "text": "Ne'iyari pepɨhɨa, ne'iwa 'uka nemetsihahɨawe, xeihɨxiyarikɨtɨtɨ penetsi'uxeiyaku, 'akuka xeiwiwierikɨ ne'iyari pepɨhɨa."
+          },
+          {
+            "verse_number": 10,
+            "text": "Kwinie yemekɨ witsipa'ane 'anaki'eriya, ne'iwa 'uka nemetsihɨawene. Matsi witsipa'ane 'anaki'eriya, winu kemɨkaha'ane, meta pemuyutawiriwa witsimu'ɨa tixaɨtɨ kemɨkatiɨ'ɨa hepaɨ pepɨ'ɨa."
+          },
+          {
+            "verse_number": 11,
+            "text": "'Uka nemetsihahɨawe, 'atenitsie xiete payeneika, retsi meta xiete 'anenitɨa pepɨ'awieta. Riwanu kemu'ɨa mɨpaɨta pɨ'ɨatɨka 'akamixate."
+          },
+          {
+            "verse_number": 12,
+            "text": "Haraweri tuturi muwa'etsie mɨreuname pekanihɨkɨtɨni, ne'iwa 'uka nemetsihahɨawe, haraweri tuturi muwa'etsie mɨreuname meta haixa manukaname pekanihɨkɨtɨni."
+          },
+          {
+            "verse_number": 13,
+            "text": "'Atsitsi xeiharaweriyari pɨhɨkɨtɨka xikɨti muwa'etsie, witsi'anenetɨ 'ikwaxi, tuturiyari naaru meta hatsahaxi,"
+          },
+          {
+            "verse_number": 14,
+            "text": "naitɨ kɨyexi muwatsuayatɨka witsimu'ɨatɨka, naaru meta 'atsapɨrani, karamu meta kanera, mixaxi meta 'aruhe, witsimɨti'anene xeikɨa naitɨ."
+          },
+          {
+            "verse_number": 15,
+            "text": "'Ekɨ haa pekanihɨkɨtɨni harawerita mieme, haixa haa mayenierenikɨ mɨ'ayumieme mexeiya pekanihɨkɨtɨni, haa 'akiyari pekanihɨkɨtɨni Riwanu makanena."
+          },
+          {
+            "verse_number": 16,
+            "text": "Kenanutanieri, 'eka tayeta mieme. 'Eka tatsutɨa mieme, niwa kenaye'a. Neharawerita xekeneuka'ekawi, witsikemɨtiuye'ɨa xekeneutawiwiexɨa. Yuharawerita 'uki neminaki'erie kehamieni muwa mieme 'ikwaxi witsima'ane keha'inɨata."
+          }
+        ],
+        "passage_titles": [
+          {
+            "verse_number": 1,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 16,
+            "title": "'Uka mɨnaki'eriwa"
+          }
+        ]
+      },
+      {
+        "chapter_number": 5,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Neharaweritari nekaninuani, 'uka ne'iwa nemɨmatsi naki'erie, muwa nepikaxei mixaxi waritsamu meta, muwa xiete kwaiyarikɨ ne'iyari paye'axe. Muwa nepikaxexeiya waɨkawa winu meta retsi, naitɨ 'ikɨ pɨtinehetsiemieme. Wahamikuma Hamikutsixi, xeketenekwaka xeketene'ieka, xekeneutitarɨwai naki'eriyakɨ. Nauriekamieme Kwikari 'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 2,
+            "text": "Ne nepukutsukai, matsi ne'iyari payenierekai. Hikɨ xeime niuki nekaniu'enieni. 'Uki neminaki'erie kitenie kanatawekaitɨni. «Ne'iwa 'uka nemɨmatsi naki'erie, witsipemɨti'ɨimari nekukuru, keneneupitɨa nemeutahanikɨ. Nemu'utsie haɨtsikɨ nepumu'uhawi, tɨkarikɨ mieme hawiriya nekɨpatetsie panakaxɨrɨwe»."
+          },
+          {
+            "verse_number": 3,
+            "text": "Nematsi nekaniyutikemaripieni, nekapɨyɨwe tawari nemɨranakatɨni. Nematsi ne'ɨkatetsie nekaneuyuhauxixɨaniri, titayari tawari nereuyukwiemawani."
+          },
+          {
+            "verse_number": 4,
+            "text": "'Uki neminaki'erie mɨreukukekatsie hewakuxawakaku, muwa kaneukumeni, netaɨta nemeiyehɨakaikɨ waɨkawa nepɨnekatemawi."
+          },
+          {
+            "verse_number": 5,
+            "text": "Ne'anukukeka 'uki nemɨnaki'eirie nekatineuyepirieni, mixaxi nemamatetsie kanikakukekaitɨni. Ne'itɨwametetsie paitɨ kananuyetsukekaitɨni mɨreuyepieriketsie paitɨ kanikaxɨrɨwekaitɨni."
+          },
+          {
+            "verse_number": 6,
+            "text": "Kepauka nemɨreiyepiriri 'uki neminaki'erie, 'ari kaniukumawekaitɨniri. Neyakaitɨniri, hikɨ 'utɨmana nekaneyani. Nekanitiwauni peru nepɨka'itaxei. Kepauka nemitahiwi pɨkanetsiheta'ei."
+          },
+          {
+            "verse_number": 7,
+            "text": "Mekaneniutaxeiya tehɨwemete kiekaritsie meye'uwatɨ, kiekari kuraruyari memɨ'ɨwiya mekaneteniukwinitɨani mekaneneutiwaxɨani, nexikuri mekananutihurieni."
+          },
+          {
+            "verse_number": 8,
+            "text": "Ne mɨpaɨ nepɨtixewawirie 'ukari Kerutsareme kiekatari, xɨka 'uki neminaki'erie hawaikɨ xehekaxeiya, mɨpaɨ xeketenetahɨawi kename netikuye ne'inaki'erietɨ."
+          },
+          {
+            "verse_number": 9,
+            "text": "'Uka kwinie yemekɨ witsipemɨti'ɨimari, ketatineutaxatɨa, ¿kehepaɨ timatsiɨkɨ 'uki peminaki'erie hipame 'ukitsi watsata? ¿Kehepaɨ timatsiɨkɨ 'uki peminaki'erie hipame 'ukitsi watsata, mɨkɨ pemɨtatsiwawirie?"
+          },
+          {
+            "verse_number": 10,
+            "text": "'Uki neminaki'erie kwinie yemekɨ pɨtitemaikɨ, xetamekɨ 'utimerɨkatɨ, tsepa tamamata miriyari wahamatɨa muyeika kanimatsiɨkɨni."
+          },
+          {
+            "verse_number": 11,
+            "text": "Mu'uya kanihurutɨni xeikɨa, kɨpateya 'etsiwa kanitutunini yɨyɨwitɨ kwatsa kemeu'ane hepaɨ."
+          },
+          {
+            "verse_number": 12,
+            "text": "Hɨxiteya kukuruxi wahepaɨ kani'aneneni 'aki'utɨa memɨyetei retsikɨ me'ɨwatɨkaitɨ, tetexi witsimɨ'anene hepaɨ metehekutetɨ."
+          },
+          {
+            "verse_number": 13,
+            "text": "'Auriteya waritsamu 'etsiyari hepaɨ pɨ'anene, tupiriya witsimu'ɨatɨka 'etsiyari. Teniteya tuturite 'atsutsena kanihɨkɨtɨni muwa matineika mixaxi."
+          },
+          {
+            "verse_number": 14,
+            "text": "Mamateya huru tepɨayari kanihɨkɨtɨni tupatsiyukɨ ti'utɨkaitɨ. Hukaya putimerɨka witsimɨtiharuani hepaɨ ti'utɨ yuyuawimekɨ."
+          },
+          {
+            "verse_number": 15,
+            "text": "Teuriteya huta 'ikitsaraɨyari pɨhɨkɨ 'anuyexawawatɨtɨ huru mɨhɨkɨakɨ yuwetɨkaitɨ. Hɨxiena xɨka 'uyeikani pumariwekare, Riwanu muyeikani hepaɨ kariuxa tsata."
+          },
+          {
+            "verse_number": 16,
+            "text": "Tenieya kanakakani, mɨkɨ witsikani'aneni 'uki. Mɨpaɨ kani'aneni 'uki neminaki'erie, nehamiku, 'ukarawetsixi Kerutsareme kiekatari."
+          }
+        ],
+        "passage_titles": [
+          {
+            "verse_number": 1,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 9,
+            "title": "Yunaitɨ kwikarɨwame"
+          },
+          {
+            "verse_number": 10,
+            "title": "'Uka mɨnaki'eriwa"
+          }
+        ]
+      },
+      {
+        "chapter_number": 6,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "¿Kekuta reuyunixɨ 'uki peminaki'erie, 'uka yemekɨ witsipemɨti'ɨimari?"
+          },
+          {
+            "verse_number": 2,
+            "text": "'Uki neminaki'erie kaneyani yuharawerita, waritsamu muye'etsietsie, muwa mɨtiwaikakɨ, tuturi 'atsutsena tipinike."
+          },
+          {
+            "verse_number": 3,
+            "text": "Ne 'uki neminaki'erie hetsiemieme nekanihɨkɨtɨni, 'uki neminaki'erie nehetsieta kanimiemetɨni, Mɨkɨ yumuxatsima tuturi 'atsutsena tsata kaniwarutihɨweni. 'Auxɨwirieka Kwikari 'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 4,
+            "text": "'Ekɨ 'uka nemɨmatsinaki'erie, witsipepɨti'ɨimari kiekari Tiritsa hepaɨ, witsipe'anetɨ kiekari Kerutsareme hepaɨ, pemɨmariwe xurawetsixi wahepaɨ."
+          },
+          {
+            "verse_number": 5,
+            "text": "Kwi pepɨkanetsixeiyaniri, nepeɨxɨyarie 'ahɨxite netsixeiyakaku. 'Akɨpate tsipuri xeitewayari wahepaɨ pɨtiyuxexeiya memuyuhayatɨwe Karaha hɨriyaritsie."
+          },
+          {
+            "verse_number": 6,
+            "text": "'Atamete tsipuri 'ukari tɨɨrixi wahepaɨ pɨ'anene hekwamekɨ memuti'ɨwaxɨ. Yuxexuitɨ mɨkɨ mepuyuhuhuta, xewitɨ yuxaɨta pɨka'uyeika."
+          },
+          {
+            "verse_number": 7,
+            "text": "'A'auritepemeuyukunama warita manitsana hepaɨ pɨtiyuxexeiya."
+          },
+          {
+            "verse_number": 8,
+            "text": "Tsepa haika tewiyari 'ukari te'aitamete wa'ɨitama memakɨne, tsepa nauka tewiyari 'ukari memɨhɨkɨ ti'aitame hutarieka 'ɨitamama tsepa mekate'inɨaritɨ 'ukari 'ɨimarixi,"
+          },
+          {
+            "verse_number": 9,
+            "text": "peru xewitɨ hɨkɨa xeikɨa kanihɨkutɨni nekukuru 'etsimupe witsimɨti'ɨimari, 'uka kwinie maamaya mɨtinaki'erie, 'aixɨa mɨtixeiya mitiniwexɨ. Hipatɨ 'ukari kepauka memixeiya 'aixɨa mepɨtehehɨawe, 'ukari te'aitamete wa'ɨitama witsimemɨ'anene meta hipatɨ 'ukarawetsixi ti'aitame hutarieka 'ɨitamama mekaninɨawani."
+          },
+          {
+            "verse_number": 10,
+            "text": "¿Kemɨ'ane 'ikɨ pɨyɨane witsi'anetɨ tau 'ɨrɨya hepaɨ? Witsikani'aneni metsa hepaɨ, xawatɨtɨ tau hepaɨ, mariwetɨ xurawetsixi muyuawitsie memeukatei wahepaɨ."
+          },
+          {
+            "verse_number": 11,
+            "text": "Nekaneyani kariu haraweriyari muyema nemɨtixeiyakɨ hekwamekɨ mayeweritsie mɨtiyɨyɨra, ne'ixeiyamɨtɨ kaxie mɨyɨyɨra, meta manitsana kɨyeyariteyari muxutu."
+          },
+          {
+            "verse_number": 12,
+            "text": "'Atsinekareyutimaiwekaku, netemawierikakɨ kauka kaxetatsie nenekaya, takiekaritsie ti'aitame kaxetayatsie."
+          },
+          {
+            "verse_number": 13,
+            "text": "Keneukunua, 'uka Tsurami kiekame keneukunua, keneukunua tahamatɨa keneuyeikani, tepɨmatsiheuxeiyaku. 'Uki mɨnaki'eriwa ¿Titayarikuta 'uka Tsunami kiekame xeteheuxeiyaku, neiya hutakɨa yu'utɨma mehewetɨkaikaku miemetsie hepaɨ?"
+          }
+        ],
+        "passage_titles": [
+          {
+            "verse_number": 1,
+            "title": "Yunaitɨ kwikarɨwame"
+          },
+          {
+            "verse_number": 2,
+            "title": "'Ahamatɨa te'uhutɨ tepiwauyu."
+          },
+          {
+            "verse_number": 2,
+            "title": "'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 2,
+            "title": "¿Hakewa kuta petɨa?"
+          },
+          {
+            "verse_number": 10,
+            "title": "Yunaitɨ kwikarɨwame"
+          },
+          {
+            "verse_number": 11,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 13,
+            "title": "Wahamikuma"
+          }
+        ]
+      },
+      {
+        "chapter_number": 7,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "'Uka ti'aitame pemunu'aya witsipemɨti'ɨimari, witsipɨtiyuxexeiya 'a'ɨkate kakaitsie heutawetɨkaitɨ. Witsipemanupe, nakɨtsa hepaɨ pɨ'ane 'aixɨa reutamaiwetɨ mitiwewiwa hepaɨ."
+          },
+          {
+            "verse_number": 2,
+            "text": "'Axɨtemutsi tekɨxi hepaɨ pɨ'ane winu witsi'anetɨ mɨhɨne hepaɨ pɨ'ane. 'Ahuka tɨriku hɨriyari hepaɨ pɨ'ane waritana tuturi 'atsutsena mahane."
+          },
+          {
+            "verse_number": 3,
+            "text": "'Atsitsi maxatsi tɨɨrixi yuhutatɨ wahepaɨ mepɨteyuxexeiya, maxa 'ɨimari yuhutame yuniwema muwarayexeiya hepaɨ."
+          },
+          {
+            "verse_number": 4,
+            "text": "'Akɨipi tuxiyu mutuxa mɨtse'i kanihɨkɨtɨni, 'Ahɨxite huta haixayari pɨhɨkɨ Hetsiwuni mieme, Wati-Xawini kitenie 'aurie mɨtineniere. 'Atsuri Riwanu tuxiyuyari hepaɨ pɨ'ane, Ramatsiku meutaniere."
+          },
+          {
+            "verse_number": 5,
+            "text": "'Amu'u waɨkawa pahekɨa Kaximeru hɨriyari kɨtsie mieme hepaɨ. Hiru mɨyɨtsikimawi hepaɨ pɨ'anene 'akɨpate, 'etsiwa tsiturawime pehewawɨtɨatɨ ti'aitame kwi pɨmatsixeiya 'aumɨ."
+          },
+          {
+            "verse_number": 6,
+            "text": "Yemekɨ kwinie pepɨti'ɨimari, 'uka nemɨmatsinaki'erie, 'ukaratsi witsipemɨtiuka'iyari pepɨhɨkɨ."
+          },
+          {
+            "verse_number": 7,
+            "text": "Kwinie peputewi takɨ 'amɨtɨtɨ hepaɨ, meta 'atsitsi huta takariyarieya pɨhɨkɨ."
+          },
+          {
+            "verse_number": 8,
+            "text": "Ne mɨpaɨ nepɨtiuyɨhɨawixɨ: «Nekananutimakimɨkɨ takɨ 'amutewitsie, takariyari nepiini netinayeitɨamɨkɨ». 'Atsitsi kaxie takari hepaɨ ke'aneneni, manitsana hepaɨ peke'ɨ'ɨaka,"
+          },
+          {
+            "verse_number": 9,
+            "text": "winu witsima'ane hepaɨ keha'aneni 'ateni. 'Uka mɨnaki'eriwa Winu witsima'ane 'uki neminaki'erie hetsɨa keye'ani, tenieyatsie ke'utayani meta tameteyatsie."
+          },
+          {
+            "verse_number": 10,
+            "text": "Ne 'uki neminaki'erie hetsiemieme nepɨhɨkɨ, kanenikuwauneni waɨkawa netsihaunaki'erietɨ."
+          },
+          {
+            "verse_number": 11,
+            "text": "Niwa kenaye'a, 'uki nemɨmatsinaki'erie, yeuta tekaniyehuni, muwa yɨwikɨta tepeka'iyunieni tuturite yeutamieme tsata."
+          },
+          {
+            "verse_number": 12,
+            "text": "Ximeri paitɨ tepeuhu kaxie haraweriyari tsata, tepeunieriyu kaxie kareyɨyɨrari, Xɨkari tuturiyari hetixutuweni, xɨka 'ikwaxi mayehatsiyatɨka hexutukari. Mana nekameneyetuiriemɨkɨ nenaki'eriya."
+          },
+          {
+            "verse_number": 13,
+            "text": "Manirakura witsimu'ɨa kanitawiwiwani, meta naitɨ takitenie katinapika 'ikwaxi witsimɨ'anene hikɨketimieme meta 'aikɨ paitɨ timieme, nekametini'utsirieka 'ahetsietimieme 'uki nemɨmatsinaki'erie."
+          }
+        ],
+        "passage_titles": []
+      },
+      {
+        "chapter_number": 8,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Xɨka ne'iwa pehɨkɨtɨnike, nemaama tsitsieyatsie pemutawerixɨ. Kepauka nemɨmatsi'anukunake kiekaritsie nepɨmatsiku'itsewenikeyu, xewitɨ pɨkayɨwenikeyu kename 'axaneyɨane mɨnerahɨaweni."
+          },
+          {
+            "verse_number": 2,
+            "text": "'Amamatsie nekawietɨ, nemaamakie nepɨmatsi'atɨanikeyu, pemɨnetita'ɨkitɨanikɨ naki'eriya hepaɨtsita. Winu nepɨmatsi'anu'itɨanikeyu naitɨ tinɨkame, meta 'ikwaxi neharaweritamieme hayari."
+          },
+          {
+            "verse_number": 3,
+            "text": "Mɨtiniyɨweniketɨ nemu'u 'utatana nemɨniuka'uxipitɨani. Mɨtiniyɨweniketɨ yutseriekɨ mɨneniuwiya."
+          },
+          {
+            "verse_number": 4,
+            "text": "Ne nepɨxewawirie, 'ukarawetsixi Kerutsareme kiekatari, xepɨka'ihɨtɨaka meta xepɨka'i'uximatɨaka 'uka neminaki'erie, mɨkɨ yɨkɨmana kepaukake manutaniere. 'Ataxewiriekamieme Kwikari Yunaitɨ kwikarɨwame"
+          },
+          {
+            "verse_number": 5,
+            "text": "¿Kemɨ'ane pɨyɨane makumawetsie matimie 'uki minaki'erie hetsie rawiyatɨ? 'Uki mɨnaki'eriwa Xikɨti hetɨa nepɨmatsi'anutahɨtɨa, mana 'amaamatsie pepɨkaya, meta manatsiere pɨmatsi'utiniwexɨ."
+          },
+          {
+            "verse_number": 6,
+            "text": "Kenena'utɨaka 'a'iyaritsie tseyu hepaɨ, tepɨa hepaɨ 'amamatsie kenena'utɨaka. Waɨkawa pɨtɨrɨkaɨye naki'eriya, mɨki hepaɨ, kaniyuritɨni naki'eriya, mɨki teukiya hepaɨ. Naki'eriya taiyari Kakaɨyari taiyaya hepaɨ kani'aneni."
+          },
+          {
+            "verse_number": 7,
+            "text": "Tsepa haa muwaɨkawa pɨkayɨwe mitɨnikɨ, meta haa hatɨa mieme mikumaweriya tɨma pɨkayɨwe. Xewitɨ xɨka tita naime mɨrexeiya tipatamɨkɨni naki'eriyakɨ, 'axamɨtikɨhɨawarɨwanikɨ xeikɨa katinikaxeiyamɨkɨ."
+          },
+          {
+            "verse_number": 8,
+            "text": "Kwinimieme yemekɨ 'etsipuyumate tataru 'uka 'akuxi tsitsiteya pɨkahanexɨawawe. ¿Keteteyurieni xɨka ta'iwa 'uta'iwaurieni?"
+          },
+          {
+            "verse_number": 9,
+            "text": "Xɨka kiekari kuraruyaritɨnike, heimana tepetayatsakeyu pɨrata. Xɨkata 'itupari hɨkɨtɨnike, heimana tepikamanikeyu kariuxa mexayari."
+          },
+          {
+            "verse_number": 10,
+            "text": "Ne kiekari kuraruyari nekanihɨkɨtɨni, meta netsitsite huta tuxiyuyari pɨhɨkɨ. 'Ayumiemekepauka 'uki neminaki'erie mɨnetsikuxexeiyatsie kayuwatɨ nemukaxeiya hepaɨ nekatiniyumaika."
+          },
+          {
+            "verse_number": 11,
+            "text": "Tsarumuni kaxie haraweriyari kanexeiyakaitɨni Wahari-Kamuni paitɨ, hipame te'uximayatamete kaniwarehɨritɨani. Mɨkɨ yuxexuitɨ mekaniyetuiriwakaitɨni 'ikwaxi mekaxuxuawerekai, xeimiriyari pɨrata tuminiyari."
+          },
+          {
+            "verse_number": 12,
+            "text": "Tsarumuni xeimiriyari tumini kena'ɨtɨ, xemeta te'uximayatamete huta tsienituyari, peru nekaxie haraweriyari nexeikɨa pɨtinepiini."
+          },
+          {
+            "verse_number": 13,
+            "text": "'Ekɨ, tuturi muwa'etsietɨkatsie pemɨti'aita, 'aniuki xeikɨa mekanita'enieka tahamikuma, kenetaniu kuta tepi'enieni."
+          },
+          {
+            "verse_number": 14,
+            "text": "Xeiya keneumietɨ, 'uki nemɨmatsinaki'erie. Keneunautsarɨmetɨ maxa hepaɨ, maxa 'etsimupe hepaɨ, hɨritetsie waritsamukɨ muwiriyarietɨkatsie."
+          }
+        ],
+        "passage_titles": [
+          {
+            "verse_number": 4,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 6,
+            "title": "'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 8,
+            "title": "Yunaitɨ kwikarɨwame"
+          },
+          {
+            "verse_number": 10,
+            "title": "'Uka mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 13,
+            "title": "'Uki mɨnaki'eriwa"
+          },
+          {
+            "verse_number": 14,
+            "title": "'Uka mɨnaki'eriwa"
+          }
+        ]
+      }
+    ]
+  }
+}

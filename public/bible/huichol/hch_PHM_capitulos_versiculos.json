@@ -1,0 +1,141 @@
+{
+  "book": {
+    "name": "Kirimuni",
+    "alternate_names": [
+      "Filemón",
+      "Philemon"
+    ],
+    "language": "Huichol (Wixarika)",
+    "source": {
+      "type": "pdf_extraction",
+      "file": "hch_PHM.pdf",
+      "extracted_utc": "2026-04-14T21:39:38.204886+00:00",
+      "notes": "Reconstruido desde encabezados y numeración del PDF; encabezados de página sin «cap:v» (p. ej. «Kirimuni 1 i Kirimuni 6») omitidos; incluye passage_titles detectados heurísticamente."
+    },
+    "chapters": [
+      {
+        "chapter_number": 1,
+        "verses": [
+          {
+            "verse_number": 1,
+            "text": "Ne Papuru, ne'anutahɨiyatɨ Kɨritsitu Ketsutsi hetsiemieme, ta'iwa Timuteu hamatɨa tekanixewaɨritɨaka, 'ekɨ Kirimuni temɨmatsinaki'erie tahamatɨa pemɨti'uximaya,"
+          },
+          {
+            "verse_number": 2,
+            "text": "meta ta'iwa 'Apiya mɨtitewa teminaki'erie, meta 'Arukipu ta'iwa tahepaɨ mɨti'uximayatame, yaxeikɨata yuri memɨte'erie 'akiita memuyutixexeɨriwa."
+          },
+          {
+            "verse_number": 3,
+            "text": "Kakaɨyari mɨta'ukiyari meta Tati'aitɨwame Ketsutsi Kɨritsitu, mɨkɨ 'aixɨa 'anemekɨ mekexepitɨaka yu'iyaritsie xemɨka'uximatɨariekakɨ."
+          },
+          {
+            "verse_number": 4,
+            "text": "Yuheyemekɨ pamɨpariyutsi nekakaɨyari nekanipitɨaka, kepauka nemuyunenewie nemetsiha'eriwatɨ,"
+          },
+          {
+            "verse_number": 5,
+            "text": "'ahetsiemieme nemɨtimariekɨ kepemɨtiwanaki'erie Kakaɨyari teɨterimama yunaime, Ti'aitame Ketsutsi hetsie yuri peti'erietɨ."
+          },
+          {
+            "verse_number": 6,
+            "text": "Mɨpaɨ Kakaɨyari nekatiniwawirieka, yaxeikɨa temɨpitɨariekakɨ matsi yemekɨ mɨhekɨakakɨ Kɨritsitu hetsie tetewiyatɨ temakɨnekɨ, teyunaitɨ temɨtaxewikɨ yuri tete'erietɨ, xɨka 'aixɨa teteyurieka tita temɨtehexeiya 'aixɨa mɨti'anekɨ naime."
+          },
+          {
+            "verse_number": 7,
+            "text": "Ne'iwa nepɨnetemawie 'ahetsiemieme 'ekɨ kepemɨti'akanaki'eriekɨ meta nepɨnɨtɨarie waɨkawa, Kakaɨyari teɨterimama memɨpatsie mekanitseiriyarieka yu'iyaritsie, 'ekɨ kepemɨtiyuriene."
+          },
+          {
+            "verse_number": 8,
+            "text": "'Ayumieme,Kɨritsitu hetsie netiwiyatɨ tsepanetɨ heitserie nemexeiya nekamatɨ nemɨmati'aitɨakakɨ kemɨreuyewetse,"
+          },
+          {
+            "verse_number": 9,
+            "text": "matsi temɨtetakanaki'eriekɨ, 'ayumieme waɨriyarika nekamenipitɨaka. Ne Papuru hikɨri, ne'ukiratsitɨtɨ, nepanutahɨiya Kɨritsitu Ketsutsi hetsiemieme,"
+          },
+          {
+            "verse_number": 10,
+            "text": "nekameniwawirieka neniwe 'Unetsimu hetsiemieme, kemɨ'ane neniwe matɨa mexi'akuxi ne'anutahɨiyakai."
+          },
+          {
+            "verse_number": 11,
+            "text": "Meripaitɨ pɨkatiyunaki'eriekai 'ahetsiemieme, matsi hikɨ tekaneiyehɨaka waɨkawa ne meta 'ekɨ teyunaitɨ."
+          },
+          {
+            "verse_number": 12,
+            "text": "Tawarita 'ahetsɨa nekanenunɨ'amɨkɨ, 'aixɨa 'anekamekɨ kenetanaki'eri ne nemeyɨaneni hepaɨ."
+          },
+          {
+            "verse_number": 13,
+            "text": "Nehetsɨa puyuhayewanikeyu, 'ahetsiemieme mɨnetsiparewienikɨ mexi'akuxi ne'anutahɨiyaka niuki 'aixɨa manuyɨne hetsiemieme."
+          },
+          {
+            "verse_number": 14,
+            "text": "Matsi 'ekɨ 'atsipekatimaikaku, nepɨkanewaɨri nemikunuitɨanikɨ, 'aixɨa kepemɨtiyuriene waɨriyarika pemɨkayɨanenikɨ, matsi pɨta waɨkawamekɨ pe'awaɨriyatɨ."
+          },
+          {
+            "verse_number": 15,
+            "text": "Xɨari 'ayumieme 'Unetsimu yapaɨmexɨa 'ahamatɨa pɨka'uyeikakai, hikɨrixɨa yuheyemekɨ pepitanaki'erieni,"
+          },
+          {
+            "verse_number": 16,
+            "text": "waɨriyarika mɨti'aitɨarieri pɨkahɨkɨtɨni, matsi pɨta waɨkawa meuyewetse: ta'iwa mɨnaki'eriwa, ne yemekɨ nehetsiemieme pɨtiyunaki'erie, 'ekɨ matsi waɨkawamekɨ pekaneiyehɨaka, tewitɨme meta 'a'iwatɨme Ti'aitame hetsiemieme."
+          },
+          {
+            "verse_number": 17,
+            "text": "'Ayumiemexɨka tetaxewini tete'uximayatɨ, kenetanaki'eri ne nemɨyɨaneni hepaɨ."
+          },
+          {
+            "verse_number": 18,
+            "text": "Xɨka 'axatiuyurieni, yatɨni xɨka merapinirieka, yakenetineutahɨawi ne nepɨrayukatuani."
+          },
+          {
+            "verse_number": 19,
+            "text": "Ne Papuru nemamakɨ mɨpaɨ nepɨtiu'utɨa: ne nepɨrayukatuani, ne yanepɨkametitahɨawe 'ekɨ pemɨnerapiniriekɨ 'atukarikɨ."
+          },
+          {
+            "verse_number": 20,
+            "text": "Huu ne'iwa, nepɨmetsiwawirie yapemɨtiyurienikɨ Ti'aitame hetsie 'ikɨ hepaɨtsita, ne'iyari kenɨtɨarieka Kɨritsitu hetsiemieme."
+          },
+          {
+            "verse_number": 21,
+            "text": "Nepɨmeti'utɨirie nemɨtimatekɨ yapemɨtikamiekɨ, mɨpaɨ netimaitɨ, kenemɨkametiwawirie matsi 'ekɨ waɨkawa pekatiniyurimɨkɨ."
+          },
+          {
+            "verse_number": 22,
+            "text": "Matsi 'ayumieme, kenenetiwawiri hakewa nemayekani, mɨpaɨ nepɨtita'ikwewa Kakaɨyaritsie yuri neti'erietɨ, xeyunenewiekaku nemɨpitɨarienikɨ xehetsɨa hutarieka nemuyeikanikɨ."
+          },
+          {
+            "verse_number": 23,
+            "text": "'Epapɨraxi kameniwaɨritɨaka, nehepaɨ manutahɨiya Kɨritsitu Ketsutsi hetsiemieme,"
+          },
+          {
+            "verse_number": 24,
+            "text": "meta Marikuxi, 'Aritsitariku, Remaxi meta Rukaxi, nehamatɨa te'uximayatamete."
+          },
+          {
+            "verse_number": 25,
+            "text": "Ti'aitame Ketsutsi Kɨritsitu 'aixɨa ketiuka'iyarini yuxexuime xe'iyaritsie. Mɨpaɨ xeikɨa kani'aneni."
+          }
+        ],
+        "passage_titles": [
+          {
+            "verse_number": 1,
+            "title": "Waɨritsika"
+          },
+          {
+            "verse_number": 1,
+            "title": "Xapa Papuru kemɨtinɨ'airi"
+          },
+          {
+            "verse_number": 4,
+            "title": "Kirimuni kemɨtiyurienekai meta yuri kemɨti'eriekai"
+          },
+          {
+            "verse_number": 8,
+            "title": "Papuru kemɨtitawawiri 'Unetsimu hepaɨtsita"
+          }
+        ]
+      }
+    ]
+  }
+}
