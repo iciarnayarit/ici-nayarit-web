@@ -13,9 +13,7 @@ const MINISTRY_TITLE_LOWER_WORDS = new Set([
   'y',
 ]);
 
-/**
- * Texto mostrado tipo título (los valores guardados en API/DB siguen siendo los de `MEMBER_MINISTRY_OPTIONS`).
- */
+/** Título legible para etiquetas de ministerio (p. ej. en casillas cargadas desde la colección `ministries`). */
 export function formatMinistryLabelForDisplay(raw: string): string {
   const words = raw.trim().split(/\s+/);
   return words
@@ -30,40 +28,5 @@ export function formatMinistryLabelForDisplay(raw: string): string {
     .join(' ');
 }
 
-/** Opciones de ministerios para asignación de miembros (directorio interno). */
-export const MEMBER_MINISTRY_OPTIONS: string[] = [
-  'Asistencia',
-  'Ayuda Pastoral',
-  'Pastor',
-  'Encargado de una Secretaría',
-  'Encargado de una Comisión',
-  'Comisión De Evangelismo Y Discipulado',
-  'Comisión De La Familia Pastoral',
-  'Construcción',
-  'Comisión General De Evangelismo',
-  'Edad De Oro',
-  'Fraternidad De Jóvenes',
-  'Ministerio De Alabanza',
-  'Ministerio De Niños',
-  'Escuela Dominical',
-  'Intercesión',
-  'Jóvenes',
-  'Mujeres',
-  'Hombres',
-];
-
-export type MemberStaffRole =
-  | 'sin_especificar'
-  | 'Nuevo'
-  | 'Pastor'
-  | 'Congregante'
-  | 'Presidente'
-  | 'Directiva';
-
-export const MEMBER_STAFF_ROLE_OPTIONS: { value: MemberStaffRole; label: string }[] = [
-  { value: 'sin_especificar', label: 'Sin especificar' },
-  { value: 'Pastor', label: 'Pastor' },
-  { value: 'Congregante', label: 'Congregante' },
-  { value: 'Presidente', label: 'Presidente' },
-  { value: 'Directiva', label: 'Directiva' },
-];
+/** Reexport para formularios que usan el valor «sin especificar». */
+export { MEMBER_STAFF_ROLE_UNSPECIFIED } from '@/lib/staff-roles-helpers';

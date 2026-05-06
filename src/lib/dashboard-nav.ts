@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { BookOpen, Church, UserPlus } from 'lucide-react';
+import { BookOpen, UserPlus } from 'lucide-react';
 
 export type DashboardNavItem = {
   name: string;
@@ -12,7 +12,7 @@ export type DashboardNavItem = {
 export const DASHBOARD_NAV_ITEMS: DashboardNavItem[] = [
   { name: 'Personal', href: '/dashboard/miembros', icon: UserPlus },
   { name: 'Biblia', href: '/dashboard/biblia', icon: BookOpen },
-  { name: 'Iglesia', href: 'https://churches.iciarnayarit.com/', icon: Church, external: true },
+  //{ name: 'Iglesia', href: 'https://churches.iciarnayarit.com/', icon: Church, external: true },
 ];
 
 export function isDashboardPath(pathname: string) {

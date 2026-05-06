@@ -242,8 +242,8 @@ export function HuicholStudioAudioBar({
   };
 
   const handleShare = async () => {
-    const url = new URL(typeof window !== 'undefined' ? window.location.href : 'https://iciarnayarit.com', 'https://iciarnayarit.com');
-    url.pathname = '/biblia';
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.origin + '/biblia');
     url.search = '';
     url.searchParams.set('book', bookNameEs);
     url.searchParams.set('chapter', String(chapter));

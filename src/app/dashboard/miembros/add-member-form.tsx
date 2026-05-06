@@ -16,28 +16,26 @@ import {
 } from '@/app/components/ui/select';
 import { X } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
-import { templeLocations } from '@/app/lib/temples-data';
+import { formatMinistryLabelForDisplay } from '@/lib/member-directory-options';
 import {
-  MEMBER_MINISTRY_OPTIONS,
-  MEMBER_STAFF_ROLE_OPTIONS,
-  formatMinistryLabelForDisplay,
-  type MemberStaffRole,
-} from '@/lib/member-directory-options';
+  churchCheckboxValues,
+  churchSelectionFromSaved,
+  type ChurchListOption,
+} from '@/lib/member-churches-helpers';
+import {
+  ministryCheckboxValues,
+  ministrySelectionFromSaved,
+  type MinistryOption,
+} from '@/lib/member-ministries-helpers';
+import { MEMBER_STAFF_ROLE_UNSPECIFIED, type StaffRoleOption } from '@/lib/staff-roles-helpers';
 function listToCheckRecord(keys: string[]): Record<string, boolean> {
   return Object.fromEntries(keys.map(k => [k, true]));
 }
 
-function parseStaffRoleValue(v: string | undefined): MemberStaffRole {
-  if (v === 'nuevo') {
-    return 'Pastor';
-  }
-  if (v === 'lider') {
-    return 'Presidente';
-  }
-  if (v && MEMBER_STAFF_ROLE_OPTIONS.some(o => o.value === v)) {
-    return v as MemberStaffRole;
-  }
-  return 'sin_especificar';
+function parseStaffRoleValue(v: string | undefined): string {
+  const t = v?.trim();
+  if (!t) return MEMBER_STAFF_ROLE_UNSPECIFIED;
+  return t;
 }
 
 /** Respuesta de GET/POST `api/members` (incluye `id`). */
@@ -149,8 +147,21 @@ export default function AddMemberForm() {
   const [address, setAddress] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [baptismDate, setBaptismDate] = useState('');
-  const [staffRole, setStaffRole] = useState<MemberStaffRole>('sin_especificar');
+  const [staffRole, setStaffRole] = useState<string>(MEMBER_STAFF_ROLE_UNSPECIFIED);
+  const [staffRoleOptions, setStaffRoleOptions] = useState<StaffRoleOption[]>([]);
+  const [staffRolesLoadError, setStaffRolesLoadError] = useState<string | null>(null);
+  const [staffRolesLoading, setStaffRolesLoading] = useState(true);
+  const [ministryOptions, setMinistryOptions] = useState<MinistryOption[]>([]);
+  const [ministryLoadError, setMinistryLoadError] = useState<string | null>(null);
+  const [ministryLoading, setMinistryLoading] = useState(true);
+  const lastSavedMinistryGroupsRef = useRef<string[]>([]);
+  const prevMinistryOptionsLenRef = useRef(0);
   const [ministries, setMinistries] = useState<Record<string, boolean>>({});
+  const [churchOptions, setChurchOptions] = useState<ChurchListOption[]>([]);
+  const [churchLoadError, setChurchLoadError] = useState<string | null>(null);
+  const [churchLoading, setChurchLoading] = useState(true);
+  const lastSavedTempleIdsRef = useRef<string[]>([]);
+  const prevChurchOptionsLenRef = useRef(0);
   const [templeKeys, setTempleKeys] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<FieldErrorKey, string>>>({});
@@ -167,9 +178,13 @@ export default function AddMemberForm() {
     setBirthDate(m.birthDate ?? '');
     setBaptismDate(m.baptismDate ?? '');
     setStaffRole(parseStaffRoleValue(m.staffRole));
-    setMinistries(listToCheckRecord(m.groups ?? m.ministries ?? []));
-    setTempleKeys(listToCheckRecord(m.templeIds ?? m.templeKeys ?? []));
-  }, []);
+    const g = m.groups ?? m.ministries ?? [];
+    lastSavedMinistryGroupsRef.current = g;
+    setMinistries(ministrySelectionFromSaved(g, ministryOptions));
+    const tIds = m.templeIds ?? m.templeKeys ?? [];
+    lastSavedTempleIdsRef.current = tIds;
+    setTempleKeys(churchSelectionFromSaved(tIds, churchOptions));
+  }, [ministryOptions, churchOptions]);
 
   useEffect(() => {
     if (!userLoaded) return;
@@ -199,6 +214,11 @@ export default function AddMemberForm() {
         }
         if (data.member) {
           applyMemberFromApi(data.member);
+        } else {
+          lastSavedMinistryGroupsRef.current = [];
+          setMinistries({});
+          lastSavedTempleIdsRef.current = [];
+          setTempleKeys({});
         }
       } finally {
         if (!cancelled) setMemberHydrating(false);
@@ -210,9 +230,138 @@ export default function AddMemberForm() {
     };
   }, [userLoaded, user?.id, sessionEmail, applyMemberFromApi]);
 
-  const sortedTemples = useMemo(
-    () => [...templeLocations].sort((a, b) => a.nameKey.localeCompare(b.nameKey, 'es')),
-    []
+  useEffect(() => {
+    const len = ministryOptions.length;
+    if (len > 0 && prevMinistryOptionsLenRef.current === 0) {
+      setMinistries(ministrySelectionFromSaved(lastSavedMinistryGroupsRef.current, ministryOptions));
+    }
+    prevMinistryOptionsLenRef.current = len;
+  }, [ministryOptions]);
+
+  useEffect(() => {
+    const len = churchOptions.length;
+    if (len > 0 && prevChurchOptionsLenRef.current === 0) {
+      setTempleKeys(churchSelectionFromSaved(lastSavedTempleIdsRef.current, churchOptions));
+    }
+    prevChurchOptionsLenRef.current = len;
+  }, [churchOptions]);
+
+  useEffect(() => {
+    if (!userLoaded || !user) return;
+
+    let cancelled = false;
+    setChurchLoading(true);
+    (async () => {
+      try {
+        const res = await fetch('/api/churches');
+        const data = (await res.json().catch(() => ({}))) as { error?: string; churches?: ChurchListOption[] };
+        if (cancelled) return;
+        if (!res.ok) {
+          setChurchLoadError(data.error ?? 'No se pudieron cargar los templos.');
+          setChurchOptions([]);
+          return;
+        }
+        setChurchLoadError(null);
+        setChurchOptions(Array.isArray(data.churches) ? data.churches : []);
+      } catch {
+        if (!cancelled) {
+          setChurchLoadError('No se pudieron cargar los templos.');
+          setChurchOptions([]);
+        }
+      } finally {
+        if (!cancelled) setChurchLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userLoaded, user?.id]);
+
+  useEffect(() => {
+    if (!userLoaded || !user) return;
+
+    let cancelled = false;
+    setMinistryLoading(true);
+    (async () => {
+      try {
+        const res = await fetch('/api/ministries');
+        const data = (await res.json().catch(() => ({}))) as { error?: string; ministries?: MinistryOption[] };
+        if (cancelled) return;
+        if (!res.ok) {
+          setMinistryLoadError(data.error ?? 'No se pudieron cargar los ministerios.');
+          setMinistryOptions([]);
+          return;
+        }
+        setMinistryLoadError(null);
+        setMinistryOptions(Array.isArray(data.ministries) ? data.ministries : []);
+      } catch {
+        if (!cancelled) {
+          setMinistryLoadError('No se pudieron cargar los ministerios.');
+          setMinistryOptions([]);
+        }
+      } finally {
+        if (!cancelled) setMinistryLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userLoaded, user?.id]);
+
+  useEffect(() => {
+    if (!userLoaded || !user) return;
+
+    let cancelled = false;
+    setStaffRolesLoading(true);
+    (async () => {
+      try {
+        const res = await fetch('/api/staff-roles');
+        const data = (await res.json().catch(() => ({}))) as { error?: string; roles?: StaffRoleOption[] };
+        if (cancelled) return;
+        if (!res.ok) {
+          setStaffRolesLoadError(data.error ?? 'No se pudieron cargar los cargos.');
+          setStaffRoleOptions([]);
+          return;
+        }
+        setStaffRolesLoadError(null);
+        setStaffRoleOptions(Array.isArray(data.roles) ? data.roles : []);
+      } catch {
+        if (!cancelled) {
+          setStaffRolesLoadError('No se pudieron cargar los cargos.');
+          setStaffRoleOptions([]);
+        }
+      } finally {
+        if (!cancelled) setStaffRolesLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userLoaded, user?.id]);
+
+  const staffRoleSelectOptions = useMemo(() => {
+    const base = [...staffRoleOptions];
+    if (
+      staffRole &&
+      staffRole !== MEMBER_STAFF_ROLE_UNSPECIFIED &&
+      !base.some((o) => o.value === staffRole)
+    ) {
+      base.push({ value: staffRole, label: staffRole });
+    }
+    return base;
+  }, [staffRoleOptions, staffRole]);
+
+  const ministryCheckboxRows = useMemo(
+    () => ministryCheckboxValues(ministryOptions, ministries),
+    [ministryOptions, ministries]
+  );
+
+  const churchCheckboxRows = useMemo(
+    () => churchCheckboxValues(churchOptions, templeKeys),
+    [churchOptions, templeKeys]
   );
 
   const toggleMinistry = useCallback((id: string, checked: boolean) => {
@@ -221,10 +370,10 @@ export default function AddMemberForm() {
     setMinistries(prev => ({ ...prev, [id]: checked }));
   }, []);
 
-  const toggleTemple = useCallback((nameKey: string, checked: boolean) => {
+  const toggleTemple = useCallback((value: string, checked: boolean) => {
     setShowSavedOnButton(false);
     setFieldErrors(prev => ({ ...prev, temples: undefined }));
-    setTempleKeys(prev => ({ ...prev, [nameKey]: checked }));
+    setTempleKeys(prev => ({ ...prev, [value]: checked }));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -260,7 +409,7 @@ export default function AddMemberForm() {
     if (!birthDate.trim()) {
       next.birthDate = 'La fecha de nacimiento es obligatoria.';
     }
-    if (staffRole === 'sin_especificar') {
+    if (staffRole === MEMBER_STAFF_ROLE_UNSPECIFIED) {
       next.staffRole = 'Selecciona un cargo o rol.';
     }
 
@@ -530,17 +679,34 @@ export default function AddMemberForm() {
         <CardHeader className="space-y-1 p-4 pb-3 sm:p-6 sm:pb-4">
           <SectionHeading>Cargo</SectionHeading>
           <CardDescription>
-            Indique si el miembro es Pastor o Congregante, con ello podrá listarse en el directorio de personal.
+            Elija el cargo registrado en la base de datos; con ello podrá listarse en el directorio de personal.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2 p-4 pt-0 sm:p-6 sm:pt-0">
+          {staffRolesLoadError ? (
+            <p className="text-sm font-medium text-amber-800" role="alert">
+              {staffRolesLoadError}
+            </p>
+          ) : null}
+          {!staffRolesLoading && !staffRolesLoadError && staffRoleOptions.length === 0 ? (
+            <p className="text-sm text-gray-600" role="status">
+              No hay cargos en la colección <code className="rounded bg-gray-100 px-1">staff_roles</code>. Añade documentos con un
+              campo <code className="rounded bg-gray-100 px-1">name</code>, <code className="rounded bg-gray-100 px-1">label</code> o{' '}
+              <code className="rounded bg-gray-100 px-1">title</code>.
+            </p>
+          ) : null}
           <Select
             value={staffRole}
             onValueChange={v => {
               setShowSavedOnButton(false);
-              setStaffRole(v as MemberStaffRole);
+              setStaffRole(v);
               setFieldErrors(prev => ({ ...prev, staffRole: undefined }));
             }}
+            disabled={
+              !staffRolesLoading &&
+              !staffRolesLoadError &&
+              staffRoleOptions.length === 0
+            }
           >
             <SelectTrigger
               id="member-role"
@@ -554,7 +720,8 @@ export default function AddMemberForm() {
               <SelectValue placeholder="Seleccionar" />
             </SelectTrigger>
             <SelectContent className="max-h-[min(70vh,24rem)]">
-              {MEMBER_STAFF_ROLE_OPTIONS.map(opt => (
+              <SelectItem value={MEMBER_STAFF_ROLE_UNSPECIFIED}>Sin especificar</SelectItem>
+              {staffRoleSelectOptions.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
                 </SelectItem>
@@ -573,6 +740,18 @@ export default function AddMemberForm() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 p-4 pt-0 sm:p-6 sm:pt-0">
+          {ministryLoadError ? (
+            <p className="text-sm font-medium text-amber-800" role="alert">
+              {ministryLoadError}
+            </p>
+          ) : null}
+          {!ministryLoading && !ministryLoadError && ministryOptions.length === 0 ? (
+            <p className="text-sm text-gray-600" role="status">
+              No hay ministerios en la colección <code className="rounded bg-gray-100 px-1">ministries</code>. Añade documentos con un campo{' '}
+              <code className="rounded bg-gray-100 px-1">name</code>, <code className="rounded bg-gray-100 px-1">label</code> o{' '}
+              <code className="rounded bg-gray-100 px-1">title</code>.
+            </p>
+          ) : null}
           <div
             className={cn(
               'max-h-[min(50vh,13rem)] touch-pan-y space-y-2 overflow-y-auto overscroll-y-contain rounded-xl border bg-white p-3 [scrollbar-width:thin] sm:max-h-52 sm:space-y-3',
@@ -581,7 +760,7 @@ export default function AddMemberForm() {
             aria-invalid={!!fieldErrors.ministries}
             aria-describedby={fieldErrors.ministries ? 'err-member-ministries' : undefined}
           >
-            {MEMBER_MINISTRY_OPTIONS.map(label => (
+            {ministryCheckboxRows.map((label) => (
               <label
                 key={label}
                 className="flex cursor-pointer items-start gap-3 rounded-lg py-2 pl-1 pr-2 text-sm font-medium text-gray-700 active:bg-gray-50 sm:py-1.5"
@@ -590,6 +769,11 @@ export default function AddMemberForm() {
                   checked={!!ministries[label]}
                   onCheckedChange={c => toggleMinistry(label, c === true)}
                   className="mt-0.5 size-5 sm:size-4"
+                  disabled={
+                    !ministryLoading &&
+                    !ministryLoadError &&
+                    ministryOptions.length === 0
+                  }
                 />
                 <span className="leading-snug">{formatMinistryLabelForDisplay(label)}</span>
               </label>
@@ -608,6 +792,19 @@ export default function AddMemberForm() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3 p-4 pt-0 sm:p-6 sm:pt-0">
+          {churchLoadError ? (
+            <p className="text-sm font-medium text-amber-800" role="alert">
+              {churchLoadError}
+            </p>
+          ) : null}
+          {!churchLoading && !churchLoadError && churchOptions.length === 0 ? (
+            <p className="text-sm text-gray-600" role="status">
+              No hay templos en la colección <code className="rounded bg-gray-100 px-1">churches</code>. Usa campos como{' '}
+              <code className="rounded bg-gray-100 px-1">name</code>, <code className="rounded bg-gray-100 px-1">nameKey</code>,{' '}
+              <code className="rounded bg-gray-100 px-1">municipality</code> y <code className="rounded bg-gray-100 px-1">address</code> o{' '}
+              <code className="rounded bg-gray-100 px-1">addressKey</code>.
+            </p>
+          ) : null}
           <div
             className={cn(
               'max-h-[min(55vh,16rem)] touch-pan-y space-y-3 overflow-y-auto overscroll-y-contain rounded-xl border bg-white p-3 [scrollbar-width:thin] sm:max-h-60 sm:space-y-4',
@@ -616,25 +813,33 @@ export default function AddMemberForm() {
             aria-invalid={!!fieldErrors.temples}
             aria-describedby={fieldErrors.temples ? 'err-member-temples' : undefined}
           >
-            {sortedTemples.map(t => (
-              <label
-                key={t.nameKey}
-                className="flex cursor-pointer items-start gap-3 rounded-lg py-2 pl-1 pr-2 active:bg-gray-50 sm:py-1.5"
-              >
-                <Checkbox
-                  checked={!!templeKeys[t.nameKey]}
-                  onCheckedChange={c => toggleTemple(t.nameKey, c === true)}
-                  className="mt-1 size-5 sm:size-4"
-                />
-                <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-gray-900">{t.nameKey}</span>
-                  <span className="block text-xs text-gray-500 mt-0.5">
-                    {t.municipality}
-                    {t.addressKey ? ` · ${t.addressKey}` : ''}
+            {churchCheckboxRows.map((value) => {
+              const opt = churchOptions.find((o) => o.value === value);
+              const title = opt?.label ?? value;
+              const sub =
+                opt && (opt.municipality || opt.addressLine)
+                  ? `${opt.municipality}${opt.municipality && opt.addressLine ? ' · ' : ''}${opt.addressLine}`
+                  : '';
+              return (
+                <label
+                  key={value}
+                  className="flex cursor-pointer items-start gap-3 rounded-lg py-2 pl-1 pr-2 active:bg-gray-50 sm:py-1.5"
+                >
+                  <Checkbox
+                    checked={!!templeKeys[value]}
+                    onCheckedChange={(c) => toggleTemple(value, c === true)}
+                    className="mt-1 size-5 sm:size-4"
+                    disabled={!churchLoading && !churchLoadError && churchOptions.length === 0}
+                  />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-semibold text-gray-900">{title}</span>
+                    {sub ? (
+                      <span className="mt-0.5 block text-xs text-gray-500">{sub}</span>
+                    ) : null}
                   </span>
-                </span>
-              </label>
-            ))}
+                </label>
+              );
+            })}
           </div>
           <FieldError id="err-member-temples" message={fieldErrors.temples} />
           <p className="text-xs text-gray-500">Mínimo uno obligatorio; las casillas permiten elegir varios templos.</p>

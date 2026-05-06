@@ -1416,8 +1416,10 @@ export default function Bible() {
             } else {
                 setSelectedBook('Génesis');
                 setSelectedChapter(1);
-                setSelectedVerses([1]);
-                pendingUrlVerseScrollRef.current = 1;
+                setSelectedVerses([]);
+                pendingUrlVerseScrollRef.current = null;
+                setIsToolbarOpen(false);
+                setShowColorPicker(false);
             }
         } finally {
             didHydrateReadingStateFromUrlRef.current = true;
@@ -1426,8 +1428,12 @@ export default function Bible() {
     }, [searchParams]);
 
     // Estado → URL (misma lectura de query que useLayoutEffect para evitar replace con estado viejo).
+    // Solo en `/biblia`: en inicio (`/`) no se escriben parámetros de lectura para no cambiar la URL del host que abrió el usuario.
     useEffect(() => {
         if (!didHydrateReadingStateFromUrlRef.current) {
+            return;
+        }
+        if (pathname !== '/biblia') {
             return;
         }
         const sp = readingQueryParams();

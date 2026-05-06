@@ -3,51 +3,33 @@ import { ObjectId } from 'mongodb';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getMongoDb } from '@/lib/mongodb';
-import type { MemberStaffRole } from '@/lib/member-directory-options';
+import { findMemberDocumentByEmail, normalizeMemberEmail } from '@/lib/members-email-lookup';
+import {
+  type DigitalChurchMemberPayload,
+  upsertMemberByEmailInDigitalChurchMembers,
+} from '@/lib/members-upsert-digital-church';
+import {
+  listChurchOptionsForMemberForm,
+  resolveChurchIdsForStorage,
+} from '@/lib/member-churches';
+import {
+  listMinistryOptionsForDirectory,
+  resolveMinistryGroupsForStorage,
+} from '@/lib/member-ministries';
+import {
+  MEMBER_STAFF_ROLE_UNSPECIFIED,
+  listStaffRoleOptionsForDirectory,
+  resolveStaffRoleForStorage,
+} from '@/lib/staff-roles';
 
-const staffRoleValues: [MemberStaffRole, ...MemberStaffRole[]] = [
-  'sin_especificar',
-  'Nuevo',
-  'Pastor',
-  'Congregante',
-  'Presidente',
-  'Directiva',
-];
-
-const normalizedStaffRoleValues: [MemberStaffRole, ...MemberStaffRole[]] = [
-  'sin_especificar',
-  'Pastor',
-  'Congregante',
-  'Presidente',
-  'Directiva',
-  'Nuevo',
-];
-
-function normalizeIncomingStaffRole(value: unknown): MemberStaffRole {
-  const raw = typeof value === 'string' ? value.trim().toLowerCase() : '';
-  if (!raw) return 'sin_especificar';
-  if (raw === 'lider') return 'Presidente';
-  if (raw === 'staff_administrativo') return 'sin_especificar';
-  if (raw === 'nuevo') return 'Pastor';
-  if (raw === 'pastor') return 'Pastor';
-  if (raw === 'congregante') return 'Congregante';
-  if (raw === 'presidente') return 'Presidente';
-  if (raw === 'directiva') return 'Directiva';
-  if (normalizedStaffRoleValues.includes(raw as MemberStaffRole)) {
-    return raw as MemberStaffRole;
-  }
-  return 'sin_especificar';
+function staffRoleFromDoc(value: unknown): string {
+  if (typeof value !== 'string') return MEMBER_STAFF_ROLE_UNSPECIFIED;
+  const t = value.trim();
+  return t || MEMBER_STAFF_ROLE_UNSPECIFIED;
 }
 
-function formatStaffRoleForStorage(value: MemberStaffRole): string {
-  if (value === 'sin_especificar') {
-    return value;
-  }
-  const [firstWord = '', ...rest] = value.split('_');
-  const firstWordCapitalized = firstWord
-    ? firstWord.charAt(0).toUpperCase() + firstWord.slice(1).toLowerCase()
-    : value;
-  return [firstWordCapitalized, ...rest].join('_');
+function formatStaffRoleForStorage(value: string): string {
+  return value.trim();
 }
 
 const createMemberSchema = z.object({
@@ -59,13 +41,10 @@ const createMemberSchema = z.object({
   address: z.string().trim().min(1).max(600),
   birthDate: z.string().trim().min(1).max(32),
   baptismDate: z.string().trim().max(32).optional().default(''),
-  staffRole: z
-    .unknown()
-    .transform(normalizeIncomingStaffRole)
-    .pipe(z.enum(normalizedStaffRoleValues)),
+  staffRole: z.string().trim(),
   /** Grupos / ministerios marcados en el formulario → campo `groups` en MongoDB. */
   groups: z.array(z.string()).min(1, { message: 'Selecciona al menos un ministerio.' }),
-  /** Identificadores de templo (`nameKey` en `temples-data`) → campo `templeIds` en MongoDB. */
+  /** Identificadores de templo (colección `churches`) → campo `templeIds` en MongoDB. */
   templeIds: z.array(z.string()).min(1, { message: 'Selecciona al menos un templo.' }),
 });
 
@@ -109,7 +88,7 @@ function templeIdsFromDoc(doc: MemberDoc): string[] {
 }
 
 function serializeMemberDoc(doc: MemberDoc) {
-  const staffRole = normalizeIncomingStaffRole(doc.staffRole);
+  const staffRole = staffRoleFromDoc(doc.staffRole);
 
   const groups = groupsFromDoc(doc);
   const templeIds = templeIdsFromDoc(doc);
@@ -140,22 +119,6 @@ async function emailFromClerkUser() {
   return { clerkUser, email };
 }
 
-function normalizeMemberEmail(email: string) {
-  return email.trim().toLowerCase();
-}
-
-/** Coincide el documento `members` al correo de la sesión (insensible a mayúsculas en datos antiguos). */
-async function findMemberBySessionEmail(
-  coll: ReturnType<Awaited<ReturnType<typeof getMongoDb>>['collection']>,
-  emailRaw: string
-) {
-  const norm = normalizeMemberEmail(emailRaw);
-  const byNorm = await coll.findOne({ email: norm });
-  if (byNorm) return byNorm;
-  const escaped = emailRaw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return coll.findOne({ email: { $regex: new RegExp(`^${escaped}$`, 'i') } });
-}
-
 /** Miembro cuyo `email` coincide con el correo principal de Clerk (sesión actual). */
 export async function GET() {
   try {
@@ -171,7 +134,7 @@ export async function GET() {
 
     const db = await getMongoDb();
     const coll = db.collection(membersCollectionName());
-    const doc = await findMemberBySessionEmail(coll, email);
+    const doc = await findMemberDocumentByEmail(coll, email);
 
     if (!doc || !('_id' in doc) || !doc._id) {
       return NextResponse.json({ member: null });
@@ -218,9 +181,81 @@ export async function POST(req: Request) {
     }
 
     const data = parsed.data;
-    if (data.staffRole === 'sin_especificar') {
+
+    let staffRoleAllowed: Awaited<ReturnType<typeof listStaffRoleOptionsForDirectory>>;
+    try {
+      staffRoleAllowed = await listStaffRoleOptionsForDirectory();
+    } catch (e) {
+      console.error('[api/members POST] staff_roles', e);
       return NextResponse.json(
-        { error: 'Selecciona un cargo o rol en Directorio de personal.' },
+        { error: 'No se pudo validar el cargo. Revisa la colección staff_roles o la conexión a la base de datos.' },
+        { status: 503 }
+      );
+    }
+
+    if (staffRoleAllowed.length === 0) {
+      return NextResponse.json(
+        { error: 'No hay cargos en la colección staff_roles. Añade registros o revisa el nombre de la colección.' },
+        { status: 503 }
+      );
+    }
+
+    const staffRoleCanonical = resolveStaffRoleForStorage(data.staffRole, staffRoleAllowed);
+    if (!staffRoleCanonical) {
+      return NextResponse.json(
+        { error: 'Selecciona un cargo o rol válido en Directorio de personal.' },
+        { status: 400 }
+      );
+    }
+
+    let ministryAllowed: Awaited<ReturnType<typeof listMinistryOptionsForDirectory>>;
+    try {
+      ministryAllowed = await listMinistryOptionsForDirectory();
+    } catch (e) {
+      console.error('[api/members POST] ministries', e);
+      return NextResponse.json(
+        { error: 'No se pudo validar los ministerios. Revisa la colección ministries o la conexión a la base de datos.' },
+        { status: 503 }
+      );
+    }
+
+    if (ministryAllowed.length === 0) {
+      return NextResponse.json(
+        { error: 'No hay ministerios en la colección ministries. Añade registros o revisa el nombre de la colección.' },
+        { status: 503 }
+      );
+    }
+
+    const canonicalGroups = resolveMinistryGroupsForStorage(data.groups, ministryAllowed);
+    if (!canonicalGroups) {
+      return NextResponse.json(
+        { error: 'Selecciona uno o más ministerios válidos.' },
+        { status: 400 }
+      );
+    }
+
+    let churchAllowed: Awaited<ReturnType<typeof listChurchOptionsForMemberForm>>;
+    try {
+      churchAllowed = await listChurchOptionsForMemberForm();
+    } catch (e) {
+      console.error('[api/members POST] churches', e);
+      return NextResponse.json(
+        { error: 'No se pudo validar los templos. Revisa la colección churches o la conexión a la base de datos.' },
+        { status: 503 }
+      );
+    }
+
+    if (churchAllowed.length === 0) {
+      return NextResponse.json(
+        { error: 'No hay templos en la colección churches. Añade registros o revisa el nombre de la colección.' },
+        { status: 503 }
+      );
+    }
+
+    const canonicalTempleIds = resolveChurchIdsForStorage(data.templeIds, churchAllowed);
+    if (!canonicalTempleIds) {
+      return NextResponse.json(
+        { error: 'Selecciona uno o más templos válidos.' },
         { status: 400 }
       );
     }
@@ -234,6 +269,13 @@ export async function POST(req: Request) {
     }
 
     const emailNorm = normalizeMemberEmail(emailFromClerk);
+    const bodyEmailNorm = data.email.trim() ? normalizeMemberEmail(data.email) : '';
+    if (bodyEmailNorm && bodyEmailNorm !== emailNorm) {
+      return NextResponse.json(
+        { error: 'El correo del formulario debe coincidir con el de tu sesión.' },
+        { status: 403 }
+      );
+    }
 
     const db = await getMongoDb();
     const collectionName = membersCollectionName();
@@ -243,80 +285,43 @@ export async function POST(req: Request) {
     const baptismTrimmed = data.baptismDate.trim();
 
     /**
-     * Documento completo enviado desde el formulario de miembros.
-     * El correo en BD siempre es el de Clerk (`emailNorm`); el cuerpo del POST no puede sustituirlo.
+     * Persistencia en la BD **digital-church** (ver `getMongoDbName`), colección `members`.
+     * El correo en BD siempre es el de Clerk (`emailNorm`); no se acepta otro correo en el cuerpo del POST.
      */
-    const payload = {
+    const payload: DigitalChurchMemberPayload = {
       firstName: data.firstName,
       lastName: data.lastName,
       email: emailNorm,
       phone: data.phone,
       address: data.address,
       birthDate: data.birthDate,
-      staffRole: formatStaffRoleForStorage(data.staffRole),
-      groups: data.groups,
-      templeIds: data.templeIds,
+      staffRole: formatStaffRoleForStorage(staffRoleCanonical),
+      groups: canonicalGroups,
+      templeIds: canonicalTempleIds,
       updatedAt: now,
       ...(baptismTrimmed ? { baptismDate: baptismTrimmed } : {}),
     };
 
-    const existing = (await findMemberBySessionEmail(coll, emailFromClerk)) as MemberDoc | null;
+    const upsert = await upsertMemberByEmailInDigitalChurchMembers({
+      coll,
+      sessionEmail: emailFromClerk,
+      payload,
+      clerkUserId: userId,
+      hasBaptismDate: Boolean(baptismTrimmed),
+      now,
+    });
 
-    if (existing?._id) {
-      const $unset: Record<string, ''> = { ministries: '', templeKeys: '' };
-      if (!baptismTrimmed) {
-        $unset.baptismDate = '';
-      }
-
-      await coll.updateOne(
-        { _id: existing._id },
-        {
-          $set: payload,
-          $unset,
-        }
-      );
-      const updated = await coll.findOne({ _id: existing._id });
-      if (!updated || !('_id' in updated) || !updated._id) {
-        return NextResponse.json({ error: 'No se pudo leer el miembro actualizado.' }, { status: 500 });
-      }
-      return NextResponse.json({
-        ok: true,
-        id: updated._id.toString(),
-        updated: true as const,
-        member: serializeMemberDoc(updated as MemberDoc),
-      });
+    const saved = await coll.findOne({ _id: upsert.memberId });
+    if (!saved || !('_id' in saved) || !saved._id) {
+      return NextResponse.json({ error: 'No se pudo leer el miembro guardado.' }, { status: 500 });
     }
 
-    const result = await coll.insertOne({
-      ...payload,
-      createdAt: now,
-      createdByClerkId: userId,
-    });
-    const id = result.insertedId.toString();
-
-    const inserted = await coll.findOne({ _id: result.insertedId });
-    const member = inserted && '_id' in inserted && inserted._id
-      ? serializeMemberDoc(inserted as MemberDoc)
-      : {
-          id,
-          firstName: payload.firstName,
-          lastName: payload.lastName,
-          email: payload.email,
-          phone: payload.phone,
-          address: payload.address,
-          birthDate: payload.birthDate,
-          baptismDate: baptismTrimmed || undefined,
-          staffRole: payload.staffRole,
-          groups: payload.groups,
-          templeIds: payload.templeIds,
-          createdAt: now.toISOString(),
-          updatedAt: now.toISOString(),
-        };
+    const member = serializeMemberDoc(saved as MemberDoc);
 
     return NextResponse.json({
       ok: true,
-      id,
-      updated: false as const,
+      id: upsert.memberId.toString(),
+      updated: upsert.outcome === 'updated',
       member,
     });
   } catch (err) {
