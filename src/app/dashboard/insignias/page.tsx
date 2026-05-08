@@ -4,7 +4,6 @@ import type { ComponentType } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Flame, BookOpenText, MicVocal, PencilLine, Gift, HandHeart, Share2, BadgeCheck, Lock } from 'lucide-react';
 import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
-import { useToast } from '@/app/hooks/use-toast';
 import {
   ENGAGEMENT_POINTS_CHANGED_EVENT,
   ENGAGEMENT_SYNC_CHANGED_EVENT,
@@ -106,7 +105,6 @@ function formatRelativeSync(ts: number | null): string {
 }
 
 export default function DashboardInsigniasPage() {
-  const { toast } = useToast();
   const [snapshot, setSnapshot] = useState<EngagementSnapshot>(EMPTY_SNAPSHOT);
   const [syncState, setSyncState] = useState<EngagementSyncState>({
     status: 'synced',
@@ -118,48 +116,6 @@ export default function DashboardInsigniasPage() {
   const lastServerSyncAtRef = useRef(0);
   const serverSyncInFlightRef = useRef(false);
 
-  const productionReminderMessages = [
-    {
-      title: 'Momento de leer la Biblia',
-      body: 'Dedica unos minutos a tu lectura de hoy y fortalece tu racha espiritual.',
-    },
-    {
-      title: 'Sigue tu racha hoy',
-      body: 'No rompas tu constancia. Lee un capítulo y mantén tu progreso activo.',
-    },
-    {
-      title: 'Tienes un reto pendiente',
-      body: 'Completa un reto de trivia hoy para sumar puntos y avanzar en el ranking.',
-    },
-  ];
-
-  const sendTestNotification = async () => {
-    if (typeof window === 'undefined') return;
-    const msg = productionReminderMessages[Math.floor(Math.random() * productionReminderMessages.length)] ?? productionReminderMessages[0];
-    if (!('Notification' in window)) {
-      toast({ title: 'Notificación de prueba', description: 'Este navegador no soporta notificaciones.' });
-      return;
-    }
-    if (Notification.permission === 'granted') {
-      new Notification(msg.title, {
-        body: msg.body,
-      });
-      return;
-    }
-    if (Notification.permission === 'default') {
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') {
-        new Notification(msg.title, {
-          body: msg.body,
-        });
-        return;
-      }
-    }
-    toast({
-      title: 'Permiso pendiente',
-      description: 'Activa notificaciones del navegador para ver la prueba visual.',
-    });
-  };
 
 
   const loadPlansProgress = async () => {
@@ -412,13 +368,6 @@ export default function DashboardInsigniasPage() {
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <span className={`inline-flex rounded-full border px-3 py-1 text-[11px] font-bold ${syncClass}`}>{syncLabel}</span>
-            <button
-              type="button"
-              onClick={() => void sendTestNotification()}
-              className="inline-flex items-center rounded-full border border-slate-300 bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-700 transition-colors hover:bg-slate-200"
-            >
-              Enviar prueba
-            </button>
             {syncState.status === 'pending' ? (
               <button
                 type="button"
