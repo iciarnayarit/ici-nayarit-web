@@ -33,6 +33,7 @@ import {
     goToDashboardBibliaSavedVerses,
 } from '@/lib/require-clerk-sign-in';
 import { ReadingDay } from '@/lib/reading-plan-data';
+import { grantEngagementPoints } from '@/lib/engagement-points';
 
 interface SavedVerse {
     text: string;
@@ -187,6 +188,34 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
     const { isLoaded: authLoaded, isSignedIn } = useAuth();
     const { redirectToSignIn } = useClerk();
 
+    const syncReadingPlanProgress = async (input: {
+        completedDays: number[];
+        completedChaptersByDay: Record<number, string[]>;
+        lastReadDay: number | null;
+    }) => {
+        if (!(authLoaded && isSignedIn === true)) return;
+        const { completedDays: completedDaysInput, completedChaptersByDay: completedByDayInput, lastReadDay } = input;
+        const totalDays = Math.max(1, planData.length);
+        const percent = Math.max(0, Math.min(100, Math.round((completedDaysInput.length / totalDays) * 100)));
+        try {
+            await fetch('/api/reading-plan-progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    planSlug,
+                    planTitle: title,
+                    completedDays: completedDaysInput,
+                    completedChaptersByDay: completedByDayInput,
+                    totalDays,
+                    percent,
+                    lastReadDay,
+                }),
+            });
+        } catch {
+            // mantén UX fluida si no hay conexión
+        }
+    };
+
     useEffect(() => {
         setMounted(true);
         const savedCompleted = localStorage.getItem(`completedDays_${planSlug}`);
@@ -247,6 +276,34 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
             cancelled = true;
         };
     }, [planVersionId]);
+
+    useEffect(() => {
+        if (!selectedDay) return;
+        const dayData = planData.find((d) => d.day === selectedDay);
+        if (!dayData) return;
+        const chapters = parseReadingChapters(dayData.reading);
+        if (chapters.length === 0) return;
+
+        chapters.forEach((item) => {
+            void grantEngagementPoints({
+                action: 'bible_read',
+                dedupeKey: `plan-read:${planSlug}:${selectedDay}:${planVersionId}:${item.id}`,
+                isSignedIn: authLoaded && isSignedIn === true,
+            });
+        });
+    }, [selectedDay, planData, planSlug, planVersionId, authLoaded, isSignedIn]);
+
+    useEffect(() => {
+        if (!(authLoaded && isSignedIn === true)) return;
+        const debounceId = window.setTimeout(() => {
+            void syncReadingPlanProgress({
+                completedDays,
+                completedChaptersByDay,
+                lastReadDay: selectedDay ?? null,
+            });
+        }, 450);
+        return () => window.clearTimeout(debounceId);
+    }, [completedDays, completedChaptersByDay, selectedDay, authLoaded, isSignedIn, planSlug, title, planData.length]);
 
     const toggleDayCompletion = (day: number) => {
         const updated = completedDays.includes(day)
@@ -321,6 +378,11 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         setHighlightedVerses(newHighlights);
         localStorage.setItem('highlightedVerses', JSON.stringify(newHighlights));
         setSelectedHighlightColor(color);
+        void grantEngagementPoints({
+            action: 'bible_highlight',
+            dedupeKey: `plan-highlight:${planSlug}:${reference}:${color}`,
+            isSignedIn: authLoaded && isSignedIn === true,
+        });
         return true;
     };
 
@@ -441,6 +503,10 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
             setNotes(updatedNotes);
             localStorage.setItem('userNotes', JSON.stringify(updatedNotes));
             toast({ title: "Reflexión guardada correctamente 📓" });
+            void grantEngagementPoints({
+                action: 'bible_note_create',
+                isSignedIn: authLoaded && isSignedIn === true,
+            });
         }
         handleClearNoteFields();
         setIsNoteOpen(false);
@@ -503,6 +569,10 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
             link.href = dataUrl;
             link.click();
             toast({ title: "¡Imagen descargada exitosamente!" });
+            void grantEngagementPoints({
+                action: 'bible_image_generate',
+                isSignedIn: authLoaded && isSignedIn === true,
+            });
         } catch (err) {
             console.error("Error generating image:", err);
             toast({ title: "Error al descargar la imagen", description: "Ocurrió un error de seguridad en el navegador.", variant: "destructive" });
@@ -612,6 +682,10 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                     title: 'Versículo de la Biblia',
                     text: textToShare,
                 });
+                void grantEngagementPoints({
+                    action: 'bible_share',
+                    isSignedIn: authLoaded && isSignedIn === true,
+                });
             } catch (error: any) {
                 if (error.message !== 'Share canceled') {
                     console.error('Error al compartir:', error);
@@ -623,6 +697,10 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                 toast({
                     title: "Enlace Copiado",
                     description: "El versículo ha sido copiado al portapapeles.",
+                });
+                void grantEngagementPoints({
+                    action: 'bible_share',
+                    isSignedIn: authLoaded && isSignedIn === true,
                 });
             } catch (error) {
                 console.error('Error al copiar:', error);

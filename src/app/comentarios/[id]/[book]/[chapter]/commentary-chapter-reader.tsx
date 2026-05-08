@@ -13,6 +13,7 @@ import { commentaryAuthorShortName, isNewTestamentBookId } from '@/lib/helloao-c
 import { cn } from '@/app/lib/utils';
 import { useAuth, useClerk } from '@clerk/nextjs';
 import { ensureClerkSignedIn } from '@/lib/require-clerk-sign-in';
+import { grantEngagementPoints } from '@/lib/engagement-points';
 
 const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII', 'XIII', 'XIV', 'XV'];
 
@@ -261,6 +262,14 @@ export default function CommentaryChapterReader({
       cancelled = true;
     };
   }, [scriptureVerses, currentVersionId, bibliaBookQueryName, bookDisplayName, chapterNumber]);
+
+  useEffect(() => {
+    void grantEngagementPoints({
+      action: 'bible_read',
+      dedupeKey: `commentary-read:${commentaryId}:${bookUsfm}:${chapterNumber}:${currentVersionId}`,
+      isSignedIn: authLoaded && isSignedIn === true,
+    });
+  }, [commentaryId, bookUsfm, chapterNumber, currentVersionId, authLoaded, isSignedIn]);
 
   const displayedScriptureVerses = scriptureVerses.length > 0 ? scriptureVerses : fallbackScriptureVerses;
 

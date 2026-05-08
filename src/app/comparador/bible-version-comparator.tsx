@@ -24,6 +24,7 @@ import {
 import { Switch } from '@/app/components/ui/switch';
 import { cn } from '@/app/lib/utils';
 import { compareVerseWords } from '@/lib/bible-verse-word-diff';
+import { grantEngagementPoints } from '@/lib/engagement-points';
 
 const SYNC_KEY = 'iciar-bible-comparator-sync-scroll';
 
@@ -286,6 +287,16 @@ export default function BibleVersionComparator() {
   }, [lookups, selectedIds, bookKey, chapter]);
 
   const loading = selectedIds.some(id => !lookups[id]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (verseCount === 0) return;
+    void grantEngagementPoints({
+      action: 'bible_read',
+      dedupeKey: `comparador-read:${bookKey}:${chapter}:${selectedIds.join(',')}`,
+      isSignedIn: authLoaded && isSignedIn === true,
+    });
+  }, [loading, verseCount, bookKey, chapter, selectedIds, authLoaded, isSignedIn]);
 
   const matchingVerses = useMemo(() => {
     const rawQuery = searchQuery.trim();

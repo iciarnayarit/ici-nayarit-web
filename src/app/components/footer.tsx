@@ -6,6 +6,55 @@ export default function Footer() {
   const [mounted, setMounted] = useState(false);
   const year = new Date().getFullYear();
 
+  const menuColumns = [
+    {
+      title: 'Inicio',
+      links: [{ href: '/', label: 'Inicio' }],
+    },
+    {
+      title: 'Biblia',
+      links: [
+        { href: '/biblia', label: 'Biblia' },
+        { href: '/comparador', label: 'Comparador' },
+        { href: '/comentarios', label: 'Comentarios' },
+        { href: '/enciclopedia', label: 'Enciclopedia' },
+        { href: '/planes', label: 'Planes' },
+      ],
+    },
+    {
+      title: 'Historia',
+      links: [
+        { href: '/historia', label: 'Historia' },
+        { href: '/historia/legado', label: 'Legado' },
+        { href: '/doctrina', label: 'Doctrina' },
+        { href: '/historia/regiones', label: 'Regiones' },
+      ],
+    },
+    {
+      title: 'Nosotros',
+      links: [
+        { href: '/templos', label: 'Templos' },
+        { href: '/radio', label: 'Radio Online' },
+        { href: '/recursos', label: 'Recursos' },
+        { href: '/avisos', label: 'Avisos' },
+        { href: '/#download', label: 'Descargar App' },
+      ],
+    },
+  ];
+  const dashboardMenuRaw = [
+    'Personal',
+    'Insignias',
+    'Trivia',
+    'Notas',
+    'Planes',
+    'Avisos',
+    'Recursos',
+    'Templos',
+    'Imágenes',
+    'Biblia',
+  ];
+  const dashboardMenu = Array.from(new Set(dashboardMenuRaw));
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -13,25 +62,33 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-4 gap-8 mb-12">
+            <div className="grid md:grid-cols-7 gap-8 mb-12">
                 <div className="col-span-1 md:col-span-1">
                     <span className="font-display font-bold text-xl text-gray-900 tracking-wide block mb-4">ICIAR <span className="text-[#B88A44]">Nayarit</span></span>
                     <p className="text-gray-500 text-sm">Llevando el mensaje de salvación a todo México y las naciones.</p>
                 </div>
-                <div>
-                    <h4 className="font-bold text-gray-800 mb-4">Explorar</h4>
+                {menuColumns.map((column) => (
+                  <div key={column.title}>
+                    <h4 className="font-bold text-gray-800 mb-4">{column.title}</h4>
                     <ul className="space-y-2 text-sm text-gray-500">
-                        <li><Link className="hover:text-[#B88A44]" href="/biblia">Biblia</Link></li>
-                        <li><Link className="hover:text-[#B88A44]" href="/planes">Planes</Link></li>
-                        <li><Link className="hover:text-[#B88A44]" href="/templos">Templos</Link></li>
+                      {column.links.map((link) => (
+                        <li key={link.href}>
+                          <Link className="hover:text-[#B88A44]" href={link.href}>
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
                     </ul>
-                </div>
+                  </div>
+                ))}
                 <div>
-                    <h4 className="font-bold text-gray-800 mb-4">Comunidad</h4>
+                    <h4 className="font-bold text-gray-800 mb-4">Dashboard</h4>
                     <ul className="space-y-2 text-sm text-gray-500">
-                        <li><Link className="hover:text-[#B88A44]" href="/radio">Radio Online</Link></li>
-                        <li><Link className="hover:text-[#B88A44]" href="#">Eventos</Link></li>
-                        <li><Link className="hover:text-[#B88A44]" href="/#download">Descargar App</Link></li>
+                      {dashboardMenu.map((item) => (
+                        <li key={item}>
+                          <span className="cursor-default select-none">{item}</span>
+                        </li>
+                      ))}
                     </ul>
                 </div>
                 <div>

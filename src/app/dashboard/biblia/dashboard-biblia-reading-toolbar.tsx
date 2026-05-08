@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Building2,
+  CircleHelp,
   Compass,
+  Flame,
   FileText,
   Image as ImageIcon,
   Megaphone,
@@ -118,6 +120,12 @@ export default function DashboardBibliaReadingToolbar({ toolbarSearch }: Dashboa
       >
         <ToolbarBtn href="/dashboard/miembros" label="Personal" active={isActiveRoute('/dashboard/miembros')}>
           <UserPlus className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
+        </ToolbarBtn>
+        <ToolbarBtn href="/dashboard/insignias" label="Insignias" active={isActiveRoute('/dashboard/insignias')}>
+          <Flame className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
+        </ToolbarBtn>
+        <ToolbarBtn href="/dashboard/trivia" label="Trivia" active={isActiveRoute('/dashboard/trivia')}>
+          <CircleHelp className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
         </ToolbarBtn>
         <ToolbarBtn href="/dashboard/notas" label="Notas" active={isActiveRoute('/dashboard/notas')}>
           <StickyNote className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />

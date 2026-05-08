@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@clerk/nextjs';
 import { Castle, ChevronLeft, ChevronRight, Lightbulb, Search } from 'lucide-react';
 import {
   Background,
@@ -27,6 +28,7 @@ import {
 import { Button } from '@/app/components/ui/button';
 import { cn } from '@/app/lib/utils';
 import { segmentTextWithBibleRefs } from '@/lib/bible-reference-parser';
+import { grantEngagementPoints } from '@/lib/engagement-points';
 
 function BibleLinkedText({ text }: { text: string }): ReactNode {
   const segments = useMemo(() => segmentTextWithBibleRefs(text), [text]);
@@ -426,11 +428,25 @@ type Props = {
 };
 
 export default function EncyclopediaArticleClient({ entry, allEntries }: Props) {
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const index = allEntries.findIndex((e) => e.slug === entry.slug);
   const prev = index > 0 ? allEntries[index - 1] : null;
   const next = index >= 0 && index < allEntries.length - 1 ? allEntries[index + 1] : null;
 
   const [query, setQuery] = useState(entry.title);
+
+  useEffect(() => {
+    const q = query.trim().toLowerCase();
+    if (q.length < 3) return;
+    const id = window.setTimeout(() => {
+      void grantEngagementPoints({
+        action: 'bible_read',
+        dedupeKey: `encyclopedia-search:${entry.slug}:${q}`,
+        isSignedIn: authLoaded && isSignedIn === true,
+      });
+    }, 450);
+    return () => window.clearTimeout(id);
+  }, [query, entry.slug, authLoaded, isSignedIn]);
 
   return (
     <div className="min-h-screen bg-[#f5f6f8] text-gray-900">

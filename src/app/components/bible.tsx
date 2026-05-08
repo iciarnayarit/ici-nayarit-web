@@ -52,6 +52,7 @@ import { HuicholWordPracticeDialog } from '@/app/components/huichol-word-practic
 import { stripWordForSpeech } from '@/lib/huichol-word-speech';
 import { spanishBibleDataKeyToUsfm } from '@/lib/helloao-usfm-to-spanish-key';
 import { canonicalizeBookName } from '@/lib/bible-reference-parser';
+import { grantEngagementPoints } from '@/lib/engagement-points';
 
 const INDIGENOUS_DBP_VERSION_TO_ISO = {
     cora_el_nayar: 'crn',
@@ -1674,6 +1675,15 @@ export default function Bible() {
         requestAnimationFrame(() => requestAnimationFrame(run));
     }, [isLoading, verses.length, selectedBook, selectedChapter]);
 
+    useEffect(() => {
+        if (isLoading || verses.length === 0) return;
+        void grantEngagementPoints({
+            action: 'bible_read',
+            dedupeKey: `read:${selectedVersion}:${selectedBook}:${selectedChapter}`,
+            isSignedIn: authLoaded && isSignedIn === true,
+        });
+    }, [isLoading, verses.length, selectedVersion, selectedBook, selectedChapter, authLoaded, isSignedIn]);
+
     const handleVerseClick = (verseNumber: number) => {
         const isAlreadySelected = selectedVerses.includes(verseNumber);
         const newSelectedVerses = isAlreadySelected
@@ -1716,6 +1726,11 @@ export default function Bible() {
         setHighlightedVerses(newHighlights);
         localStorage.setItem('highlightedVerses', JSON.stringify(newHighlights));
         setSelectedHighlightColor(color);
+        void grantEngagementPoints({
+            action: 'bible_highlight',
+            dedupeKey: `highlight:${reference}:${color}`,
+            isSignedIn: authLoaded && isSignedIn === true,
+        });
     };
 
     const handleFormat = (command: string, value: string = '') => {
@@ -1855,6 +1870,10 @@ export default function Bible() {
             link.href = dataUrl;
             link.click();
             toast({ title: "¡Imagen descargada exitosamente!" });
+            void grantEngagementPoints({
+                action: 'bible_image_generate',
+                isSignedIn: authLoaded && isSignedIn === true,
+            });
         } catch (err) {
             console.error("Error generating image:", err);
             toast({ title: "Error al descargar la imagen", description: "Ocurrió un error al exportar.", variant: "destructive" });
@@ -1909,6 +1928,10 @@ export default function Bible() {
         toast({
             title: 'Borrador guardado',
             description: 'Lo encuentras en el panel Imágenes del dashboard.',
+        });
+        void grantEngagementPoints({
+            action: 'bible_image_create',
+            isSignedIn: authLoaded && isSignedIn === true,
         });
     }, [
         selectedBook,
@@ -1976,6 +1999,10 @@ export default function Bible() {
             setNotes(updatedNotes);
             localStorage.setItem('userNotes', JSON.stringify(updatedNotes));
             toast({ title: "Reflexión guardada correctamente 📓" });
+            void grantEngagementPoints({
+                action: 'bible_note_create',
+                isSignedIn: authLoaded && isSignedIn === true,
+            });
         }
 
         handleClearNoteFields();
@@ -2134,6 +2161,10 @@ export default function Bible() {
                     title: "Versículo Compartido",
                     description: "El versículo ha sido compartido.",
                 });
+                void grantEngagementPoints({
+                    action: 'bible_share',
+                    isSignedIn: authLoaded && isSignedIn === true,
+                });
             } catch (error: any) {
                 if (error.message !== 'Share canceled') {
                     console.error('Error al compartir:', error);
@@ -2150,6 +2181,10 @@ export default function Bible() {
                 toast({
                     title: "Versículo Copiado",
                     description: "El versículo ha sido copiado al portapapeles.",
+                });
+                void grantEngagementPoints({
+                    action: 'bible_share',
+                    isSignedIn: authLoaded && isSignedIn === true,
                 });
             } catch (error) {
                 console.error('Error al copiar:', error);
@@ -2613,6 +2648,14 @@ export default function Bible() {
                                                                                                 localStorage.setItem('highlightedVerses', JSON.stringify(newHighlights));
                                                                                                 setSelectedHighlightColor(c.id);
                                                                                                 setShowColorPicker(false);
+                                                                                                const firstSelected = [...selectedVerses].sort((a, b) => a - b)[0];
+                                                                                                if (firstSelected) {
+                                                                                                    void grantEngagementPoints({
+                                                                                                        action: 'bible_highlight',
+                                                                                                        dedupeKey: `highlight:${selectedBook} ${selectedChapter}:${firstSelected}:${c.id}`,
+                                                                                                        isSignedIn: authLoaded && isSignedIn === true,
+                                                                                                    });
+                                                                                                }
                                                                                                 toast({ title: selectedVerses.length > 1 ? `${selectedVerses.length} versículos resaltados` : 'Resaltado guardado' });
                                                                                             }}
                                                                                             className={`w-8 h-8 rounded-full transition-transform hover:scale-110 ${c.color} ${selectedHighlightColor === c.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}

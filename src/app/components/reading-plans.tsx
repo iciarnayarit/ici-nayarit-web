@@ -8,6 +8,7 @@ import { allPlanData, plans } from '@/lib/reading-plan-data';
 import { SAVED_PLANS_CHANGED_EVENT } from '@/lib/saved-reading-plans';
 import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
 import { useAuth, useClerk } from '@clerk/nextjs';
+import { grantEngagementPoints } from '@/lib/engagement-points';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Bookmark, Download, Share2 } from 'lucide-react';
@@ -28,6 +29,15 @@ export default function ReadingPlans() {
       setSavedPlans(JSON.parse(saved).map((p: any) => p.id));
     }
   }, []);
+
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    void grantEngagementPoints({
+      action: 'bible_read',
+      dedupeKey: `plans-devotional-read:${today}`,
+      isSignedIn: authLoaded && isSignedIn === true,
+    });
+  }, [authLoaded, isSignedIn]);
 
   const handleSavePlan = (plan: typeof plans[0]) => {
     const alreadySaved = savedPlans.includes(plan.id);

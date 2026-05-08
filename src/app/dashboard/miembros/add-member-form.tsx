@@ -16,6 +16,7 @@ import {
 } from '@/app/components/ui/select';
 import { X } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
+import { getLocalFirstData } from '@/lib/local-storage-cache';
 import { formatMinistryLabelForDisplay } from '@/lib/member-directory-options';
 import {
   churchCheckboxValues,
@@ -57,6 +58,12 @@ type MemberFromApi = {
   createdAt?: string;
   updatedAt?: string;
 };
+
+const MEMBERS_PROFILE_CACHE_KEY = 'iciar-cache-members-profile-v1';
+const CHURCHES_CACHE_KEY = 'iciar-cache-churches-v1';
+const MINISTRIES_CACHE_KEY = 'iciar-cache-ministries-v1';
+const STAFF_ROLES_CACHE_KEY = 'iciar-cache-staff-roles-v1';
+const LIST_CACHE_TTL_MS = 30 * 60 * 1000;
 
 function SectionHeading({ children }: { children: ReactNode }) {
   return (
@@ -199,13 +206,18 @@ export default function AddMemberForm() {
 
     (async () => {
       try {
-        const res = await fetch('/api/members');
-        const data = (await res.json().catch(() => ({}))) as {
-          error?: string;
-          member?: MemberFromApi | null;
-        };
+        const data = await getLocalFirstData<{ error?: string; member?: MemberFromApi | null }>({
+          cacheKey: MEMBERS_PROFILE_CACHE_KEY,
+          ttlMs: LIST_CACHE_TTL_MS,
+          fetcher: async () => {
+            const res = await fetch('/api/members');
+            const json = (await res.json().catch(() => ({}))) as { error?: string; member?: MemberFromApi | null };
+            if (!res.ok) throw new Error(json.error ?? 'No se pudo cargar tu información.');
+            return json;
+          },
+        });
         if (cancelled) return;
-        if (!res.ok) {
+        if (data.error) {
           setFormBanner({
             type: 'error',
             text: data.error ?? 'No se pudo cargar tu información desde la base de datos.',
@@ -253,14 +265,17 @@ export default function AddMemberForm() {
     setChurchLoading(true);
     (async () => {
       try {
-        const res = await fetch('/api/churches');
-        const data = (await res.json().catch(() => ({}))) as { error?: string; churches?: ChurchListOption[] };
+        const data = await getLocalFirstData<{ error?: string; churches?: ChurchListOption[] }>({
+          cacheKey: CHURCHES_CACHE_KEY,
+          ttlMs: LIST_CACHE_TTL_MS,
+          fetcher: async () => {
+            const res = await fetch('/api/churches');
+            const json = (await res.json().catch(() => ({}))) as { error?: string; churches?: ChurchListOption[] };
+            if (!res.ok) throw new Error(json.error ?? 'No se pudieron cargar los templos.');
+            return json;
+          },
+        });
         if (cancelled) return;
-        if (!res.ok) {
-          setChurchLoadError(data.error ?? 'No se pudieron cargar los templos.');
-          setChurchOptions([]);
-          return;
-        }
         setChurchLoadError(null);
         setChurchOptions(Array.isArray(data.churches) ? data.churches : []);
       } catch {
@@ -285,14 +300,17 @@ export default function AddMemberForm() {
     setMinistryLoading(true);
     (async () => {
       try {
-        const res = await fetch('/api/ministries');
-        const data = (await res.json().catch(() => ({}))) as { error?: string; ministries?: MinistryOption[] };
+        const data = await getLocalFirstData<{ error?: string; ministries?: MinistryOption[] }>({
+          cacheKey: MINISTRIES_CACHE_KEY,
+          ttlMs: LIST_CACHE_TTL_MS,
+          fetcher: async () => {
+            const res = await fetch('/api/ministries');
+            const json = (await res.json().catch(() => ({}))) as { error?: string; ministries?: MinistryOption[] };
+            if (!res.ok) throw new Error(json.error ?? 'No se pudieron cargar los ministerios.');
+            return json;
+          },
+        });
         if (cancelled) return;
-        if (!res.ok) {
-          setMinistryLoadError(data.error ?? 'No se pudieron cargar los ministerios.');
-          setMinistryOptions([]);
-          return;
-        }
         setMinistryLoadError(null);
         setMinistryOptions(Array.isArray(data.ministries) ? data.ministries : []);
       } catch {
@@ -317,14 +335,17 @@ export default function AddMemberForm() {
     setStaffRolesLoading(true);
     (async () => {
       try {
-        const res = await fetch('/api/staff-roles');
-        const data = (await res.json().catch(() => ({}))) as { error?: string; roles?: StaffRoleOption[] };
+        const data = await getLocalFirstData<{ error?: string; roles?: StaffRoleOption[] }>({
+          cacheKey: STAFF_ROLES_CACHE_KEY,
+          ttlMs: LIST_CACHE_TTL_MS,
+          fetcher: async () => {
+            const res = await fetch('/api/staff-roles');
+            const json = (await res.json().catch(() => ({}))) as { error?: string; roles?: StaffRoleOption[] };
+            if (!res.ok) throw new Error(json.error ?? 'No se pudieron cargar los cargos.');
+            return json;
+          },
+        });
         if (cancelled) return;
-        if (!res.ok) {
-          setStaffRolesLoadError(data.error ?? 'No se pudieron cargar los cargos.');
-          setStaffRoleOptions([]);
-          return;
-        }
         setStaffRolesLoadError(null);
         setStaffRoleOptions(Array.isArray(data.roles) ? data.roles : []);
       } catch {
@@ -469,6 +490,11 @@ export default function AddMemberForm() {
       setFieldErrors({});
       if (data.member) {
         applyMemberFromApi(data.member);
+      }
+      try {
+        localStorage.removeItem(MEMBERS_PROFILE_CACHE_KEY);
+      } catch {
+        // ignore localStorage quota issues
       }
       window.dispatchEvent(new Event('member-profile-saved'));
       setFormBanner({
