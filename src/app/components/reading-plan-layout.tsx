@@ -14,7 +14,7 @@ import {
     Download, Eye, Share2 as ShareIcon, Image as ImageIcon, BookOpen
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useRef } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
 import { handleReadPassage, type BibleBookData, type PassageVerse } from '@/lib/bible-data';
 import {
@@ -65,6 +65,44 @@ type DayChapterItem = {
     book: string;
     chapter: number;
 };
+
+type DayProgress = { total: number; completed: number; percent: number };
+
+type ReadingPlanDayCardProps = {
+    item: ReadingDay;
+    isCompleted: boolean;
+    progress: DayProgress;
+    onOpenDay: (day: number) => void;
+};
+
+const ReadingPlanDayCard = memo(function ReadingPlanDayCard({
+    item,
+    isCompleted,
+    progress,
+    onOpenDay,
+}: ReadingPlanDayCardProps) {
+    return (
+        <Card
+            className={`cursor-pointer transition-all hover:shadow-md border-none ring-1 ring-gray-100 ${isCompleted ? 'bg-amber-50/50 ring-amber-200' : 'bg-white'}`}
+            onClick={() => onOpenDay(item.day)}
+        >
+            <div className="p-5 flex items-start gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold ${isCompleted ? 'bg-[#B88A44] text-white' : 'bg-gray-100 text-gray-400'}`}>
+                    {isCompleted ? <CheckCircle2 className="h-6 w-6" /> : item.day}
+                </div>
+                <div>
+                    <h4 className="font-bold text-gray-900 group-hover:text-[#B88A44] transition-colors">{item.title || `Día ${item.day}`}</h4>
+                    <p className="text-sm text-[#B88A44] font-medium">{item.reading}</p>
+                    {progress.total > 0 ? (
+                        <p className="mt-1 text-xs font-semibold text-gray-500">
+                            Avance del día: {progress.completed}/{progress.total} ({progress.percent}%)
+                        </p>
+                    ) : null}
+                </div>
+            </div>
+        </Card>
+    );
+});
 
 function parseReadingChapters(reading: string): DayChapterItem[] {
     const tokens = reading
@@ -305,6 +343,20 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         return () => window.clearTimeout(debounceId);
     }, [completedDays, completedChaptersByDay, selectedDay, authLoaded, isSignedIn, planSlug, title, planData.length]);
 
+    // Precalcula capítulos por día para reducir parseos repetidos en render (diffing más estable).
+    const chaptersByDay = useMemo(() => {
+        const byDay = new Map<number, DayChapterItem[]>();
+        for (const day of planData) {
+            byDay.set(day.day, parseReadingChapters(day.reading));
+        }
+        return byDay;
+    }, [planData]);
+
+    const getDayChapterItems = useCallback(
+        (day: number) => chaptersByDay.get(day) ?? [],
+        [chaptersByDay]
+    );
+
     const toggleDayCompletion = (day: number) => {
         const updated = completedDays.includes(day)
             ? completedDays.filter((d) => d !== day)
@@ -315,7 +367,7 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         // Si se marca manualmente completo, llenamos todos los capítulos/partes del día.
         const dayData = planData.find(d => d.day === day);
         if (!dayData) return;
-        const dayItems = parseReadingChapters(dayData.reading).map(item => item.id);
+        const dayItems = getDayChapterItems(day).map(item => item.id);
         if (dayItems.length === 0) return;
         setCompletedChaptersByDay(prev => {
             const next = {
@@ -329,8 +381,8 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
 
     const getCompletedChapterIdsForDay = (day: number) => completedChaptersByDay[day] ?? [];
 
-    const getDayProgress = (day: number, reading: string) => {
-        const parts = parseReadingChapters(reading);
+    const getDayProgress = useCallback((day: number) => {
+        const parts = getDayChapterItems(day);
         if (parts.length === 0) {
             return { total: 0, completed: 0, percent: completedDays.includes(day) ? 100 : 0 };
         }
@@ -338,10 +390,10 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         const completed = parts.filter(p => completedSet.has(p.id)).length;
         const percent = Math.round((completed / parts.length) * 100);
         return { total: parts.length, completed, percent };
-    };
+    }, [completedChaptersByDay, completedDays, getDayChapterItems]);
 
-    const toggleChapterCompletion = (day: number, chapterId: string, reading: string) => {
-        const dayItems = parseReadingChapters(reading).map(item => item.id);
+    const toggleChapterCompletion = (day: number, chapterId: string) => {
+        const dayItems = getDayChapterItems(day).map(item => item.id);
         setCompletedChaptersByDay(prev => {
             const current = new Set(prev[day] ?? []);
             if (current.has(chapterId)) {
@@ -631,6 +683,36 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
     };
 
     const progressPercentage = planData.length > 0 ? (completedDays.length / planData.length) * 100 : 0;
+    const completedDaysSet = useMemo(() => new Set(completedDays), [completedDays]);
+
+    const dayProgressByDay = useMemo(() => {
+        const map = new Map<number, DayProgress>();
+        for (const day of planData) {
+            map.set(day.day, getDayProgress(day.day));
+        }
+        return map;
+    }, [planData, getDayProgress]);
+
+    const sections = useMemo(() => {
+        const groupedSections: { title: string; days: ReadingDay[] }[] = [];
+        let currentSectionTitle = "";
+        planData.forEach(day => {
+            if (day.section && day.section !== currentSectionTitle) {
+                currentSectionTitle = day.section;
+                groupedSections.push({ title: currentSectionTitle, days: [day] });
+            } else if (groupedSections.length > 0) {
+                groupedSections[groupedSections.length - 1].days.push(day);
+            } else {
+                groupedSections.push({ title: "Días", days: [day] });
+                currentSectionTitle = "Días";
+            }
+        });
+        return groupedSections;
+    }, [planData]);
+
+    const handleOpenDay = useCallback((day: number) => {
+        setSelectedDay(day);
+    }, []);
 
     const handleSaveVerse = (verse: PassageVerse) => {
         const reference = `${verse.book} ${verse.chapter}:${verse.verse}`;
@@ -734,7 +816,7 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
 
         const verses =
             planLookup && !planLookupLoading ? handleReadPassage(dayData.reading, planLookup) : [];
-        const dayChapterItems = parseReadingChapters(dayData.reading);
+        const dayChapterItems = getDayChapterItems(selectedDay);
         const completedChapterIds = new Set(getCompletedChapterIdsForDay(selectedDay));
         const dayCompletedCount = dayChapterItems.filter(item => completedChapterIds.has(item.id)).length;
         const dayPercent = dayChapterItems.length > 0 ? Math.round((dayCompletedCount / dayChapterItems.length) * 100) : 0;
@@ -859,7 +941,7 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                                     <button
                                                         key={item.id}
                                                         type="button"
-                                                        onClick={() => toggleChapterCompletion(selectedDay, item.id, dayData.reading)}
+                                                        onClick={() => toggleChapterCompletion(selectedDay, item.id)}
                                                         className={`flex min-h-[52px] w-full items-center gap-2.5 rounded-2xl px-4 py-3 text-left text-base font-bold transition-colors ${
                                                             done
                                                                 ? 'bg-[#FFF9D6] text-[#B88A44]'
@@ -1452,24 +1534,6 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         );
     }
 
-
-    // Group days by sections/phases if available
-    const sections: { title: string; days: ReadingDay[] }[] = [];
-    let currentSectionTitle = "";
-
-    planData.forEach(day => {
-        if (day.section && day.section !== currentSectionTitle) {
-            currentSectionTitle = day.section;
-            sections.push({ title: currentSectionTitle, days: [day] });
-        } else if (sections.length > 0) {
-            sections[sections.length - 1].days.push(day);
-        } else {
-            // No section yet
-            sections.push({ title: "Días", days: [day] });
-            currentSectionTitle = "Días";
-        }
-    });
-
     return (
         <div className="container mx-auto px-4 py-12 md:px-6">
             <div className="max-w-4xl mx-auto">
@@ -1560,30 +1624,13 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                             )}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {section.days.map((item) => (
-                                    <Card
+                                    <ReadingPlanDayCard
                                         key={item.day}
-                                        className={`cursor-pointer transition-all hover:shadow-md border-none ring-1 ring-gray-100 ${completedDays.includes(item.day) ? 'bg-amber-50/50 ring-amber-200' : 'bg-white'}`}
-                                        onClick={() => setSelectedDay(item.day)}
-                                    >
-                                        <div className="p-5 flex items-start gap-4">
-                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold ${completedDays.includes(item.day) ? 'bg-[#B88A44] text-white' : 'bg-gray-100 text-gray-400'}`}>
-                                                {completedDays.includes(item.day) ? <CheckCircle2 className="h-6 w-6" /> : item.day}
-                                            </div>
-                                            <div>
-                                                <h4 className="font-bold text-gray-900 group-hover:text-[#B88A44] transition-colors">{item.title || `Día ${item.day}`}</h4>
-                                                <p className="text-sm text-[#B88A44] font-medium">{item.reading}</p>
-                                                {(() => {
-                                                    const p = getDayProgress(item.day, item.reading);
-                                                    if (p.total === 0) return null;
-                                                    return (
-                                                        <p className="mt-1 text-xs font-semibold text-gray-500">
-                                                            Avance del día: {p.completed}/{p.total} ({p.percent}%)
-                                                        </p>
-                                                    );
-                                                })()}
-                                            </div>
-                                        </div>
-                                    </Card>
+                                        item={item}
+                                        isCompleted={completedDaysSet.has(item.day)}
+                                        progress={dayProgressByDay.get(item.day) ?? { total: 0, completed: 0, percent: 0 }}
+                                        onOpenDay={handleOpenDay}
+                                    />
                                 ))}
                             </div>
                         </div>

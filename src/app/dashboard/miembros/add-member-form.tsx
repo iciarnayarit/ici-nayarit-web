@@ -453,6 +453,12 @@ export default function AddMemberForm() {
       return;
     }
 
+    // Optimistic UI: mostrar "guardado" inmediato mientras sincroniza con backend.
+    setShowSavedOnButton(true);
+    setFormBanner({
+      type: 'success',
+      text: 'Guardado localmente. Sincronizando con el servidor…',
+    });
     setIsSubmitting(true);
     try {
       const res = await fetch('/api/members', {
@@ -482,7 +488,9 @@ export default function AddMemberForm() {
         setShowSavedOnButton(false);
         setFormBanner({
           type: 'error',
-          text: data.error ?? `No se pudo guardar (error ${res.status}).`,
+          text:
+            (data.error ?? `No se pudo guardar (error ${res.status}).`) +
+            ' Se revirtió el estado visual de guardado.',
         });
         return;
       }
@@ -503,12 +511,18 @@ export default function AddMemberForm() {
           ? `${data.member?.firstName?.trim() ?? firstName.trim()} ${data.member?.lastName?.trim() ?? lastName.trim()} se actualizó correctamente.`
           : `${data.member?.firstName?.trim() ?? firstName.trim()} ${data.member?.lastName?.trim() ?? lastName.trim()} quedó registrado correctamente.`,
       });
+    } catch {
+      setShowSavedOnButton(false);
+      setFormBanner({
+        type: 'error',
+        text: 'No se pudo sincronizar el guardado. Se revirtió el estado visual.',
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const saveButtonLabel = isSubmitting ? 'Guardando…' : showSavedOnButton ? 'guardado' : 'Guardar';
+  const saveButtonLabel = showSavedOnButton ? 'guardado' : isSubmitting ? 'Guardando…' : 'Guardar';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8" noValidate>
@@ -878,10 +892,7 @@ export default function AddMemberForm() {
           variant="outline"
           className={cn(
             'h-12 w-full rounded-xl px-5 font-semibold shadow-sm transition-colors sm:h-11 sm:w-auto sm:min-w-[8.5rem]',
-            isSubmitting &&
-              'border-neutral-600 bg-neutral-600 text-white hover:bg-neutral-600 hover:text-white',
-            !isSubmitting &&
-              showSavedOnButton &&
+            showSavedOnButton &&
               'border-amber-500/60 bg-amber-50 text-amber-700 hover:bg-amber-50 hover:text-amber-700',
             !isSubmitting &&
               !showSavedOnButton &&

@@ -1,7 +1,50 @@
 /** Catálogo público [Free Use Bible API / HelloAO](https://bible.helloao.org/api/available_commentaries.json). */
+import { cache } from 'react';
 
 export const HELLOAO_COMMENTARIES_JSON =
   'https://bible.helloao.org/api/available_commentaries.json' as const;
+
+export const HELLOAO_ISR_REVALIDATE_SECONDS = 3600;
+
+export function helloAoTagAvailableCommentaries() {
+  return 'helloao:commentaries';
+}
+
+export function helloAoTagCommentary(commentaryId: string) {
+  return `helloao:commentary:${commentaryId}`;
+}
+
+export function helloAoTagCommentaryBooks(commentaryId: string) {
+  return `helloao:commentary:${commentaryId}:books`;
+}
+
+export function helloAoTagCommentaryChapter(commentaryId: string, bookUsfm: string, chapterNumber: number) {
+  return `helloao:commentary:${commentaryId}:chapter:${bookUsfm.toUpperCase()}:${Math.max(1, Math.floor(chapterNumber))}`;
+}
+
+type BuildCommentaryRevalidateTagsInput = {
+  commentaryId: string;
+  bookUsfm?: string;
+  chapterNumber?: number;
+  includeCatalogTag?: boolean;
+};
+
+export function buildCommentaryRevalidateTags({
+  commentaryId,
+  bookUsfm,
+  chapterNumber,
+  includeCatalogTag = false,
+}: BuildCommentaryRevalidateTagsInput): string[] {
+  const tags: string[] = [];
+  if (includeCatalogTag) tags.push(helloAoTagAvailableCommentaries());
+  tags.push(helloAoTagCommentary(commentaryId), helloAoTagCommentaryBooks(commentaryId));
+
+  if (bookUsfm && typeof chapterNumber === 'number' && Number.isFinite(chapterNumber)) {
+    tags.push(helloAoTagCommentaryChapter(commentaryId, bookUsfm, chapterNumber));
+  }
+
+  return [...new Set(tags)];
+}
 
 /** Nombre corto del autor / obra para UI (quita sufijos repetidos). */
 export function commentaryAuthorShortName(fullName: string): string {
@@ -31,10 +74,13 @@ export type CommentaryCatalogResponse = {
   commentaries: HelloAoCommentary[];
 };
 
-export async function fetchAvailableCommentaries(): Promise<HelloAoCommentary[]> {
+export const fetchAvailableCommentaries = cache(async function fetchAvailableCommentaries(): Promise<HelloAoCommentary[]> {
   try {
     const res = await fetch(HELLOAO_COMMENTARIES_JSON, {
-      next: { revalidate: 3600 },
+      next: {
+        revalidate: HELLOAO_ISR_REVALIDATE_SECONDS,
+        tags: [helloAoTagAvailableCommentaries()],
+      },
       headers: { Accept: 'application/json' },
     });
     if (!res.ok) return [];
@@ -43,7 +89,7 @@ export async function fetchAvailableCommentaries(): Promise<HelloAoCommentary[]>
   } catch {
     return [];
   }
-}
+});
 
 export function helloAoBooksUrl(listOfBooksApiLink: string): string {
   if (listOfBooksApiLink.startsWith('http')) return listOfBooksApiLink;
@@ -105,11 +151,14 @@ export type HelloAoBooksPayload = {
   books: HelloAoBookEntry[];
 };
 
-export async function fetchCommentaryBooks(commentaryId: string): Promise<HelloAoBooksPayload | null> {
+export const fetchCommentaryBooks = cache(async function fetchCommentaryBooks(commentaryId: string): Promise<HelloAoBooksPayload | null> {
   const url = `https://bible.helloao.org/api/c/${encodeURIComponent(commentaryId)}/books.json`;
   try {
     const res = await fetch(url, {
-      next: { revalidate: 3600 },
+      next: {
+        revalidate: HELLOAO_ISR_REVALIDATE_SECONDS,
+        tags: [helloAoTagAvailableCommentaries(), helloAoTagCommentary(commentaryId), helloAoTagCommentaryBooks(commentaryId)],
+      },
       headers: { Accept: 'application/json' },
     });
     if (!res.ok) return null;
@@ -119,7 +168,7 @@ export async function fetchCommentaryBooks(commentaryId: string): Promise<HelloA
   } catch {
     return null;
   }
-}
+});
 
 export type CommentaryBookUiStatus = 'complete' | 'in_progress' | 'not_started';
 
@@ -168,7 +217,7 @@ export function helloAoChapterApiPathToInternal(apiPath: string | null | undefin
   }
 }
 
-export async function fetchCommentaryChapterJson(
+export const fetchCommentaryChapterJson = cache(async function fetchCommentaryChapterJson(
   commentaryId: string,
   bookUsfm: string,
   chapterNumber: number
@@ -178,7 +227,14 @@ export async function fetchCommentaryChapterJson(
   const url = `https://bible.helloao.org/api/c/${encodeURIComponent(commentaryId)}/${bookSeg}/${ch}.json`;
   try {
     const res = await fetch(url, {
-      next: { revalidate: 3600 },
+      next: {
+        revalidate: HELLOAO_ISR_REVALIDATE_SECONDS,
+        tags: [
+          helloAoTagCommentary(commentaryId),
+          helloAoTagCommentaryBooks(commentaryId),
+          helloAoTagCommentaryChapter(commentaryId, bookUsfm, ch),
+        ],
+      },
       headers: { Accept: 'application/json' },
     });
     if (!res.ok) return null;
@@ -188,4 +244,4 @@ export async function fetchCommentaryChapterJson(
   } catch {
     return null;
   }
-}
+});

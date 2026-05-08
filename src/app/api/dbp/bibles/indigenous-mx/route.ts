@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchDbpJson } from '@/lib/dbp-proxy';
+import { buildDbpCircuitHeader, fetchDbpJson } from '@/lib/dbp-proxy';
 
 type DbpBiblesResponse = {
   data?: Array<Record<string, unknown>>;
@@ -13,6 +13,7 @@ const TARGET_LANGUAGES = [
 ] as const;
 
 export async function GET() {
+  const circuitStateHeader = buildDbpCircuitHeader();
   try {
     const groups = await Promise.all(
       TARGET_LANGUAGES.map(async lang => {
@@ -36,12 +37,14 @@ export async function GET() {
         requested_languages: TARGET_LANGUAGES.length,
         generated_at: new Date().toISOString(),
       },
+    }, {
+      headers: { 'X-Circuit-State': circuitStateHeader },
     });
   } catch (error) {
     console.error('[api/dbp/bibles/indigenous-mx]', error);
     return NextResponse.json(
       { error: 'No se pudo cargar la Biblia para los idiomas solicitados.' },
-      { status: 502 }
+      { status: 502, headers: { 'X-Circuit-State': circuitStateHeader } }
     );
   }
 }

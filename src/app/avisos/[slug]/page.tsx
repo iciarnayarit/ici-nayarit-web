@@ -9,6 +9,8 @@ import { Calendar, MapPin, Clock, ArrowLeft, Bookmark, Share2 } from 'lucide-rea
 import { loadSavedAnnouncementTitles, persistSavedAnnouncementTitles } from '@/lib/saved-announcements';
 import { useAuth, useClerk } from '@clerk/nextjs';
 import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
+import { grantEngagementPoints } from '@/lib/engagement-points';
+import { toVisualLabel } from '@/lib/visual-labels';
 
 export default function AvisoDetailPage() {
   const params = useParams();
@@ -23,6 +25,15 @@ export default function AvisoDetailPage() {
     const savedList = loadSavedAnnouncementTitles();
     setIsSaved(savedList.includes(announcement.title));
   }, [announcement]);
+
+  useEffect(() => {
+    if (!announcement) return;
+    void grantEngagementPoints({
+      action: 'announcement_read',
+      dedupeKey: `aviso-read:${slug}`,
+      isSignedIn: authLoaded && isSignedIn === true,
+    });
+  }, [announcement, slug, authLoaded, isSignedIn]);
 
   if (!announcement) {
     notFound();
@@ -94,7 +105,9 @@ export default function AvisoDetailPage() {
             
             <div className="p-8 md:p-12">
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">{announcement.category}</span>
+                <span className="text-sm font-semibold text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                  {toVisualLabel(announcement.category)}
+                </span>
                 <span className="text-sm text-gray-400 font-medium">{announcement.date}</span>
               </div>
               <h1 className="text-4xl font-bold text-gray-800 font-display mb-6">{announcement.title}</h1>

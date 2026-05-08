@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
 import { useToast } from '@/app/hooks/use-toast';
+import { useNdjsonStreamBuffer } from '@/app/hooks/use-ndjson-stream-buffer';
 import { commentaryAuthorShortName, isNewTestamentBookId } from '@/lib/helloao-commentaries';
 import { cn } from '@/app/lib/utils';
 import { useAuth, useClerk } from '@clerk/nextjs';
@@ -119,20 +120,98 @@ export default function CommentaryChapterReader({
     chapterIntroductionTeaser: string | null;
   } | null>(null);
   const [translating, setTranslating] = useState(false);
+  const [streamTranslatedCount, setStreamTranslatedCount] = useState(0);
+  const [pendingStreamEvents, setPendingStreamEvents] = useState<
+    Array<{ type?: string; index?: number; text?: string; message?: string }>
+  >([]);
 
   const textsKey = useMemo(() => commentaryBlocks.map(b => b.text).join('\u0001'), [commentaryBlocks]);
+  const streamBuffer = useNdjsonStreamBuffer<{ type?: string; index?: number; text?: string; message?: string }>({
+    flushMs: 120,
+    onFlush: (events) => {
+      setPendingStreamEvents((prev) => [...prev, ...events]);
+    },
+  });
+
+  useEffect(() => {
+    if (pendingStreamEvents.length === 0) return;
+
+    const nextMap = new Map<number, string>();
+    for (const event of pendingStreamEvents) {
+      if (event.type === 'error') {
+        toast({
+          title: 'No se pudo traducir la página',
+          description: event.message || 'Error en traducción por streaming.',
+          variant: 'destructive',
+        });
+        setPendingStreamEvents([]);
+        setTranslations(null);
+        setPageTranslations(null);
+        setStreamTranslatedCount(0);
+        setCommentaryLang('en');
+        return;
+      }
+      if (event.type === 'segment' && Number.isInteger(event.index) && typeof event.text === 'string') {
+        nextMap.set(event.index as number, event.text);
+      }
+    }
+
+    if (nextMap.size === 0) {
+      setPendingStreamEvents([]);
+      return;
+    }
+
+    const allSegments = [
+      pageTranslations?.bookDisplayName || bookDisplayName,
+      pageTranslations?.commentaryName || commentaryName,
+      pageTranslations?.bookIntroductionTeaser || bookIntroductionTeaser,
+      pageTranslations?.chapterIntroductionTeaser || chapterIntroductionTeaser || '',
+      ...(translations ?? commentaryBlocks.map(b => b.text)),
+    ];
+
+    for (const [idx, text] of nextMap.entries()) {
+      if (idx >= 0 && idx < allSegments.length) {
+        allSegments[idx] = text;
+      }
+    }
+
+    setStreamTranslatedCount(allSegments.filter(Boolean).length);
+    const [tBook, tCom, tBkIntro, tChapIntro, ...tBlocks] = allSegments;
+    setPageTranslations({
+      bookDisplayName: tBook || bookDisplayName,
+      commentaryName: tCom || commentaryName,
+      bookIntroductionTeaser: tBkIntro || bookIntroductionTeaser,
+      chapterIntroductionTeaser: chapterIntroductionTeaser ? (tChapIntro || chapterIntroductionTeaser) : null,
+    });
+    setTranslations(tBlocks.map((t, idx) => t || commentaryBlocks[idx]?.text || ''));
+    setPendingStreamEvents([]);
+  }, [
+    pendingStreamEvents,
+    toast,
+    pageTranslations,
+    translations,
+    commentaryBlocks,
+    bookDisplayName,
+    commentaryName,
+    bookIntroductionTeaser,
+    chapterIntroductionTeaser,
+  ]);
 
   useEffect(() => {
     if (commentaryLang === 'en') {
       setTranslations(null);
       setPageTranslations(null);
       setTranslating(false);
+      setStreamTranslatedCount(0);
+      streamBuffer.reset();
+      setPendingStreamEvents([]);
       return;
     }
 
     let cancelled = false;
     (async () => {
       setTranslating(true);
+      setStreamTranslatedCount(0);
       try {
         const segmentsToTranslate = [
           bookDisplayName,
@@ -142,7 +221,7 @@ export default function CommentaryChapterReader({
           ...commentaryBlocks.map(b => b.text),
         ];
 
-        const res = await fetch('/api/translate', {
+        const res = await fetch('/api/translate?stream=1', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -151,6 +230,13 @@ export default function CommentaryChapterReader({
             target: commentaryLang,
           }),
         });
+        const contentType = (res.headers.get('content-type') || '').toLowerCase();
+        const isNdjson = contentType.includes('application/x-ndjson');
+        if (isNdjson && res.body && res.ok) {
+          streamBuffer.reset();
+          await streamBuffer.consumeResponse(res);
+          return;
+        }
         const data = (await res.json()) as { translations?: string[]; error?: string };
         if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
         if (!Array.isArray(data.translations) || data.translations.length !== segmentsToTranslate.length) {
@@ -176,6 +262,7 @@ export default function CommentaryChapterReader({
         if (!cancelled) {
           setTranslations(null);
           setPageTranslations(null);
+          setStreamTranslatedCount(0);
           setCommentaryLang('en');
         }
       } finally {
@@ -185,6 +272,7 @@ export default function CommentaryChapterReader({
 
     return () => {
       cancelled = true;
+      streamBuffer.cancel();
     };
   }, [
     commentaryLang,
@@ -194,6 +282,7 @@ export default function CommentaryChapterReader({
     commentaryName,
     bookIntroductionTeaser,
     chapterIntroductionTeaser,
+    streamBuffer,
   ]);
 
   const displayBookName = pageTranslations?.bookDisplayName ?? bookDisplayName;
@@ -488,6 +577,11 @@ export default function CommentaryChapterReader({
                 {!translating && commentaryLang !== 'en' ? (
                   <span className="pl-1 pr-2 text-[10px] font-bold uppercase tracking-wider text-emerald-600">
                     Traducido
+                  </span>
+                ) : null}
+                {translating ? (
+                  <span className="pl-1 pr-2 text-[10px] font-bold uppercase tracking-wider text-blue-600">
+                    Streaming {streamTranslatedCount}/{4 + commentaryBlocks.length}
                   </span>
                 ) : null}
               </div>

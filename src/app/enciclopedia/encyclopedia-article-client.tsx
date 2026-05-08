@@ -1,34 +1,35 @@
 'use client';
 
-import Link from 'next/link';
-import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@clerk/nextjs';
-import { Castle, ChevronLeft, ChevronRight, Lightbulb, Search } from 'lucide-react';
 import {
-  Background,
-  Controls,
-  Handle,
-  MiniMap,
-  Position,
-  ReactFlow,
-  type Edge,
-  type Node,
-  type NodeProps,
-  type NodeTypes,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
-import type { EncyclopediaEntry } from '@/lib/bible-encyclopedia-data';
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
 } from '@/app/components/ui/accordion';
 import { Button } from '@/app/components/ui/button';
+import { useNdjsonStreamBuffer } from '@/app/hooks/use-ndjson-stream-buffer';
 import { cn } from '@/app/lib/utils';
+import type { EncyclopediaEntry } from '@/lib/bible-encyclopedia-data';
 import { segmentTextWithBibleRefs } from '@/lib/bible-reference-parser';
 import { grantEngagementPoints } from '@/lib/engagement-points';
+import { useAuth } from '@clerk/nextjs';
+import {
+    Background,
+    Controls,
+    Handle,
+    MiniMap,
+    Position,
+    ReactFlow,
+    type Edge,
+    type Node,
+    type NodeProps,
+    type NodeTypes,
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
+import { Castle, ChevronLeft, ChevronRight, Lightbulb, Loader2, Search } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from 'react';
 
 function BibleLinkedText({ text }: { text: string }): ReactNode {
   const segments = useMemo(() => segmentTextWithBibleRefs(text), [text]);
@@ -134,6 +135,25 @@ function extractLexicoRefs(entry: EncyclopediaEntry): Array<{ text: string; href
   }
   return out;
 }
+
+type EncyclopediaSearchResult = {
+  slug: string;
+  title: string;
+  kind: string;
+  summary: string;
+  score: number;
+  reason: 'title' | 'kind' | 'summary' | 'section';
+};
+
+type EncyclopediaSearchStreamEvent = {
+  type?: string;
+  query?: string;
+  limit?: number;
+  index?: number;
+  total?: number;
+  item?: EncyclopediaSearchResult;
+  message?: string;
+};
 
 type LexicoNodeData = {
   label: string;
@@ -425,15 +445,30 @@ function LexicoGraph({ entry, allEntries }: { entry: EncyclopediaEntry; allEntri
 type Props = {
   entry: EncyclopediaEntry;
   allEntries: EncyclopediaEntry[];
+  relatedSlot?: ReactNode;
 };
 
-export default function EncyclopediaArticleClient({ entry, allEntries }: Props) {
+export default function EncyclopediaArticleClient({ entry, allEntries, relatedSlot }: Props) {
   const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const index = allEntries.findIndex((e) => e.slug === entry.slug);
   const prev = index > 0 ? allEntries[index - 1] : null;
   const next = index >= 0 && index < allEntries.length - 1 ? allEntries[index + 1] : null;
 
+  const MIN_QUERY_LENGTH = 2;
   const [query, setQuery] = useState(entry.title);
+  const [searchResults, setSearchResults] = useState<EncyclopediaSearchResult[]>([]);
+  const [searchTotal, setSearchTotal] = useState<number | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [pendingSearchEvents, setPendingSearchEvents] = useState<EncyclopediaSearchStreamEvent[]>([]);
+  const hasActiveSearch = query.trim().length >= MIN_QUERY_LENGTH;
+
+  const streamBuffer = useNdjsonStreamBuffer<EncyclopediaSearchStreamEvent>({
+    flushMs: 120,
+    onFlush: (events) => {
+      setPendingSearchEvents((prev) => [...prev, ...events]);
+    },
+  });
 
   useEffect(() => {
     const q = query.trim().toLowerCase();
@@ -447,6 +482,108 @@ export default function EncyclopediaArticleClient({ entry, allEntries }: Props) 
     }, 450);
     return () => window.clearTimeout(id);
   }, [query, entry.slug, authLoaded, isSignedIn]);
+
+  useEffect(() => {
+    if (pendingSearchEvents.length === 0) return;
+
+    setSearchResults((prev) => {
+      let next = [...prev];
+      for (const event of pendingSearchEvents) {
+        if (event.type === 'start') {
+          next = [];
+          continue;
+        }
+        if (event.type === 'result' && event.item) {
+          const index = Number.isInteger(event.index) ? event.index : next.length;
+          next[index] = event.item;
+        }
+      }
+      return next.filter(Boolean);
+    });
+
+    const errorEvent = pendingSearchEvents.find((event) => event.type === 'error');
+    const doneEvent = pendingSearchEvents.find((event) => event.type === 'done');
+
+    if (errorEvent) {
+      setSearchError(errorEvent.message ?? 'Error en búsqueda incremental.');
+      setSearchTotal(0);
+      setSearchResults([]);
+    } else {
+      if (doneEvent) {
+        setSearchTotal(doneEvent.total ?? null);
+      }
+      setSearchError(null);
+    }
+
+    setPendingSearchEvents([]);
+  }, [pendingSearchEvents]);
+
+  useEffect(() => {
+    const searchText = query.trim();
+    const MIN_QUERY_LENGTH = 2;
+
+    if (searchText.length < MIN_QUERY_LENGTH) {
+      setSearchResults([]);
+      setSearchTotal(null);
+      setSearchError(null);
+      setSearchLoading(false);
+      streamBuffer.cancel();
+      streamBuffer.reset();
+      return;
+    }
+
+    let cancelled = false;
+    const controller = new AbortController();
+
+    setSearchLoading(true);
+    setSearchError(null);
+    setSearchTotal(null);
+    setSearchResults([]);
+    setPendingSearchEvents([]);
+
+    void (async () => {
+      try {
+        const res = await fetch(
+          `/api/enciclopedia/search?q=${encodeURIComponent(searchText)}&stream=1&limit=20`,
+          {
+            signal: controller.signal,
+            headers: {
+              Accept: 'application/x-ndjson',
+            },
+          }
+        );
+
+        const contentType = (res.headers.get('content-type') || '').toLowerCase();
+        if (res.ok && contentType.includes('application/x-ndjson') && res.body) {
+          streamBuffer.reset();
+          await streamBuffer.consumeResponse(res);
+          return;
+        }
+
+        const data = (await res.json()) as {
+          ok?: boolean;
+          results?: EncyclopediaSearchResult[];
+          error?: string;
+        };
+        if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+        setSearchResults(Array.isArray(data.results) ? data.results : []);
+        setSearchTotal(Array.isArray(data.results) ? data.results.length : 0);
+      } catch (error) {
+        if (cancelled || controller.signal.aborted) return;
+        setSearchResults([]);
+        setSearchTotal(null);
+        setSearchError(error instanceof Error ? error.message : 'Error de conexión.');
+      } finally {
+        if (!cancelled) setSearchLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      streamBuffer.cancel();
+    };
+  }, [query, streamBuffer]);
 
   return (
     <div className="min-h-screen bg-[#f5f6f8] text-gray-900">
@@ -490,6 +627,61 @@ export default function EncyclopediaArticleClient({ entry, allEntries }: Props) 
       </div>
 
       <article className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
+        <section className="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-900">Búsqueda en la enciclopedia</p>
+              <p className="text-sm text-gray-500">Resultados para «{query.trim()}»</p>
+            </div>
+            <div className="text-sm text-gray-500">
+              {searchLoading ? (
+                <span className="inline-flex items-center gap-2 text-gray-600">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Cargando resultados…
+                </span>
+              ) : searchError ? (
+                <span className="text-red-600">{searchError}</span>
+              ) : hasActiveSearch ? (
+                <span>{searchTotal ?? searchResults.length} resultados</span>
+              ) : (
+                <span>Escribe al menos {MIN_QUERY_LENGTH} caracteres para buscar</span>
+              )}
+            </div>
+          </div>
+
+          {searchError ? (
+            <p className="mt-4 text-sm text-red-600">{searchError}</p>
+          ) : (
+            <div className="mt-4 grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {!hasActiveSearch ? (
+                <p className="text-sm leading-relaxed text-gray-600">Escribe al menos {MIN_QUERY_LENGTH} caracteres para buscar en la enciclopedia.</p>
+              ) : searchLoading ? null : searchResults.length === 0 ? (
+                <p className="text-sm leading-relaxed text-gray-600">No se encontraron resultados para «{query.trim()}».</p>
+              ) : (
+                searchResults.map((result) => (
+                  <Link
+                    key={result.slug}
+                    href={`/enciclopedia/${result.slug}`}
+                    className="group flex h-full flex-col rounded-2xl border border-gray-200/90 bg-white p-5 shadow-sm transition-all hover:border-[#B88A44]/35 hover:shadow-md"
+                  >
+                    <div className="mb-3 flex items-start gap-3">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#8B2942]/10 text-[#8B2942]">
+                        <Castle className="h-5 w-5" strokeWidth={1.5} aria-hidden />
+                      </span>
+                      <div className="min-w-0">
+                        <h3 className="font-display text-lg font-bold text-gray-900 group-hover:text-[#B88A44]">{result.title}</h3>
+                        <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">{result.kind}</p>
+                      </div>
+                    </div>
+                    <p className="line-clamp-3 flex-1 text-sm leading-relaxed text-gray-600">{result.summary}</p>
+                    <span className="mt-4 text-sm font-semibold text-[#B88A44] group-hover:underline">Leer artículo →</span>
+                  </Link>
+                ))
+              )}
+            </div>
+          )}
+        </section>
+
         <div className="rounded-2xl border border-gray-200/80 bg-white px-5 py-8 shadow-sm sm:px-10 sm:py-10">
           <header className="mb-8 border-b border-gray-100 pb-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
@@ -533,26 +725,27 @@ export default function EncyclopediaArticleClient({ entry, allEntries }: Props) 
             ))}
           </Accordion>
 
-          {entry.seeAlso && entry.seeAlso.length > 0 && (
-            <div className="mt-8 border-t border-gray-100 pt-8">
-              <h2 className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-gray-800">
-                <Lightbulb className="h-4 w-4 text-[#B88A44]" aria-hidden />
-                Ver también
-              </h2>
-              <ul className="flex flex-wrap gap-2">
-                {entry.seeAlso.map((r) => (
-                  <li key={r.slug}>
-                    <Link
-                      href={`/enciclopedia/${r.slug}`}
-                      className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm font-semibold text-blue-700 transition-colors hover:border-[#B88A44]/40 hover:bg-amber-50/60 hover:text-[#B88A44]"
-                    >
-                      {r.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {relatedSlot ??
+            (entry.seeAlso && entry.seeAlso.length > 0 && (
+              <div className="mt-8 border-t border-gray-100 pt-8">
+                <h2 className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.12em] text-gray-800">
+                  <Lightbulb className="h-4 w-4 text-[#B88A44]" aria-hidden />
+                  Ver también
+                </h2>
+                <ul className="flex flex-wrap gap-2">
+                  {entry.seeAlso.map((r) => (
+                    <li key={r.slug}>
+                      <Link
+                        href={`/enciclopedia/${r.slug}`}
+                        className="inline-flex rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-sm font-semibold text-blue-700 transition-colors hover:border-[#B88A44]/40 hover:bg-amber-50/60 hover:text-[#B88A44]"
+                      >
+                        {r.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
         </div>
 
         <p className="mt-6 text-center text-sm text-gray-500">

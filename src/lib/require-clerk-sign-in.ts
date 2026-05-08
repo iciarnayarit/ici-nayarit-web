@@ -1,4 +1,4 @@
-type RedirectToSignInFn = (opts?: {
+export type RedirectToSignInFn = (opts?: {
   signInFallbackRedirectUrl?: string | null;
   redirectUrl?: string | null;
 }) => Promise<unknown>;

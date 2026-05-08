@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Bookmark, MapPin, Plus, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/app/hooks/use-toast';
 import { templeDirectory } from '@/lib/temple-directory';
 import { templeLocations } from '@/app/lib/temples-data';
@@ -16,6 +17,8 @@ import {
   SAVED_TEMPLES_CHANGED_EVENT,
   SAVED_TEMPLES_STORAGE_KEY,
 } from '@/lib/saved-temples';
+import { normalizeSearchText, fuzzySimilarity } from '@/lib/fuzzy-search';
+import { useDebouncedValue } from '@/app/hooks/use-debounced-value';
 
 function AddTempleDirectoryCard() {
   return (
@@ -37,6 +40,11 @@ function AddTempleDirectoryCard() {
 export default function DashboardSavedTemples() {
   const [slugs, setSlugs] = useState<string[]>([]);
   const [localNames, setLocalNames] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 220);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
 
   const refresh = useCallback(() => {
@@ -61,6 +69,28 @@ export default function DashboardSavedTemples() {
     };
   }, [refresh]);
 
+  useEffect(() => {
+    const queryInUrl = searchParams.get('q') ?? '';
+    if (queryInUrl !== searchQuery) {
+      setSearchQuery(queryInUrl);
+    }
+  }, [searchParams, searchQuery]);
+
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams.toString());
+    const normalized = debouncedSearchQuery.trim();
+    const current = searchParams.get('q') ?? '';
+    if (normalized.length >= 2) {
+      if (current === normalized) return;
+      next.set('q', normalized);
+    } else {
+      if (!current) return;
+      next.delete('q');
+    }
+    const queryString = next.toString();
+    router.replace(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+  }, [debouncedSearchQuery, pathname, router, searchParams]);
+
   const resolved = useMemo(() => {
     const map = new Map(templeDirectory.map(t => [t.slug, t]));
     return slugs.map(s => map.get(s)).filter((t): t is NonNullable<typeof t> => t != null);
@@ -71,7 +101,41 @@ export default function DashboardSavedTemples() {
     return localNames.map(n => map.get(n)).filter((t): t is NonNullable<typeof t> => t != null);
   }, [localNames]);
 
+  const filteredResolved = useMemo(() => {
+    const normalizedQuery = normalizeSearchText(searchQuery);
+    if (normalizedQuery.length < 2) return resolved;
+    return resolved.filter(temple => {
+      const name = normalizeSearchText(temple.name);
+      const location = normalizeSearchText(temple.location);
+      return (
+        name.includes(normalizedQuery) ||
+        location.includes(normalizedQuery) ||
+        fuzzySimilarity(name, normalizedQuery) >= 0.72 ||
+        fuzzySimilarity(location, normalizedQuery) >= 0.72
+      );
+    });
+  }, [resolved, searchQuery]);
+
+  const filteredResolvedLocal = useMemo(() => {
+    const normalizedQuery = normalizeSearchText(searchQuery);
+    if (normalizedQuery.length < 2) return resolvedLocal;
+    return resolvedLocal.filter(temple => {
+      const name = normalizeSearchText(temple.nameKey);
+      const address = normalizeSearchText(temple.addressKey);
+      const municipality = normalizeSearchText(temple.municipality);
+      return (
+        name.includes(normalizedQuery) ||
+        address.includes(normalizedQuery) ||
+        municipality.includes(normalizedQuery) ||
+        fuzzySimilarity(name, normalizedQuery) >= 0.72 ||
+        fuzzySimilarity(address, normalizedQuery) >= 0.72 ||
+        fuzzySimilarity(municipality, normalizedQuery) >= 0.72
+      );
+    });
+  }, [resolvedLocal, searchQuery]);
+
   const totalCount = resolved.length + resolvedLocal.length;
+  const filteredTotalCount = filteredResolved.length + filteredResolvedLocal.length;
 
   const removeSlug = (slug: string) => {
     const next = slugs.filter(s => s !== slug);
@@ -114,8 +178,24 @@ export default function DashboardSavedTemples() {
         </span>
       </div>
 
+      <div className="rounded-xl border border-gray-200 bg-white/95 p-3 backdrop-blur">
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Buscar templo guardado por nombre, municipio o ubicación..."
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
+        />
+      </div>
+
+      {searchQuery.trim().length >= 2 && filteredTotalCount === 0 ? (
+        <p className="rounded-xl border border-dashed border-gray-300 bg-white p-4 text-center text-sm text-gray-500">
+          No se encontraron templos guardados para esa búsqueda.
+        </p>
+      ) : null}
+
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {resolvedLocal.map(temple => (
+        {filteredResolvedLocal.map(temple => (
           <article
             key={`local-${temple.nameKey}`}
             className="flex flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"
@@ -154,7 +234,7 @@ export default function DashboardSavedTemples() {
             </div>
           </article>
         ))}
-        {resolved.map(temple => (
+        {filteredResolved.map(temple => (
           <article
             key={temple.slug}
             className="flex flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"

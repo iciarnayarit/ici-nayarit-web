@@ -4,7 +4,10 @@ export type EngagementPointsAction =
   | 'bible_highlight'
   | 'bible_note_create'
   | 'bible_image_generate'
-  | 'bible_image_create';
+  | 'bible_image_create'
+  | 'announcement_read'
+  | 'resource_read'
+  | 'resource_download';
 
 export const ENGAGEMENT_POINTS_BY_ACTION: Record<EngagementPointsAction, number> = {
   bible_read: 1,
@@ -13,6 +16,9 @@ export const ENGAGEMENT_POINTS_BY_ACTION: Record<EngagementPointsAction, number>
   bible_note_create: 4,
   bible_image_generate: 5,
   bible_image_create: 6,
+  announcement_read: 1,
+  resource_read: 1,
+  resource_download: 3,
 };
 
 export const ENGAGEMENT_POINTS_CHANGED_EVENT = 'iciar-engagement-points-changed';

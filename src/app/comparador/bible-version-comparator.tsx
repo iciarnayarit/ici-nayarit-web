@@ -25,6 +25,8 @@ import { Switch } from '@/app/components/ui/switch';
 import { cn } from '@/app/lib/utils';
 import { compareVerseWords } from '@/lib/bible-verse-word-diff';
 import { grantEngagementPoints } from '@/lib/engagement-points';
+import { useDebouncedValue } from '@/app/hooks/use-debounced-value';
+import { useThrottledCallback } from '@/app/hooks/use-throttled-callback';
 
 const SYNC_KEY = 'iciar-bible-comparator-sync-scroll';
 
@@ -174,6 +176,7 @@ export default function BibleVersionComparator() {
   const [lookups, setLookups] = useState<Partial<Record<VersionId, Record<string, BibleBookData>>>>({});
   const [syncScroll, setSyncScroll] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 250);
   const [savedVerses, setSavedVerses] = useState<{ text: string; reference: string; source?: string }[]>([]);
 
   useEffect(() => {
@@ -252,8 +255,8 @@ export default function BibleVersionComparator() {
   }, []);
 
   useEffect(() => {
-    parseAndNavigate(searchQuery);
-  }, [searchQuery, parseAndNavigate]);
+    parseAndNavigate(debouncedSearchQuery);
+  }, [debouncedSearchQuery, parseAndNavigate]);
 
   useEffect(() => {
     let cancelled = false;
@@ -299,7 +302,7 @@ export default function BibleVersionComparator() {
   }, [loading, verseCount, bookKey, chapter, selectedIds, authLoaded, isSignedIn]);
 
   const matchingVerses = useMemo(() => {
-    const rawQuery = searchQuery.trim();
+    const rawQuery = debouncedSearchQuery.trim();
     if (!rawQuery) {
       return Array.from({ length: verseCount }, (_, i) => i);
     }
@@ -345,7 +348,7 @@ export default function BibleVersionComparator() {
       if (found) matches.push(vi);
     }
     return matches;
-  }, [searchQuery, verseCount, lookups, selectedIds, bookKey, chapter]);
+  }, [debouncedSearchQuery, verseCount, lookups, selectedIds, bookKey, chapter]);
 
   const syncFrom = useCallback(
     (source: HTMLDivElement | null) => {
@@ -362,6 +365,7 @@ export default function BibleVersionComparator() {
     },
     [syncScroll]
   );
+  const throttledSyncFrom = useThrottledCallback(syncFrom, 45);
 
   const removeVersion = (id: VersionId) => {
     setSelectedIds(prev => (prev.length <= 1 ? prev : prev.filter(x => x !== id)));
@@ -689,7 +693,7 @@ export default function BibleVersionComparator() {
                   <div
                     ref={numColRef}
                     className="w-14 shrink-0 overflow-y-auto border-r border-gray-100 bg-gray-50/90 py-0"
-                    onScroll={e => syncFrom(e.currentTarget)}
+                    onScroll={e => throttledSyncFrom(e.currentTarget)}
                   >
                     {matchingVerses.length === 0 ? (
                       <div className="p-4 text-center text-xs text-gray-400">—</div>
@@ -711,7 +715,7 @@ export default function BibleVersionComparator() {
                         colRefs.current[ci] = el;
                       }}
                       className="min-w-[12rem] flex-1 overflow-y-auto border-l border-gray-100 bg-white py-0 xl:min-w-[14rem]"
-                      onScroll={e => syncFrom(e.currentTarget)}
+                      onScroll={e => throttledSyncFrom(e.currentTarget)}
                     >
                       {matchingVerses.length === 0 ? (
                         <div className="p-4 text-center text-sm text-gray-400">Sin coincidencias</div>

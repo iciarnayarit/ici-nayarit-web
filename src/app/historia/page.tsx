@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, BookOpen, Map, Clock, Users } from 'lucide-react';
 import Footer from '@/app/components/footer';
+import EngagementPageTracker from '@/app/components/engagement-page-tracker';
 
 const highlights = [
   { year: '1920', event: 'Primeras reuniones en la Colonia La Ladrillera, Ciudad de México.' },
@@ -41,6 +42,7 @@ const sections = [
 export default function HistoriaPage() {
   return (
     <main className="min-h-screen bg-white">
+      <EngagementPageTracker dedupeKey="historia-read" />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-[#1a1209] py-24 md:py-36 px-4">

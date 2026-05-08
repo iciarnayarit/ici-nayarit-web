@@ -4,7 +4,11 @@ import { z } from 'zod';
 import { getMongoDb } from '@/lib/mongodb';
 import { normalizeMemberEmail } from '@/lib/members-email-lookup';
 import { stableMergeSort } from '@/lib/perf-algorithms';
+import { getSharedCache, setSharedCache } from '@/lib/ram-cache';
 import { triviaBasePointsByDifficulty, TRIVIA_TOPICS } from '@/lib/trivia-topics';
+import { consumeLeakyBucket, getClientIpFromHeaders } from '@/lib/rate-limit';
+import { logRateLimitHit } from '@/lib/rate-limit-telemetry';
+import { buildRateLimit429Headers, buildRateLimitPolicy } from '@/lib/rate-limit-headers';
 
 type RankingUser = {
   displayName: string;
@@ -120,9 +124,25 @@ async function loadOrBuildDailyRanking(forceRebuild = false) {
 
   const tz = process.env.TRIVIA_RANKING_TIMEZONE?.trim() || 'America/Mazatlan';
   const todayKey = dateKeyInTimezone(new Date(), tz);
+  const ramCacheKey = `api:trivia-ranking:daily:${todayKey}`;
+  if (!forceRebuild) {
+    const ramCached = await getSharedCache<{
+      _id: string;
+      dateKey: string;
+      timezone: string;
+      generatedAt: Date;
+      totalUsers: number;
+      topUsers: Array<{ rank: number; clerkUserId: string; email: string; displayName: string; title: string; points: number }>;
+      top20CutoffPoints: number;
+      allUsers: Array<{ rank: number; clerkUserId: string; email: string; displayName: string; title: string; points: number }>;
+    }>(ramCacheKey);
+    if (ramCached) return ramCached;
+  }
 
   const existing = await cacheColl.findOne({ _id: todayKey });
-  if (existing && !forceRebuild) return existing;
+  if (existing && !forceRebuild) {
+    return setSharedCache(ramCacheKey, existing, 60 * 1000);
+  }
 
   const rankingDocs = await rankingColl
     .find(
@@ -196,7 +216,7 @@ async function loadOrBuildDailyRanking(forceRebuild = false) {
   };
 
   await cacheColl.updateOne({ _id: todayKey }, { $set: payload }, { upsert: true });
-  return payload;
+  return setSharedCache(ramCacheKey, payload, 60 * 1000);
 }
 
 function viewerPositionFromDailyRanking(input: {
@@ -295,6 +315,40 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ ok: false, reason: 'unauthenticated' }, { status: 401 });
+    }
+
+    const ip = getClientIpFromHeaders(req.headers);
+    const policy = buildRateLimitPolicy({
+      kind: 'leaky-bucket',
+      capacity: 15,
+      leakRatePerSecond: 0.2,
+    });
+    const rate = consumeLeakyBucket({
+      key: `api:trivia-ranking:${userId}:${ip}`,
+      capacity: 15,
+      leakRatePerSecond: 0.2,
+    });
+    if (!rate.allowed) {
+      logRateLimitHit({
+        endpoint: '/api/trivia-ranking',
+        key: `${userId}:${ip}`,
+        retryAfterSeconds: rate.retryAfterSeconds,
+        meta: {
+          policy,
+          remaining: rate.remaining,
+        },
+      });
+      return NextResponse.json(
+        { ok: false, error: 'Demasiados intentos consecutivos. Espera un momento para continuar.' },
+        {
+          status: 429,
+          headers: buildRateLimit429Headers({
+            retryAfterSeconds: rate.retryAfterSeconds,
+            remaining: rate.remaining,
+            policy,
+          }),
+        }
+      );
     }
 
     let body: unknown;

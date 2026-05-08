@@ -1,50 +1,19 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Footer from '@/app/components/footer';
-import CommentaryChapterReader from '@/app/comentarios/[id]/[book]/[chapter]/commentary-chapter-reader';
-import { bookOrder } from '@/lib/bible-data';
+import CommentaryChapterContentSlot from '@/app/comentarios/[id]/[book]/[chapter]/commentary-chapter-content-slot';
+import CommentaryChapterShell from '@/app/comentarios/[id]/[book]/[chapter]/commentary-chapter-shell';
 import {
   commentaryAuthorShortName,
   fetchCommentaryChapterJson,
-  helloAoChapterApiPathToInternal,
 } from '@/lib/helloao-commentaries';
-import { loadFullBibleLookup, isValidReadingPlanVersionId, VersionId, VERSIONS } from '@/lib/bible-versions';
-import { usfmToSpanishBibleDataKey } from '@/lib/helloao-usfm-to-spanish-key';
-import type { BibleBookData } from '@/lib/bible-data';
+import { isValidReadingPlanVersionId } from '@/lib/bible-versions';
 
 type Props = {
   params: Promise<{ id: string; book: string; chapter: string }>;
   searchParams: Promise<{ version?: string }>;
 };
-
-function bibliaQueryBookName(spanishKey: string | null): string {
-  if (!spanishKey) return '';
-  const found = bookOrder.find(b => b.toLowerCase() === spanishKey);
-  return found ?? spanishKey;
-}
-
-function normalizeBookKey(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/^s\.\s*/i, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function resolveBookFromLookup(
-  lookup: Record<string, BibleBookData>,
-  spanishKey: string | null
-): BibleBookData | null {
-  if (!spanishKey) return null;
-  const exact = lookup[spanishKey];
-  if (exact) return exact;
-
-  const target = normalizeBookKey(spanishKey);
-  const matchedKey = Object.keys(lookup).find(key => normalizeBookKey(key) === target);
-  return matchedKey ? lookup[matchedKey] ?? null : null;
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id, book, chapter } = await params;
@@ -66,70 +35,18 @@ export default async function CommentaryChapterPage({ params, searchParams }: Pr
   const sParams = await searchParams;
   const ch = parseInt(chapter, 10);
   if (!Number.isFinite(ch) || ch < 1) notFound();
-
-  const data = await fetchCommentaryChapterJson(id, book, ch);
-  if (!data) notFound();
-
-  const versionParam = sParams.version || 'rvr';
-  const versionId: VersionId = isValidReadingPlanVersionId(versionParam) ? versionParam : 'rvr';
-
-  const usfmBookId = data.book.id || book;
-  const spanishKey = usfmToSpanishBibleDataKey(usfmBookId);
-  let scriptureVerses: string[] = [];
-  if (spanishKey) {
-    try {
-      const lookup = await loadFullBibleLookup(versionId);
-      const bookData = resolveBookFromLookup(lookup, spanishKey);
-      scriptureVerses = bookData?.chapters[ch - 1] ?? [];
-    } catch (error) {
-      // En producción la lectura local de JSON puede fallar en runtime; no debe romper la vista del comentario.
-      console.error(
-        '[comentarios] No se pudo cargar texto bíblico local',
-        { commentaryId: id, book, chapter: ch, versionId },
-        error
-      );
-      scriptureVerses = [];
-    }
-  }
-
-  const intro = (data.book.introduction ?? '').replace(/\s+/g, ' ').trim();
-  const bookIntroductionTeaser = intro.length > 400 ? `${intro.slice(0, 397)}…` : intro || data.commentary.englishName;
-
-  const chIntro = (data.chapter.introduction ?? '').replace(/\s+/g, ' ').trim();
-  const chapterIntroductionTeaser = chIntro
-    ? chIntro.length > 220
-      ? `${chIntro.slice(0, 217)}…`
-      : chIntro
-    : null;
-
-  const commentaryBlocks = data.chapter.content
-    .filter((x): x is { type: 'verse'; number: number; content: string[] } => x.type === 'verse' && Array.isArray(x.content))
-    .map(x => ({
-      verseNumber: x.number,
-      text: x.content.join('\n\n'),
-    }));
-
-  const prevHref = helloAoChapterApiPathToInternal(data.previousChapterApiLink);
-  const nextHref = helloAoChapterApiPathToInternal(data.nextChapterApiLink);
+  const versionParam = isValidReadingPlanVersionId(sParams.version || 'rvr') ? sParams.version : 'rvr';
 
   return (
     <>
-      <CommentaryChapterReader
-        commentaryId={id}
-        bookUsfm={book.toUpperCase()}
-        chapterNumber={ch}
-        commentaryName={data.commentary.name}
-        bookDisplayName={data.book.commonName ?? data.book.name}
-        bookIntroductionTeaser={bookIntroductionTeaser}
-        chapterIntroductionTeaser={chapterIntroductionTeaser}
-        scriptureVerses={scriptureVerses}
-        bibliaBookQueryName={bibliaQueryBookName(spanishKey)}
-        commentaryBlocks={commentaryBlocks}
-        prevHref={prevHref}
-        nextHref={nextHref}
-        currentVersionId={versionId}
-        bibleVersions={VERSIONS}
-      />
+      <Suspense fallback={<CommentaryChapterShell book={book} chapter={ch} />}>
+        <CommentaryChapterContentSlot
+          commentaryId={id}
+          book={book}
+          chapter={ch}
+          versionParam={versionParam}
+        />
+      </Suspense>
       <Footer />
     </>
   );

@@ -19,6 +19,7 @@ type DbpAlphabetResponse = {
  */
 export async function GET(req: NextRequest) {
   const upstreamRes = await proxyDbpGet(req, ['alphabets']);
+  const circuitStateHeader = upstreamRes.headers.get('X-Circuit-State') ?? '';
 
   if (!upstreamRes.ok) return upstreamRes;
 
@@ -34,12 +35,20 @@ export async function GET(req: NextRequest) {
         }))
       : [];
 
-    return NextResponse.json({ data });
+    return NextResponse.json(
+      { data },
+      {
+        headers: circuitStateHeader ? { 'X-Circuit-State': circuitStateHeader } : undefined,
+      }
+    );
   } catch (error) {
     console.error('[api/dbp/alphabets] Respuesta inválida', error);
     return NextResponse.json(
       { error: 'Respuesta inválida del servicio DBP.' },
-      { status: 502 }
+      {
+        status: 502,
+        headers: circuitStateHeader ? { 'X-Circuit-State': circuitStateHeader } : undefined,
+      }
     );
   }
 }

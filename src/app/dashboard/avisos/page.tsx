@@ -1,8 +1,33 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
-import DashboardSavedAvisos from '@/app/dashboard/avisos/dashboard-saved-avisos';
+import { MountOnView } from '@/app/components/mount-on-view';
+
+const AvisosRecommendationsPanel = dynamic(() => import('./avisos-recommendations-panel'), {
+  loading: () => (
+    <div className="mx-auto mb-6 w-full max-w-7xl px-4 sm:px-6 md:px-10">
+      <div className="min-h-[160px] animate-pulse rounded-2xl border border-gray-100 bg-white shadow-sm" />
+    </div>
+  ),
+});
+
+const DashboardSavedAvisos = dynamic(() => import('./dashboard-saved-avisos'), {
+  loading: () => (
+    <div className="mx-auto mt-4 max-w-7xl px-4 sm:mt-6 sm:px-6 md:px-10">
+      <div className="mb-4 h-11 animate-pulse rounded-xl bg-white/80 shadow-sm sm:max-w-xs" />
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={`avisos-saved-skel-${i}`}
+            className="min-h-[320px] animate-pulse rounded-[20px] border border-gray-100 bg-white shadow-sm"
+          />
+        ))}
+      </div>
+    </div>
+  ),
+});
 
 export default function AvisosGuardadosPage() {
   return (
@@ -24,7 +49,33 @@ export default function AvisosGuardadosPage() {
         </p>
       </header>
 
-      <DashboardSavedAvisos />
+      <MountOnView
+        fallback={
+          <div className="mx-auto mt-4 max-w-7xl px-4 sm:mt-6 sm:px-6 md:px-10">
+            <div className="mb-4 h-11 animate-pulse rounded-xl bg-white/80 shadow-sm sm:max-w-xs" />
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={`avisos-saved-view-skel-${i}`}
+                  className="min-h-[320px] animate-pulse rounded-[20px] border border-gray-100 bg-white shadow-sm"
+                />
+              ))}
+            </div>
+          </div>
+        }
+      >
+        <DashboardSavedAvisos />
+      </MountOnView>
+
+      <MountOnView
+        fallback={
+          <div className="mx-auto mb-6 w-full max-w-7xl px-4 sm:px-6 md:px-10">
+            <div className="min-h-[160px] animate-pulse rounded-2xl border border-gray-100 bg-white shadow-sm" />
+          </div>
+        }
+      >
+        <AvisosRecommendationsPanel />
+      </MountOnView>
     </div>
   );
 }

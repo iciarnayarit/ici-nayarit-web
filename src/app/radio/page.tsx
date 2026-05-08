@@ -20,6 +20,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
+import { useAuth } from '@clerk/nextjs';
+import { grantEngagementPoints } from '@/lib/engagement-points';
 
 const InfoCard = ({ icon, title, description, href }: { icon: React.ReactNode, title: string, description: string, href: string }) => (
   <Link href={href} className="block bg-[#FBF5E9] p-4 sm:p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
@@ -33,6 +35,7 @@ const InfoCard = ({ icon, title, description, href }: { icon: React.ReactNode, t
 
 export default function RadioPage() {
   const { isPlaying, togglePlayPause, audioRef } = useAudio();
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const [isMuted, setIsMuted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -117,6 +120,15 @@ export default function RadioPage() {
     }
   }, [isPlaying, hasStarted]);
 
+  useEffect(() => {
+    if (!isPlaying) return;
+    void grantEngagementPoints({
+      action: 'bible_read',
+      dedupeKey: `radio-listen:${new Date().toISOString().slice(0, 10)}`,
+      isSignedIn: authLoaded && isSignedIn === true,
+    });
+  }, [isPlaying, authLoaded, isSignedIn]);
+
   const pingColor = isPlaying ? "bg-green-400" : hasStarted ? "bg-orange-400" : "bg-red-400";
   const staticColor = isPlaying ? "bg-green-500" : hasStarted ? "bg-orange-500" : "bg-red-500";
 
@@ -196,6 +208,9 @@ export default function RadioPage() {
             src="https://i.imgur.com/m7jgIpR.jpeg"
             alt="Microphone"
             fill
+            priority
+            fetchPriority="high"
+            sizes="(max-width: 1024px) 100vw, 1024px"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-black/50 flex flex-col justify-end p-4 sm:p-8">

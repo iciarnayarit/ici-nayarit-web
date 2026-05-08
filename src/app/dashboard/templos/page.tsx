@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
 import DashboardSavedTemples from '@/app/dashboard/templos/dashboard-saved-temples';
+import EngagementPageTracker from '@/app/components/engagement-page-tracker';
 
 export default function TemplosDirectoryPage() {
   return (
     <div className="relative min-h-screen w-full bg-[#F8F9FA] pb-[max(5rem,env(safe-area-inset-bottom))] font-sans">
+      <EngagementPageTracker dedupeKey="dashboard-templos-read" />
       <div className="mx-auto mb-8 block max-w-7xl px-4 pt-6 sm:mb-10 sm:px-6 sm:pt-8 md:px-10">
         <DashboardBibliaReadingToolbar />
         <div className="flex flex-col justify-between gap-5 sm:gap-6 md:flex-row md:items-end">

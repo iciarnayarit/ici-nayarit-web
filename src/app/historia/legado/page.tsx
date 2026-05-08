@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import Footer from '@/app/components/footer';
+import EngagementPageTracker from '@/app/components/engagement-page-tracker';
 
 const decades = [
   {
@@ -69,6 +70,7 @@ const pastors = [
 export default function LegadoPage() {
   return (
     <main className="min-h-screen bg-white">
+      <EngagementPageTracker dedupeKey="historia-legado-read" />
 
       {/* Header */}
       <section className="bg-gradient-to-r from-gray-900 to-gray-800 py-16 px-4">

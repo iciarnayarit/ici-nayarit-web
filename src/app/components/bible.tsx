@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import { toPng } from 'html-to-image';
-import { useEffect, useLayoutEffect, useState, useRef, useCallback, type Dispatch, type SetStateAction } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useState, useRef, useCallback, type Dispatch, type SetStateAction } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { takePendingReturnAfterVerseSave, SAVED_VERSES_CHANGED_EVENT } from '@/lib/saved-verses';
 import {
@@ -45,10 +45,15 @@ import {
 } from '@/lib/bible-versions';
 import { loadPublicBibleJson } from '@/lib/load-public-bible-json';
 import { getHuicholJsonPathForSpanishBook } from '@/lib/bible-huichol-paths';
-import { huicholKaraokeFromProgress, tokenizeVerseWords } from '@/lib/huichol-audio-verse-sync';
+import { huicholKaraokeFromProgress } from '@/lib/huichol-audio-verse-sync';
 import { HuicholReaderInviteBanner } from '@/app/components/huichol-reader-invite-banner';
 import { HuicholStudioAudioBar } from '@/app/components/huichol-studio-audio-bar';
 import { HuicholWordPracticeDialog } from '@/app/components/huichol-word-practice-dialog';
+import {
+    MemoVerseRow,
+    type BibleVerseRowApi,
+    type BibleVerseToolbarActions,
+} from '@/app/components/bible-verse-row';
 import { stripWordForSpeech } from '@/lib/huichol-word-speech';
 import { spanishBibleDataKeyToUsfm } from '@/lib/helloao-usfm-to-spanish-key';
 import { canonicalizeBookName } from '@/lib/bible-reference-parser';
@@ -572,6 +577,11 @@ function BibleTypographyPanel({
     );
 }
 
+const MemoGridOverlay = memo(GridOverlay);
+const MemoDraggableImage = memo(DraggableImage);
+const MemoDraggableStudioFreeText = memo(DraggableStudioFreeText);
+const MemoBibleTypographyPanel = memo(BibleTypographyPanel);
+
 export default function Bible() {
     const [selectedVersion, setSelectedVersion] = useState<VersionId>(DEFAULT_BIBLE_VERSION_ID);
     const [selectedBook, setSelectedBook] = useState('Génesis');
@@ -593,6 +603,8 @@ export default function Bible() {
     const lastScrolledHuicholAudioVerseRef = useRef<number | null>(null);
     const skipNextVerseParagraphClickRef = useRef(false);
     const huicholVerseParagraphClickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const verseRowApiRef = useRef<BibleVerseRowApi | null>(null);
+    const verseToolbarActionsRef = useRef<BibleVerseToolbarActions | null>(null);
     /** Primer versículo a mostrar tras abrir ?book=&chapter=&verse= (scroll tras cargar el capítulo). */
     const pendingUrlVerseScrollRef = useRef<number | null>(null);
     /** Evita que estado→URL pise la query antes de hidratar estado desde la URL actual. */
@@ -768,19 +780,41 @@ export default function Bible() {
 
     // El versículo activo es el último que se seleccionó (para notas y studio)
     const activeVerse = selectedVerses.length > 0 ? selectedVerses[selectedVerses.length - 1] : null;
+    const lastSelectedVerse = selectedVerses.length > 0 ? selectedVerses[selectedVerses.length - 1] : null;
+    const selectedVerseSet = useMemo(() => new Set(selectedVerses), [selectedVerses]);
+    const sortedSelectedVerses = useMemo(
+        () => [...selectedVerses].sort((a, b) => a - b),
+        [selectedVerses]
+    );
 
     /** Título visible del libro (Huichol: `book.name` del JSON; resto: nombre en español de la UI). */
     const readerBookTitle =
         selectedVersion === 'huichol' && huicholNativeBookName ? huicholNativeBookName : selectedBook;
 
     // Texto combinado de todos los versículos seleccionados (ordenados)
-    const selectedVersesText = [...selectedVerses].sort((a, b) => a - b).map(v => verses[v - 1]).join(' ');
-    const selectedVersesRef = (() => {
-        const s = [...selectedVerses].sort((a, b) => a - b);
-        if (s.length === 0) return `${readerBookTitle} ${selectedChapter}`;
-        if (s.length === 1) return `${readerBookTitle} ${selectedChapter}:${s[0]}`;
-        return `${readerBookTitle} ${selectedChapter}:${s[0]}-${s[s.length - 1]}`;
-    })();
+    const selectedVersesText = useMemo(
+        () => sortedSelectedVerses.map(v => verses[v - 1]).join(' '),
+        [sortedSelectedVerses, verses]
+    );
+    const selectedVersesRef = useMemo(() => {
+        if (sortedSelectedVerses.length === 0) return `${readerBookTitle} ${selectedChapter}`;
+        if (sortedSelectedVerses.length === 1) return `${readerBookTitle} ${selectedChapter}:${sortedSelectedVerses[0]}`;
+        return `${readerBookTitle} ${selectedChapter}:${sortedSelectedVerses[0]}-${sortedSelectedVerses[sortedSelectedVerses.length - 1]}`;
+    }, [readerBookTitle, selectedChapter, sortedSelectedVerses]);
+    const selectedVersionMeta = useMemo(
+        () => VERSIONS.find(v => v.id === selectedVersion) ?? null,
+        [selectedVersion]
+    );
+    const selectedVersionLangBadgeClass = useMemo(() => {
+        const lang = selectedVersionMeta?.lang ?? 'ES';
+        if (lang === 'ES') return 'bg-amber-100 text-amber-700';
+        if (lang === 'EN') return 'bg-blue-100 text-blue-700';
+        if (lang === 'PT') return 'bg-green-100 text-green-700';
+        if (lang === 'ZH' || lang === 'KO') return 'bg-red-100 text-red-700';
+        if (lang === 'RU') return 'bg-indigo-100 text-indigo-700';
+        if (lang === 'HCH') return 'bg-orange-100 text-orange-700';
+        return 'bg-gray-100 text-gray-600';
+    }, [selectedVersionMeta?.lang]);
 
     const STUDIO_WEBSITE_DEFAULT = 'www.iciarnayarit.com';
     const studioRefDisplay = studioCanvasTextOverride.ref ?? selectedVersesRef;
@@ -1036,7 +1070,7 @@ export default function Bible() {
             color: resolveColor(elementStyles[el].color),
         };
         return (
-            <DraggableStudioFreeText
+            <MemoDraggableStudioFreeText
                 key={el}
                 className={isVerseMultiline ? `${options.rootClassName ?? ''} mx-auto !max-w-none` : options.rootClassName}
                 hideGrip={studioExporting}
@@ -1194,7 +1228,7 @@ export default function Bible() {
                         </p>
                     </div>
                 )}
-            </DraggableStudioFreeText>
+            </MemoDraggableStudioFreeText>
         );
     };
 
@@ -1210,7 +1244,7 @@ export default function Bible() {
                     color: resolveColor(ov.color),
                 };
                 return (
-                    <DraggableStudioFreeText
+                    <MemoDraggableStudioFreeText
                         key={ov.id}
                         hideGrip={studioExporting}
                         position={ov.position}
@@ -1289,11 +1323,11 @@ export default function Bible() {
                                 </p>
                             </div>
                         )}
-                    </DraggableStudioFreeText>
+                    </MemoDraggableStudioFreeText>
                 );
             }
             return (
-                <DraggableImage
+                <MemoDraggableImage
                     key={ov.id}
                     src={ov.imageSrc}
                     position={ov.position}
@@ -2281,6 +2315,73 @@ export default function Bible() {
         }
     };
 
+    verseRowApiRef.current = {
+        skipNextVerseParagraphClickRef,
+        flushHuicholVerseParagraphClickTimer,
+        queueHuicholVerseParagraphClick,
+        handleVerseClick,
+        onVerseParagraphClick: (v) => {
+            if (skipNextVerseParagraphClickRef.current) return;
+            if (selectedVersion === 'huichol') queueHuicholVerseParagraphClick(v);
+            else handleVerseClick(v);
+        },
+        onVerseSupClick: (v) => {
+            flushHuicholVerseParagraphClickTimer();
+            handleVerseClick(v);
+        },
+        onHuicholWordSpanClick: (vNum, defaultHighlightColor) => {
+            flushHuicholVerseParagraphClickTimer();
+            setSelectedVerses([vNum]);
+            setIsToolbarOpen(true);
+            setShowColorPicker(false);
+            const refKey = `${selectedBook} ${selectedChapter}:${vNum}`;
+            setSelectedHighlightColor(highlightedVerses[refKey] || defaultHighlightColor);
+        },
+        onHuicholWordSpanDoubleClick: (vNum, raw) => {
+            const speech = stripWordForSpeech(raw);
+            if (!speech) return;
+            setHuicholWordPractice({
+                displayWord: raw.trim(),
+                speechText: speech,
+                reference: `${readerBookTitle} ${selectedChapter}:${vNum}`,
+            });
+        },
+        onHuicholParagraphMouseUp: (vNum, raw) => {
+            const speech = stripWordForSpeech(raw);
+            if (!speech) return;
+            skipNextVerseParagraphClickRef.current = true;
+            window.setTimeout(() => {
+                skipNextVerseParagraphClickRef.current = false;
+            }, 220);
+            setHuicholWordPractice({
+                displayWord: raw,
+                speechText: speech,
+                reference: `${readerBookTitle} ${selectedChapter}:${vNum}`,
+            });
+        },
+        readerBookTitle,
+        selectedBook,
+        selectedChapter,
+    };
+
+    verseToolbarActionsRef.current = {
+        authLoaded,
+        isSignedIn,
+        redirectToSignIn,
+        setShowColorPicker,
+        setSelectedHighlightColor,
+        selectedVerses,
+        selectedBook,
+        selectedChapter,
+        highlightedVerses,
+        setHighlightedVerses,
+        verses,
+        setIsNoteOpen,
+        openStudioForSocialImage,
+        handleBookmarkSelectedVerses,
+        handleShareVerse,
+    };
+
     return (
         <>
             <section
@@ -2440,7 +2541,7 @@ export default function Bible() {
                                                                             </button>
                                                                         </PopoverTrigger>
                                                                         <PopoverContent className="w-[min(100vw-1.5rem,20rem)] max-w-[calc(100vw-1.5rem)] p-4 sm:p-6 rounded-2xl shadow-2xl bg-white border border-gray-100 font-sans" align="end" sideOffset={8}>
-                                                                            <BibleTypographyPanel
+                                                                            <MemoBibleTypographyPanel
                                                                                 fontSize={fontSize}
                                                                                 setFontSize={setFontSize}
                                                                                 lineHeight={lineHeight}
@@ -2528,18 +2629,10 @@ export default function Bible() {
                                                     <div>
                                                         <h2 className={`text-[1.65rem] leading-tight sm:text-3xl md:text-[34px] font-bold font-sans tracking-tight mb-2 ${themeStyles.title}`}>{readerBookTitle} {selectedChapter}</h2>
                                                         <p className={`text-xs md:text-[13px] font-bold flex items-center gap-2 ${themeStyles.subtitle}`}>
-                                                            {VERSIONS.find(v => v.id === selectedVersion)?.label ?? DEFAULT_BIBLE_VERSION_LABEL}
-                                                            {(() => {
-                                                                const lang = VERSIONS.find(v => v.id === selectedVersion)?.lang ?? 'ES';
-                                                                const cls = lang === 'ES' ? 'bg-amber-100 text-amber-700' :
-                                                                    lang === 'EN' ? 'bg-blue-100 text-blue-700' :
-                                                                        lang === 'PT' ? 'bg-green-100 text-green-700' :
-                                                                            lang === 'ZH' || lang === 'KO' ? 'bg-red-100 text-red-700' :
-                                                                                lang === 'RU' ? 'bg-indigo-100 text-indigo-700' :
-                                                                                    lang === 'HCH' ? 'bg-orange-100 text-orange-700' :
-                                                                                        'bg-gray-100 text-gray-600';
-                                                                return <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${cls}`}>{lang}</span>;
-                                                            })()}
+                                                            {selectedVersionMeta?.label ?? DEFAULT_BIBLE_VERSION_LABEL}
+                                                            <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${selectedVersionLangBadgeClass}`}>
+                                                                {selectedVersionMeta?.lang ?? 'ES'}
+                                                            </span>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -2561,331 +2654,75 @@ export default function Bible() {
                                                         <p>Cargando...</p>
                                                     ) : verses.length > 0 ? (
                                                         verses.map((verse, index) => {
+                                                            const verseNumber = index + 1;
                                                             const sec = verseSectionTitles[index]?.trim() ?? '';
                                                             const prevSec =
                                                                 index > 0 ? (verseSectionTitles[index - 1]?.trim() ?? '') : '';
                                                             const showSectionTitle = Boolean(sec) && sec !== prevSec;
-                                                            const reference = `${selectedBook} ${selectedChapter}:${index + 1}`;
-                                                            const isSelected = selectedVerses.includes(index + 1);
-                                                            const isLastSelected = selectedVerses.length > 0 && selectedVerses[selectedVerses.length - 1] === index + 1;
-                                                            const isHighlighted = highlightedVerses[reference];
+                                                            const reference = `${selectedBook} ${selectedChapter}:${verseNumber}`;
+                                                            const isSelected = selectedVerseSet.has(verseNumber);
+                                                            const isLastSelected = lastSelectedVerse === verseNumber;
+                                                            const storedHighlightColorId = highlightedVerses[reference];
                                                             const isAudioFollowing =
                                                                 selectedVersion === 'huichol' &&
-                                                                huicholAudioPlaybackVerse === index + 1;
+                                                                huicholAudioPlaybackVerse === verseNumber;
                                                             const activeColorId = isSelected
                                                                 ? selectedHighlightColor
-                                                                : isHighlighted
-                                                                  ? isHighlighted
+                                                                : storedHighlightColorId
+                                                                  ? storedHighlightColorId
                                                                   : isAudioFollowing
                                                                     ? 'cyan'
                                                                     : undefined;
-
-                                                            const hlColors: Record<string, string> = {
-                                                                yellow: 'bg-[#FFF9D6] text-[#B88A44]',
-                                                                green: 'bg-[#E6F8F0] text-[#10B981]',
-                                                                blue: 'bg-[#EEF4FF] text-[#3B82F6]',
-                                                                pink: 'bg-[#FDF2F8] text-[#EC4899]',
-                                                                purple: 'bg-[#F5F3FF] text-[#8B5CF6]',
-                                                                orange: 'bg-[#FFF7ED] text-[#F97316]',
-                                                                red: 'bg-[#FEE2E2] text-[#DC2626]',
-                                                                cyan: 'bg-[#ECFEFF] text-[#0891B2]',
-                                                                teal: 'bg-[#CCFBF1] text-[#0D9488]',
-                                                                indigo: 'bg-[#EEF2FF] text-[#4F46E5]',
-                                                                slate: 'bg-[#F1F5F9] text-[#475569]',
-                                                            };
-
-                                                            const activeHlStyles = activeColorId ? hlColors[activeColorId] : '';
-                                                            const containerClasses =
-                                                                isSelected || isHighlighted || isAudioFollowing
-                                                                    ? `${activeHlStyles} px-4 py-3 -mx-4 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)]${
-                                                                          isAudioFollowing && !isSelected && !isHighlighted
-                                                                              ? ' ring-2 ring-[#B88A44]/45'
-                                                                              : ''
-                                                                      }`
-                                                                    : `${themeStyles.buttonHover} py-0.5 cursor-pointer`;
-
-                                                            return (
-                                                                <div
-                                                                    key={index}
-                                                                    id={`verse-${index + 1}`}
-                                                                    data-verse={index + 1}
-                                                                    className={`relative rounded-xl transition-all duration-200 ${isLastSelected ? 'z-40' : isAudioFollowing ? 'z-30' : ''} ${containerClasses}`}
-                                                                >
-                                                                    {showSectionTitle && (
-                                                                        <p className={`mb-4 whitespace-pre-line font-sans text-[1.8rem] font-bold leading-tight tracking-tight ${index === 0 ? 'mt-0' : 'mt-8'} ${themeStyles.title}`}>
-                                                                            {sec}
-                                                                        </p>
-                                                                    )}
-                                                                    {/* Toolbar: encima del versículo; colores fuera del contenedor con scroll para que no se recorten. Con audio Huichol en reproducción se oculta para no parpadear al cambiar de versículo. */}
-                                                                    {isLastSelected && !(selectedVersion === 'huichol' && huicholAudioIsPlaying) && (
-                                                                        <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-50 flex flex-col items-center gap-2 w-max max-w-[calc(100vw-2rem)] pointer-events-auto">
-                                                                            {showColorPicker && (
-                                                                                <div className="shrink-0 bg-white border border-gray-100 shadow-xl rounded-2xl px-2.5 py-2 flex flex-wrap justify-center gap-2 max-w-[min(100vw-2rem,420px)] animate-in fade-in zoom-in duration-200">
-                                                                                    {[
-                                                                                        { id: 'yellow', color: 'bg-[#FCEBA2]' },
-                                                                                        { id: 'green', color: 'bg-[#BBF7D0]' },
-                                                                                        { id: 'blue', color: 'bg-[#BFDBFE]' },
-                                                                                        { id: 'pink', color: 'bg-[#FBCFE8]' },
-                                                                                        { id: 'purple', color: 'bg-[#E9D5FF]' },
-                                                                                        { id: 'orange', color: 'bg-[#FED7AA]' },
-                                                                                        { id: 'red', color: 'bg-[#FECACA]' },
-                                                                                        { id: 'cyan', color: 'bg-[#A5F3FC]' },
-                                                                                        { id: 'teal', color: 'bg-[#99F6E4]' },
-                                                                                        { id: 'indigo', color: 'bg-[#C7D2FE]' },
-                                                                                        { id: 'slate', color: 'bg-[#CBD5E1]' },
-                                                                                    ].map((c) => (
-                                                                                        <button
-                                                                                            key={c.id}
-                                                                                            type="button"
-                                                                                            onClick={(e) => {
-                                                                                                e.stopPropagation();
-                                                                                                if (!ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) return;
-                                                                                                const newHighlights = { ...highlightedVerses };
-                                                                                                selectedVerses.forEach(v => {
-                                                                                                    newHighlights[`${selectedBook} ${selectedChapter}:${v}`] = c.id;
-                                                                                                });
-                                                                                                setHighlightedVerses(newHighlights);
-                                                                                                localStorage.setItem('highlightedVerses', JSON.stringify(newHighlights));
-                                                                                                setSelectedHighlightColor(c.id);
-                                                                                                setShowColorPicker(false);
-                                                                                                const firstSelected = [...selectedVerses].sort((a, b) => a - b)[0];
-                                                                                                if (firstSelected) {
-                                                                                                    void grantEngagementPoints({
-                                                                                                        action: 'bible_highlight',
-                                                                                                        dedupeKey: `highlight:${selectedBook} ${selectedChapter}:${firstSelected}:${c.id}`,
-                                                                                                        isSignedIn: authLoaded && isSignedIn === true,
-                                                                                                    });
-                                                                                                }
-                                                                                                toast({ title: selectedVerses.length > 1 ? `${selectedVerses.length} versículos resaltados` : 'Resaltado guardado' });
-                                                                                            }}
-                                                                                            className={`w-8 h-8 rounded-full transition-transform hover:scale-110 ${c.color} ${selectedHighlightColor === c.id ? 'ring-2 ring-blue-500 ring-offset-2' : ''}`}
-                                                                                        />
-                                                                                    ))}
-                                                                                </div>
-                                                                            )}
-                                                                            <div className="relative bg-[#1F2937] shadow-xl rounded-[10px] min-w-0 max-w-[calc(100vw-2rem)]">
-                                                                                <div className="absolute -bottom-[5px] left-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-[#1F2937] rotate-45 rounded-sm pointer-events-none z-0" aria-hidden />
-                                                                                <div className="flex items-center space-x-0.5 relative z-40 px-1.5 py-1 overflow-x-auto">
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        onClick={(e) => {
-                                                                                            e.stopPropagation();
-                                                                                            if (!showColorPicker && !ensureClerkSignedIn(authLoaded, isSignedIn === true, redirectToSignIn)) return;
-                                                                                            setShowColorPicker(!showColorPicker);
-                                                                                        }}
-                                                                                        className={`flex shrink-0 items-center gap-2 px-3 py-2 hover:bg-white/10 rounded-md text-white text-[11px] font-semibold tracking-wide transition-colors ${showColorPicker ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-[#1F2937]' : ''}`}
-                                                                                    >
-                                                                                        <span className="text-white text-[9px] -mt-0.5" aria-hidden>▲</span> Resaltar
-                                                                                    </button>
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        onClick={(e) => { e.stopPropagation(); setIsNoteOpen(true); }}
-                                                                                        className="flex shrink-0 items-center gap-2 px-3 py-2 hover:bg-white/10 rounded-md text-white text-[11px] font-semibold tracking-wide transition-colors"
-                                                                                    >
-                                                                                        <StickyNote className="h-3.5 w-3.5" /> Nota
-                                                                                    </button>
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        onClick={(e) => {
-                                                                                            e.stopPropagation();
-                                                                                            openStudioForSocialImage();
-                                                                                        }}
-                                                                                        className="flex shrink-0 items-center gap-2 px-3 py-2 hover:bg-white/10 rounded-md text-white text-[11px] font-semibold tracking-wide transition-colors"
-                                                                                        title="Generar imagen para redes sociales"
-                                                                                        aria-label="Generar imagen para redes sociales"
-                                                                                    >
-                                                                                        <ImagePlus className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                                                                                        Imagen
-                                                                                    </button>
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        onClick={(e) => {
-                                                                                            e.stopPropagation();
-                                                                                            handleBookmarkSelectedVerses();
-                                                                                        }}
-                                                                                        className="p-2 hover:bg-white/10 rounded-md transition-colors shrink-0"
-                                                                                    >
-                                                                                        {(() => {
-                                                                                            const allSaved = selectedVerses.every(v =>
-                                                                                                savedVerses.some(sv => sv.reference === `${selectedBook} ${selectedChapter}:${v}`)
-                                                                                            );
-                                                                                            return <Bookmark className={`h-3.5 w-3.5 transition-all ${allSaved ? 'fill-white text-white' : 'fill-none text-gray-300'}`} />;
-                                                                                        })()}
-                                                                                    </button>
-                                                                                    <div className="w-px h-5 bg-white/10 mx-1 shrink-0" />
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        onClick={async (e) => {
-                                                                                            e.stopPropagation();
-                                                                                            const sorted = [...selectedVerses].sort((a, b) => a - b);
-                                                                                            const text = sorted.map(v => `${v} ${verses[v - 1]}`).join('\n');
-                                                                                            await navigator.clipboard.writeText(text);
-                                                                                            toast({ title: "Copiado" });
-                                                                                        }}
-                                                                                        className="p-2 hover:bg-white/10 rounded-md text-gray-300 hover:text-white transition-colors shrink-0"
-                                                                                    >
-                                                                                        <Copy className="h-4 w-4" />
-                                                                                    </button>
-                                                                                    <button
-                                                                                        type="button"
-                                                                                        onClick={(e) => {
-                                                                                            e.stopPropagation();
-                                                                                            const sorted = [...selectedVerses].sort((a, b) => a - b);
-                                                                                            const combinedText = sorted.map(v => verses[v - 1]).join(' ');
-                                                                                            handleShareVerse(combinedText, sorted[0]);
-                                                                                        }}
-                                                                                        className="p-2 hover:bg-white/10 rounded-md text-gray-300 hover:text-white transition-colors shrink-0"
-                                                                                    >
-                                                                                        <Share2 className="h-4 w-4" />
-                                                                                    </button>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    )}
-                                                                    <p
-                                                                        className={`flex-grow text-justify leading-[1.58] tracking-[0.002em] transition-colors duration-300 ${isSelected || isHighlighted || isAudioFollowing ? 'font-medium' : ''}`}
-                                                                        onClick={() => {
-                                                                            if (skipNextVerseParagraphClickRef.current) return;
-                                                                            if (selectedVersion === 'huichol') {
-                                                                                queueHuicholVerseParagraphClick(index + 1);
-                                                                            } else {
-                                                                                handleVerseClick(index + 1);
-                                                                            }
-                                                                        }}
-                                                                        onDoubleClick={() => {
-                                                                            if (selectedVersion !== 'huichol') return;
-                                                                            flushHuicholVerseParagraphClickTimer();
-                                                                            requestAnimationFrame(() => {
-                                                                                const sel = window.getSelection();
-                                                                                const raw = (sel?.toString() ?? '')
-                                                                                    .replace(/\u00a0/g, ' ')
-                                                                                    .trim();
-                                                                                if (!raw || /\s/.test(raw)) return;
-                                                                                const speech = stripWordForSpeech(raw);
-                                                                                if (!speech) return;
-                                                                                setHuicholWordPractice({
-                                                                                    displayWord: raw,
-                                                                                    speechText: speech,
-                                                                                    reference: `${readerBookTitle} ${selectedChapter}:${index + 1}`,
-                                                                                });
-                                                                                sel?.removeAllRanges();
-                                                                            });
-                                                                        }}
-                                                                        onMouseUp={(e) => {
-                                                                            if (selectedVersion !== 'huichol') return;
-                                                                            const sel = window.getSelection();
-                                                                            if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
-                                                                            const range = sel.getRangeAt(0);
-                                                                            const root = range.commonAncestorContainer;
-                                                                            const el =
-                                                                                root.nodeType === Node.ELEMENT_NODE
-                                                                                    ? (root as Element)
-                                                                                    : root.parentElement;
-                                                                            if (!el || !e.currentTarget.contains(el)) return;
-                                                                            const raw = sel.toString().replace(/\u00a0/g, ' ').trim();
-                                                                            if (!raw || /\s/.test(raw)) return;
-                                                                            const speech = stripWordForSpeech(raw);
-                                                                            if (!speech) return;
-                                                                            skipNextVerseParagraphClickRef.current = true;
-                                                                            window.setTimeout(() => {
-                                                                                skipNextVerseParagraphClickRef.current = false;
-                                                                            }, 220);
-                                                                            setHuicholWordPractice({
-                                                                                displayWord: raw,
-                                                                                speechText: speech,
-                                                                                reference: `${readerBookTitle} ${selectedChapter}:${index + 1}`,
-                                                                            });
-                                                                            sel.removeAllRanges();
-                                                                        }}
-                                                                    >
-                                                                        {index === 0 && (
-                                                                            <span className={`mr-2.5 inline-block align-top text-[2.45em] font-bold leading-[0.86] ${themeStyles.title}`}>
-                                                                                {selectedChapter}
-                                                                            </span>
-                                                                        )}
-                                                                        <sup
-                                                                            className={`cursor-pointer font-bold mr-2 text-[60%] align-top ${index === 0 ? 'hidden' : ''} ${isSelected || isHighlighted || isAudioFollowing ? '' : themeStyles.subtitle}`}
-                                                                            onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                flushHuicholVerseParagraphClickTimer();
-                                                                                handleVerseClick(index + 1);
-                                                                            }}
-                                                                        >
-                                                                            {index + 1}
-                                                                        </sup>
-                                                                        {(() => {
-                                                                            if (selectedVersion !== 'huichol') {
-                                                                                return verse;
-                                                                            }
-                                                                            const k = huicholKaraoke;
-                                                                            const showKaraokeWordSpans =
+                                                            const isHuichol = selectedVersion === 'huichol';
+                                                            const showHuicholKaraokeSpans =
+                                                                isHuichol &&
                                                                                 huicholAudioIsPlaying &&
-                                                                                k !== null &&
-                                                                                k.verseNumber === index + 1;
-                                                                            if (!showKaraokeWordSpans) {
-                                                                                return verse;
-                                                                            }
-                                                                            const words = tokenizeVerseWords(verse);
-                                                                            if (!words.length) return verse;
+                                                                huicholKaraoke?.verseNumber === verseNumber;
+                                                            const huicholKaraokeWordIndex =
+                                                                showHuicholKaraokeSpans && huicholKaraoke
+                                                                    ? huicholKaraoke.wordIndex
+                                                                    : -1;
+                                                            const activeToolbar = isLastSelected
+                                                                ? {
+                                                                      showColorPicker,
+                                                                      selectedHighlightColor,
+                                                                      selectedVersesKey: sortedSelectedVerses.join(','),
+                                                                      hideForHuicholAudio:
+                                                                          selectedVersion === 'huichol' && huicholAudioIsPlaying,
+                                                                      allSelectedBookmarked: selectedVerses.every((v) =>
+                                                                          savedVerses.some(
+                                                                              (sv) =>
+                                                                                  sv.reference ===
+                                                                                  `${selectedBook} ${selectedChapter}:${v}`
+                                                                          )
+                                                                      ),
+                                                                  }
+                                                                : null;
                                                                             return (
-                                                                                <span className="inline leading-relaxed">
-                                                                                    {words.map((w, wi) => {
-                                                                                        const spoken =
-                                                                                            k != null && wi <= k.wordIndex;
-                                                                                        const current =
-                                                                                            k != null && wi === k.wordIndex;
-                                                                                        const play = huicholAudioIsPlaying;
-                                                                                        const underline =
-                                                                                            play && spoken
-                                                                                                ? current
-                                                                                                    ? 'underline decoration-[#B88A44] decoration-2 underline-offset-[4px]'
-                                                                                                    : 'underline decoration-gray-400/80 decoration-1 underline-offset-[3px]'
-                                                                                                : '';
-                                                                                        return (
-                                                                                            <span key={`${index}-hw-${wi}`} className="inline">
-                                                                                                <span
-                                                                                                    data-huichol-word
-                                                                                                    className={`cursor-pointer rounded-sm px-0.5 transition-[color,font-weight,text-decoration,background-color] duration-100 ${
-                                                                                                        spoken
-                                                                                                            ? 'font-bold text-gray-900'
-                                                                                                            : themeStyles.text
-                                                                                                    } ${underline} hover:bg-orange-50/80 active:bg-orange-100/90`}
-                                                                                                    onClick={(ev) => {
-                                                                                                        ev.stopPropagation();
-                                                                                                        flushHuicholVerseParagraphClickTimer();
-                                                                                                        const vNum = index + 1;
-                                                                                                        setSelectedVerses([vNum]);
-                                                                                                        setIsToolbarOpen(true);
-                                                                                                        setShowColorPicker(false);
-                                                                                                        const ref = `${selectedBook} ${selectedChapter}:${vNum}`;
-                                                                                                        setSelectedHighlightColor(
-                                                                                                            highlightedVerses[ref] || 'blue'
-                                                                                                        );
-                                                                                                    }}
-                                                                                                    onDoubleClick={(ev) => {
-                                                                                                        ev.stopPropagation();
-                                                                                                        ev.preventDefault();
-                                                                                                        flushHuicholVerseParagraphClickTimer();
-                                                                                                        const speech = stripWordForSpeech(w);
-                                                                                                        if (!speech) return;
-                                                                                                        setHuicholWordPractice({
-                                                                                                            displayWord: w.trim(),
-                                                                                                            speechText: speech,
-                                                                                                            reference: `${readerBookTitle} ${selectedChapter}:${index + 1}`,
-                                                                                                        });
-                                                                                                    }}
-                                                                                                >
-                                                                                                    {w}
-                                                                                                </span>
-                                                                                                {wi < words.length - 1 ? ' ' : ''}
-                                                                                            </span>
-                                                                                        );
-                                                                                    })}
-                                                                                </span>
-                                                                            );
-                                                                        })()}
-                                                                    </p>
-                                                                </div>
+                                                                <MemoVerseRow
+                                                                    key={verseNumber}
+                                                                    verseNumber={verseNumber}
+                                                                    verseIndex0={index}
+                                                                    verseText={verse}
+                                                                    selectedChapter={selectedChapter}
+                                                                    showSectionTitle={showSectionTitle}
+                                                                    sectionTitle={sec}
+                                                                    isSelected={isSelected}
+                                                                    isLastSelected={isLastSelected}
+                                                                    storedHighlightColorId={storedHighlightColorId}
+                                                                    activeColorId={activeColorId}
+                                                                    isAudioFollowing={isAudioFollowing}
+                                                                    isHuichol={isHuichol}
+                                                                    themeText={themeStyles.text}
+                                                                    themeTitle={themeStyles.title}
+                                                                    themeSubtitle={themeStyles.subtitle}
+                                                                    themeButtonHover={themeStyles.buttonHover}
+                                                                    showHuicholKaraokeSpans={showHuicholKaraokeSpans}
+                                                                    huicholKaraokeWordIndex={huicholKaraokeWordIndex}
+                                                                    activeToolbar={activeToolbar}
+                                                                    verseRowApiRef={verseRowApiRef}
+                                                                    toolbarActionsRef={verseToolbarActionsRef}
+                                                                />
                                                             );
                                                         })
                                                     ) : (
@@ -3230,7 +3067,7 @@ export default function Bible() {
                                                             style={{ backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor, backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
                                                         >
                                                             {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
-                                                            <GridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
+                                                            <MemoGridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
                                                             <div className="relative z-10 flex min-h-0 flex-1 flex-col">
                                                                 <div className="flex shrink-0 justify-center px-1 pt-1">
                                                                     {renderStudioFixedText('ref', {
@@ -3295,7 +3132,7 @@ export default function Bible() {
                                                             style={{ backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor, backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
                                                         >
                                                             {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
-                                                            <GridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
+                                                            <MemoGridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
                                                             <div className="relative z-10 flex min-h-0 flex-1 flex-col">
                                                                 <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-1">
                                                                     {renderStudioFixedText('verse', {
@@ -3362,7 +3199,7 @@ export default function Bible() {
                                                             style={{ backgroundColor: studioTheme.bgImage ? 'transparent' : studioTheme.bgColor, backgroundImage: studioTheme.bgImage ? `url(${studioTheme.bgImage})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center', color: studioTheme.bgColor === '#FFFFFF' || studioTheme.bgColor === '#FEF08A' ? '#000' : '#FFF' }}
                                                         >
                                                             {studioTheme.bgImage && <div className="absolute inset-0 bg-black/40" />}
-                                                            <GridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
+                                                            <MemoGridOverlay visible={isCanvasDragging} snapX={activeSnap.x} snapY={activeSnap.y} />
                                                             <div className="relative z-10 flex min-h-0 flex-1 flex-col">
                                                                 <div className="flex shrink-0 justify-center px-1 pt-1">
                                                                     {renderStudioFixedText('ref', {

@@ -4,7 +4,7 @@ import { ChevronDown, Library } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import DOMPurify from 'dompurify';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ReflectionMarkdownPreview } from '@/app/dashboard/biblia/reflection-markdown-preview';
 import {
   loadPersonalReflectionsFromStorage,
@@ -83,6 +83,7 @@ function StoredReflectionBody({ body }: { body: string }) {
 
 export default function DashboardSavedPersonalReflections() {
   const [items, setItems] = useState<StoredPersonalReflection[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState('Todas');
 
   const refresh = useCallback(() => {
     setItems(loadPersonalReflectionsFromStorage());
@@ -97,6 +98,21 @@ export default function DashboardSavedPersonalReflections() {
     window.addEventListener(PERSONAL_REFLECTIONS_CHANGED_EVENT, onChange);
     return () => window.removeEventListener(PERSONAL_REFLECTIONS_CHANGED_EVENT, onChange);
   }, [refresh]);
+
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    for (const item of items) {
+      const cat = item.category?.trim();
+      if (!cat) continue;
+      set.add(cat);
+    }
+    return ['Todas', ...[...set].sort((a, b) => a.localeCompare(b, 'es'))];
+  }, [items]);
+
+  const visibleItems = useMemo(() => {
+    if (selectedCategory === 'Todas') return items;
+    return items.filter(r => (r.category?.trim() ?? '') === selectedCategory);
+  }, [items, selectedCategory]);
 
   return (
     <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-6 md:p-8">
@@ -114,13 +130,35 @@ export default function DashboardSavedPersonalReflections() {
         <h2 className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Reflexiones guardadas</h2>
       </div>
 
-      {items.length === 0 ? (
+      {categories.length > 1 ? (
+        <div className="mb-4">
+          <label htmlFor="saved-reflections-category" className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-gray-500">
+            Filtrar por categoría
+          </label>
+          <select
+            id="saved-reflections-category"
+            value={selectedCategory}
+            onChange={e => setSelectedCategory(e.target.value)}
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 outline-none focus:border-[#B88A44]/50 focus:ring-2 focus:ring-[#B88A44]/20 sm:w-auto"
+          >
+            {categories.map(cat => (
+              <option key={cat} value={cat}>
+                {cat === 'Todas' ? 'Todas las categorías' : cat}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
+
+      {visibleItems.length === 0 ? (
         <p className="text-sm text-gray-400">
-          Aún no hay reflexiones guardadas. Escribe título y contenido, luego usa el botón de guardar en el panel de Biblia o en Notas.
+          {items.length === 0
+            ? 'Aún no hay reflexiones guardadas. Escribe título y contenido, luego usa el botón de guardar en el panel de Biblia o en Notas.'
+            : 'No hay reflexiones para la categoría seleccionada.'}
         </p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {items.map(r => {
+          {visibleItems.map(r => {
             const title = r.title?.trim() || 'Sin título';
             const whenLabel = relativeSavedLabel(r.savedAt);
             return (
@@ -133,6 +171,11 @@ export default function DashboardSavedPersonalReflections() {
                   {r.verseReference ? (
                     <span className="rounded-full bg-blue-50 px-3 py-0.5 text-[10px] font-bold text-blue-600 shadow-sm">
                       {r.verseReference}
+                    </span>
+                  ) : null}
+                  {r.category ? (
+                    <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[10px] font-bold uppercase text-amber-700">
+                      {r.category}
                     </span>
                   ) : null}
                   {r.tags?.length

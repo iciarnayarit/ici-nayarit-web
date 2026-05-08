@@ -247,6 +247,7 @@ export default function PersonalReflectionsCard({ verseReference }: PersonalRefl
         id,
         title: titleTrim,
         body: reflectionBodyHtml,
+        category: 'devocional',
         verseReference,
         savedAt: new Date().toISOString(),
       });

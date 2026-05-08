@@ -4,6 +4,7 @@ import { Toaster } from '@/app/components/ui/toaster';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
+import { Alegreya, PT_Sans } from 'next/font/google';
 import './globals.css';
 import Header from './components/header';
 import { AudioProvider } from './context/AudioContext';
@@ -11,6 +12,20 @@ import { AudioProvider } from './context/AudioContext';
 type Props = {
   children: React.ReactNode;
 };
+
+const bodyFont = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+  variable: '--font-body',
+});
+
+const headlineFont = Alegreya({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+  variable: '--font-headline',
+});
 
 export const metadata: Metadata = {
   title: 'ICIAR Nayarit',
@@ -60,19 +75,7 @@ export default async function RootLayout({ children }: Props) {
       signUpForceRedirectUrl="/dashboard/miembros"
     >
       <html lang="es" className="scroll-smooth" suppressHydrationWarning>
-        <head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossOrigin="anonymous"
-          />
-          <link
-            href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;700&family=PT+Sans:wght@400;700&display=swap"
-            rel="stylesheet"
-          />
-        </head>
-        <body className="font-body antialiased" suppressHydrationWarning>
+        <body className={`${bodyFont.variable} ${headlineFont.variable} font-body antialiased`} suppressHydrationWarning>
           <AudioProvider>
             <Header />
             {children}

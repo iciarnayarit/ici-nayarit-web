@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Footer from '@/app/components/footer';
-import EncyclopediaArticleClient from '@/app/enciclopedia/encyclopedia-article-client';
-import { encyclopediaSlugs, getEncyclopediaEntry, listEncyclopediaEntries } from '@/lib/bible-encyclopedia-data';
+import { encyclopediaSlugs, getEncyclopediaEntry } from '@/lib/bible-encyclopedia-data';
+import EncyclopediaArticleMainShell from './encyclopedia-article-main-shell';
+import EncyclopediaArticleMainSlot from './encyclopedia-article-main-slot';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -26,11 +28,12 @@ export default async function EnciclopediaArticlePage({ params }: Props) {
   const { slug } = await params;
   const entry = getEncyclopediaEntry(slug);
   if (!entry) notFound();
-  const allEntries = listEncyclopediaEntries();
 
   return (
     <>
-      <EncyclopediaArticleClient entry={entry} allEntries={allEntries} />
+      <Suspense fallback={<EncyclopediaArticleMainShell />}>
+        <EncyclopediaArticleMainSlot slug={slug} />
+      </Suspense>
       <Footer />
     </>
   );

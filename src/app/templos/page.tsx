@@ -1,9 +1,11 @@
 import TempleList from "./temple-list";
+import EngagementPageTracker from '@/app/components/engagement-page-tracker';
 
 export default function TemplosPage() {
 
   return (
     <div className="container mx-auto px-4 md:px-6 py-12">
+      <EngagementPageTracker dedupeKey="templos-read" />
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Ubicaciones de las Iglesias</h1>
         <p className="mt-4 text-lg text-foreground/80">

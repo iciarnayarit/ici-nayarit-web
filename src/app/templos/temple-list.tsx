@@ -16,10 +16,14 @@ import {
     toggleSavedLocalTempleName,
 } from "@/lib/saved-temples";
 import { ClipboardCopy, Share2, Bookmark, MapPin, ChevronDown } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth, useClerk } from "@clerk/nextjs";
 import { useIsMobile } from "@/app/hooks/use-mobile";
 import { ensureClerkSignedInForFavoriteAdd } from "@/lib/require-clerk-sign-in";
+import { grantEngagementPoints } from '@/lib/engagement-points';
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { normalizeSearchText, fuzzySimilarity } from "@/lib/fuzzy-search";
+import { useDebouncedValue } from "@/app/hooks/use-debounced-value";
 
 const grouped = templeLocations.reduce<Record<string, typeof templeLocations>>((acc, temple) => {
     const m = temple.municipality;
@@ -41,9 +45,14 @@ export default function TempleList() {
     const [selectedTemple, setSelectedTemple] = useState(templeLocations[0]);
     const [savedTemples, setSavedTemples] = useState<string[]>([]);
     const [expandedMunicipalities, setExpandedMunicipalities] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState('');
     const isMobile = useIsMobile();
     const { isLoaded: authLoaded, isSignedIn } = useAuth();
     const { redirectToSignIn } = useClerk();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const debouncedSearchQuery = useDebouncedValue(searchQuery, 220);
 
     const refreshSaved = useCallback(() => {
         setSavedTemples(loadSavedLocalTempleNames());
@@ -65,6 +74,71 @@ export default function TempleList() {
             window.removeEventListener("storage", onStorage);
         };
     }, [refreshSaved]);
+
+    useEffect(() => {
+        const queryInUrl = searchParams.get('q') ?? '';
+        if (queryInUrl !== searchQuery) {
+            setSearchQuery(queryInUrl);
+        }
+    }, [searchParams, searchQuery]);
+
+    useEffect(() => {
+        const next = new URLSearchParams(searchParams.toString());
+        const normalized = debouncedSearchQuery.trim();
+        const current = searchParams.get('q') ?? '';
+        if (normalized.length >= 2) {
+            if (current === normalized) return;
+            next.set('q', normalized);
+        } else {
+            if (!current) return;
+            next.delete('q');
+        }
+        const queryString = next.toString();
+        router.replace(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
+    }, [debouncedSearchQuery, pathname, router, searchParams]);
+
+    const filteredMunicipalities = useMemo(() => {
+        const normalizedQuery = normalizeSearchText(searchQuery);
+        if (normalizedQuery.length < 2) return municipalities;
+
+        return municipalities.filter((municipality) => {
+            const inMunicipality = fuzzySimilarity(normalizeSearchText(municipality), normalizedQuery) >= 0.72;
+            if (inMunicipality) return true;
+            return grouped[municipality].some((temple) => {
+                const name = normalizeSearchText(temple.nameKey);
+                const address = normalizeSearchText(temple.addressKey);
+                return (
+                    fuzzySimilarity(name, normalizedQuery) >= 0.72 ||
+                    fuzzySimilarity(address, normalizedQuery) >= 0.72 ||
+                    name.includes(normalizedQuery) ||
+                    address.includes(normalizedQuery)
+                );
+            });
+        });
+    }, [searchQuery]);
+
+    const firstVisibleTemple = useMemo(() => {
+        for (const municipality of filteredMunicipalities) {
+            const temple = grouped[municipality][0];
+            if (temple) return temple;
+        }
+        return null;
+    }, [filteredMunicipalities]);
+
+    useEffect(() => {
+        if (!firstVisibleTemple) return;
+        const selectedStillVisible = filteredMunicipalities.some((municipality) =>
+            grouped[municipality].some((temple) => temple.nameKey === selectedTemple.nameKey)
+        );
+        if (!selectedStillVisible) {
+            setSelectedTemple(firstVisibleTemple);
+        }
+    }, [filteredMunicipalities, firstVisibleTemple, selectedTemple.nameKey]);
+
+    useEffect(() => {
+        if (searchQuery.trim().length < 2) return;
+        setExpandedMunicipalities(filteredMunicipalities);
+    }, [filteredMunicipalities, searchQuery]);
 
     const handleShareInteraction = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -90,6 +164,11 @@ export default function TempleList() {
         setExpandedMunicipalities(prev =>
             prev.includes(m) ? prev.filter(x => x !== m) : [...prev, m]
         );
+        void grantEngagementPoints({
+            action: 'bible_read',
+            dedupeKey: `templos-search:${m}`,
+            isSignedIn: authLoaded && isSignedIn === true,
+        });
     };
 
     const handleCopy = (text: string) => {
@@ -120,7 +199,21 @@ export default function TempleList() {
     if (isMobile) {
         return (
             <div className="flex flex-col space-y-6">
-                {municipalities.map(municipality => {
+                <div className="sticky top-[4.5rem] z-20 rounded-xl border border-gray-200 bg-white/95 p-3 backdrop-blur">
+                    <input
+                        type="search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Buscar templo, municipio o dirección..."
+                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
+                    />
+                </div>
+                {filteredMunicipalities.length === 0 ? (
+                    <p className="rounded-xl border border-dashed border-gray-300 bg-white p-4 text-center text-sm text-gray-500">
+                        No se encontraron templos para esa búsqueda.
+                    </p>
+                ) : null}
+                {filteredMunicipalities.map(municipality => {
                     const temples = grouped[municipality];
                     const isExpanded = expandedMunicipalities.includes(municipality);
                     return (
@@ -134,7 +227,18 @@ export default function TempleList() {
                                         const wazeUrl = `https://waze.com/ul?ll=${temple.lat},${temple.lng}&navigate=yes`;
                                         const whatsappMsg = encodeURIComponent(`¡Echa un vistazo a este templo!\n\nTemplo: ${temple.nameKey}\nDirección: ${temple.addressKey}\n\nVer en Google Maps: ${mapsUrl}`);
                                         return (
-                                            <Card key={index} onClick={() => setSelectedTemple(temple)} className={`cursor-pointer transition-all ${isSelected ? 'border-primary shadow-md' : ''}`}>
+                                            <Card
+                                                key={index}
+                                                onClick={() => {
+                                                    setSelectedTemple(temple);
+                                                    void grantEngagementPoints({
+                                                        action: 'bible_read',
+                                                        dedupeKey: `templos-select:${temple.nameKey}`,
+                                                        isSignedIn: authLoaded && isSignedIn === true,
+                                                    });
+                                                }}
+                                                className={`cursor-pointer transition-all ${isSelected ? 'border-primary shadow-md' : ''}`}
+                                            >
                                                 <CardContent className="p-4">
                                                     <div className="flex items-start justify-between gap-2">
                                                         <div className="flex-1 min-w-0">
@@ -214,7 +318,21 @@ export default function TempleList() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
             <div className="md:col-span-4 flex flex-col space-y-5">
-                {municipalities.map(municipality => {
+                <div className="sticky top-[4.5rem] z-20 rounded-xl border border-gray-200 bg-white/95 p-3 backdrop-blur">
+                    <input
+                        type="search"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Buscar templo, municipio o dirección..."
+                        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100"
+                    />
+                </div>
+                {filteredMunicipalities.length === 0 ? (
+                    <p className="rounded-xl border border-dashed border-gray-300 bg-white p-4 text-center text-sm text-gray-500">
+                        No se encontraron templos para esa búsqueda.
+                    </p>
+                ) : null}
+                {filteredMunicipalities.map(municipality => {
                     const temples = grouped[municipality];
                     const isExpanded = expandedMunicipalities.includes(municipality);
                     return (
@@ -225,7 +343,14 @@ export default function TempleList() {
                                     {temples.map((temple, index) => (
                                         <Card
                                             key={index}
-                                            onClick={() => setSelectedTemple(temple)}
+                                            onClick={() => {
+                                                setSelectedTemple(temple);
+                                                void grantEngagementPoints({
+                                                    action: 'bible_read',
+                                                    dedupeKey: `templos-select:${temple.nameKey}`,
+                                                    isSignedIn: authLoaded && isSignedIn === true,
+                                                });
+                                            }}
                                             className={`cursor-pointer transition-all ${selectedTemple.nameKey === temple.nameKey ? 'border-primary shadow-sm' : 'hover:border-gray-300'}`}
                                         >
                                             <CardContent className="p-4">

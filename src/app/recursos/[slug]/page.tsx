@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Footer from '@/app/components/footer';
 import { ArrowLeft, Download } from 'lucide-react';
+import EngagementPageTracker from '@/app/components/engagement-page-tracker';
 
 export default async function RecursoDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -33,6 +34,7 @@ export default async function RecursoDetailPage({ params }: { params: Promise<{ 
 
   return (
     <>
+      <EngagementPageTracker action="resource_read" dedupeKey={`resource-read:${resolvedParams.slug}`} />
       <div className="bg-[#F9FAFB] py-12 min-h-[calc(100vh-64px)]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">

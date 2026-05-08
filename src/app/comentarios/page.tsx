@@ -1,7 +1,8 @@
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Footer from '@/app/components/footer';
-import CommentariesCatalog from '@/app/comentarios/commentaries-catalog';
-import { fetchAvailableCommentaries } from '@/lib/helloao-commentaries';
+import CommentariesCatalogShell from '@/app/comentarios/commentaries-catalog-shell';
+import CommentariesCatalogSlot from '@/app/comentarios/commentaries-catalog-slot';
 
 export const metadata: Metadata = {
   title: 'Comentarios bíblicos — ICIAR Nayarit',
@@ -10,11 +11,11 @@ export const metadata: Metadata = {
 };
 
 export default async function ComentariosPage() {
-  const commentaries = await fetchAvailableCommentaries();
-
   return (
     <>
-      <CommentariesCatalog commentaries={commentaries} />
+      <Suspense fallback={<CommentariesCatalogShell />}>
+        <CommentariesCatalogSlot />
+      </Suspense>
       <Footer />
     </>
   );

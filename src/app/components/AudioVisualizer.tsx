@@ -2,10 +2,15 @@
 
 import { useAudio } from '@/app/context/AudioContext';
 import { useEffect, useRef } from 'react';
+import { useThrottledCallback } from '@/app/hooks/use-throttled-callback';
 
 const AudioVisualizer = () => {
   const { analyser, isPlaying } = useAudio();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const throttledResize = useThrottledCallback((canvas: HTMLCanvasElement) => {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }, 120);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -20,10 +25,7 @@ const AudioVisualizer = () => {
 
     let animationFrameId: number;
 
-    const resizeCanvas = () => {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
-    };
+    const resizeCanvas = () => throttledResize(canvas);
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
@@ -67,7 +69,7 @@ const AudioVisualizer = () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [analyser, isPlaying]);
+  }, [analyser, isPlaying, throttledResize]);
 
   return <canvas ref={canvasRef} className="w-full h-full" />;
 };

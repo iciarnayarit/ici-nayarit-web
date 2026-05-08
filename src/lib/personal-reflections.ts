@@ -8,6 +8,8 @@ export interface StoredPersonalReflection {
   body: string;
   /** Título mostrado en el listado (opcional en entradas antiguas). */
   title?: string;
+  /** Categoría opcional para filtros (NLP/manual). */
+  category?: string;
   verseReference: string | null;
   savedAt: string;
   /** Etiquetas opcionales (p. ej. desde el panel Notas). */
@@ -34,6 +36,7 @@ export function loadPersonalReflectionsFromStorage(): StoredPersonalReflection[]
       const rec = r as StoredPersonalReflection;
       if (!(rec.verseReference === null || typeof rec.verseReference === 'string')) return false;
       if (!(rec.title === undefined || typeof rec.title === 'string')) return false;
+      if (!(rec.category === undefined || typeof rec.category === 'string')) return false;
       if (rec.tags !== undefined) {
         if (!Array.isArray(rec.tags) || !rec.tags.every((t): t is string => typeof t === 'string')) {
           return false;

@@ -1,11 +1,16 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
-import DashboardSavedPlans from '@/app/dashboard/planes/dashboard-saved-plans';
 import { allPlanData, plans } from '@/lib/reading-plan-data';
+
+const DashboardSavedPlans = dynamic(() => import('@/app/dashboard/planes/dashboard-saved-plans'), {
+  loading: () => <div className="min-h-[180px] animate-pulse rounded-2xl bg-white shadow-sm" />,
+});
 
 const INITIAL_VISIBLE = 6;
 const LOAD_MORE_COUNT = 6;
@@ -43,6 +48,7 @@ function daysLabel(slug: string): string {
 }
 
 export default function PlanesPage() {
+  const router = useRouter();
   const total = plans.length;
   const [visibleCount, setVisibleCount] = useState(() => Math.min(INITIAL_VISIBLE, total));
 
@@ -54,6 +60,13 @@ export default function PlanesPage() {
     if (!hasMore) return;
     setVisibleCount(c => Math.min(c + LOAD_MORE_COUNT, total));
   };
+
+  useEffect(() => {
+    router.prefetch(`/planes/${FEATURED_PROVERBS_PLAN_SLUG}`);
+    for (const p of plans.slice(0, 6)) {
+      router.prefetch(`/planes/${p.slug}`);
+    }
+  }, [router]);
 
   return (
     <div className="relative min-h-screen w-full bg-[#F8F9FA] pb-20 font-sans">

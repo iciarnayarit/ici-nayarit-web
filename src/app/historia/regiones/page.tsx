@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ChevronLeft, MapPin } from 'lucide-react';
 import Footer from '@/app/components/footer';
+import EngagementPageTracker from '@/app/components/engagement-page-tracker';
 
 const regions = [
   {
@@ -62,6 +63,7 @@ const stats = [
 export default function RegionesPage() {
   return (
     <main className="min-h-screen bg-white">
+      <EngagementPageTracker dedupeKey="historia-regiones-read" />
 
       {/* Hero */}
       <section className="bg-gradient-to-br from-[#3d2a0e] via-gray-900 to-gray-800 py-16 px-4">

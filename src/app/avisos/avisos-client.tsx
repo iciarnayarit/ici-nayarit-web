@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
@@ -12,11 +12,19 @@ import {
   isSameMonth,
 } from 'date-fns';
 import { Calendar, MapPin, ArrowRight, Bell, Bookmark, Share2 } from 'lucide-react';
+import Image from 'next/image';
 import Footer from '@/app/components/footer';
 import { featuredAnnouncement, recentAnnouncements, slugify } from '@/app/lib/announcements';
-import { loadSavedAnnouncementTitles, persistSavedAnnouncementTitles } from '@/lib/saved-announcements';
+import {
+  loadSavedAnnouncementTitles,
+  persistSavedAnnouncementTitles,
+  SAVED_ANNOUNCEMENTS_CHANGED_EVENT,
+  SAVED_ANNOUNCEMENTS_STORAGE_KEY,
+} from '@/lib/saved-announcements';
 import { useAuth, useClerk } from '@clerk/nextjs';
 import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
+import { grantEngagementPoints } from '@/lib/engagement-points';
+import { normalizeVisualKey, toVisualLabel } from '@/lib/visual-labels';
 
 /** Nombre del query en la URL: `?tiempo=…` */
 export const AVISOS_TIME_PARAM = 'tiempo';
@@ -35,6 +43,9 @@ export const AVISOS_ANIO_PARAM = 'anio';
 export const AVISOS_MES_PARAM = 'mes';
 
 const ITEMS_PER_PAGE = 4;
+/** Pedimos más candidatos al API y filtramos guardados en cliente para mantener ~3 visibles. */
+const RECOMMENDED_AVISOS_FETCH_LIMIT = 12;
+const RECOMMENDED_AVISOS_DISPLAY = 3;
 const filters = ['Todos', 'Eventos', 'Comunidad', 'Avisos', 'Misiones', 'Celebración'];
 const timeFilters = ['Todos', 'Hoy', 'Esta Semana', 'Este Mes'] as const;
 
@@ -155,20 +166,98 @@ const parseAnnouncementDate = (dateStr: string) => {
 
 const CategoryTag = ({ category }: { category: string }) => {
   let colorClass = 'bg-gray-500';
-  switch (category.toLowerCase()) {
-    case 'destacado': colorClass = 'bg-[#B88A44]'; break;
-    case 'comunidad': colorClass = 'bg-indigo-600'; break;
-    case 'evento': colorClass = 'bg-purple-600'; break;
-    case 'misiones': colorClass = 'bg-emerald-600'; break;
-    case 'aviso': colorClass = 'bg-amber-600'; break;
-    case 'celebración': colorClass = 'bg-rose-600'; break;
+  switch (normalizeVisualKey(category)) {
+    case 'destacado':
+      colorClass = 'bg-[#B88A44]';
+      break;
+    case 'comunidad':
+      colorClass = 'bg-indigo-600';
+      break;
+    case 'evento':
+      colorClass = 'bg-purple-600';
+      break;
+    case 'misiones':
+      colorClass = 'bg-emerald-600';
+      break;
+    case 'aviso':
+      colorClass = 'bg-amber-600';
+      break;
+    case 'celebracion':
+      colorClass = 'bg-rose-600';
+      break;
   }
   return (
     <span className={`text-white text-[10px] uppercase tracking-wider font-bold px-3 py-1 rounded-full shadow-sm ${colorClass}`}>
-      {category}
+      {toVisualLabel(category)}
     </span>
   );
 };
+
+const MemoCategoryTag = memo(CategoryTag);
+
+type AnnouncementCardProps = {
+  item: (typeof recentAnnouncements)[number];
+  isSaved: boolean;
+  onToggleSave: (e: React.MouseEvent, title: string) => void;
+  onShare: (e: React.MouseEvent, title: string) => Promise<void>;
+};
+
+type AvisoRecommendation = {
+  type: 'aviso';
+  slug: string;
+  title: string;
+  category: string;
+  score: number;
+  reason: string;
+};
+
+const AnnouncementCard = memo(function AnnouncementCard({ item, isSaved, onToggleSave, onShare }: AnnouncementCardProps) {
+  return (
+    <div className="block bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group relative">
+      <div className="absolute top-3 right-3 z-20 flex gap-2">
+        <button
+          onClick={(e) => onToggleSave(e, item.title)}
+          className="p-2 bg-white/90 rounded-full shadow-sm backdrop-blur-sm cursor-pointer transition-colors hover:bg-white z-30"
+          aria-label="Guardar"
+        >
+          <Bookmark className={`w-4 h-4 transition-colors ${isSaved ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-700 fill-none'}`} />
+        </button>
+        <button
+          onClick={(e) => void onShare(e, item.title)}
+          className="p-2 bg-white/90 rounded-full hover:bg-white text-gray-700 hover:text-[#B88A44] transition-colors shadow-sm backdrop-blur-sm cursor-pointer z-30"
+          aria-label="Compartir"
+        >
+          <Share2 className="w-4 h-4" />
+        </button>
+      </div>
+
+      <Link href={`/avisos/${slugify(item.title)}`} className="block h-full">
+        <div className="h-48 overflow-hidden relative">
+          <Image
+            src={item.imageUrl}
+            alt={item.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            loading="lazy"
+            fetchPriority="low"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-3">
+            <MemoCategoryTag category={item.category} />
+            <span className="text-xs text-gray-400 font-medium">{item.date}</span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-800 mb-2 truncate font-display">{item.title}</h3>
+          <p className="text-gray-500 text-sm mb-4 h-10 overflow-hidden">{item.description}</p>
+          <div className="text-[#B88A44] font-semibold text-sm flex items-center group-hover:underline">
+            Ver detalles <ArrowRight className="h-4 w-4 ml-1.5 transform group-hover:translate-x-1 transition-transform" />
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+});
 
 export default function AvisosClient() {
   const searchParams = useSearchParams();
@@ -180,23 +269,83 @@ export default function AvisosClient() {
 
   const [activeFilter, setActiveFilter] = useState('Todos');
   const [savedAvisos, setSavedAvisos] = useState<string[]>([]);
+  const [recommendedAvisos, setRecommendedAvisos] = useState<(typeof recentAnnouncements)[number][]>([]);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const { redirectToSignIn } = useClerk();
 
+  const timeFilterState = useMemo(
+    () => parseTimeFilterFromParams(tiempoParam, anioParam, mesParam, new Date()),
+    [tiempoParam, anioParam, mesParam]
+  );
+
   useEffect(() => {
-    setSavedAvisos(loadSavedAnnouncementTitles());
+    const refresh = () => setSavedAvisos(loadSavedAnnouncementTitles());
+    refresh();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === SAVED_ANNOUNCEMENTS_STORAGE_KEY || e.key === null) refresh();
+    };
+    window.addEventListener(SAVED_ANNOUNCEMENTS_CHANGED_EVENT, refresh);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(SAVED_ANNOUNCEMENTS_CHANGED_EVENT, refresh);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!authLoaded || isSignedIn !== true) return;
+    const filterKey = `${activeFilter}:${timeFilterState.kind}:${timeFilterState.periodYear}:${timeFilterState.periodMonth}`;
+    void grantEngagementPoints({
+      action: 'announcement_read',
+      dedupeKey: `avisos-search:${filterKey}`,
+      isSignedIn: true,
+    });
+  }, [authLoaded, isSignedIn, activeFilter, timeFilterState]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/content-recommendations?type=avisos&limit=${RECOMMENDED_AVISOS_FETCH_LIMIT}`,
+          { cache: 'no-store' }
+        );
+        if (!res.ok) return;
+        const data = (await res.json()) as { ok?: boolean; recommendations?: AvisoRecommendation[] };
+        if (!data.ok || !Array.isArray(data.recommendations)) return;
+        const bySlug = new Map(recentAnnouncements.map((a) => [slugify(a.title), a]));
+        const mapped = data.recommendations
+          .map((rec) => bySlug.get(rec.slug))
+          .filter((x): x is (typeof recentAnnouncements)[number] => Boolean(x));
+        if (!cancelled) setRecommendedAvisos(mapped.slice(0, RECOMMENDED_AVISOS_FETCH_LIMIT));
+      } catch {
+        // keep UX stable
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
   }, [tiempoParam, anioParam, mesParam]);
 
+  const parsedAnnouncements = useMemo(
+    () =>
+      recentAnnouncements.map((announcement) => ({
+        announcement,
+        dateObj: startOfDay(parseAnnouncementDate(announcement.date)),
+      })),
+    []
+  );
+
   const yearBounds = useMemo(() => {
     let minY = new Date().getFullYear();
     let maxY = minY;
-    for (const a of recentAnnouncements) {
-      const y = parseAnnouncementDate(a.date).getFullYear();
+    for (const a of parsedAnnouncements) {
+      const y = a.dateObj.getFullYear();
       minY = Math.min(minY, y);
       maxY = Math.max(maxY, y);
     }
@@ -205,26 +354,21 @@ export default function AvisosClient() {
       minY: Math.min(minY, cy - 1),
       maxY: Math.max(maxY, cy + 1),
     };
-  }, []);
-
-  const timeFilterState = useMemo(
-    () => parseTimeFilterFromParams(tiempoParam, anioParam, mesParam, new Date()),
-    [tiempoParam, anioParam, mesParam]
-  );
+  }, [parsedAnnouncements]);
 
   const selectYear = timeFilterState.periodYear;
   const selectMonth = timeFilterState.periodMonth;
 
-  const applyPeriodo = (anio: number, mes: number) => {
+  const applyPeriodo = useCallback((anio: number, mes: number) => {
     router.replace(buildPeriodoHref(anio, mes), { scroll: false });
-  };
+  }, [router]);
 
-  const handleFilterClick = (filter: string) => {
+  const handleFilterClick = useCallback((filter: string) => {
     setActiveFilter(filter);
     setVisibleCount(ITEMS_PER_PAGE);
-  };
+  }, []);
 
-  const toggleSave = (e: React.MouseEvent, title: string) => {
+  const toggleSave = useCallback((e: React.MouseEvent, title: string) => {
     e.preventDefault();
     e.stopPropagation();
     setSavedAvisos(prev => {
@@ -243,9 +387,9 @@ export default function AvisosClient() {
       persistSavedAnnouncementTitles(next);
       return next;
     });
-  };
+  }, [authLoaded, isSignedIn, redirectToSignIn]);
 
-  const handleShare = async (e: React.MouseEvent, title: string) => {
+  const handleShare = useCallback(async (e: React.MouseEvent, title: string) => {
     e.preventDefault();
     e.stopPropagation();
     const url = `${window.location.origin}/avisos/${slugify(title)}`;
@@ -255,7 +399,7 @@ export default function AvisosClient() {
       navigator.clipboard.writeText(url);
       alert('Enlace copiado al portapapeles');
     }
-  };
+  }, []);
 
   const filteredAnnouncements = useMemo(() => {
     const now = new Date();
@@ -267,7 +411,8 @@ export default function AvisosClient() {
     };
     const { kind, periodYear, periodMonth } = timeFilterState;
 
-    return recentAnnouncements.filter(a => {
+    return parsedAnnouncements
+      .filter(({ announcement: a, dateObj: announcementDate }) => {
       let categoryMatch = true;
       if (activeFilter !== 'Todos') {
         if (activeFilter === 'Eventos') categoryMatch = a.category === 'Evento';
@@ -276,8 +421,6 @@ export default function AvisosClient() {
       if (!categoryMatch) return false;
 
       if (kind === 'todos') return true;
-
-      const announcementDate = startOfDay(parseAnnouncementDate(a.date));
 
       if (kind === 'hoy') {
         return isSameDay(announcementDate, todayStart);
@@ -298,11 +441,13 @@ export default function AvisosClient() {
       }
 
       return true;
-    });
-  }, [activeFilter, timeFilterState]);
+      })
+      .map(({ announcement }) => announcement);
+  }, [activeFilter, timeFilterState, parsedAnnouncements]);
 
   const visibleAnnouncements = filteredAnnouncements.slice(0, visibleCount);
   const hasMore = visibleCount < filteredAnnouncements.length;
+  const savedAvisosSet = useMemo(() => new Set(savedAvisos), [savedAvisos]);
 
   const timeBtnClass = (active: boolean) =>
     `px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 inline-flex items-center justify-center ${
@@ -327,17 +472,25 @@ export default function AvisosClient() {
               <div className="md:w-1/2 relative">
                 <div className="absolute top-4 right-4 z-10 flex gap-2">
                   <div role="button" onClick={(e) => toggleSave(e, featuredAnnouncement.title)} className="p-2 bg-white/90 rounded-full shadow-sm backdrop-blur-sm cursor-pointer transition-colors">
-                    <Bookmark className={`w-5 h-5 transition-colors ${savedAvisos.includes(featuredAnnouncement.title) ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-700 fill-none'}`} />
+                    <Bookmark className={`w-5 h-5 transition-colors ${savedAvisosSet.has(featuredAnnouncement.title) ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-700 fill-none'}`} />
                   </div>
                   <div role="button" onClick={(e) => handleShare(e, featuredAnnouncement.title)} className="p-2 bg-white/90 rounded-full hover:bg-white text-gray-700 hover:text-[#B88A44] transition-colors shadow-sm backdrop-blur-sm cursor-pointer">
                     <Share2 className="w-5 h-5" />
                   </div>
                 </div>
-                <img src={featuredAnnouncement.imageUrl} alt={featuredAnnouncement.title} className="h-full w-full object-cover" />
+                <Image
+                  src={featuredAnnouncement.imageUrl}
+                  alt={featuredAnnouncement.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                  fetchPriority="high"
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div className="p-8 md:w-1/2 flex flex-col justify-center">
                 <div className="flex items-center justify-between mb-4">
-                  <CategoryTag category={featuredAnnouncement.category} />
+                  <MemoCategoryTag category={featuredAnnouncement.category} />
                   <span className="text-sm text-gray-500 font-medium">{featuredAnnouncement.date}</span>
                 </div>
                 <h3 className="text-3xl font-bold text-gray-900 mb-4 font-display">{featuredAnnouncement.title}</h3>
@@ -350,6 +503,25 @@ export default function AvisosClient() {
               </div>
             </Link>
           </section>
+
+          {displayRecommendedAvisos.length > 0 ? (
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-700 text-center md:text-left mb-6 font-display">
+                Recomendado para ti
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {displayRecommendedAvisos.map((item) => (
+                  <AnnouncementCard
+                    key={`recommended-${item.title}-${item.date}`}
+                    item={item}
+                    isSaved={savedAvisosSet.has(item.title)}
+                    onToggleSave={toggleSave}
+                    onShare={handleShare}
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <div className="space-y-6 mb-12">
             <div className="flex flex-wrap items-center justify-center gap-2">
@@ -426,41 +598,13 @@ export default function AvisosClient() {
             ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {visibleAnnouncements.map(item => (
-                <div key={`${item.title}-${item.date}`} className="block bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group relative">
-                  <div className="absolute top-3 right-3 z-20 flex gap-2">
-                    <button
-                      onClick={(e) => toggleSave(e, item.title)}
-                      className="p-2 bg-white/90 rounded-full shadow-sm backdrop-blur-sm cursor-pointer transition-colors hover:bg-white z-30"
-                      aria-label="Guardar"
-                    >
-                      <Bookmark className={`w-4 h-4 transition-colors ${savedAvisos.includes(item.title) ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-700 fill-none'}`} />
-                    </button>
-                    <button
-                      onClick={(e) => handleShare(e, item.title)}
-                      className="p-2 bg-white/90 rounded-full hover:bg-white text-gray-700 hover:text-[#B88A44] transition-colors shadow-sm backdrop-blur-sm cursor-pointer z-30"
-                      aria-label="Compartir"
-                    >
-                      <Share2 className="w-4 h-4" />
-                    </button>
-                  </div>
-
-                  <Link href={`/avisos/${slugify(item.title)}`} className="block h-full">
-                    <div className="h-48 overflow-hidden relative">
-                      <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    </div>
-                    <div className="p-6">
-                      <div className="flex justify-between items-center mb-3">
-                        <CategoryTag category={item.category} />
-                        <span className="text-xs text-gray-400 font-medium">{item.date}</span>
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-800 mb-2 truncate font-display">{item.title}</h3>
-                      <p className="text-gray-500 text-sm mb-4 h-10 overflow-hidden">{item.description}</p>
-                      <div className="text-[#B88A44] font-semibold text-sm flex items-center group-hover:underline">
-                        Ver detalles <ArrowRight className="h-4 w-4 ml-1.5 transform group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </div>
-                  </Link>
-                </div>
+                <AnnouncementCard
+                  key={`${item.title}-${item.date}`}
+                  item={item}
+                  isSaved={savedAvisosSet.has(item.title)}
+                  onToggleSave={toggleSave}
+                  onShare={handleShare}
+                />
               ))}
             </div>
             )}

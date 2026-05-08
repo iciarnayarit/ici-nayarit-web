@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchDbpJson } from '@/lib/dbp-proxy';
+import { buildDbpCircuitHeader, fetchDbpJson } from '@/lib/dbp-proxy';
 
 type DbpBiblesResponse = {
   data?: Array<{
@@ -42,6 +42,7 @@ function pickAudioFilesetId(payload: DbpBiblesResponse): string | null {
 }
 
 export async function GET(req: NextRequest) {
+  const circuitStateHeader = buildDbpCircuitHeader();
   const iso = req.nextUrl.searchParams.get('iso')?.toLowerCase().trim() ?? '';
   const book = req.nextUrl.searchParams.get('book')?.toUpperCase().trim() ?? '';
   const chapter = Number.parseInt(req.nextUrl.searchParams.get('chapter') ?? '', 10);
@@ -49,7 +50,7 @@ export async function GET(req: NextRequest) {
   if (!SUPPORTED_ISOS.has(iso) || !book || !Number.isFinite(chapter) || chapter < 1) {
     return NextResponse.json(
       { error: 'Parámetros inválidos. Requiere iso=hch, book (USFM) y chapter.' },
-      { status: 400 }
+      { status: 400, headers: { 'X-Circuit-State': circuitStateHeader } }
     );
   }
 
@@ -60,7 +61,10 @@ export async function GET(req: NextRequest) {
     });
     const filesetId = pickAudioFilesetId(biblesPayload);
     if (!filesetId) {
-      return NextResponse.json({ data: { audioUrl: null as string | null, filesetId: null, message: 'Sin fileset de audio' } });
+      return NextResponse.json(
+        { data: { audioUrl: null as string | null, filesetId: null, message: 'Sin fileset de audio' } },
+        { headers: { 'X-Circuit-State': circuitStateHeader } }
+      );
     }
 
     const chapterPayload = await fetchDbpJson<DbpFilesetChapterResponse>(
@@ -77,12 +81,14 @@ export async function GET(req: NextRequest) {
         chapter,
         duration: typeof row?.duration === 'number' ? row.duration : undefined,
       },
+    }, {
+      headers: { 'X-Circuit-State': circuitStateHeader },
     });
   } catch (error) {
     console.error('[api/dbp/bibles/indigenous-mx/chapter-audio]', error);
     return NextResponse.json(
       { error: 'No se pudo obtener el audio del capítulo.' },
-      { status: 502 }
+      { status: 502, headers: { 'X-Circuit-State': circuitStateHeader } }
     );
   }
 }

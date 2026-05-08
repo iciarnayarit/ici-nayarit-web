@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import AvisosClient from './avisos-client';
+import EngagementPageTracker from '@/app/components/engagement-page-tracker';
 
 export default function AvisosPage() {
   return (
@@ -10,6 +11,7 @@ export default function AvisosPage() {
         </div>
       }
     >
+      <EngagementPageTracker dedupeKey="avisos-read" />
       <AvisosClient />
     </Suspense>
   );

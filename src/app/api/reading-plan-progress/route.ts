@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getMongoDb } from '@/lib/mongodb';
 import { normalizeMemberEmail } from '@/lib/members-email-lookup';
+import { stableMergeSort } from '@/lib/perf-algorithms';
+import { deleteSharedCache, getSharedCache, setSharedCache } from '@/lib/ram-cache';
 
 const payloadSchema = z.object({
   planSlug: z.string().trim().min(1).max(160),
@@ -18,6 +20,12 @@ function plansCollectionName() {
   return process.env.STORAGE_MONGODB_PLANS_COLLECTION?.trim() || 'plans';
 }
 
+function plansProgressCacheKey(userId: string) {
+  return `api:reading-plan-progress:${userId}`;
+}
+
+const READING_PLAN_PROGRESS_TTL_MS = 20 * 1000;
+
 export async function GET() {
   try {
     const { userId } = await auth();
@@ -25,36 +33,62 @@ export async function GET() {
       return NextResponse.json({ ok: false, reason: 'unauthenticated' }, { status: 401 });
     }
 
-    const db = await getMongoDb();
-    const coll = db.collection(plansCollectionName());
-    const docs = await coll
-      .find(
-        { clerkUserId: userId },
-        {
-          projection: {
-            planSlug: 1,
-            planTitle: 1,
-            completedDays: 1,
-            totalDays: 1,
-            percent: 1,
-            status: 1,
-            updatedAt: 1,
-          },
-        }
-      )
-      .toArray();
+    const cacheKey = plansProgressCacheKey(userId);
+    const cached = await getSharedCache<
+      Array<{
+        slug: string;
+        title: string;
+        completedDays: number;
+        totalDays: number;
+        percent: number;
+        completed: boolean;
+        updatedAt: Date | null;
+      }>
+    >(cacheKey);
+    const plans = cached
+      ? cached
+      : await (async () => {
+          const db = await getMongoDb();
+          const coll = db.collection(plansCollectionName());
+          const docs = await coll
+            .find(
+              { clerkUserId: userId },
+              {
+                projection: {
+                  planSlug: 1,
+                  planTitle: 1,
+                  completedDays: 1,
+                  totalDays: 1,
+                  percent: 1,
+                  status: 1,
+                  updatedAt: 1,
+                },
+              }
+            )
+            .toArray();
+
+          const mapped = docs.map((doc) => ({
+            slug: String(doc.planSlug ?? ''),
+            title: String(doc.planTitle ?? ''),
+            completedDays: Array.isArray(doc.completedDays) ? doc.completedDays.length : 0,
+            totalDays: Number(doc.totalDays ?? 0),
+            percent: Number(doc.percent ?? 0),
+            completed: String(doc.status ?? '') === 'completed' || Number(doc.percent ?? 0) >= 100,
+            updatedAt: (doc.updatedAt as Date | null) ?? null,
+          }));
+          const sorted = stableMergeSort(mapped, (a, b) => {
+            if (a.completed !== b.completed) return a.completed ? 1 : -1;
+            if (a.percent !== b.percent) return b.percent - a.percent;
+            const ta = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+            const tb = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+            return tb - ta;
+          });
+          return setSharedCache(cacheKey, sorted, READING_PLAN_PROGRESS_TTL_MS);
+        })();
 
     return NextResponse.json({
       ok: true,
-      plans: docs.map((doc) => ({
-        slug: String(doc.planSlug ?? ''),
-        title: String(doc.planTitle ?? ''),
-        completedDays: Array.isArray(doc.completedDays) ? doc.completedDays.length : 0,
-        totalDays: Number(doc.totalDays ?? 0),
-        percent: Number(doc.percent ?? 0),
-        completed: String(doc.status ?? '') === 'completed' || Number(doc.percent ?? 0) >= 100,
-        updatedAt: doc.updatedAt ?? null,
-      })),
+      plans,
     });
   } catch (error) {
     console.error('[api/reading-plan-progress GET]', error);
@@ -121,6 +155,8 @@ export async function POST(req: Request) {
       },
       { upsert: true }
     );
+
+    await deleteSharedCache(plansProgressCacheKey(userId));
 
     return NextResponse.json({ ok: true, synced: true });
   } catch (error) {

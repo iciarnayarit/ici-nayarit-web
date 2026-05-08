@@ -1,13 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Star, Download, Film, FileText, Wrench, Package, ArrowRight, BookOpen, DownloadCloud, ExternalLink, Scissors, Headphones, Mail, Bookmark, Share2 } from 'lucide-react';
 import Footer from '@/app/components/footer';
 import Link from 'next/link';
+import Image from 'next/image';
 import { resourceItems, slugify } from '@/app/lib/resources-data';
-import { loadSavedResourceTitles, persistSavedResourceTitles } from '@/lib/saved-resources';
+import {
+  loadSavedResourceTitles,
+  persistSavedResourceTitles,
+  SAVED_RESOURCES_CHANGED_EVENT,
+  SAVED_RESOURCES_STORAGE_KEY,
+} from '@/lib/saved-resources';
 import { useAuth, useClerk } from '@clerk/nextjs';
 import { ensureClerkSignedInForFavoriteAdd } from '@/lib/require-clerk-sign-in';
+import { grantEngagementPoints } from '@/lib/engagement-points';
+import { toVisualLabel } from '@/lib/visual-labels';
 
 const filters = [
   { label: 'Todos', icon: Package },
@@ -18,20 +26,135 @@ const filters = [
 ];
 
 const ITEMS_PER_PAGE = 8;
+/** Máximo permitido por `/api/content-recommendations` (clamp servidor). */
+const RECOMMENDED_RECURSOS_FETCH_LIMIT = 12;
+const RECOMMENDED_RECURSOS_DISPLAY = 4;
+
+type ResourceCardProps = {
+  item: (typeof resourceItems)[number];
+  isSaved: boolean;
+  onToggleSave: (e: React.MouseEvent, title: string) => void;
+  onShare: (e: React.MouseEvent, title: string) => Promise<void>;
+};
+
+type ResourceRecommendation = {
+  type: 'recurso';
+  slug: string;
+  title: string;
+  category: string;
+  badge: string | null;
+  link: string;
+  score: number;
+  reason: string;
+};
+
+const ResourceCard = memo(function ResourceCard({ item, isSaved, onToggleSave, onShare }: ResourceCardProps) {
+  return (
+    <div className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col relative">
+      <div className="absolute top-2 left-2 z-20 flex gap-2">
+        <button
+          onClick={(e) => onToggleSave(e, item.title)}
+          className="p-2 bg-white/90 rounded-full shadow-sm backdrop-blur-sm cursor-pointer transition-colors hover:bg-white z-30"
+          aria-label="Guardar"
+        >
+          <Bookmark className={`w-4 h-4 transition-colors ${isSaved ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-700 fill-none'}`} />
+        </button>
+        <button
+          onClick={(e) => void onShare(e, item.title)}
+          className="p-2 bg-white/90 rounded-full hover:bg-white text-gray-700 hover:text-[#B88A44] transition-colors shadow-sm backdrop-blur-sm cursor-pointer z-30"
+          aria-label="Compartir"
+        >
+          <Share2 className="w-4 h-4" />
+        </button>
+      </div>
+
+      <Link href={`/recursos/${slugify(item.title)}`} className="flex flex-col h-full">
+        <div className="relative h-48">
+          <Image
+            src={item.imageUrl}
+            alt={item.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            loading="lazy"
+            fetchPriority="low"
+            className="w-full h-full object-cover"
+          />
+          {item.badge && (
+            <span className={`absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded ${item.badge === 'PDF' ? 'bg-[#B88A44] text-white' : 'bg-black/60 text-white'}`}>
+              {toVisualLabel(item.badge)}
+            </span>
+          )}
+        </div>
+        <div className="p-5 flex-grow flex flex-col">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{toVisualLabel(item.category)}</p>
+          <h3 className="text-lg font-bold text-gray-800 mb-2 font-display">{item.title}</h3>
+          <p className="text-sm text-gray-600 mb-4 flex-grow">{item.description}</p>
+          <div className="w-full mt-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-lg flex items-center justify-center transition-colors text-sm">
+            <item.actionIcon className="w-4 h-4 mr-2" />
+            {item.actionLabel}
+          </div>
+        </div>
+      </Link>
+    </div>
+  );
+});
 
 export default function RecursosPage() {
   const [activeFilter, setActiveFilter] = useState('Todos');
-  const [filteredResources, setFilteredResources] = useState(resourceItems);
   const [savedRecursos, setSavedRecursos] = useState<string[]>([]);
+  const [recommendedResources, setRecommendedResources] = useState<(typeof resourceItems)[number][]>([]);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const { redirectToSignIn } = useClerk();
 
   useEffect(() => {
-    setSavedRecursos(loadSavedResourceTitles());
+    const refresh = () => setSavedRecursos(loadSavedResourceTitles());
+    refresh();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === SAVED_RESOURCES_STORAGE_KEY || e.key === null) refresh();
+    };
+    window.addEventListener(SAVED_RESOURCES_CHANGED_EVENT, refresh);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(SAVED_RESOURCES_CHANGED_EVENT, refresh);
+      window.removeEventListener('storage', onStorage);
+    };
   }, []);
 
-  const toggleSave = (e: React.MouseEvent, title: string) => {
+  useEffect(() => {
+    void grantEngagementPoints({
+      action: 'resource_read',
+      dedupeKey: 'recursos-read',
+      isSignedIn: authLoaded && isSignedIn === true,
+    });
+  }, [authLoaded, isSignedIn]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/content-recommendations?type=recursos&limit=${RECOMMENDED_RECURSOS_FETCH_LIMIT}`,
+          { cache: 'no-store' }
+        );
+        if (!res.ok) return;
+        const data = (await res.json()) as { ok?: boolean; recommendations?: ResourceRecommendation[] };
+        if (!data.ok || !Array.isArray(data.recommendations)) return;
+        const bySlug = new Map(resourceItems.map((r) => [slugify(r.title), r]));
+        const mapped = data.recommendations
+          .map((rec) => bySlug.get(rec.slug))
+          .filter((x): x is (typeof resourceItems)[number] => Boolean(x));
+        if (!cancelled) setRecommendedResources(mapped.slice(0, RECOMMENDED_RECURSOS_FETCH_LIMIT));
+      } catch {
+        // keep UX stable
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const toggleSave = useCallback((e: React.MouseEvent, title: string) => {
     e.preventDefault();
     e.stopPropagation();
     setSavedRecursos(prev => {
@@ -50,9 +173,9 @@ export default function RecursosPage() {
       persistSavedResourceTitles(next);
       return next;
     });
-  };
+  }, [authLoaded, isSignedIn, redirectToSignIn]);
 
-  const handleShare = async (e: React.MouseEvent, title: string) => {
+  const handleShare = useCallback(async (e: React.MouseEvent, title: string) => {
     e.preventDefault();
     e.stopPropagation();
     const url = `${window.location.origin}/recursos`;
@@ -64,46 +187,63 @@ export default function RecursosPage() {
       navigator.clipboard.writeText(url);
       alert('Enlace copiado al portapapeles');
     }
-  };
+  }, []);
 
-  const handleFilterClick = (filterLabel: string) => {
+  const handleFilterClick = useCallback((filterLabel: string) => {
     setActiveFilter(filterLabel);
     setVisibleCount(ITEMS_PER_PAGE); // reset pagination on filter change
+  }, []);
 
-    if (filterLabel === 'Todos') {
-      setFilteredResources(resourceItems);
-      return;
-    }
-
-    let searchKeyword = '';
-    if (filterLabel === 'Multimedia') {
-      searchKeyword = 'MULTIMEDIA';
-    } else if (filterLabel === 'Documentos') {
-      searchKeyword = 'DOCUMENTO';
-    } else if (filterLabel === 'Herramientas Bíblicas') {
-      searchKeyword = 'HERRAMIENTA';
-    } else if (filterLabel === 'Descargas') {
-      searchKeyword = 'DESCARGA';
-    }
-
-    const newFilteredResources = resourceItems.filter(item =>
-      item.category.toUpperCase().includes(searchKeyword)
-    );
-    setFilteredResources(newFilteredResources);
+  const handleResourceDownload = (resourceKey: string) => {
+    void grantEngagementPoints({
+      action: 'resource_download',
+      dedupeKey: `resource-download:${resourceKey}`,
+      isSignedIn: authLoaded && isSignedIn === true,
+    });
   };
 
-  const visibleResources = filteredResources.slice(0, visibleCount);
+  const filteredResources = useMemo(() => {
+    if (activeFilter === 'Todos') return resourceItems;
+    const keywordByFilter: Record<string, string> = {
+      Multimedia: 'MULTIMEDIA',
+      Documentos: 'DOCUMENTO',
+      'Herramientas Bíblicas': 'HERRAMIENTA',
+      Descargas: 'DESCARGA',
+    };
+    const keyword = keywordByFilter[activeFilter] ?? '';
+    return resourceItems.filter((item) => item.category.toUpperCase().includes(keyword));
+  }, [activeFilter]);
+
+  const visibleResources = useMemo(
+    () => filteredResources.slice(0, visibleCount),
+    [filteredResources, visibleCount]
+  );
   const hasMore = visibleCount < filteredResources.length;
+  const savedRecursosSet = useMemo(() => new Set(savedRecursos), [savedRecursos]);
+
+  const displayRecommendedResources = useMemo(
+    () =>
+      recommendedResources
+        .filter((r) => !savedRecursosSet.has(r.title))
+        .slice(0, RECOMMENDED_RECURSOS_DISPLAY),
+    [recommendedResources, savedRecursosSet]
+  );
 
   return (
     <>
       <div className="bg-[#F9FAFB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           
-          <section 
-            className="bg-cover bg-center rounded-2xl p-8 md:p-12 mb-12 text-white relative overflow-hidden"
-            style={{ backgroundImage: 'url(https://i.imgur.com/YhJc6R0.jpeg)' }}
-          >
+          <section className="rounded-2xl p-8 md:p-12 mb-12 text-white relative overflow-hidden">
+            <Image
+              src="https://i.imgur.com/YhJc6R0.jpeg"
+              alt="Recurso destacado"
+              fill
+              priority
+              fetchPriority="high"
+              sizes="100vw"
+              className="object-cover"
+            />
             <div className="absolute inset-0 bg-slate-800 opacity-80"></div>
             <div className="relative z-10 md:flex items-center">
                 <div className="md:w-full">
@@ -122,6 +262,7 @@ export default function RecursosPage() {
                             href="/recursos/Plan de predicación - 2026.pdf" 
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => handleResourceDownload('plan-predicacion-2026')}
                             className="bg-[#B88A44] hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg flex items-center transition-colors"
                         >
                             <Download className="w-5 h-5 mr-2" />
@@ -131,7 +272,7 @@ export default function RecursosPage() {
                             Ver Detalles
                         </Link>
                         <button onClick={(e) => toggleSave(e, "Plan de Predicación 2026")} className="bg-white/20 hover:bg-white/20 p-3 rounded-lg transition-none flex items-center justify-center">
-                            <Bookmark className={`w-5 h-5 transition-colors ${savedRecursos.includes("Plan de Predicación 2026") ? 'text-[#B88A44] fill-[#B88A44]' : 'text-white fill-none'}`} />
+                            <Bookmark className={`w-5 h-5 transition-colors ${savedRecursosSet.has("Plan de Predicación 2026") ? 'text-[#B88A44] fill-[#B88A44]' : 'text-white fill-none'}`} />
                         </button>
                         <button onClick={(e) => handleShare(e, "Plan de Predicación 2026")} className="bg-white/20 hover:bg-white/30 text-white p-3 rounded-lg transition-colors flex items-center justify-center">
                             <Share2 className="w-5 h-5" />
@@ -153,46 +294,34 @@ export default function RecursosPage() {
             ))}
           </div>
 
+          {displayRecommendedResources.length > 0 ? (
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-700 text-center md:text-left mb-8 font-display">
+                Recomendado para ti
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                {displayRecommendedResources.map((item, index) => (
+                  <ResourceCard
+                    key={`recommended-${item.title}-${index}`}
+                    item={item}
+                    isSaved={savedRecursosSet.has(item.title)}
+                    onToggleSave={toggleSave}
+                    onShare={handleShare}
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {visibleResources.map((item, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group flex flex-col relative">
-                <div className="absolute top-2 left-2 z-20 flex gap-2">
-                   <button 
-                     onClick={(e) => toggleSave(e, item.title)} 
-                     className="p-2 bg-white/90 rounded-full shadow-sm backdrop-blur-sm cursor-pointer transition-colors hover:bg-white z-30"
-                     aria-label="Guardar"
-                   >
-                     <Bookmark className={`w-4 h-4 transition-colors ${savedRecursos.includes(item.title) ? 'text-[#B88A44] fill-[#B88A44]' : 'text-gray-700 fill-none'}`} />
-                   </button>
-                   <button 
-                     onClick={(e) => handleShare(e, item.title)} 
-                     className="p-2 bg-white/90 rounded-full hover:bg-white text-gray-700 hover:text-[#B88A44] transition-colors shadow-sm backdrop-blur-sm cursor-pointer z-30"
-                     aria-label="Compartir"
-                   >
-                     <Share2 className="w-4 h-4" />
-                   </button>
-                </div>
-                
-                <Link href={`/recursos/${slugify(item.title)}`} className="flex flex-col h-full">
-                  <div className="relative h-48">
-                    <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover"/>
-                    {item.badge && (
-                      <span className={`absolute top-2 right-2 text-xs font-semibold px-2 py-0.5 rounded ${item.badge === 'PDF' ? 'bg-[#B88A44] text-white' : 'bg-black/60 text-white'}`}>
-                        {item.badge}
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-5 flex-grow flex flex-col">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">{item.category}</p>
-                    <h3 className="text-lg font-bold text-gray-800 mb-2 font-display">{item.title}</h3>
-                    <p className="text-sm text-gray-600 mb-4 flex-grow">{item.description}</p>
-                    <div className="w-full mt-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-lg flex items-center justify-center transition-colors text-sm">
-                      <item.actionIcon className="w-4 h-4 mr-2" />
-                      {item.actionLabel}
-                    </div>
-                  </div>
-                </Link>
-              </div>
+              <ResourceCard
+                key={`${item.title}-${index}`}
+                item={item}
+                isSaved={savedRecursosSet.has(item.title)}
+                onToggleSave={toggleSave}
+                onShare={handleShare}
+              />
             ))}
           </section>
 

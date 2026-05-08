@@ -2,12 +2,14 @@
 
 import type { ComponentType } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAuth } from '@clerk/nextjs';
 import { Flame, BookOpenText, MicVocal, PencilLine, Gift, HandHeart, Share2, BadgeCheck, Lock } from 'lucide-react';
 import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
 import {
   ENGAGEMENT_POINTS_CHANGED_EVENT,
   ENGAGEMENT_SYNC_CHANGED_EVENT,
   getEngagementSnapshot,
+  grantEngagementPoints,
   getEngagementSyncState,
   hydrateEngagementFromServer,
   type EngagementSnapshot,
@@ -105,6 +107,7 @@ function formatRelativeSync(ts: number | null): string {
 }
 
 export default function DashboardInsigniasPage() {
+  const { isLoaded: authLoaded, isSignedIn } = useAuth();
   const [snapshot, setSnapshot] = useState<EngagementSnapshot>(EMPTY_SNAPSHOT);
   const [syncState, setSyncState] = useState<EngagementSyncState>({
     status: 'synced',
@@ -222,6 +225,14 @@ export default function DashboardInsigniasPage() {
       void loadPlansProgress();
     });
   };
+
+  useEffect(() => {
+    void grantEngagementPoints({
+      action: 'bible_read',
+      dedupeKey: 'insignias-read',
+      isSignedIn: authLoaded && isSignedIn === true,
+    });
+  }, [authLoaded, isSignedIn]);
 
   useEffect(() => {
     const refresh = () => setSnapshot(getEngagementSnapshot());

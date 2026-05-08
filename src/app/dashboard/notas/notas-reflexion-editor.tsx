@@ -16,10 +16,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
 import { useToast } from '@/app/hooks/use-toast';
 import { prependPersonalReflection } from '@/lib/personal-reflections';
+import { stripHtmlToText, type NlpClassification } from '@/lib/nlp-classifier';
 
 const NOTAS_DRAFT_STORAGE_KEY = 'dashboardNotasReflectionDraft';
 
 type DraftShape = { title: string; body: string; tags: string[] };
+type ClassificationState = {
+  loading: boolean;
+  data: NlpClassification | null;
+};
+type SaveUiState = 'idle' | 'saving' | 'saved' | 'error';
 
 function parseDraft(raw: string | null): DraftShape {
   if (raw == null || raw === '') return { title: '', body: '', tags: [] };
@@ -66,6 +72,11 @@ export default function NotasReflexionEditor() {
   const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
   const [linkInput, setLinkInput] = useState('');
   const [savedSelection, setSavedSelection] = useState<Range | null>(null);
+  const [classification, setClassification] = useState<ClassificationState>({
+    loading: false,
+    data: null,
+  });
+  const [saveUiState, setSaveUiState] = useState<SaveUiState>('idle');
 
   const draftSkipFirst = useRef(true);
   const contentEditableRef = useRef<HTMLDivElement>(null);
@@ -120,6 +131,46 @@ export default function NotasReflexionEditor() {
   useEffect(() => {
     if (tagInputVisible) tagInputRef.current?.focus();
   }, [tagInputVisible]);
+
+  useEffect(() => {
+    const plainBody = stripHtmlToText(bodyHtml);
+    const combined = `${title.trim()} ${plainBody}`.trim();
+    if (combined.length < 24) {
+      setClassification(prev => ({ ...prev, loading: false }));
+      return;
+    }
+
+    let cancelled = false;
+    const id = window.setTimeout(async () => {
+      setClassification(prev => ({ ...prev, loading: true }));
+      try {
+        const res = await fetch('/api/nlp/classify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, body: bodyHtml, maxTags: 4 }),
+        });
+        if (!res.ok || cancelled) {
+          setClassification(prev => ({ ...prev, loading: false }));
+          return;
+        }
+        const data = (await res.json()) as { ok?: boolean; classification?: NlpClassification };
+        if (!data.ok || !data.classification || cancelled) {
+          setClassification(prev => ({ ...prev, loading: false }));
+          return;
+        }
+        setClassification({ loading: false, data: data.classification });
+      } catch {
+        if (!cancelled) {
+          setClassification(prev => ({ ...prev, loading: false }));
+        }
+      }
+    }, 480);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(id);
+    };
+  }, [title, bodyHtml]);
 
   const syncHtmlFromEditor = useCallback(() => {
     if (contentEditableRef.current) setBodyHtml(contentEditableRef.current.innerHTML);
@@ -212,6 +263,20 @@ export default function NotasReflexionEditor() {
       });
       return;
     }
+    const previousDraft: DraftShape = {
+      title,
+      body: bodyHtml,
+      tags: [...tags],
+    };
+    const previousStoredReflections = localStorage.getItem('dashboardBibliaPersonalReflections');
+    setSaveUiState('saving');
+    // Optimistic UI: limpia editor y muestra "guardado" inmediatamente.
+    setTitle('');
+    setBodyHtml('');
+    setTags([]);
+    setTagInput('');
+    setTagInputVisible(false);
+    if (contentEditableRef.current) contentEditableRef.current.innerHTML = '';
     try {
       const id =
         typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
@@ -223,23 +288,36 @@ export default function NotasReflexionEditor() {
         body: bodyHtml,
         verseReference: null,
         savedAt: new Date().toISOString(),
+        category: classification.data?.category ?? 'devocional',
         tags: tags.length ? tags : undefined,
       });
       localStorage.removeItem(NOTAS_DRAFT_STORAGE_KEY);
-      setTitle('');
-      setBodyHtml('');
-      setTags([]);
-      setTagInput('');
-      setTagInputVisible(false);
-      if (contentEditableRef.current) contentEditableRef.current.innerHTML = '';
+      setSaveUiState('saved');
       toast({ title: 'Nota guardada', description: 'Tu nota quedó guardada en este dispositivo.' });
       queueMicrotask(() => contentEditableRef.current?.focus());
+      window.setTimeout(() => {
+        setSaveUiState((state) => (state === 'saved' ? 'idle' : state));
+      }, 1800);
     } catch {
+      // Rollback visual + de almacenamiento si falla persistencia.
+      if (previousStoredReflections === null) {
+        localStorage.removeItem('dashboardBibliaPersonalReflections');
+      } else {
+        localStorage.setItem('dashboardBibliaPersonalReflections', previousStoredReflections);
+      }
+      setTitle(previousDraft.title);
+      setBodyHtml(previousDraft.body);
+      setTags(previousDraft.tags);
+      if (contentEditableRef.current) contentEditableRef.current.innerHTML = previousDraft.body;
+      setSaveUiState('error');
       toast({ title: 'No se pudo guardar', variant: 'destructive' });
+      window.setTimeout(() => {
+        setSaveUiState((state) => (state === 'error' ? 'idle' : state));
+      }, 2200);
     }
-  }, [title, bodyHtml, tags, toast]);
+  }, [title, bodyHtml, tags, classification.data?.category, toast]);
 
-  const canSave = title.trim().length > 0 && !isEditorEmpty(bodyHtml);
+  const canSave = title.trim().length > 0 && !isEditorEmpty(bodyHtml) && saveUiState !== 'saving';
 
   const commitTag = useCallback(() => {
     const label = tagInput.trim().replace(/^#+/u, '');
@@ -259,6 +337,23 @@ export default function NotasReflexionEditor() {
   const removeTag = useCallback((index: number) => {
     setTags(prev => prev.filter((_, i) => i !== index));
   }, []);
+
+  const applySuggestedTags = useCallback(() => {
+    const suggestions = classification.data?.suggestedTags ?? [];
+    if (suggestions.length === 0) return;
+    setTags(prev => {
+      const existing = new Set(prev.map(t => t.toLowerCase()));
+      const merged = [...prev];
+      for (const tag of suggestions) {
+        const normalized = tag.trim();
+        if (!normalized) continue;
+        if (existing.has(normalized.toLowerCase())) continue;
+        merged.push(normalized);
+        existing.add(normalized.toLowerCase());
+      }
+      return merged.slice(0, 12);
+    });
+  }, [classification.data]);
 
   const toolbarBtn =
     'shrink-0 touch-manipulation rounded-lg p-2.5 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B88A44]/30 sm:p-2';
@@ -298,10 +393,22 @@ export default function NotasReflexionEditor() {
           type="button"
           onClick={guardarNota}
           disabled={!canSave}
-          className="inline-flex min-h-[44px] w-full touch-manipulation items-center justify-center gap-2 rounded-xl bg-[#B88A44] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#a67c3c] disabled:pointer-events-none disabled:opacity-45 sm:w-auto"
+          className={`inline-flex min-h-[44px] w-full touch-manipulation items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors disabled:pointer-events-none disabled:opacity-45 sm:w-auto ${
+            saveUiState === 'saved'
+              ? 'bg-emerald-600 hover:bg-emerald-600'
+              : saveUiState === 'error'
+                ? 'bg-red-600 hover:bg-red-600'
+                : 'bg-[#B88A44] hover:bg-[#a67c3c]'
+          }`}
         >
           <Save className="h-4 w-4 shrink-0" aria-hidden />
-          Guardar nota
+          {saveUiState === 'saving'
+            ? 'Guardando...'
+            : saveUiState === 'saved'
+              ? 'Guardado'
+              : saveUiState === 'error'
+                ? 'Reintentable'
+                : 'Guardar nota'}
         </button>
       </div>
 
@@ -452,6 +559,24 @@ export default function NotasReflexionEditor() {
 
       <div className="mt-8">
         <label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">Etiquetas</label>
+        {classification.data ? (
+          <div className="mb-2 rounded-xl border border-[#E7D9BD] bg-[#FCF7ED] px-3 py-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-[#7A5A24]">
+                NLP: <span className="uppercase">{classification.data.category}</span> ({Math.round(classification.data.confidence * 100)}%)
+              </p>
+              <button
+                type="button"
+                onClick={applySuggestedTags}
+                className="rounded-md bg-[#B88A44] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#a67c3c]"
+              >
+                Aplicar etiquetas sugeridas
+              </button>
+            </div>
+            <p className="mt-1 text-[11px] text-[#7A5A24]">{classification.data.reason}</p>
+          </div>
+        ) : null}
+        {classification.loading ? <p className="mb-2 text-[11px] text-gray-500">Analizando contenido con NLP...</p> : null}
         <div className="flex min-h-[3.25rem] flex-wrap items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2.5 shadow-sm">
           {tags.map((tag, i) => (
             <span

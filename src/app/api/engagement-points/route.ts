@@ -5,6 +5,9 @@ import { z } from 'zod';
 import { getMongoDb } from '@/lib/mongodb';
 import { findMemberDocumentByEmail, normalizeMemberEmail } from '@/lib/members-email-lookup';
 import type { EngagementPointsAction } from '@/lib/engagement-points';
+import { consumeLeakyBucket, getClientIpFromHeaders } from '@/lib/rate-limit';
+import { logRateLimitHit } from '@/lib/rate-limit-telemetry';
+import { buildRateLimit429Headers, buildRateLimitPolicy } from '@/lib/rate-limit-headers';
 
 const actionSchema = z.enum([
   'bible_read',
@@ -13,6 +16,9 @@ const actionSchema = z.enum([
   'bible_note_create',
   'bible_image_generate',
   'bible_image_create',
+  'announcement_read',
+  'resource_read',
+  'resource_download',
 ] as const satisfies readonly EngagementPointsAction[]);
 
 const payloadSchema = z.object({
@@ -228,6 +234,40 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ ok: false, reason: 'unauthenticated' }, { status: 401 });
+    }
+
+    const ip = getClientIpFromHeaders(req.headers);
+    const policy = buildRateLimitPolicy({
+      kind: 'leaky-bucket',
+      capacity: 25,
+      leakRatePerSecond: 0.5,
+    });
+    const rate = consumeLeakyBucket({
+      key: `api:engagement-points:${userId}:${ip}`,
+      capacity: 25,
+      leakRatePerSecond: 0.5,
+    });
+    if (!rate.allowed) {
+      logRateLimitHit({
+        endpoint: '/api/engagement-points',
+        key: `${userId}:${ip}`,
+        retryAfterSeconds: rate.retryAfterSeconds,
+        meta: {
+          policy,
+          remaining: rate.remaining,
+        },
+      });
+      return NextResponse.json(
+        { ok: false, error: 'Demasiadas acciones en poco tiempo. Intenta de nuevo en unos segundos.' },
+        {
+          status: 429,
+          headers: buildRateLimit429Headers({
+            retryAfterSeconds: rate.retryAfterSeconds,
+            remaining: rate.remaining,
+            policy,
+          }),
+        }
+      );
     }
 
     let body: unknown;

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, X, ChevronDown, BookOpen, LayoutGrid, Clock, ArrowRight, Keyboard } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { fuzzySimilarity, normalizeSearchText } from '@/lib/fuzzy-search';
 
 const BIBLE_BOOKS = [
     "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", "Josué",
@@ -179,7 +180,7 @@ function inferSection(words: string[]): typeof SECTIONS[0] | null {
 }
 
 function normalize(s: string): string {
-    return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    return normalizeSearchText(s);
 }
 
 // Normalize AND strip spaces so "1samuel" matches "1 Samuel"
@@ -194,6 +195,15 @@ function findBook(part: string): string | undefined {
     let found = BIBLE_BOOKS.find(b => normFlat(b).startsWith(p));
     // 2. fallback: includes match (handles mid-word searches)
     if (!found) found = BIBLE_BOOKS.find(b => normFlat(b).includes(p));
+    // 3. fuzzy fallback for typos (e.g. "apocalispsis")
+    if (!found) {
+        let best: { book: string; score: number } | null = null;
+        for (const book of BIBLE_BOOKS) {
+            const score = fuzzySimilarity(normFlat(book), p);
+            if (!best || score > best.score) best = { book, score };
+        }
+        if (best && best.score >= 0.7) found = best.book;
+    }
     return found;
 }
 
@@ -334,6 +344,15 @@ export default function GlobalSearch() {
                         else if (normalize(s.desc).includes(w)) score += 2;
                         else if (fullText.includes(w)) score += 1;
                         else if ((s.keywords ?? []).some(k => normalize(k).includes(w))) score += 1;
+                        else {
+                            const fuzzyLabel = fuzzySimilarity(normalize(s.label), w);
+                            const fuzzyKeywords = Math.max(
+                                0,
+                                ...(s.keywords ?? []).map(k => fuzzySimilarity(normalize(k), w))
+                            );
+                            if (fuzzyLabel >= 0.74) score += 3.5;
+                            else if (fuzzyKeywords >= 0.74) score += 1.8;
+                        }
                     }
 
                     // Boost score using learned mappings for this section

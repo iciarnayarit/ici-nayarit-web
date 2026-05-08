@@ -1,5 +1,6 @@
 import { getMongoDb } from '@/lib/mongodb';
 import type { ChurchListOption } from '@/lib/member-churches-helpers';
+import { getOrSetRamCache } from '@/lib/ram-cache';
 
 export type { ChurchListOption } from '@/lib/member-churches-helpers';
 export {
@@ -12,6 +13,9 @@ export {
 export function churchesCollectionName(): string {
   return process.env.STORAGE_MONGODB_CHURCHES_COLLECTION?.trim() || 'churches';
 }
+
+const CHURCH_OPTIONS_CACHE_KEY = 'member-churches:options:v1';
+const CHURCH_OPTIONS_CACHE_TTL_MS = 60 * 1000;
 
 function normalizeLabelKey(label: string): string {
   return label.trim().toLocaleLowerCase('es');
@@ -63,37 +67,39 @@ function sortOrderFromDoc(doc: Record<string, unknown>): number {
  * Templos desde MongoDB (`churches` por defecto) para el registro de miembros.
  */
 export async function listChurchOptionsForMemberForm(): Promise<ChurchListOption[]> {
-  const db = await getMongoDb();
-  const coll = db.collection(churchesCollectionName());
-  const docs = await coll.find({}).toArray();
+  return getOrSetRamCache(CHURCH_OPTIONS_CACHE_KEY, CHURCH_OPTIONS_CACHE_TTL_MS, async () => {
+    const db = await getMongoDb();
+    const coll = db.collection(churchesCollectionName());
+    const docs = await coll.find({}).toArray();
 
-  const rows: { option: ChurchListOption; order: number }[] = [];
-  const seen = new Set<string>();
+    const rows: { option: ChurchListOption; order: number }[] = [];
+    const seen = new Set<string>();
 
-  for (const d of docs) {
-    const rec = d as Record<string, unknown>;
-    const label = churchDisplayNameFromDoc(rec);
-    if (!label) continue;
-    const value = churchStorageValueFromDoc(rec, label);
-    if (!value) continue;
-    const nk = normalizeLabelKey(value);
-    if (seen.has(nk)) continue;
-    seen.add(nk);
-    rows.push({
-      option: {
-        value,
-        label,
-        municipality: churchMunicipalityFromDoc(rec),
-        addressLine: churchAddressLineFromDoc(rec),
-      },
-      order: sortOrderFromDoc(rec),
+    for (const d of docs) {
+      const rec = d as Record<string, unknown>;
+      const label = churchDisplayNameFromDoc(rec);
+      if (!label) continue;
+      const value = churchStorageValueFromDoc(rec, label);
+      if (!value) continue;
+      const nk = normalizeLabelKey(value);
+      if (seen.has(nk)) continue;
+      seen.add(nk);
+      rows.push({
+        option: {
+          value,
+          label,
+          municipality: churchMunicipalityFromDoc(rec),
+          addressLine: churchAddressLineFromDoc(rec),
+        },
+        order: sortOrderFromDoc(rec),
+      });
+    }
+
+    rows.sort((a, b) => {
+      if (a.order !== b.order) return a.order - b.order;
+      return a.option.label.localeCompare(b.option.label, 'es');
     });
-  }
 
-  rows.sort((a, b) => {
-    if (a.order !== b.order) return a.order - b.order;
-    return a.option.label.localeCompare(b.option.label, 'es');
+    return rows.map((r) => r.option);
   });
-
-  return rows.map((r) => r.option);
 }

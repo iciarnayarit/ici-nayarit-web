@@ -1,14 +1,27 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { Share2, Copy } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
-import DashboardSavedVerses from '@/app/dashboard/biblia/dashboard-saved-verses';
 import DailyVerseHero from '@/app/dashboard/biblia/daily-verse-hero';
-import DashboardSavedPersonalReflections from '@/app/dashboard/biblia/dashboard-saved-personal-reflections';
-import PersonalReflectionsCard from '@/app/dashboard/biblia/personal-reflections-card';
 import { useToast } from '@/app/hooks/use-toast';
 import { getDailyVerseEs, type DailyVerseEs } from '@/lib/daily-verse-es';
+
+const DashboardSavedVerses = dynamic(() => import('@/app/dashboard/biblia/dashboard-saved-verses'), {
+  loading: () => <div className="min-h-[160px] animate-pulse rounded-2xl bg-white shadow-sm" />,
+});
+
+const PersonalReflectionsCard = dynamic(() => import('@/app/dashboard/biblia/personal-reflections-card'), {
+  loading: () => <div className="min-h-[180px] animate-pulse rounded-2xl bg-white shadow-sm" />,
+});
+
+const DashboardSavedPersonalReflections = dynamic(
+  () => import('@/app/dashboard/biblia/dashboard-saved-personal-reflections'),
+  {
+    loading: () => <div className="min-h-[220px] animate-pulse rounded-2xl bg-white shadow-sm" />,
+  }
+);
 
 const CONTEXT_TAGS_STORAGE_KEY = 'dashboardBibliaContextTags';
 const DEFAULT_CONTEXT_TAGS = ['Esperanza', 'Futuro', 'Promesa', 'Confianza'];

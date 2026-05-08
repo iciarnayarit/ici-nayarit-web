@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BookOpen, Bookmark, Filter, Plus, Share2 } from 'lucide-react';
@@ -17,6 +17,8 @@ import {
   SAVED_COMMENTARIES_CHANGED_EVENT,
   toggleSavedCommentary,
 } from '@/lib/saved-commentaries';
+import { useDebouncedValue } from '@/app/hooks/use-debounced-value';
+import { fuzzySimilarity, normalizeSearchText } from '@/lib/fuzzy-search';
 
 type TabId = 'all' | 'ot' | 'nt' | 'theological' | 'historical';
 
@@ -86,6 +88,8 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
   const { toast } = useToast();
   const [tab, setTab] = useState<TabId>('all');
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 280);
 
   const refreshSavedIds = useCallback(() => {
     setSavedIds(new Set(getSavedCommentaries().map(x => x.id)));
@@ -104,14 +108,70 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
 
   const filtered = useMemo(() => {
     const list = commentaries.filter(c => matchesTab(c, tab));
+    const normalizedQuery = normalizeSearchText(debouncedSearchQuery);
+    const queryActive = normalizedQuery.length >= 2;
     const rank = new Map<string, number>(PREFERRED_ORDER.map((id, i) => [id, i]));
-    return [...list].sort((a, b) => {
-      const ra = rank.has(a.id) ? rank.get(a.id)! : Number.MAX_SAFE_INTEGER;
-      const rb = rank.has(b.id) ? rank.get(b.id)! : Number.MAX_SAFE_INTEGER;
-      if (ra !== rb) return ra - rb;
-      return commentaryAuthorShortName(a.name).localeCompare(commentaryAuthorShortName(b.name), 'es');
-    });
-  }, [commentaries, tab]);
+    const scored = list
+      .map(c => {
+        const author = commentaryAuthorShortName(c.name);
+        const baseText = `${author} ${c.englishName} ${snippetFor(c)} ${c.numberOfBooks} libros`;
+        const score = queryActive ? fuzzySimilarity(baseText, normalizedQuery) : 1;
+        return { c, score, author };
+      })
+      .filter(item => !queryActive || item.score >= 0.62);
+
+    return scored
+      .sort((a, b) => {
+        if (queryActive && a.score !== b.score) return b.score - a.score;
+        const ra = rank.has(a.c.id) ? rank.get(a.c.id)! : Number.MAX_SAFE_INTEGER;
+        const rb = rank.has(b.c.id) ? rank.get(b.c.id)! : Number.MAX_SAFE_INTEGER;
+        if (ra !== rb) return ra - rb;
+        return a.author.localeCompare(b.author, 'es');
+      })
+      .map(item => item.c);
+  }, [commentaries, tab, debouncedSearchQuery]);
+
+  const handleOpenCommentary = useCallback(
+    (id: string) => {
+      router.push(`/comentarios/${id}`);
+    },
+    [router]
+  );
+
+  const handleToggleSaved = useCallback(
+    (c: HelloAoCommentary) => {
+      const nowSaved = toggleSavedCommentary(c);
+      toast({
+        title: nowSaved ? 'Guardado' : 'Quitado',
+        description: nowSaved
+          ? `${commentaryAuthorShortName(c.name)} se guardó en este dispositivo.`
+          : `${commentaryAuthorShortName(c.name)} ya no está en guardados.`,
+      });
+    },
+    [toast]
+  );
+
+  useEffect(() => {
+    if (filtered.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const target = entry.target as HTMLElement;
+          const href = target.dataset.prefetchHref;
+          if (!href) continue;
+          router.prefetch(href);
+          observer.unobserve(target);
+        }
+      },
+      { rootMargin: '180px 0px', threshold: 0.01 }
+    );
+
+    const nodes = document.querySelectorAll<HTMLElement>('[data-prefetch-href]');
+    nodes.forEach(node => observer.observe(node));
+    return () => observer.disconnect();
+  }, [filtered, router]);
 
   return (
     <div className="min-h-screen bg-[#F0F2F6] pb-24">
@@ -145,6 +205,13 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
             </button>
           ))}
         </div>
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          placeholder="Buscar comentario, autor o temática..."
+          className="w-full rounded-full border border-gray-200 bg-white px-4 py-2 text-sm text-gray-700 shadow-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-100 sm:w-[22rem]"
+        />
         <Button
           type="button"
           variant="outline"
@@ -170,83 +237,16 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
               const ref = referenceFor(index);
               const moreHref = c.website ?? helloAoBooksUrl(c.listOfBooksApiLink);
               return (
-                <li
+                <CommentaryCard
                   key={c.id}
-                  role="link"
-                  tabIndex={0}
-                  className="flex cursor-pointer flex-col rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
-                  onClick={() => router.push(`/comentarios/${c.id}`)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      router.push(`/comentarios/${c.id}`);
-                    }
-                  }}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span
-                        className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-200 to-slate-300 text-sm font-black text-slate-700"
-                        aria-hidden
-                      >
-                        {author
-                          .split(/\s+/)
-                          .map(w => w[0])
-                          .join('')
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate font-bold text-gray-900">{author}</p>
-                        <span className="mt-0.5 inline-block rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-700">
-                          {languageBadge(c)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex shrink-0 gap-1 text-gray-400" onClick={e => e.stopPropagation()}>
-                      <button
-                        type="button"
-                        className={`rounded-lg p-1.5 hover:bg-gray-100 hover:text-gray-700 ${savedIds.has(c.id) ? 'text-blue-600' : ''}`}
-                        aria-label={savedIds.has(c.id) ? 'Quitar guardado' : 'Guardar'}
-                        title={savedIds.has(c.id) ? 'Quitar de guardados' : 'Guardar en este dispositivo'}
-                        onClick={() => {
-                          const nowSaved = toggleSavedCommentary(c);
-                          toast({
-                            title: nowSaved ? 'Guardado' : 'Quitado',
-                            description: nowSaved
-                              ? `${commentaryAuthorShortName(c.name)} se guardó en este dispositivo.`
-                              : `${commentaryAuthorShortName(c.name)} ya no está en guardados.`,
-                          });
-                        }}
-                      >
-                        <Bookmark className={`h-4 w-4 ${savedIds.has(c.id) ? 'fill-current' : ''}`} />
-                      </button>
-                      <button type="button" className="rounded-lg p-1.5 hover:bg-gray-100 hover:text-gray-700" aria-label="Compartir">
-                        <Share2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                  <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Versículo de ejemplo</p>
-                  <p className="mt-1 font-display text-lg font-bold text-gray-900">{ref}</p>
-                  <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-gray-600">{snippetFor(c)}</p>
-                  <div
-                    className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-4"
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <button
-                      type="button"
-                      className="text-left text-sm font-bold text-blue-600 hover:text-blue-800"
-                      onClick={() => router.push(`/comentarios/${c.id}`)}
-                    >
-                      Ver libros →
-                    </button>
-                    <div className="flex items-center gap-3">
-                      <span className="text-[11px] text-gray-400">
-                        {c.totalNumberOfVerses.toLocaleString('es-MX')} versículos
-                      </span>
-                    </div>
-                  </div>
-                </li>
+                  commentary={c}
+                  author={author}
+                  refLabel={ref}
+                  isSaved={savedIds.has(c.id)}
+                  onOpen={handleOpenCommentary}
+                  onToggleSaved={handleToggleSaved}
+                  prefetchHref={`/comentarios/${c.id}`}
+                />
               );
             })}
           </ul>
@@ -256,3 +256,97 @@ export default function CommentariesCatalog({ commentaries }: { commentaries: He
     </div>
   );
 }
+
+type CommentaryCardProps = {
+  commentary: HelloAoCommentary;
+  author: string;
+  refLabel: string;
+  isSaved: boolean;
+  onOpen: (id: string) => void;
+  onToggleSaved: (commentary: HelloAoCommentary) => void;
+  prefetchHref: string;
+};
+
+const CommentaryCard = memo(function CommentaryCard({
+  commentary,
+  author,
+  refLabel,
+  isSaved,
+  onOpen,
+  onToggleSaved,
+  prefetchHref,
+}: CommentaryCardProps) {
+  const initials = author
+    .split(/\s+/)
+    .map(w => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <li
+      data-prefetch-href={prefetchHref}
+      role="link"
+      tabIndex={0}
+      className="flex cursor-pointer flex-col rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+      onClick={() => onOpen(commentary.id)}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onOpen(commentary.id);
+        }
+      }}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-3">
+          <span
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-slate-200 to-slate-300 text-sm font-black text-slate-700"
+            aria-hidden
+          >
+            {initials}
+          </span>
+          <div className="min-w-0">
+            <p className="truncate font-bold text-gray-900">{author}</p>
+            <span className="mt-0.5 inline-block rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-700">
+              {languageBadge(commentary)}
+            </span>
+          </div>
+        </div>
+        <div className="flex shrink-0 gap-1 text-gray-400" onClick={e => e.stopPropagation()}>
+          <button
+            type="button"
+            className={`rounded-lg p-1.5 hover:bg-gray-100 hover:text-gray-700 ${isSaved ? 'text-blue-600' : ''}`}
+            aria-label={isSaved ? 'Quitar guardado' : 'Guardar'}
+            title={isSaved ? 'Quitar de guardados' : 'Guardar en este dispositivo'}
+            onClick={() => onToggleSaved(commentary)}
+          >
+            <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current' : ''}`} />
+          </button>
+          <button type="button" className="rounded-lg p-1.5 hover:bg-gray-100 hover:text-gray-700" aria-label="Compartir">
+            <Share2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+      <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-gray-400">Versículo de ejemplo</p>
+      <p className="mt-1 font-display text-lg font-bold text-gray-900">{refLabel}</p>
+      <p className="mt-2 line-clamp-4 text-sm leading-relaxed text-gray-600">{snippetFor(commentary)}</p>
+      <div
+        className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-4"
+        onClick={e => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="text-left text-sm font-bold text-blue-600 hover:text-blue-800"
+          onClick={() => onOpen(commentary.id)}
+        >
+          Ver libros →
+        </button>
+        <div className="flex items-center gap-3">
+          <span className="text-[11px] text-gray-400">
+            {commentary.totalNumberOfVerses.toLocaleString('es-MX')} versículos
+          </span>
+        </div>
+      </div>
+    </li>
+  );
+});

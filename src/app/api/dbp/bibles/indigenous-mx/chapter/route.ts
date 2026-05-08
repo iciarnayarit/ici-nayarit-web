@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchDbpJson } from '@/lib/dbp-proxy';
+import { buildDbpCircuitHeader, fetchDbpJson } from '@/lib/dbp-proxy';
 
 type DbpBiblesResponse = {
   data?: Array<{
@@ -75,6 +75,7 @@ function pickTextJsonFilesetId(payload: DbpBiblesResponse): string | null {
 }
 
 export async function GET(req: NextRequest) {
+  const circuitStateHeader = buildDbpCircuitHeader();
   const iso = req.nextUrl.searchParams.get('iso')?.toLowerCase().trim() ?? '';
   const book = req.nextUrl.searchParams.get('book')?.toUpperCase().trim() ?? '';
   const chapter = Number.parseInt(req.nextUrl.searchParams.get('chapter') ?? '', 10);
@@ -82,7 +83,7 @@ export async function GET(req: NextRequest) {
   if (!SUPPORTED_ISOS.has(iso) || !book || !Number.isFinite(chapter) || chapter < 1) {
     return NextResponse.json(
       { error: 'Parámetros inválidos. Requiere iso, book y chapter.' },
-      { status: 400 }
+      { status: 400, headers: { 'X-Circuit-State': circuitStateHeader } }
     );
   }
 
@@ -93,7 +94,10 @@ export async function GET(req: NextRequest) {
     });
     const filesetId = pickTextJsonFilesetId(biblesPayload);
     if (!filesetId) {
-      return NextResponse.json({ data: { iso, bookId: book, chapter, verses: [] } });
+      return NextResponse.json(
+        { data: { iso, bookId: book, chapter, verses: [] } },
+        { headers: { 'X-Circuit-State': circuitStateHeader } }
+      );
     }
 
     const chapterPayload = await fetchDbpJson<DbpFilesetChapterResponse>(
@@ -101,7 +105,10 @@ export async function GET(req: NextRequest) {
     );
     const sourcePath = chapterPayload?.data?.[0]?.path;
     if (!sourcePath) {
-      return NextResponse.json({ data: { iso, filesetId, bookId: book, chapter, verses: [] } });
+      return NextResponse.json(
+        { data: { iso, filesetId, bookId: book, chapter, verses: [] } },
+        { headers: { 'X-Circuit-State': circuitStateHeader } }
+      );
     }
 
     const sourceRes = await fetch(sourcePath, {
@@ -110,7 +117,10 @@ export async function GET(req: NextRequest) {
       cache: 'no-store',
     });
     if (!sourceRes.ok) {
-      return NextResponse.json({ data: { iso, filesetId, bookId: book, chapter, verses: [] } });
+      return NextResponse.json(
+        { data: { iso, filesetId, bookId: book, chapter, verses: [] } },
+        { headers: { 'X-Circuit-State': circuitStateHeader } }
+      );
     }
 
     const sourceJson = (await sourceRes.json()) as unknown;
@@ -124,12 +134,14 @@ export async function GET(req: NextRequest) {
         chapter,
         verses,
       },
+    }, {
+      headers: { 'X-Circuit-State': circuitStateHeader },
     });
   } catch (error) {
     console.error('[api/dbp/bibles/indigenous-mx/chapter]', error);
     return NextResponse.json(
       { error: 'No se pudo cargar el capítulo solicitado.' },
-      { status: 502 }
+      { status: 502, headers: { 'X-Circuit-State': circuitStateHeader } }
     );
   }
 }

@@ -21,6 +21,9 @@ import {
   listStaffRoleOptionsForDirectory,
   resolveStaffRoleForStorage,
 } from '@/lib/staff-roles';
+import { consumeLeakyBucket, getClientIpFromHeaders } from '@/lib/rate-limit';
+import { logRateLimitHit } from '@/lib/rate-limit-telemetry';
+import { buildRateLimit429Headers, buildRateLimitPolicy } from '@/lib/rate-limit-headers';
 
 function staffRoleFromDoc(value: unknown): string {
   if (typeof value !== 'string') return MEMBER_STAFF_ROLE_UNSPECIFIED;
@@ -159,6 +162,40 @@ export async function POST(req: Request) {
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: 'Debes iniciar sesión para guardar miembros.' }, { status: 401 });
+    }
+
+    const ip = getClientIpFromHeaders(req.headers);
+    const policy = buildRateLimitPolicy({
+      kind: 'leaky-bucket',
+      capacity: 8,
+      leakRatePerSecond: 0.1,
+    });
+    const rate = consumeLeakyBucket({
+      key: `api:members:${userId}:${ip}`,
+      capacity: 8,
+      leakRatePerSecond: 0.1,
+    });
+    if (!rate.allowed) {
+      logRateLimitHit({
+        endpoint: '/api/members',
+        key: `${userId}:${ip}`,
+        retryAfterSeconds: rate.retryAfterSeconds,
+        meta: {
+          policy,
+          remaining: rate.remaining,
+        },
+      });
+      return NextResponse.json(
+        { error: 'Demasiados intentos para guardar el formulario. Espera un momento e intenta de nuevo.' },
+        {
+          status: 429,
+          headers: buildRateLimit429Headers({
+            retryAfterSeconds: rate.retryAfterSeconds,
+            remaining: rate.remaining,
+            policy,
+          }),
+        }
+      );
     }
 
     let json: unknown;

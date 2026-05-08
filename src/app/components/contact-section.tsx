@@ -15,12 +15,14 @@ import { useToast } from '@/app/hooks/use-toast';
 import { MessageCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import { IMAGE_BLUR_PLACEHOLDERS } from '@/lib/image-placeholders';
 
 export default function ContactSection() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const handleWhatsAppClick = () => {
@@ -29,7 +31,8 @@ export default function ContactSection() {
     window.open(whatsappUrl, '_blank');
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
     if (!name.trim() || !message.trim() || !email.trim()) {
       toast({
         title: "Campos incompletos",
@@ -49,18 +52,51 @@ export default function ContactSection() {
         return;
     }
 
-    // Placeholder for email sending logic
-    console.log("Formulario enviado:", { name, email, message });
+    try {
+      setIsSubmitting(true);
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim(),
+        }),
+      });
 
-    toast({
-      title: "Formulario enviado",
-      description: "Tu mensaje ha sido recibido.",
-    });
+      const data = (await res.json()) as { error?: string; message?: string };
+      if (!res.ok) {
+        const apiMessage =
+          data?.error ??
+          (res.status === 429
+            ? 'Demasiados intentos. Espera un momento antes de volver a enviar.'
+            : 'No se pudo enviar el formulario.');
+        toast({
+          title: "No se pudo enviar",
+          description: apiMessage,
+          variant: "destructive",
+        });
+        return;
+      }
 
-    setIsModalOpen(false);
-    setName('');
-    setEmail('');
-    setMessage('');
+      toast({
+        title: "Formulario enviado",
+        description: data?.message ?? "Tu mensaje ha sido recibido.",
+      });
+
+      setIsModalOpen(false);
+      setName('');
+      setEmail('');
+      setMessage('');
+    } catch {
+      toast({
+        title: "Error de red",
+        description: "No fue posible conectar con el servidor. Intenta nuevamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -68,8 +104,10 @@ export default function ContactSection() {
       <Image
         src="https://i.imgur.com/pIdxDkl.jpeg"
         alt="Background"
-        layout="fill"
-        objectFit="cover"
+        fill
+        sizes="100vw"
+        placeholder="blur"
+        blurDataURL={IMAGE_BLUR_PLACEHOLDERS.contactBackground}
         className="z-0"
       />
       <div className="absolute inset-0 bg-black/60 z-10"></div>
@@ -108,7 +146,9 @@ export default function ContactSection() {
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" onClick={handleSubmit}>Enviar</Button>
+                <Button type="submit" onClick={handleSubmit} disabled={isSubmitting}>
+                  {isSubmitting ? 'Enviando...' : 'Enviar'}
+                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>

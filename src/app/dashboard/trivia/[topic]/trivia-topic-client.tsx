@@ -16,6 +16,15 @@ const TRIVIA_RANKING_CACHE_KEY = 'iciar-trivia-ranking-cache-v3';
 const TRIVIA_LIVE_POINTS_KEY = 'iciar-trivia-live-points-v1';
 const TRIVIA_COMPLETED_TOPICS_KEY = 'iciar-trivia-completed-topics-v1';
 
+function speedBonusFromAvgSeconds(avgSeconds: number): number {
+  if (avgSeconds <= 5) return 80;
+  if (avgSeconds <= 8) return 60;
+  if (avgSeconds <= 12) return 40;
+  if (avgSeconds <= 16) return 25;
+  if (avgSeconds <= 20) return 10;
+  return 0;
+}
+
 function readCompletedTopicsMap(): Record<string, true> {
   if (typeof window === 'undefined') return {};
   try {
@@ -133,12 +142,35 @@ export default function TriviaTopicClient({ topic }: Props) {
         ? 'Discípulo de Bronce'
         : 'Discípulo Inicial';
 
+    const values = Object.values(timingMap).filter(v => Number.isFinite(v));
+    const answeredCount = values.length;
+    const totalResponseSeconds = values.reduce((acc, v) => acc + v, 0);
+    const avgResponseSeconds = answeredCount > 0 ? totalResponseSeconds / answeredCount : QUESTION_TIME_LIMIT_SECONDS;
+    const fastestResponseSeconds = answeredCount > 0 ? Math.min(...values) : QUESTION_TIME_LIMIT_SECONDS;
+    const optimisticPoints = basePoints + finalScore * 10 + speedBonusFromAvgSeconds(avgResponseSeconds);
+
+    const previousLivePointsRaw = localStorage.getItem(TRIVIA_LIVE_POINTS_KEY);
+    const previousLivePoints = Number(previousLivePointsRaw ?? '0');
+    const previousCompletedMap = readCompletedTopicsMap();
+    const previousTopicLocked = topicLocked;
+
+    // Optimistic UI: actualiza puntos y estado local antes de confirmar servidor.
     try {
-      const values = Object.values(timingMap).filter(v => Number.isFinite(v));
-      const answeredCount = values.length;
-      const totalResponseSeconds = values.reduce((acc, v) => acc + v, 0);
-      const avgResponseSeconds = answeredCount > 0 ? totalResponseSeconds / answeredCount : QUESTION_TIME_LIMIT_SECONDS;
-      const fastestResponseSeconds = answeredCount > 0 ? Math.min(...values) : QUESTION_TIME_LIMIT_SECONDS;
+      const nextPoints = (Number.isFinite(previousLivePoints) ? previousLivePoints : 0) + optimisticPoints;
+      localStorage.setItem(TRIVIA_LIVE_POINTS_KEY, String(nextPoints));
+      localStorage.removeItem(TRIVIA_RANKING_CACHE_KEY);
+      const optimisticCompleted = { ...previousCompletedMap };
+      if (finalScore >= total) {
+        optimisticCompleted[topic.slug] = true;
+        setTopicLocked(true);
+      }
+      persistCompletedTopicsMap(optimisticCompleted);
+      window.dispatchEvent(new CustomEvent('iciar-trivia-points-updated'));
+    } catch {
+      // no-op si localStorage falla
+    }
+
+    try {
       const res = await fetch('/api/trivia-ranking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -165,26 +197,39 @@ export default function TriviaTopicClient({ topic }: Props) {
         completedThisTopic?: boolean;
         completedTopics?: string[];
       };
-      if (res.ok && data.ok && Number.isFinite(Number(data.viewerPoints))) {
-        try {
-          localStorage.setItem(TRIVIA_LIVE_POINTS_KEY, String(Number(data.viewerPoints)));
-          localStorage.removeItem(TRIVIA_RANKING_CACHE_KEY);
-          const completedMap = readCompletedTopicsMap();
-          if (Array.isArray(data.completedTopics)) {
-            for (const slug of data.completedTopics) completedMap[slug] = true;
-          }
-          if (data.completedThisTopic) {
-            completedMap[topic.slug] = true;
-            setTopicLocked(true);
-          }
-          persistCompletedTopicsMap(completedMap);
-          window.dispatchEvent(new CustomEvent('iciar-trivia-points-updated'));
-        } catch {
-          // ignore localStorage issues
+      if (!res.ok || !data.ok || !Number.isFinite(Number(data.viewerPoints))) {
+        throw new Error('No se pudo sincronizar el resultado del test.');
+      }
+      try {
+        localStorage.setItem(TRIVIA_LIVE_POINTS_KEY, String(Number(data.viewerPoints)));
+        localStorage.removeItem(TRIVIA_RANKING_CACHE_KEY);
+        const completedMap = readCompletedTopicsMap();
+        if (Array.isArray(data.completedTopics)) {
+          for (const slug of data.completedTopics) completedMap[slug] = true;
         }
+        if (data.completedThisTopic) {
+          completedMap[topic.slug] = true;
+          setTopicLocked(true);
+        }
+        persistCompletedTopicsMap(completedMap);
+        window.dispatchEvent(new CustomEvent('iciar-trivia-points-updated'));
+      } catch {
+        // ignore localStorage issues
       }
     } catch {
-      // keep UX fluid if offline
+      // Rollback: revierte estado optimista si la sincronización falla.
+      try {
+        if (previousLivePointsRaw === null) {
+          localStorage.removeItem(TRIVIA_LIVE_POINTS_KEY);
+        } else {
+          localStorage.setItem(TRIVIA_LIVE_POINTS_KEY, previousLivePointsRaw);
+        }
+        persistCompletedTopicsMap(previousCompletedMap);
+        setTopicLocked(previousTopicLocked);
+        window.dispatchEvent(new CustomEvent('iciar-trivia-points-updated'));
+      } catch {
+        // keep UX fluid if rollback storage fails
+      }
     }
   };
 
@@ -193,10 +238,6 @@ export default function TriviaTopicClient({ topic }: Props) {
       const finalAnswers = { ...answers };
       const finalScore = computeScore(finalAnswers);
       const finalTimingMap = { ...responseSecondsByQuestion };
-      if (finalScore >= total) {
-        markTopicCompleted(topic.slug);
-        setTopicLocked(true);
-      }
       void syncFinishedTest(finalScore, finalTimingMap);
       setFinished(true);
       return;
