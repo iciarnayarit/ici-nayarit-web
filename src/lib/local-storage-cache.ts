@@ -12,6 +12,8 @@ type CacheIndexEntry = {
 
 const CACHE_INDEX_KEY = 'iciar-local-cache-index-v1';
 const MAX_CACHE_ENTRIES = 40;
+const inFlightByKey = new Map<string, Promise<unknown>>();
+const lastRemoteFetchAtByKey = new Map<string, number>();
 
 function isBrowser() {
   return typeof window !== 'undefined';
@@ -141,16 +143,48 @@ export async function getLocalFirstData<T>(input: {
   cacheKey: string;
   ttlMs: number;
   fetcher: () => Promise<T>;
+  minRemoteIntervalMs?: number;
+  forceRemote?: boolean;
 }): Promise<T> {
   const cached = readLocalCache<T>(input.cacheKey);
-  if (isCacheFresh(cached)) {
+  const forceRemote = input.forceRemote === true;
+  if (!forceRemote && isCacheFresh(cached)) {
     return cached.data;
   }
 
+  const now = Date.now();
+  const minRemoteIntervalMs = Math.max(0, input.minRemoteIntervalMs ?? 0);
+  const lastFetchAt = lastRemoteFetchAtByKey.get(input.cacheKey) ?? 0;
+  const shouldCooldown = !forceRemote && minRemoteIntervalMs > 0 && now - lastFetchAt < minRemoteIntervalMs;
+  if (shouldCooldown && cached) {
+    return cached.data;
+  }
+
+  const inFlight = inFlightByKey.get(input.cacheKey) as Promise<T> | undefined;
+  if (inFlight) {
+    try {
+      return await inFlight;
+    } catch {
+      if (cached) return cached.data;
+      throw new Error('No se pudo resolver petición en curso.');
+    }
+  }
+
+  const requestPromise = (async () => {
+    try {
+      const remote = await input.fetcher();
+      writeLocalCache(input.cacheKey, remote, input.ttlMs);
+      lastRemoteFetchAtByKey.set(input.cacheKey, Date.now());
+      return remote;
+    } finally {
+      inFlightByKey.delete(input.cacheKey);
+    }
+  })();
+
+  inFlightByKey.set(input.cacheKey, requestPromise as Promise<unknown>);
+
   try {
-    const remote = await input.fetcher();
-    writeLocalCache(input.cacheKey, remote, input.ttlMs);
-    return remote;
+    return await requestPromise;
   } catch (error) {
     if (cached) return cached.data;
     throw error;

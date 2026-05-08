@@ -263,11 +263,12 @@ function writeServerSnapshotCache(snapshot: EngagementSnapshot) {
   }
 }
 
-export async function hydrateEngagementFromServer(): Promise<EngagementSnapshot> {
+export async function hydrateEngagementFromServer(options?: { force?: boolean }): Promise<EngagementSnapshot> {
   const local = getEngagementSnapshot();
   if (typeof window === 'undefined') return local;
-  const cachedRemote = readServerSnapshotCache();
-  if (cachedRemote) {
+  const force = options?.force === true;
+  const cachedRemote = force ? null : readServerSnapshotCache();
+  if (!force && cachedRemote) {
     const mergedCached: EngagementSnapshot = {
       totalPoints: Math.max(local.totalPoints, cachedRemote.totalPoints),
       counters: mergeNumberMaps(
@@ -288,7 +289,7 @@ export async function hydrateEngagementFromServer(): Promise<EngagementSnapshot>
   setSyncState({ ...getEngagementSyncState(), status: 'syncing', lastAttemptAt: nowTs });
 
   try {
-    const res = await fetch('/api/engagement-points', { method: 'GET' });
+    const res = await fetch('/api/engagement-points', { method: 'GET', cache: 'no-store' });
     if (!res.ok) {
       setSyncState({ ...getEngagementSyncState(), status: 'pending' });
       return local;

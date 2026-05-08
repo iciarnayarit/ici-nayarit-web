@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { BookOpen, Flame, Megaphone, Sparkles, Star } from 'lucide-react';
 import DashboardBibliaReadingToolbar from '@/app/dashboard/biblia/dashboard-biblia-reading-toolbar';
@@ -164,6 +164,7 @@ const EMPTY_SNAPSHOT: EngagementSnapshot = {
 const TRIVIA_POINTS_CACHE_KEY = 'iciar-trivia-user-points-v1';
 const TRIVIA_RANKING_CACHE_KEY = 'iciar-trivia-ranking-cache-v3';
 const TRIVIA_LIVE_POINTS_KEY = 'iciar-trivia-live-points-v1';
+const TRIVIA_MULTI_DEVICE_SYNC_INTERVAL_MS = 20000;
 
 function computeStreakDays(dailyActivity: Record<string, number>): number {
   const now = new Date();
@@ -328,6 +329,8 @@ export default function DashboardTriviaPage() {
   const [pointsToTop20, setPointsToTop20] = useState<number>(0);
   const [showAllTopics, setShowAllTopics] = useState(false);
   const [topicsPage, setTopicsPage] = useState(0);
+  const lastServerSyncAtRef = useRef(0);
+  const serverSyncInFlightRef = useRef(false);
 
   useEffect(() => {
     const cached = readCachedSnapshot();
@@ -338,7 +341,7 @@ export default function DashboardTriviaPage() {
     }
 
     if (authLoaded && isSignedIn) {
-      void hydrateEngagementFromServer().then(remote => {
+      void hydrateEngagementFromServer({ force: true }).then(remote => {
         setSnapshot(remote);
         writeCachedSnapshot(remote);
       });
@@ -388,6 +391,69 @@ export default function DashboardTriviaPage() {
     return () => {
       window.removeEventListener('storage', syncLivePoints);
       window.removeEventListener('iciar-trivia-points-updated', syncLivePoints as EventListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const syncNow = async () => {
+      if (serverSyncInFlightRef.current) return;
+      const now = Date.now();
+      if (now - lastServerSyncAtRef.current < TRIVIA_MULTI_DEVICE_SYNC_INTERVAL_MS) return;
+      serverSyncInFlightRef.current = true;
+      try {
+        const remote = await hydrateEngagementFromServer({ force: true });
+        if (cancelled) return;
+        setSnapshot(remote);
+        writeCachedSnapshot(remote);
+      } catch {
+        // keep current snapshot if offline
+      }
+
+      try {
+        const res = await fetch(`/api/trivia-ranking?ts=${Date.now()}`, {
+          method: 'GET',
+          cache: 'no-store',
+        });
+        if (!res.ok || cancelled) return;
+        const data = (await res.json()) as RankingApiResponse;
+        if (!data.ok || cancelled) return;
+        setRankingUsers(data.topUsers ?? []);
+        setViewerRank(data.viewer?.rank ?? null);
+        const livePoints = Math.max(data.viewer?.points ?? 0, readLiveTriviaPoints());
+        setViewerTriviaPoints(livePoints);
+        setPointsToTop20(data.viewer?.pointsToTop20 ?? 0);
+        lastServerSyncAtRef.current = Date.now();
+      } catch {
+        // keep current ranking if offline
+      } finally {
+        serverSyncInFlightRef.current = false;
+      }
+    };
+
+    const onFocus = () => {
+      void syncNow();
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        void syncNow();
+      }
+    };
+
+    void syncNow();
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void syncNow();
+      }
+    }, 45000);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.clearInterval(intervalId);
     };
   }, []);
 

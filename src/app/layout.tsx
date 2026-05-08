@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Header from './components/header';
 import { AudioProvider } from './context/AudioContext';
+import DailyReminderNotifier from './components/daily-reminder-notifier';
 
 type Props = {
   children: React.ReactNode;
@@ -75,6 +76,7 @@ export default async function RootLayout({ children }: Props) {
         <body className="font-body antialiased" suppressHydrationWarning>
           <AudioProvider>
             <Header />
+            <DailyReminderNotifier />
             {children}
             <Toaster />
             <SpeedInsights />

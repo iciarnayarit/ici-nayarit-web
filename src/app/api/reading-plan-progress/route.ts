@@ -18,6 +18,50 @@ function plansCollectionName() {
   return process.env.STORAGE_MONGODB_PLANS_COLLECTION?.trim() || 'plans';
 }
 
+export async function GET() {
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return NextResponse.json({ ok: false, reason: 'unauthenticated' }, { status: 401 });
+    }
+
+    const db = await getMongoDb();
+    const coll = db.collection(plansCollectionName());
+    const docs = await coll
+      .find(
+        { clerkUserId: userId },
+        {
+          projection: {
+            planSlug: 1,
+            planTitle: 1,
+            completedDays: 1,
+            totalDays: 1,
+            percent: 1,
+            status: 1,
+            updatedAt: 1,
+          },
+        }
+      )
+      .toArray();
+
+    return NextResponse.json({
+      ok: true,
+      plans: docs.map((doc) => ({
+        slug: String(doc.planSlug ?? ''),
+        title: String(doc.planTitle ?? ''),
+        completedDays: Array.isArray(doc.completedDays) ? doc.completedDays.length : 0,
+        totalDays: Number(doc.totalDays ?? 0),
+        percent: Number(doc.percent ?? 0),
+        completed: String(doc.status ?? '') === 'completed' || Number(doc.percent ?? 0) >= 100,
+        updatedAt: doc.updatedAt ?? null,
+      })),
+    });
+  } catch (error) {
+    console.error('[api/reading-plan-progress GET]', error);
+    return NextResponse.json({ ok: false, error: 'No se pudo obtener el progreso de planes.' }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
