@@ -2,14 +2,12 @@
 
 import type { ReactNode } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
-  BookOpen,
   Building2,
-  Columns2,
   Compass,
   FileText,
   Image as ImageIcon,
-  Library,
   Megaphone,
   Printer,
   Search,
@@ -29,18 +27,24 @@ function ToolbarBtn({
   onClick,
   label,
   children,
+  active = false,
 }: {
   href?: string;
   onClick?: () => void;
   label: string;
   children: ReactNode;
+  active?: boolean;
 }) {
   const className =
-    'inline-flex h-9 w-9 shrink-0 touch-manipulation items-center justify-center rounded-xl text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 sm:h-10 sm:w-10';
+    `inline-flex h-9 w-9 shrink-0 touch-manipulation items-center justify-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/30 sm:h-10 sm:w-10 ${
+      active
+        ? 'bg-slate-100 text-slate-900'
+        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+    }`;
 
   if (href) {
     return (
-      <Link href={href} className={className} aria-label={label} title={label}>
+      <Link href={href} className={className} aria-label={label} title={label} aria-current={active ? 'page' : undefined}>
         {children}
       </Link>
     );
@@ -65,6 +69,11 @@ type DashboardBibliaReadingToolbarProps = {
 
 export default function DashboardBibliaReadingToolbar({ toolbarSearch }: DashboardBibliaReadingToolbarProps) {
   const { toast } = useToast();
+  const pathname = usePathname();
+  const isActiveRoute = useCallback(
+    (href: string) => pathname === href || pathname.startsWith(`${href}/`),
+    [pathname]
+  );
 
   const handlePrint = useCallback(() => {
     try {
@@ -107,41 +116,27 @@ export default function DashboardBibliaReadingToolbar({ toolbarSearch }: Dashboa
         className="inline-flex max-w-full flex-nowrap items-center gap-0.5 overflow-x-auto overscroll-x-contain rounded-full border border-slate-200/90 bg-white px-1.5 py-1.5 shadow-md shadow-slate-900/5 [-ms-overflow-style:none] [scrollbar-width:none] sm:flex-wrap sm:justify-center sm:overflow-x-visible [&::-webkit-scrollbar]:hidden"
         aria-label="Panel y accesos rápidos de lectura"
       >
-        <ToolbarBtn href="/dashboard/miembros" label="Personal">
+        <ToolbarBtn href="/dashboard/miembros" label="Personal" active={isActiveRoute('/dashboard/miembros')}>
           <UserPlus className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
         </ToolbarBtn>
-        <ToolbarBtn href="/dashboard/notas" label="Notas">
+        <ToolbarBtn href="/dashboard/notas" label="Notas" active={isActiveRoute('/dashboard/notas')}>
           <StickyNote className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
         </ToolbarBtn>
-        <ToolbarBtn href="/dashboard/planes" label="Planes">
+        <ToolbarBtn href="/dashboard/planes" label="Planes" active={isActiveRoute('/dashboard/planes')}>
           <Compass className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
         </ToolbarBtn>
-        <ToolbarBtn href="/dashboard/avisos" label="Avisos">
+        <ToolbarBtn href="/dashboard/avisos" label="Avisos" active={isActiveRoute('/dashboard/avisos')}>
           <Megaphone className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
         </ToolbarBtn>
-        <ToolbarBtn href="/dashboard/recursos" label="Recursos">
+        <ToolbarBtn href="/dashboard/recursos" label="Recursos" active={isActiveRoute('/dashboard/recursos')}>
           <FileText className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
         </ToolbarBtn>
-        <ToolbarBtn href="/dashboard/templos" label="Templos">
+        <ToolbarBtn href="/dashboard/templos" label="Templos" active={isActiveRoute('/dashboard/templos')}>
           <Building2 className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
         </ToolbarBtn>
 
-        <ToolbarSep />
-
-        <ToolbarBtn href="/biblia" label="Abrir Biblia">
-          <BookOpen className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
-        </ToolbarBtn>
-        <ToolbarBtn href="/comparador" label="Comparador de versiones">
-          <Columns2 className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
-        </ToolbarBtn>
-        <ToolbarBtn href="/dashboard/imagenes" label="Imágenes">
+        <ToolbarBtn href="/dashboard/imagenes" label="Imágenes" active={isActiveRoute('/dashboard/imagenes')}>
           <ImageIcon className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
-        </ToolbarBtn>
-
-        <ToolbarSep />
-
-        <ToolbarBtn href="/comentarios" label="Comentarios bíblicos">
-          <Library className="h-[18px] w-[18px] sm:h-5 sm:w-5" strokeWidth={1.75} />
         </ToolbarBtn>
 
         <ToolbarSep />

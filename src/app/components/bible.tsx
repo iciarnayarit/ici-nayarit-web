@@ -789,7 +789,7 @@ export default function Bible() {
     const [selectedHighlightColor, setSelectedHighlightColor] = useState('blue');
 
     // Typography State
-    const [fontSize, setFontSize] = useState(100);
+    const [fontSize, setFontSize] = useState(150);
     const [lineHeight, setLineHeight] = useState<'tight' | 'normal' | 'loose'>('normal');
     const [theme, setTheme] = useState<'light' | 'sepia' | 'dark'>('light');
 
@@ -2511,8 +2511,8 @@ export default function Bible() {
 
                                                 {/* Verses Area */}
                                                 <div
-                                                    className={`space-y-4 text-left font-sans transition-all duration-500 ${themeStyles.text} ${getLineHeightClass()}`}
-                                                    style={{ fontSize: `max(1rem, ${(fontSize / 100) * 16}px)` }}
+                                                    className={`space-y-2 text-left font-serif transition-all duration-500 ${themeStyles.text} ${getLineHeightClass()}`}
+                                                    style={{ fontSize: `max(1.05rem, ${(fontSize / 100) * 18}px)` }}
                                                     onClick={(e) => {
                                                         // If the click target is the container itself (not a verse), clear selection
                                                         if (e.target === e.currentTarget) {
@@ -2567,7 +2567,7 @@ export default function Bible() {
                                                                               ? ' ring-2 ring-[#B88A44]/45'
                                                                               : ''
                                                                       }`
-                                                                    : `${themeStyles.buttonHover} py-1.5 cursor-pointer`;
+                                                                    : `${themeStyles.buttonHover} py-0.5 cursor-pointer`;
 
                                                             return (
                                                                 <div
@@ -2577,7 +2577,7 @@ export default function Bible() {
                                                                     className={`relative rounded-xl transition-all duration-200 ${isLastSelected ? 'z-40' : isAudioFollowing ? 'z-30' : ''} ${containerClasses}`}
                                                                 >
                                                                     {showSectionTitle && (
-                                                                        <p className={`text-sm font-bold tracking-wide mb-2 whitespace-pre-line leading-snug ${index === 0 ? 'mt-0' : 'mt-5'} ${themeStyles.subtitle}`}>
+                                                                        <p className={`mb-4 whitespace-pre-line font-sans text-[1.8rem] font-bold leading-tight tracking-tight ${index === 0 ? 'mt-0' : 'mt-8'} ${themeStyles.title}`}>
                                                                             {sec}
                                                                         </p>
                                                                     )}
@@ -2700,7 +2700,7 @@ export default function Bible() {
                                                                         </div>
                                                                     )}
                                                                     <p
-                                                                        className={`flex-grow transition-colors duration-300 ${isSelected || isHighlighted || isAudioFollowing ? 'font-medium' : ''}`}
+                                                                        className={`flex-grow text-justify leading-[1.58] tracking-[0.002em] transition-colors duration-300 ${isSelected || isHighlighted || isAudioFollowing ? 'font-medium' : ''}`}
                                                                         onClick={() => {
                                                                             if (skipNextVerseParagraphClickRef.current) return;
                                                                             if (selectedVersion === 'huichol') {
@@ -2755,8 +2755,13 @@ export default function Bible() {
                                                                             sel.removeAllRanges();
                                                                         }}
                                                                     >
+                                                                        {index === 0 && (
+                                                                            <span className={`mr-2.5 inline-block align-top text-[2.45em] font-bold leading-[0.86] ${themeStyles.title}`}>
+                                                                                {selectedChapter}
+                                                                            </span>
+                                                                        )}
                                                                         <sup
-                                                                            className={`cursor-pointer font-bold mr-2.5 text-[65%] ${isSelected || isHighlighted || isAudioFollowing ? '' : themeStyles.subtitle}`}
+                                                                            className={`cursor-pointer font-bold mr-2 text-[60%] align-top ${index === 0 ? 'hidden' : ''} ${isSelected || isHighlighted || isAudioFollowing ? '' : themeStyles.subtitle}`}
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
                                                                                 flushHuicholVerseParagraphClickTimer();

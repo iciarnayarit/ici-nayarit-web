@@ -123,17 +123,6 @@ function parseReadingChapters(reading: string): DayChapterItem[] {
     return items;
 }
 
-function formatBookName(book: string): string {
-    return book
-        .split(' ')
-        .filter(Boolean)
-        .map((token) => {
-            if (/^\d+$/.test(token)) return token;
-            return token.charAt(0).toUpperCase() + token.slice(1).toLowerCase();
-        })
-        .join(' ');
-}
-
 export default function ReadingPlanLayout({ planData, planSlug, title, description }: ReadingPlanLayoutProps) {
     const [completedDays, setCompletedDays] = useState<number[]>([]);
     const [completedChaptersByDay, setCompletedChaptersByDay] = useState<Record<number, string[]>>({});
@@ -142,7 +131,7 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
     const [highlightedVerses, setHighlightedVerses] = useState<Record<string, string>>({});
     const [selectedVerse, setSelectedVerse] = useState<number | null>(null);
     const [showColorPicker, setShowColorPicker] = useState(false);
-    const [selectedHighlightColor, setSelectedHighlightColor] = useState('blue');
+    const [selectedHighlightColor, setSelectedHighlightColor] = useState('yellow');
 
     // Note State
     const [isNoteOpen, setIsNoteOpen] = useState(false);
@@ -160,7 +149,8 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
     const [savedSelection, setSavedSelection] = useState<Range | null>(null);
 
     // Typography State
-    const [fontSize, setFontSize] = useState(100);
+    const DEFAULT_READING_FONT_SIZE = 130;
+    const [fontSize, setFontSize] = useState(DEFAULT_READING_FONT_SIZE);
     const [lineHeight, setLineHeight] = useState<'tight' | 'normal' | 'loose'>('normal');
     const [theme, setTheme] = useState<'light' | 'sepia' | 'dark'>('light');
 
@@ -220,7 +210,12 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
             setNotes(JSON.parse(savedNotes));
         }
         const savedSize = localStorage.getItem('bibleFontSize');
-        if (savedSize) setFontSize(Number(savedSize));
+        if (savedSize) {
+            setFontSize(Number(savedSize));
+        } else {
+            setFontSize(DEFAULT_READING_FONT_SIZE);
+            localStorage.setItem('bibleFontSize', String(DEFAULT_READING_FONT_SIZE));
+        }
         const savedLH = localStorage.getItem('bibleLineHeight');
         if (savedLH) setLineHeight(savedLH as any);
         const savedTheme = localStorage.getItem('bibleTheme');
@@ -525,7 +520,7 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
 
         if (newSelectedVerse) {
             const reference = `${book} ${chapter}:${newSelectedVerse}`;
-            setSelectedHighlightColor(highlightedVerses[reference] || 'blue');
+            setSelectedHighlightColor(highlightedVerses[reference] || 'yellow');
         } else {
             setIsNoteOpen(false);
         }
@@ -548,7 +543,7 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
     const getThemeStyles = () => {
         switch (theme) {
             case 'dark': return { bg: 'bg-[#0B1120]', card: 'bg-[#151D2C] border-gray-800 shadow-xl', text: 'text-gray-300', title: 'text-gray-100', subtitle: 'text-gray-400', verseHighlight: 'bg-blue-900/30 text-blue-400', buttonHover: 'hover:bg-gray-800 hover:text-gray-200' };
-            case 'sepia': return { bg: 'bg-[#F4ECE3]', card: 'bg-[#FDF6E3] border-[#EADAB8] shadow-md', text: 'text-[#5C4D3C]', title: 'text-[#3B2C1C]', subtitle: 'text-[#8A7967]', verseHighlight: 'bg-[#EADAB8]/50 text-[#8B5A2B]', buttonHover: 'hover:bg-[#F4ECE3] hover:text-[#3B2C1C]' };
+            case 'sepia': return { bg: 'bg-[#F4ECE3]', card: 'bg-[#FDF6E3] border-[#EADAB8] shadow-md', text: 'text-[#4E4234]', title: 'text-[#3B2C1C]', subtitle: 'text-[#6F604D]', verseHighlight: 'bg-[#EADAB8]/50 text-[#8B5A2B]', buttonHover: 'hover:bg-[#F4ECE3] hover:text-[#3B2C1C]' };
             default: return { bg: 'bg-[#F8F9FA]', card: 'bg-white border-gray-100/50 shadow-lg', text: 'text-[#4B5563]', title: 'text-[#111827]', subtitle: 'text-[#9CA3AF]', verseHighlight: 'bg-[#EEF4FF] text-[#3B82F6]', buttonHover: 'hover:bg-gray-50 hover:text-gray-700' };
         }
     };
@@ -662,9 +657,6 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
         const verses =
             planLookup && !planLookupLoading ? handleReadPassage(dayData.reading, planLookup) : [];
         const dayChapterItems = parseReadingChapters(dayData.reading);
-        const chapterLabelByKey = new Map(
-            dayChapterItems.map((item) => [`${item.book.toLowerCase()}-${item.chapter}`, item.label.toUpperCase()])
-        );
         const completedChapterIds = new Set(getCompletedChapterIdsForDay(selectedDay));
         const dayCompletedCount = dayChapterItems.filter(item => completedChapterIds.has(item.id)).length;
         const dayPercent = dayChapterItems.length > 0 ? Math.round((dayCompletedCount / dayChapterItems.length) * 100) : 0;
@@ -695,7 +687,13 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                         }}
                                     >
                                         <SelectTrigger
-                                            className={`h-11 w-full min-w-0 rounded-xl border px-3 text-sm font-semibold sm:w-[220px] ${theme === 'dark' ? 'border-gray-700 bg-[#151D2C] text-gray-200' : 'border-gray-200 bg-white text-gray-800'}`}
+                                            className={`h-11 w-full min-w-0 rounded-xl border px-3 text-sm font-semibold sm:w-[220px] ${
+                                                theme === 'dark'
+                                                    ? 'border-gray-700 bg-[#151D2C] text-gray-200'
+                                                    : theme === 'sepia'
+                                                      ? 'border-[#D8C7A8] bg-[#FFF8EA] text-[#3B2C1C]'
+                                                      : 'border-gray-200 bg-white text-gray-800'
+                                            }`}
                                         >
                                             <SelectValue placeholder="Versión" />
                                         </SelectTrigger>
@@ -724,16 +722,16 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                                 <div className="space-y-4">
                                                     <label className={`text-[10px] font-black uppercase tracking-widest ${themeStyles.subtitle}`}>Tamaño del texto</label>
                                                     <div className="flex items-center gap-4">
-                                                        <span className="text-xs font-bold text-gray-400">A</span>
+                                                        <span className={`text-xs font-bold ${theme === 'sepia' ? 'text-[#8A7967]' : 'text-gray-400'}`}>A</span>
                                                         <input type="range" min="80" max="200" step="10" value={fontSize} onChange={(e) => { setFontSize(Number(e.target.value)); localStorage.setItem('bibleFontSize', e.target.value); }} className="flex-1 h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-                                                        <span className="text-xl font-bold text-gray-400">A</span>
+                                                        <span className={`text-xl font-bold ${theme === 'sepia' ? 'text-[#8A7967]' : 'text-gray-400'}`}>A</span>
                                                     </div>
                                                 </div>
                                                 <div className="space-y-4">
                                                     <label className={`text-[10px] font-black uppercase tracking-widest ${themeStyles.subtitle}`}>Espaciado</label>
-                                                    <div className="grid grid-cols-3 gap-2 p-1 bg-gray-50/50 rounded-xl">
+                                                    <div className={`grid grid-cols-3 gap-2 p-1 rounded-xl ${theme === 'sepia' ? 'bg-[#F3E9D6]' : 'bg-gray-50/50'}`}>
                                                         {(['tight', 'normal', 'loose'] as const).map((lh) => (
-                                                            <button key={lh} onClick={() => { setLineHeight(lh); localStorage.setItem('bibleLineHeight', lh); }} className={`py-2 text-[11px] font-bold rounded-lg transition-all ${lineHeight === lh ? 'bg-white shadow-sm text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}>
+                                                            <button key={lh} onClick={() => { setLineHeight(lh); localStorage.setItem('bibleLineHeight', lh); }} className={`py-2 text-[11px] font-bold rounded-lg transition-all ${lineHeight === lh ? 'bg-white shadow-sm text-blue-600' : theme === 'sepia' ? 'text-[#8A7967] hover:text-[#5C4D3C]' : 'text-gray-400 hover:text-gray-600'}`}>
                                                                 {lh === 'tight' ? 'Sli' : lh === 'normal' ? 'Std' : 'Esp'}
                                                             </button>
                                                         ))}
@@ -776,7 +774,7 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                             <span className="text-sm font-bold text-[#B88A44]">{dayCompletedCount}/{dayChapterItems.length} ({dayPercent}%)</span>
                                         </div>
                                         <Progress value={dayPercent} className="h-2.5 bg-gray-100" />
-                                        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                                        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                                             {dayChapterItems.map(item => {
                                                 const done = completedChapterIds.has(item.id);
                                                 return (
@@ -784,11 +782,15 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                                         key={item.id}
                                                         type="button"
                                                         onClick={() => toggleChapterCompletion(selectedDay, item.id, dayData.reading)}
-                                                        className={`flex items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-semibold transition-colors ${
-                                                            done ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                                                        className={`flex min-h-[52px] w-full items-center gap-2.5 rounded-2xl px-4 py-3 text-left text-base font-bold transition-colors ${
+                                                            done
+                                                                ? 'bg-[#FFF9D6] text-[#B88A44]'
+                                                                : theme === 'sepia'
+                                                                  ? 'bg-[#F5EEDF] text-[#5C4D3C] hover:bg-[#EFE4CF]'
+                                                                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
                                                         }`}
                                                     >
-                                                        <CheckCircle2 className={`h-4 w-4 shrink-0 ${done ? 'text-emerald-600' : 'text-gray-400'}`} />
+                                                        <CheckCircle2 className={`h-[18px] w-[18px] shrink-0 ${done ? 'text-[#B88A44]' : theme === 'sepia' ? 'text-[#B7A58E]' : 'text-gray-400'}`} />
                                                         <span>{item.label}</span>
                                                     </button>
                                                 );
@@ -800,22 +802,35 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
 
                             <Card className={`border-0 rounded-3xl overflow-visible transition-all duration-300 ${themeStyles.card}`}>
                                 <CardContent className="p-8">
-                                    <div className={`space-y-4 text-left font-sans transition-all duration-500 ${themeStyles.text} ${getLineHeightClass()}`} style={{ fontSize: `${(fontSize / 100) * 16}px` }}>
+                                    <div
+                                        className={`space-y-3 text-left font-sans transition-all duration-500 ${themeStyles.text} ${getLineHeightClass()}`}
+                                        style={{ fontSize: `max(1rem, ${(fontSize / 100) * 17}px)` }}
+                                    >
                                         {verses.length > 0 ? verses.map((v, index) => {
                                             const prev = index > 0 ? verses[index - 1] : null;
                                             const showSectionTitle =
                                                 Boolean(v.sectionTitle?.trim()) &&
                                                 (!prev || prev.sectionTitle !== v.sectionTitle);
-                                            const chapterKey = `${v.book.toLowerCase()}-${v.chapter}`;
                                             const showPassageTitle =
                                                 !prev || prev.book !== v.book || prev.chapter !== v.chapter;
-                                            const passageTitle =
-                                                chapterLabelByKey.get(chapterKey) ??
-                                                `${formatBookName(v.book)} ${v.chapter}`.toUpperCase();
+                                            const showLargeChapterNumber = showPassageTitle && v.verse === 1;
+                                            const sectionTitleLines = (v.sectionTitle ?? '')
+                                                .split(/\n+/)
+                                                .map((line) => line.trim())
+                                                .filter(Boolean);
+                                            const sectionMainTitle = sectionTitleLines[0] ?? '';
+                                            const sectionMetaLines = sectionTitleLines.slice(1);
                                             const reference = `${v.book} ${v.chapter}:${v.verse}`;
                                             const isSelected = selectedVerse === v.verse;
                                             const isHighlighted = highlightedVerses[reference];
-                                            const activeColorId = isSelected ? selectedHighlightColor : isHighlighted;
+                                            // Si solo está seleccionado (sin subrayado guardado), usamos dorado por defecto.
+                                            const activeColorId = isSelected
+                                                ? (isHighlighted || 'yellow')
+                                                : isHighlighted;
+                                            const sectionMetaTextClass =
+                                                theme === 'dark' ? 'text-[#FCA5A5]' : 'text-[#7C261A]';
+                                            const mainTextClass = theme === 'dark' ? 'text-gray-100' : 'text-[#111827]';
+                                            const bigChapterTextClass = theme === 'dark' ? 'text-white' : 'text-black';
 
                                             const hlColors: Record<string, string> = {
                                                 yellow: 'bg-[#FFF9D6] text-[#B88A44]',
@@ -834,19 +849,24 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                             const activeHlStyles = activeColorId ? hlColors[activeColorId] : '';
                                             const containerClasses = (isSelected || isHighlighted)
                                                 ? `${activeHlStyles} px-4 py-3 -mx-4 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)]`
-                                                : `${themeStyles.buttonHover} py-1.5 cursor-pointer`;
+                                                : `${themeStyles.buttonHover} py-1 cursor-pointer`;
 
                                             return (
                                                 <div key={`${v.book}-${v.chapter}-${v.verse}-${index}`} className={`relative rounded-xl transition-all duration-200 ${isSelected ? 'z-40' : ''} ${containerClasses}`}>
-                                                    {showPassageTitle && (
-                                                        <p className={`text-center text-xs font-extrabold tracking-[0.18em] uppercase mb-3 ${index === 0 ? 'mt-0' : 'mt-7'} ${themeStyles.subtitle}`}>
-                                                            {passageTitle}
-                                                        </p>
-                                                    )}
                                                     {showSectionTitle && (
-                                                        <p className={`text-sm font-bold tracking-wide mb-2 whitespace-pre-line leading-snug ${showPassageTitle ? 'mt-0' : index === 0 ? 'mt-0' : 'mt-5'} ${themeStyles.subtitle}`}>
-                                                            {v.sectionTitle}
-                                                        </p>
+                                                        <div className={`${showPassageTitle ? 'mt-0' : index === 0 ? 'mt-0' : 'mt-6'} mb-4`}>
+                                                            <p className={`text-[2.1rem] font-semibold leading-tight tracking-tight ${themeStyles.title}`}>
+                                                                {sectionMainTitle}
+                                                            </p>
+                                                            {sectionMetaLines.map((line, metaIndex) => (
+                                                                <p
+                                                                    key={`${reference}-meta-${metaIndex}`}
+                                                                    className={`mt-3 text-[1.9rem] font-bold leading-tight ${sectionMetaTextClass}`}
+                                                                >
+                                                                    {line}
+                                                                </p>
+                                                            ))}
+                                                        </div>
                                                     )}
                                                     {isSelected && (
                                                         <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1.5 z-50 flex flex-col items-center gap-2 w-max max-w-[calc(100vw-2rem)] pointer-events-auto">
@@ -906,16 +926,28 @@ export default function ReadingPlanLayout({ planData, planSlug, title, descripti
                                                             </div>
                                                         </div>
                                                     )}
-                                                    <p className={`transition-colors duration-300 ${(isSelected || isHighlighted) ? 'font-medium' : ''}`} onClick={() => handleVerseClick(v.verse, v.book, v.chapter)}>
-                                                        <sup className={`font-bold mr-2.5 text-[65%] ${(isSelected || isHighlighted) ? '' : themeStyles.subtitle}`}>{v.verse}</sup>
+                                                    <p
+                                                        className={`text-left leading-[1.58] tracking-[0.002em] transition-colors duration-300 ${mainTextClass} ${(isSelected || isHighlighted) ? 'font-medium' : ''}`}
+                                                        onClick={() => handleVerseClick(v.verse, v.book, v.chapter)}
+                                                    >
+                                                        {showLargeChapterNumber && (
+                                                            <span className={`mr-2.5 inline-block align-top text-[2.35em] font-bold leading-[0.86] ${bigChapterTextClass}`}>
+                                                                {v.chapter}
+                                                            </span>
+                                                        )}
+                                                        {!showLargeChapterNumber && (
+                                                            <sup className={`mr-2 align-top text-[62%] font-bold ${(isSelected || isHighlighted) ? '' : themeStyles.subtitle}`}>
+                                                                {v.verse}
+                                                            </sup>
+                                                        )}
                                                         {v.text}
                                                     </p>
                                                 </div>
                                             );
                                         }) : planLookupLoading || !planLookup ? (
-                                            <p className="text-center text-gray-500 italic py-8">Cargando pasaje...</p>
+                                            <p className={`text-center italic py-8 ${themeStyles.subtitle}`}>Cargando pasaje...</p>
                                         ) : (
-                                            <p className="text-center text-gray-500 italic py-8">No se encontró el texto para esta lectura.</p>
+                                            <p className={`text-center italic py-8 ${themeStyles.subtitle}`}>No se encontró el texto para esta lectura.</p>
                                         )}
                                     </div>
                                 </CardContent>
