@@ -163,6 +163,7 @@ const EMPTY_SNAPSHOT: EngagementSnapshot = {
 
 const TRIVIA_POINTS_CACHE_KEY = 'iciar-trivia-user-points-v1';
 const TRIVIA_RANKING_CACHE_KEY = 'iciar-trivia-ranking-cache-v3';
+const TRIVIA_LIVE_POINTS_KEY = 'iciar-trivia-live-points-v1';
 
 function computeStreakDays(dailyActivity: Record<string, number>): number {
   const now = new Date();
@@ -200,6 +201,12 @@ function msUntilNextMidnight(): number {
   const next = new Date(now);
   next.setHours(24, 0, 0, 0);
   return Math.max(60_000, next.getTime() - now.getTime());
+}
+
+function readLiveTriviaPoints(): number {
+  if (typeof window === 'undefined') return 0;
+  const n = Number(localStorage.getItem(TRIVIA_LIVE_POINTS_KEY) ?? '0');
+  return Number.isFinite(n) ? n : 0;
 }
 
 function categoryByTopicSlug(slug: string): TriviaCategory {
@@ -317,7 +324,7 @@ export default function DashboardTriviaPage() {
   const [snapshot, setSnapshot] = useState<EngagementSnapshot>(EMPTY_SNAPSHOT);
   const [rankingUsers, setRankingUsers] = useState<RankingUser[]>([]);
   const [viewerRank, setViewerRank] = useState<number | null>(null);
-  const [viewerTriviaPoints, setViewerTriviaPoints] = useState<number>(0);
+  const [viewerTriviaPoints, setViewerTriviaPoints] = useState<number>(() => readLiveTriviaPoints());
   const [pointsToTop20, setPointsToTop20] = useState<number>(0);
   const [showAllTopics, setShowAllTopics] = useState(false);
   const [topicsPage, setTopicsPage] = useState(0);
@@ -359,7 +366,7 @@ export default function DashboardTriviaPage() {
         if (!data.ok || cancelled) return;
         setRankingUsers(data.topUsers ?? []);
         setViewerRank(data.viewer?.rank ?? null);
-        setViewerTriviaPoints(data.viewer?.points ?? 0);
+        setViewerTriviaPoints(Math.max(data.viewer?.points ?? 0, readLiveTriviaPoints()));
         setPointsToTop20(data.viewer?.pointsToTop20 ?? 0);
       } catch {
         // keep UI with existing values
@@ -368,6 +375,19 @@ export default function DashboardTriviaPage() {
     void loadRanking();
     return () => {
       cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const syncLivePoints = () => {
+      setViewerTriviaPoints(prev => Math.max(prev, readLiveTriviaPoints()));
+    };
+    syncLivePoints();
+    window.addEventListener('storage', syncLivePoints);
+    window.addEventListener('iciar-trivia-points-updated', syncLivePoints as EventListener);
+    return () => {
+      window.removeEventListener('storage', syncLivePoints);
+      window.removeEventListener('iciar-trivia-points-updated', syncLivePoints as EventListener);
     };
   }, []);
 

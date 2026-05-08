@@ -241,14 +241,17 @@ export async function GET() {
     const liveViewerDoc = userId
       ? await rankingColl.findOne(
           { clerkUserId: userId },
-          { projection: { triviaPoints: 1, dashboardSnapshot: 1, clerkUserId: 1, email: 1, displayName: 1, rankTitle: 1 } }
+          { projection: { triviaPoints: 1, dashboardSnapshot: 1, completedTopics: 1, clerkUserId: 1, email: 1, displayName: 1, rankTitle: 1 } }
         )
       : null;
+
+    const completedTopics = Object.keys((liveViewerDoc?.completedTopics as Record<string, unknown> | undefined) ?? {});
 
     const viewer = viewerFromCache
       ? {
           ...viewerFromCache,
           points: liveViewerDoc ? totalPointsFromDoc(liveViewerDoc as RankingSourceDoc) : viewerFromCache.points,
+          completedTopics,
         }
       : liveViewerDoc
       ? {
@@ -258,6 +261,7 @@ export async function GET() {
           displayName: asName(liveViewerDoc.displayName, liveViewerDoc.email),
           title: asTitle(liveViewerDoc.rankTitle),
           points: totalPointsFromDoc(liveViewerDoc as RankingSourceDoc),
+          completedTopics,
         }
       : null;
 
@@ -275,6 +279,7 @@ export async function GET() {
             rank: viewer.rank,
             points: viewer.points,
             pointsToTop20,
+            completedTopics: viewer.completedTopics ?? [],
           }
         : null,
       top20CutoffPoints: Number(daily.top20CutoffPoints ?? 0),
@@ -406,10 +411,25 @@ export async function POST(req: Request) {
       { upsert: true }
     );
 
+    const completedThisTopic = score >= totalQuestions;
+    if (completedThisTopic) {
+      await rankingColl.updateOne(
+        { clerkUserId: userId },
+        { $set: { [`completedTopics.${topicSlug}`]: true, updatedAt: now } }
+      );
+    }
+
+    const updatedViewer = await rankingColl.findOne(
+      { clerkUserId: userId },
+      { projection: { triviaPoints: 1, completedTopics: 1 } }
+    );
+    const viewerPoints = Number(updatedViewer?.triviaPoints ?? 0);
+    const completedTopics = Object.keys((updatedViewer?.completedTopics as Record<string, unknown> | undefined) ?? {});
+
     // Refresca el ranking diario inmediatamente después de cada test completado.
     await loadOrBuildDailyRanking(true);
 
-    return NextResponse.json({ ok: true, synced: true });
+    return NextResponse.json({ ok: true, synced: true, pointsEarned, viewerPoints, completedThisTopic, completedTopics });
   } catch (error) {
     console.error('[api/trivia-ranking POST]', error);
     return NextResponse.json({ ok: false, error: 'No se pudo sincronizar el test.' }, { status: 500 });
