@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useMemo } from 'react';
 
 type UseNdjsonStreamBufferOptions<T> = {
   flushMs?: number;
@@ -10,9 +10,12 @@ type UseNdjsonStreamBufferOptions<T> = {
 
 export function useNdjsonStreamBuffer<T>(options: UseNdjsonStreamBufferOptions<T>) {
   const flushMs = options.flushMs ?? 120;
-  const parseLine = options.parseLine ?? ((line: string) => JSON.parse(line) as T);
 
   const queueRef = useRef<T[]>([]);
+  const parseLineRef = useRef(options.parseLine ?? ((line: string) => JSON.parse(line) as T));
+  useEffect(() => {
+    parseLineRef.current = options.parseLine ?? ((line: string) => JSON.parse(line) as T);
+  }, [options.parseLine]);
   const timerRef = useRef<number | null>(null);
   const cancelledRef = useRef(false);
   const onFlushRef = useRef(options.onFlush);
@@ -69,7 +72,7 @@ export function useNdjsonStreamBuffer<T>(options: UseNdjsonStreamBufferOptions<T
           const trimmed = line.trim();
           if (!trimmed) continue;
           try {
-            const event = parseLine(trimmed);
+            const event = parseLineRef.current(trimmed);
             if (event == null) continue;
             queueRef.current.push(event);
             scheduleFlush();
@@ -80,7 +83,7 @@ export function useNdjsonStreamBuffer<T>(options: UseNdjsonStreamBufferOptions<T
       }
       if (carry.trim()) {
         try {
-          const event = parseLine(carry.trim());
+          const event = parseLineRef.current(carry.trim());
           if (event != null) queueRef.current.push(event);
         } catch {
           // ignore
@@ -88,18 +91,18 @@ export function useNdjsonStreamBuffer<T>(options: UseNdjsonStreamBufferOptions<T
       }
       flushNow();
     },
-    [flushNow, parseLine, scheduleFlush]
+    [flushNow, scheduleFlush]
   );
 
   useEffect(() => {
     return () => cancel();
   }, [cancel]);
 
-  return {
+  return useMemo(() => ({
     consumeResponse,
     flushNow,
     reset,
     cancel,
-  };
+  }), [consumeResponse, flushNow, reset, cancel]);
 }
 

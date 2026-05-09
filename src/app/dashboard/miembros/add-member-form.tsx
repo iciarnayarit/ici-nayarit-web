@@ -1,34 +1,34 @@
 'use client';
 
-import { useUser } from '@clerk/nextjs';
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/app/components/ui/card';
 import { Checkbox } from '@/app/components/ui/checkbox';
 import { Input } from '@/app/components/ui/input';
 import { Label } from '@/app/components/ui/label';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from '@/app/components/ui/select';
-import { X } from 'lucide-react';
 import { cn } from '@/app/lib/utils';
 import { getLocalFirstData } from '@/lib/local-storage-cache';
+import {
+    churchCheckboxValues,
+    churchSelectionFromSaved,
+    type ChurchListOption,
+} from '@/lib/member-churches-helpers';
 import { formatMinistryLabelForDisplay } from '@/lib/member-directory-options';
 import {
-  churchCheckboxValues,
-  churchSelectionFromSaved,
-  type ChurchListOption,
-} from '@/lib/member-churches-helpers';
-import {
-  ministryCheckboxValues,
-  ministrySelectionFromSaved,
-  type MinistryOption,
+    ministryCheckboxValues,
+    ministrySelectionFromSaved,
+    type MinistryOption,
 } from '@/lib/member-ministries-helpers';
 import { MEMBER_STAFF_ROLE_UNSPECIFIED, type StaffRoleOption } from '@/lib/staff-roles-helpers';
+import { useUser } from '@clerk/nextjs';
+import { X } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 function listToCheckRecord(keys: string[]): Record<string, boolean> {
   return Object.fromEntries(keys.map(k => [k, true]));
 }
@@ -573,8 +573,8 @@ export default function AddMemberForm() {
           <CardDescription>Detalles básicos para el registro.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 p-4 pt-0 sm:space-y-5 sm:p-6 sm:pt-0">
-          <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-4 sm:gap-5 sm:grid-cols-2 min-w-0">
+            <div className="space-y-2 min-w-0">
               <Label htmlFor="member-first-name">Nombre (obligatorio, prellenado desde tu sesión)</Label>
               <Input
                 id="member-first-name"
@@ -595,7 +595,7 @@ export default function AddMemberForm() {
               />
               <FieldError id="err-member-first-name" message={fieldErrors.firstName} />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <Label htmlFor="member-last-name">Apellido (obligatorio, prellenado desde tu sesión)</Label>
               <Input
                 id="member-last-name"
@@ -616,7 +616,7 @@ export default function AddMemberForm() {
               />
               <FieldError id="err-member-last-name" message={fieldErrors.lastName} />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <Label htmlFor="member-email">Correo electrónico (obligatorio, de tu sesión)</Label>
               <Input
                 id="member-email"
@@ -635,7 +635,7 @@ export default function AddMemberForm() {
               />
               <FieldError id="err-member-email" message={fieldErrors.email} />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <Label htmlFor="member-phone">Número de teléfono (obligatorio)</Label>
               <Input
                 id="member-phone"
@@ -657,7 +657,7 @@ export default function AddMemberForm() {
               />
               <FieldError id="err-member-phone" message={fieldErrors.phone} />
             </div>
-            <div className="space-y-2 sm:col-span-2">
+            <div className="space-y-2 sm:col-span-2 min-w-0">
               <Label htmlFor="member-address">Dirección (obligatorio)</Label>
               <Input
                 id="member-address"
@@ -678,7 +678,7 @@ export default function AddMemberForm() {
               />
               <FieldError id="err-member-address" message={fieldErrors.address} />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <Label htmlFor="member-birth">Fecha de nacimiento (obligatorio)</Label>
               <Input
                 id="member-birth"
@@ -698,7 +698,7 @@ export default function AddMemberForm() {
               />
               <FieldError id="err-member-birth" message={fieldErrors.birthDate} />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 min-w-0">
               <Label htmlFor="member-baptism">Fecha de bautismo (opcional)</Label>
               <Input
                 id="member-baptism"

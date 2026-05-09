@@ -1,24 +1,41 @@
 'use client';
+import {
+    MemoVerseRow,
+    type BibleVerseRowApi,
+    type BibleVerseToolbarActions,
+} from '@/app/components/bible-verse-row';
+import DailyVerse from '@/app/components/daily-verse';
+import { HuicholReaderInviteBanner } from '@/app/components/huichol-reader-invite-banner';
+import { HuicholStudioAudioBar } from '@/app/components/huichol-studio-audio-bar';
+import { HuicholWordPracticeDialog } from '@/app/components/huichol-word-practice-dialog';
+import ReadingPlans from '@/app/components/reading-plans';
 import { Button } from '@/app/components/ui/button';
 import { Card, CardContent } from '@/app/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/app/components/ui/popover';
-import { Switch } from '@/app/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/app/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/app/components/ui/tooltip';
 import { useToast } from '@/app/hooks/use-toast';
+import { getHuicholJsonPathForSpanishBook } from '@/lib/bible-huichol-paths';
+import { canonicalizeBookName } from '@/lib/bible-reference-parser';
 import {
-    Bookmark, ChevronLeft, ChevronRight, Share2, Image as ImageIcon, ImagePlus, Languages, Type,
-    FileText, Copy, MessageSquare, StickyNote, Minus, Plus, BookOpen, Clock,
-    Bold, Italic, List, Link as LinkIcon, Quote, Image as ImgIcon, X, Save,
-    Eye, Instagram, Facebook, Palette, Download, Share2 as ShareIcon, GripVertical,
-    RefreshCw, Search
-} from 'lucide-react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { toPng } from 'html-to-image';
-import { memo, useEffect, useLayoutEffect, useMemo, useState, useRef, useCallback, type Dispatch, type SetStateAction } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { takePendingReturnAfterVerseSave, SAVED_VERSES_CHANGED_EVENT } from '@/lib/saved-verses';
+    bibleVersionSlugToId,
+    bibleVersionUrlSlug,
+    DEFAULT_BIBLE_VERSION_ID,
+    DEFAULT_BIBLE_VERSION_LABEL,
+    loadFullBibleLookup,
+    VERSIONS,
+    type VersionId,
+} from '@/lib/bible-versions';
+import { grantEngagementPoints } from '@/lib/engagement-points';
+import { spanishBibleDataKeyToUsfm } from '@/lib/helloao-usfm-to-spanish-key';
+import { huicholKaraokeFromProgress } from '@/lib/huichol-audio-verse-sync';
+import { stripWordForSpeech } from '@/lib/huichol-word-speech';
+import { loadPublicBibleJson } from '@/lib/load-public-bible-json';
+import {
+    ensureClerkSignedIn,
+    ensureClerkSignedInForFavoriteAdd
+} from '@/lib/require-clerk-sign-in';
+import { SAVED_VERSES_CHANGED_EVENT, takePendingReturnAfterVerseSave } from '@/lib/saved-verses';
 import {
     addStudioPublicationDraft,
     getStudioPublicationDraftById,
@@ -27,37 +44,30 @@ import {
     type StudioPublicationDraftRecord,
 } from '@/lib/studio-publication-drafts';
 import { useAuth, useClerk } from '@clerk/nextjs';
+import { toPng } from 'html-to-image';
 import {
-    ensureClerkSignedIn,
-    ensureClerkSignedInForFavoriteAdd,
-    goToDashboardBibliaSavedVerses,
-} from '@/lib/require-clerk-sign-in';
-import DailyVerse from '@/app/components/daily-verse';
-import ReadingPlans from '@/app/components/reading-plans';
-import {
-    VERSIONS,
-    type VersionId,
-    DEFAULT_BIBLE_VERSION_ID,
-    DEFAULT_BIBLE_VERSION_LABEL,
-    bibleVersionSlugToId,
-    bibleVersionUrlSlug,
-    loadFullBibleLookup,
-} from '@/lib/bible-versions';
-import { loadPublicBibleJson } from '@/lib/load-public-bible-json';
-import { getHuicholJsonPathForSpanishBook } from '@/lib/bible-huichol-paths';
-import { huicholKaraokeFromProgress } from '@/lib/huichol-audio-verse-sync';
-import { HuicholReaderInviteBanner } from '@/app/components/huichol-reader-invite-banner';
-import { HuicholStudioAudioBar } from '@/app/components/huichol-studio-audio-bar';
-import { HuicholWordPracticeDialog } from '@/app/components/huichol-word-practice-dialog';
-import {
-    MemoVerseRow,
-    type BibleVerseRowApi,
-    type BibleVerseToolbarActions,
-} from '@/app/components/bible-verse-row';
-import { stripWordForSpeech } from '@/lib/huichol-word-speech';
-import { spanishBibleDataKeyToUsfm } from '@/lib/helloao-usfm-to-spanish-key';
-import { canonicalizeBookName } from '@/lib/bible-reference-parser';
-import { grantEngagementPoints } from '@/lib/engagement-points';
+    Bold,
+    Bookmark,
+    BookOpen,
+    ChevronLeft, ChevronRight,
+    Clock,
+    Download,
+    GripVertical,
+    Image as ImageIcon,
+    Image as ImgIcon,
+    Italic,
+    Link as LinkIcon,
+    List,
+    Palette,
+    Quote,
+    Save,
+    StickyNote,
+    Type,
+    X
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ChangeEvent, type CSSProperties, type Dispatch, type DragEvent, type PointerEvent, type ReactNode, type SetStateAction } from 'react';
 
 const INDIGENOUS_DBP_VERSION_TO_ISO = {
     cora_el_nayar: 'crn',
@@ -256,7 +266,7 @@ function DraggableImage({
     const SNAP_ZONE = 10;
 
     const handleImageResizePointerDown = useCallback(
-        (e: React.PointerEvent) => {
+        (e: PointerEvent) => {
             e.preventDefault();
             e.stopPropagation();
             if (!onImageWidthPercentChange || !canvasMaxWidth) return;
@@ -266,7 +276,7 @@ function DraggableImage({
             const x0 = e.clientX;
             const y0 = e.clientY;
             const startPx = maxWidthPx;
-            const onMove = (ev: PointerEvent) => {
+            const onMove = (ev: globalThis.PointerEvent) => {
                 const dw = ev.clientX - x0;
                 const dh = ev.clientY - y0;
                 const delta = (dw + dh) / 2;
@@ -292,7 +302,7 @@ function DraggableImage({
         [canvasMaxWidth, maxWidthPx, onImageWidthPercentChange, onSelect],
     );
 
-    const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    const handlePointerDown = useCallback((e: PointerEvent) => {
         e.preventDefault();
         e.stopPropagation();
         onSelect?.();
@@ -303,7 +313,7 @@ function DraggableImage({
         const startX = e.clientX - position.x;
         const startY = e.clientY - position.y;
 
-        const onMove = (ev: PointerEvent) => {
+        const onMove = (ev: globalThis.PointerEvent) => {
             let newX = ev.clientX - startX;
             let newY = ev.clientY - startY;
             const sx = Math.abs(newX) < SNAP_ZONE;
@@ -398,7 +408,7 @@ function DraggableStudioFreeText({
     onSnapChange,
     hideGrip = false,
 }: {
-    children: React.ReactNode;
+    children: ReactNode;
     position: { x: number; y: number };
     onPositionChange: (pos: { x: number; y: number }) => void;
     className?: string;
@@ -415,7 +425,7 @@ function DraggableStudioFreeText({
     const SNAP_ZONE = 10;
 
     const handleGripPointerDown = useCallback(
-        (e: React.PointerEvent) => {
+        (e: PointerEvent) => {
             e.preventDefault();
             e.stopPropagation();
             onSelect?.();
@@ -426,7 +436,7 @@ function DraggableStudioFreeText({
             const startX = e.clientX - position.x;
             const startY = e.clientY - position.y;
 
-            const onMove = (ev: PointerEvent) => {
+            const onMove = (ev: globalThis.PointerEvent) => {
                 let newX = ev.clientX - startX;
                 let newY = ev.clientY - startY;
                 const sx = Math.abs(newX) < SNAP_ZONE;
@@ -609,6 +619,8 @@ export default function Bible() {
     const pendingUrlVerseScrollRef = useRef<number | null>(null);
     /** Evita que estado→URL pise la query antes de hidratar estado desde la URL actual. */
     const didHydrateReadingStateFromUrlRef = useRef(false);
+    const syncStateRef = useRef({ book: selectedBook, chapter: selectedChapter, version: selectedVersion, verses: selectedVerses });
+    syncStateRef.current = { book: selectedBook, chapter: selectedChapter, version: selectedVersion, verses: selectedVerses };
     const [huicholWordPractice, setHuicholWordPractice] = useState<{
         displayWord: string;
         speechText: string;
@@ -953,14 +965,14 @@ export default function Bible() {
         [toast],
     );
 
-    const handlePreviewDragOver = useCallback((e: React.DragEvent) => {
+    const handlePreviewDragOver = useCallback((e: DragEvent) => {
         e.preventDefault();
         e.stopPropagation();
         e.dataTransfer.dropEffect = 'copy';
     }, []);
 
     const handlePreviewDrop = useCallback(
-        (e: React.DragEvent) => {
+        (e: DragEvent) => {
             e.preventDefault();
             e.stopPropagation();
             setStudioDropHighlight(false);
@@ -976,7 +988,7 @@ export default function Bible() {
     );
 
     const handleStudioOverlayImagePick = useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
+        (e: ChangeEvent<HTMLInputElement>) => {
             const file = e.target.files?.[0];
             const targetId = studioOverlayImageTargetRef.current;
             e.target.value = '';
@@ -996,7 +1008,7 @@ export default function Bible() {
     };
 
     const beginVerseFrameResize = useCallback(
-        (e: React.PointerEvent) => {
+        (e: PointerEvent) => {
             e.preventDefault();
             e.stopPropagation();
             const handle = e.currentTarget as HTMLElement;
@@ -1007,7 +1019,7 @@ export default function Bible() {
             const y0 = e.clientY;
             const w0 = studioVerseFrame.w;
             const h0 = studioVerseFrame.maxH;
-            const onMove = (ev: PointerEvent) => {
+            const onMove = (ev: globalThis.PointerEvent) => {
                 const dw = ev.clientX - x0;
                 const dh = ev.clientY - y0;
                 setStudioVerseFrame({
@@ -1049,7 +1061,7 @@ export default function Bible() {
         options: {
             label: string;
             displayValue: string;
-            viewContent: React.ReactNode;
+            viewContent: ReactNode;
             contentClassName: string;
             rootClassName?: string;
             scrollWrapClassName?: string;
@@ -1063,7 +1075,7 @@ export default function Bible() {
         const isVerseMultiline = el === 'verse' && options.multiline;
         /** En el lienzo, el versículo va centrado con 32px de aire a los lados. */
         const verseStudioPadX = 32;
-        const textStyle: React.CSSProperties = {
+        const textStyle: CSSProperties = {
             fontSize: `${elementStyles[el].fontSize}px`,
             fontWeight: elementStyles[el].fontWeight,
             textAlign: (isVerseMultiline ? 'center' : elementStyles[el].textAlign) as 'left' | 'center' | 'right',
@@ -1237,7 +1249,7 @@ export default function Bible() {
             const maxImg = Math.max(56, Math.round((ov.imageWidthPercent / 100) * canvasMaxWidth));
             if (ov.type === 'text') {
                 const editing = studioOverlayTextEditingId === ov.id;
-                const textStyle: React.CSSProperties = {
+                const textStyle: CSSProperties = {
                     fontSize: `${ov.fontSize}px`,
                     fontWeight: ov.fontWeight,
                     textAlign: ov.textAlign as 'left' | 'center' | 'right',
@@ -1434,27 +1446,26 @@ export default function Bible() {
             const resolvedVersion = versionFromParams(p);
             if (resolvedVersion) {
                 setSelectedVersion(resolvedVersion);
+                syncStateRef.current.version = resolvedVersion;
             }
             if (resolvedBook && books.includes(resolvedBook)) {
                 setSelectedBook(resolvedBook);
+                syncStateRef.current.book = resolvedBook;
                 const ch = chapter ? parseInt(chapter, 10) : 1;
                 const maxCh = chaptersPerBook[resolvedBook] ?? 1;
-                setSelectedChapter(Number.isFinite(ch) ? Math.min(Math.max(1, ch), maxCh) : 1);
+                const finalCh = Number.isFinite(ch) ? Math.min(Math.max(1, ch), maxCh) : 1;
+                setSelectedChapter(finalCh);
+                syncStateRef.current.chapter = finalCh;
                 const verseNums = versesListFromQuery(verse);
                 if (verseNums.length > 0) {
                     setSelectedVerses(verseNums);
+                    syncStateRef.current.verses = verseNums;
                     pendingUrlVerseScrollRef.current = Math.min(...verseNums);
                 } else {
                     setSelectedVerses([]);
+                    syncStateRef.current.verses = [];
                     pendingUrlVerseScrollRef.current = 1;
                 }
-            } else {
-                setSelectedBook('Génesis');
-                setSelectedChapter(1);
-                setSelectedVerses([]);
-                pendingUrlVerseScrollRef.current = null;
-                setIsToolbarOpen(false);
-                setShowColorPicker(false);
             }
         } finally {
             didHydrateReadingStateFromUrlRef.current = true;
@@ -1471,7 +1482,21 @@ export default function Bible() {
         if (pathname !== '/biblia') {
             return;
         }
+
+        if (
+            selectedBook !== syncStateRef.current.book ||
+            selectedChapter !== syncStateRef.current.chapter ||
+            selectedVersion !== syncStateRef.current.version ||
+            selectedVerses !== syncStateRef.current.verses
+        ) {
+            return;
+        }
+
         const sp = readingQueryParams();
+        if (!sp.get('book') && selectedBook === 'Génesis' && selectedChapter === 1 && selectedVerses.length === 0) {
+            return;
+        }
+
         if (
             readingParamsMatchStateWithParams(
                 sp,
@@ -1803,7 +1828,7 @@ export default function Bible() {
         setLinkInput("");
     };
 
-    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -1820,7 +1845,7 @@ export default function Bible() {
         e.target.value = ''; // Reset input
     };
 
-    const handleSocialBgUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSocialBgUpload = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();

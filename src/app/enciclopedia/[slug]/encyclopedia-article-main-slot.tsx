@@ -18,7 +18,7 @@ export default async function EncyclopediaArticleMainSlot({ slug }: Props) {
       entry={entry}
       allEntries={allEntries}
       relatedSlot={
-        <Suspense fallback={<EncyclopediaArticleRelatedShell />}>
+        <Suspense key="related-slot" fallback={<EncyclopediaArticleRelatedShell />}>
           <EncyclopediaArticleRelatedSlot entry={entry} />
         </Suspense>
       }

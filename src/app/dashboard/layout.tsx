@@ -1,12 +1,9 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { ChevronDown, LayoutDashboard } from 'lucide-react';
-import { Show, SignInButton } from '@clerk/nextjs';
 import Footer from '@/app/components/footer';
-import { DASHBOARD_NAV_ITEMS } from '@/lib/dashboard-nav';
+import { Show, SignInButton } from '@clerk/nextjs';
+import { usePathname } from 'next/navigation';
+import { ReactNode, useEffect, useState } from 'react';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -36,7 +33,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     <Show 
       when="signed-in"
       fallback={
-        <div className="flex flex-col items-center justify-center min-h-screen bg-[#F4F7F6]">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-[#F4F7F6] px-4 text-center">
           <h2 className="text-2xl font-bold mb-4 text-gray-800">Acceso Restringido</h2>
           <p className="text-gray-500 mb-6 text-sm">Debes iniciar sesión para ver tu dashboard.</p>
           <SignInButton mode="modal">
@@ -47,7 +44,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
       }
     >
-      <div className="flex flex-col lg:flex-row bg-[#F4F7F6] min-h-[calc(100vh-80px)] text-gray-900 font-sans relative">
+      <div className="flex min-h-screen w-full flex-col overflow-x-hidden bg-[#F4F7F6] text-gray-900 font-sans relative">
         {/* Sidebar */}
 
         {/* Main Content Area */}

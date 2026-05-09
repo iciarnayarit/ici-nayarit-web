@@ -317,7 +317,8 @@ export default function AvisosClient() {
         const bySlug = new Map(recentAnnouncements.map((a) => [slugify(a.title), a]));
         const mapped = data.recommendations
           .map((rec) => bySlug.get(rec.slug))
-          .filter((x): x is (typeof recentAnnouncements)[number] => Boolean(x));
+          .filter((x): x is (typeof recentAnnouncements)[number] => Boolean(x))
+          .filter((item, index, self) => self.findIndex(i => i.title === item.title) === index);
         if (!cancelled) setRecommendedAvisos(mapped.slice(0, RECOMMENDED_AVISOS_FETCH_LIMIT));
       } catch {
         // keep UX stable
@@ -504,13 +505,13 @@ export default function AvisosClient() {
             </Link>
           </section>
 
-          {displayRecommendedAvisos.length > 0 ? (
+          {recommendedAvisos.length > 0 ? (
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-700 text-center md:text-left mb-6 font-display">
                 Recomendado para ti
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {displayRecommendedAvisos.map((item) => (
+                {recommendedAvisos.map((item) => (
                   <AnnouncementCard
                     key={`recommended-${item.title}-${item.date}`}
                     item={item}

@@ -1,13 +1,13 @@
-import { ClerkProvider, Show, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
-import { esES } from '@clerk/localizations';
 import { Toaster } from '@/app/components/ui/toaster';
+import { esES } from '@clerk/localizations';
+import { ClerkProvider } from '@clerk/nextjs';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import { Alegreya, PT_Sans } from 'next/font/google';
-import './globals.css';
 import Header from './components/header';
 import { AudioProvider } from './context/AudioContext';
+import './globals.css';
 
 type Props = {
   children: React.ReactNode;
@@ -30,6 +30,10 @@ const headlineFont = Alegreya({
 export const metadata: Metadata = {
   title: 'ICIAR Nayarit',
   description: 'Somos una Iglesia Cristiana Interdenominacional comprometida con compartir el amor de Cristo en Nayarit.',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+  },
   keywords: [
     'Cristianismo',
     'ICIAR Iglesia Central - Portales',

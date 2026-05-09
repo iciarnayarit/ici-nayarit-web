@@ -1,6 +1,8 @@
 import Footer from '@/app/components/footer';
 import { Lightbulb } from 'lucide-react';
 import type { Metadata } from 'next';
+import { getEncyclopediaIndexPage } from '@/lib/bible-encyclopedia-data';
+import EncyclopediaIndexListClient from './encyclopedia-index-list-client';
 
 export const metadata: Metadata = {
   title: 'Enciclopedia bíblica — ICIAR Nayarit',
